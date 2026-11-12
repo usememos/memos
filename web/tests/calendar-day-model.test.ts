@@ -51,6 +51,12 @@ describe("calendar day snapshots", () => {
     expect(day([memoAt(9, { content: "- [x] Ship release\n- [ ] Write notes" })]).excerpt?.text).toBe("Ship release\nWrite notes");
   });
 
+  it("reads a callout without its type marker, as the memo shows it", () => {
+    expect(day([memoAt(9, { content: "> [!WARNING]\n> Back up first." })]).excerpt?.text).toBe("Back up first.");
+    expect(day([memoAt(9, { content: "> [!NOTE] inline\n> text" })]).excerpt?.text).toBe("[!NOTE] inline\ntext");
+    expect(day([memoAt(9, { content: "> `[!NOTE]`\n> text" })]).excerpt?.text).toBe("[!NOTE]\ntext");
+  });
+
   it("skips empty and image-only memos when choosing text and keeps photos from distinct memos", () => {
     const summary = day([
       memoAt(8),
@@ -119,6 +125,7 @@ describe("calendar day snapshots", () => {
           "`![code](https://example.com/code.jpg)`",
           "```md\n![fenced](https://example.com/fenced.jpg)\n```",
           '<img src="https://example.com/html.jpg">',
+          'Inline <img src="https://example.com/inline-html.jpg"> text',
           "![missing][undefined]",
           "![data](data:image/png;base64,AAAA)",
           "![insecure](http://example.com/insecure.jpg)",
@@ -129,6 +136,29 @@ describe("calendar day snapshots", () => {
       }),
     ]);
     expect(result.images.map((entry) => entry.thumbnailUrl)).toEqual(["https://example.com/valid.jpg"]);
+  });
+
+  it("reads images in footnotes in reading order, references and source policy included", () => {
+    const result = day([
+      memoAt(9, {
+        content: [
+          "See the note[^1].",
+          "[^1]: Taken at dawn ![dawn][photo]\n    ![insecure](http://example.com/insecure.jpg)",
+          "![after](https://example.com/after.jpg)",
+          "[photo]: https://example.com/dawn.jpg",
+        ].join("\n\n"),
+      }),
+    ]);
+    expect(result.images.map((entry) => entry.thumbnailUrl)).toEqual(["https://example.com/dawn.jpg"]);
+    expect(getMemoThumbnail(memoAt(9, { content: "Note[^a]\n\n[^a]: ![only](https://example.com/only.jpg)" }))).toBe(
+      "https://example.com/only.jpg",
+    );
+  });
+
+  it("reads a footnote's text, not its reference label, into the excerpt", () => {
+    expect(day([memoAt(9, { content: "Test[^1]\n\n[^1]: very **important**\n\n    second paragraph" })]).excerpt?.text).toBe(
+      "Test\nvery important\nsecond paragraph",
+    );
   });
 
   it("does not turn an image-only memo's alt text into an excerpt", () => {

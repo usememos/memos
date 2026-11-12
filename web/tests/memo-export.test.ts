@@ -3,13 +3,12 @@ import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { exportMemos, stageMemoImport } from "@/lib/memo-export";
 
-const { exportRequest, importRequest, download } = vi.hoisted(() => ({
-  exportRequest: vi.fn(),
+const { importRequest, download } = vi.hoisted(() => ({
   importRequest: vi.fn(),
   download: vi.fn(),
 }));
 
-vi.mock("@/connect", () => ({ userServiceClient: { exportMemos: exportRequest, importMemos: importRequest } }));
+vi.mock("@/connect", () => ({ userServiceClient: { importMemos: importRequest } }));
 vi.mock("@/lib/browser", () => ({ downloadFileFromUrl: download }));
 
 describe("memo export files", () => {
@@ -19,24 +18,55 @@ describe("memo export files", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.useRealTimers();
   });
 
-  it("downloads a ZIP with the export name and releases its object URL", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-09-20T08:30:00Z"));
-    const createURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:export");
-    const revokeURL = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
-    exportRequest.mockResolvedValue({ contentType: "application/vnd.usememos.export+zip", data: new Uint8Array([80, 75]) });
+  it("preflights the export route with HEAD and hands the download to the browser", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 200,
+        headers: { "Content-Disposition": "attachment; filename=memos-export-alice-20260920T083000Z.zip" },
+      }),
+    );
 
-    await exportMemos("users/alice", "alice");
+    await exportMemos("alice");
 
-    expect(exportRequest).toHaveBeenCalledWith({ name: "users/alice" });
-    expect(createURL.mock.calls[0][0]).toMatchObject({ type: "application/vnd.usememos.export+zip", size: 2 });
-    expect(download).toHaveBeenCalledWith("blob:export", "memos-export-alice-20260920T083000Z.zip");
-    expect(revokeURL).not.toHaveBeenCalled();
-    await vi.runAllTimersAsync();
-    expect(revokeURL).toHaveBeenCalledWith("blob:export");
+    expect(fetchSpy).toHaveBeenCalledWith("/file/users/alice/export", { method: "HEAD", credentials: "same-origin" });
+    expect(download).toHaveBeenCalledWith("/file/users/alice/export", "memos-export-alice-20260920T083000Z.zip");
+  });
+
+  it("keeps a filename that is not percent-encoded as sent", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 200,
+        headers: { "Content-Disposition": 'attachment; filename="memos-export-100%25-20260920T083000Z.zip"' },
+      }),
+    );
+    await exportMemos("100%");
+    expect(download).toHaveBeenCalledWith("/file/users/100%25/export", "memos-export-100%-20260920T083000Z.zip");
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 200,
+        headers: { "Content-Disposition": 'attachment; filename="memos-export-50%-20260920T083000Z.zip"' },
+      }),
+    );
+    await exportMemos("50%");
+    expect(download).toHaveBeenLastCalledWith("/file/users/50%25/export", "memos-export-50%-20260920T083000Z.zip");
+  });
+
+  it("reports a refused preflight with its status instead of downloading", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 429 }));
+
+    await expect(exportMemos("alice")).rejects.toMatchObject({ name: "MemoExportError", status: 429 });
+    expect(download).not.toHaveBeenCalled();
+  });
+
+  it("escapes the username in the route", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 200 }));
+
+    await exportMemos("a b");
+
+    expect(download).toHaveBeenCalledWith("/file/users/a%20b/export", "memos-export-a b.zip");
   });
 
   it.each([

@@ -37,12 +37,31 @@ const (
 	FieldKindJSONExists   FieldKind = "json_exists"
 	FieldKindJSONList     FieldKind = "json_list"
 	FieldKindVirtualAlias FieldKind = "virtual_alias"
+	// FieldKindExists represents a boolean derived from the presence of related
+	// rows in another table, optionally OR-ed with a JSON boolean flag.
+	FieldKindExists FieldKind = "exists"
 )
 
 // Column identifies the backing table column.
 type Column struct {
 	Table string
 	Name  string
+}
+
+// RelatedRows identifies the rows of another table that belong to a record,
+// for fields of kind FieldKindExists.
+type RelatedRows struct {
+	// Table is the related table.
+	Table string
+	// ForeignKey is the column of Table that holds the owner's key.
+	ForeignKey string
+	// Owner is the outer column ForeignKey refers to, such as memo.id.
+	Owner Column
+	// PrefixColumn and Prefix, when set, keep only related rows whose
+	// PrefixColumn starts with Prefix, ignoring case. Prefix is a schema
+	// constant and must not contain quotes or LIKE wildcards.
+	PrefixColumn string
+	Prefix       string
 }
 
 // Field captures the schema metadata for an exposed CEL identifier.
@@ -52,6 +71,7 @@ type Field struct {
 	Type                 FieldType
 	Column               Column
 	JSONPath             []string
+	Related              *RelatedRows
 	AliasFor             string
 	SupportsContains     bool
 	Expressions          map[DialectName]string
@@ -254,6 +274,45 @@ func NewSchema() Schema {
 				CompareNeq: true,
 			},
 		},
+		// Attachment binding lives in attachment.memo_id and changes without the
+		// memo content changing, so it is read at query time, never copied into
+		// the memo payload.
+		"has_attachments": {
+			Name: "has_attachments",
+			Kind: FieldKindExists,
+			Type: FieldTypeBool,
+			Related: &RelatedRows{
+				Table:      "attachment",
+				ForeignKey: "memo_id",
+				Owner:      Column{Table: "memo", Name: "id"},
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+		// has_image answers "does the memo show a picture": Markdown image syntax
+		// in the content (the stored hasInlineImage flag) or an attached image
+		// file that renders in the attachment strip. Both halves are needed; the
+		// stored flag alone misses photos that are uploaded but not referenced.
+		"has_image": {
+			Name:     "has_image",
+			Kind:     FieldKindExists,
+			Type:     FieldTypeBool,
+			Column:   Column{Table: "memo", Name: "payload"},
+			JSONPath: []string{"property", "hasInlineImage"},
+			Related: &RelatedRows{
+				Table:        "attachment",
+				ForeignKey:   "memo_id",
+				Owner:        Column{Table: "memo", Name: "id"},
+				PrefixColumn: "type",
+				Prefix:       "image/",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 	}
 
 	envOptions := []cel.EnvOption{
@@ -273,6 +332,8 @@ func NewSchema() Schema {
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
 		cel.Variable("has_location", cel.BoolType),
+		cel.Variable("has_attachments", cel.BoolType),
+		cel.Variable("has_image", cel.BoolType),
 		cel.Variable("now", cel.TimestampType),
 		ext.Sets(),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),

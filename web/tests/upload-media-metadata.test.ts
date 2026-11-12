@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { LocalFile } from "@/components/MemoEditor/types/attachment";
+import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
 import { MediaMetadataSchema } from "@/types/proto/api/attachment_service_pb";
 
 const mocks = vi.hoisted(() => ({
@@ -17,12 +17,12 @@ vi.mock("@/connect", () => ({
   refreshAccessToken: vi.fn(),
 }));
 
-vi.mock("@/components/MemoEditor/services/mediaMetadataService", () => ({
+vi.mock("@/components/MemoEditor/edit/services/mediaMetadataService", () => ({
   mediaMetadataService: { extract: mocks.extractMetadata },
 }));
 
-import { toLocalFiles } from "@/components/MemoEditor/hooks/useFileUpload";
-import { uploadService } from "@/components/MemoEditor/services/uploadService";
+import { toLocalFiles } from "@/components/MemoEditor/edit/hooks/useFileUpload";
+import { uploadService } from "@/components/MemoEditor/edit/services/uploadService";
 
 const createBlobUrl = (file: File) => `blob:${file.name}`;
 

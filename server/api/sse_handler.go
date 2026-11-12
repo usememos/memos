@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/labstack/echo/v5"
-
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -19,34 +18,29 @@ const (
 	sseHeartbeatComment  = ": heartbeat\n\n"
 )
 
-type sseRouteRegistrar interface {
-	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
-}
-
-// RegisterSSERoutes registers the SSE endpoint on the given Echo router.
-func RegisterSSERoutes(router sseRouteRegistrar, hub *SSEHub, storeInstance *store.Store, secret string) {
+// RegisterSSERoutes registers the SSE endpoint.
+func RegisterSSERoutes(mux *http.ServeMux, hub *SSEHub, storeInstance *store.Store, secret string) {
 	authenticator := auth.NewAuthenticator(storeInstance, secret)
-	router.GET("/api/sse", func(c *echo.Context) error {
-		return handleSSE(c, hub, authenticator)
-	})
+	mux.Handle("/api/sse", httphandler.GET(httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		return handleSSE(w, r, hub, authenticator)
+	}), nil))
 }
 
 // handleSSE handles the SSE connection for live memo refresh.
 // Authentication is done via Bearer token in the Authorization header.
-func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
+func handleSSE(w http.ResponseWriter, r *http.Request, hub *SSEHub, authenticator *auth.Authenticator) error {
 	// Authenticate the request.
-	authHeader := c.Request().Header.Get("Authorization")
-	result := authenticator.Authenticate(c.Request().Context(), authHeader)
+	authHeader := r.Header.Get("Authorization")
+	result := authenticator.Authenticate(r.Context(), authHeader)
 	if result == nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+		return httphandler.JSON(w, http.StatusUnauthorized, map[string]string{"error": "authentication required"})
 	}
 	userID := getSSEClientUserID(result)
 	if userID == 0 {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+		return httphandler.JSON(w, http.StatusUnauthorized, map[string]string{"error": "authentication required"})
 	}
 
 	// Set SSE headers.
-	w := c.Response()
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -67,7 +61,7 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	client := hub.Subscribe()
 	defer hub.Unsubscribe(client)
 
-	ctx := c.Request().Context()
+	ctx := r.Context()
 
 	slog.Debug("SSE client connected", "userID", userID)
 

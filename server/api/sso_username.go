@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/pkg/errors"
 
+	coreuser "github.com/usememos/memos/core/user"
 	"github.com/usememos/memos/internal/random"
 )
 
@@ -15,7 +16,7 @@ const ssoUsernameFallbackAttempts = 5
 // another local account.
 func deriveSSOUsername() (string, error) {
 	username := random.UUID()
-	if err := validateWritableUsername(username); err != nil {
+	if err := coreuser.ValidateUsername(username); err != nil {
 		return "", errors.Wrap(err, "generated UUID did not satisfy username constraints")
 	}
 	return username, nil

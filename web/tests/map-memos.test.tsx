@@ -97,7 +97,7 @@ describe("map pagination", () => {
     const updated = { ...original.memos[0], location: { ...original.memos[0].location!, latitude: 0, longitude: 0 } };
     state.update.mockResolvedValueOnce(updated);
     state.list.mockResolvedValueOnce({ memos: [updated], nextPageToken: "" });
-    const mutations = renderHook(() => ({ update: useUpdateMemo(), remove: useDeleteMemo() }), { wrapper });
+    const mutations = renderHook(() => ({ update: useUpdateMemo(updated.name), remove: useDeleteMemo() }), { wrapper });
     await act(async () => {
       await mutations.result.current.update.mutateAsync({ update: updated, updateMask: ["location"] });
     });

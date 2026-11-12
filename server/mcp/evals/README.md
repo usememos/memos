@@ -42,22 +42,59 @@ update both this summary and `memos_eval.xml`; nothing in CI catches drift.
 
 ## Running an evaluation
 
-1. Launch a throwaway demo-mode instance (SQLite, auto-seeded) on a free port:
+The seed users have random, discarded passwords and the seed ships no access
+token, so the instance needs a way to sign in as `steven`. Questions 10 and 11
+depend on the caller being `steven`. Declare that user in a configuration
+directory: the seed runs after the configuration is applied and attaches its
+content to the declared `steven` instead of creating a second one.
+
+1. Write a configuration that declares `steven` as an administrator with a
+   password you choose:
+
+   ```bash
+   mkdir -p /tmp/memos-evals/config
+   cat > /tmp/memos-evals/config/instance.json <<'EOF'
+   {
+     "users": [
+       { "name": "users/steven", "username": "steven", "role": "ADMIN", "password": "${env:MEMOS_EVAL_PASSWORD}" }
+     ]
+   }
+   EOF
+   export MEMOS_EVAL_PASSWORD=evals-only
+   ```
+
+2. Launch a throwaway demo-mode instance (SQLite, auto-seeded) on a free port:
 
    ```bash
    go run -buildvcs=true ./cmd/memos --demo --driver sqlite \
      --port 8099 --data "$(mktemp -d)" \
+     --config-dir /tmp/memos-evals/config \
      --instance-url http://localhost:8099
    ```
 
-2. The MCP endpoint is `http://localhost:8099/mcp`. Authenticate with the seed's
-   demo personal access token, which belongs to `steven`:
+3. Sign in as `steven` and create a personal access token for the harness. The
+   sign-in access token is short-lived; the personal access token is not.
+
+   ```bash
+   ACCESS_TOKEN=$(curl -s -X POST http://localhost:8099/api/auth/signin \
+     -H 'Content-Type: application/json' \
+     -d "{\"passwordCredentials\":{\"username\":\"steven\",\"password\":\"$MEMOS_EVAL_PASSWORD\"}}" \
+     | jq -r .accessToken)
+   MEMOS_TOKEN=$(curl -s -X POST http://localhost:8099/api/users/steven/personalAccessTokens \
+     -H "Authorization: Bearer $ACCESS_TOKEN" \
+     -H 'Content-Type: application/json' \
+     -d '{"description":"mcp evals"}' \
+     | jq -r .token)
+   ```
+
+4. The MCP endpoint is `http://localhost:8099/mcp`. Authenticate every request
+   with that token:
 
    ```
-   Authorization: Bearer memos_pat_demo
+   Authorization: Bearer $MEMOS_TOKEN
    ```
 
-3. Point an MCP client / eval harness at that endpoint and have the model answer
+5. Point an MCP client / eval harness at that endpoint and have the model answer
    each `<question>`, then string-compare against each `<answer>`.
 
    Quick manual check of a single tool call:
@@ -66,7 +103,7 @@ update both this summary and `memos_eval.xml`; nothing in CI catches drift.
    curl -s -X POST http://localhost:8099/mcp \
      -H 'Content-Type: application/json' \
      -H 'Accept: application/json, text/event-stream' \
-     -H 'Authorization: Bearer memos_pat_demo' \
+     -H "Authorization: Bearer $MEMOS_TOKEN" \
      -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"memo_list_memos","arguments":{"filter":"pinned == true"}}}'
    ```
 

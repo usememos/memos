@@ -13,8 +13,9 @@ import (
 )
 
 // TestGetUserByPATHashWithMissingData tests the fix for #5611 and #5612.
-// Verifies that GetUserByPATHash handles missing/malformed data gracefully
-// instead of throwing PostgreSQL JSONB errors.
+// Verifies that GetUserByPATHash treats missing data as a miss and only fails on
+// a row that carries the hash but cannot be decoded, instead of throwing
+// PostgreSQL JSONB errors.
 func TestGetUserByPATHashWithMissingData(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping PostgreSQL integration test in short mode")
@@ -55,9 +56,8 @@ func TestGetUserByPATHashWithMissingData(t *testing.T) {
 		// Test case: User has no PERSONAL_ACCESS_TOKENS key
 		// This simulates fresh users or users upgraded from v0.25.3
 		result, err := driver.GetUserByPATHash(ctx, "any-hash")
-		assert.Error(t, err)
+		assert.NoError(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "PAT not found")
 	})
 
 	t.Run("EmptyTokensArray", func(t *testing.T) {
@@ -70,9 +70,8 @@ func TestGetUserByPATHashWithMissingData(t *testing.T) {
 		require.NoError(t, err)
 
 		result, err := driver.GetUserByPATHash(ctx, "any-hash")
-		assert.Error(t, err)
+		assert.NoError(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "PAT not found")
 	})
 
 	t.Run("MalformedJSON", func(t *testing.T) {
@@ -84,11 +83,24 @@ func TestGetUserByPATHashWithMissingData(t *testing.T) {
 		`, 1002, "PERSONAL_ACCESS_TOKENS", `{invalid json}`)
 		require.NoError(t, err)
 
-		// Should handle gracefully without crashing
+		// A corrupt row that cannot carry the hash is skipped.
 		result, err := driver.GetUserByPATHash(ctx, "any-hash")
+		assert.NoError(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("CorruptRowCarryingHash", func(t *testing.T) {
+		_, err := db.ExecContext(ctx, `
+			INSERT INTO user_setting (user_id, key, value)
+			VALUES ($1, $2, $3)
+			ON CONFLICT (user_id, key) DO UPDATE SET value = EXCLUDED.value
+		`, 1002, "PERSONAL_ACCESS_TOKENS", `{"tokens":[{"tokenId":"pat-corrupt","tokenHash":"hash-corrupt","lastUsedAt":""}]}`)
+		require.NoError(t, err)
+
+		// A corrupt row that does carry the hash is a lookup failure, not a miss.
+		result, err := driver.GetUserByPATHash(ctx, "hash-corrupt")
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "PAT not found")
 	})
 
 	t.Run("MissingTokensField", func(t *testing.T) {
@@ -102,7 +114,7 @@ func TestGetUserByPATHashWithMissingData(t *testing.T) {
 
 		// Should handle gracefully
 		result, err := driver.GetUserByPATHash(ctx, "any-hash")
-		assert.Error(t, err)
+		assert.NoError(t, err)
 		assert.Nil(t, result)
 	})
 

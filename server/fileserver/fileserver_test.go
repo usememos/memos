@@ -18,11 +18,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/random"
 	"github.com/usememos/memos/internal/testutil"
@@ -37,12 +37,10 @@ import (
 	teststore "github.com/usememos/memos/store/test"
 )
 
-func TestServeAttachmentFile_S3(t *testing.T) {
-	ctx := context.Background()
-	fake := fakes3.New(t, "file-server-attachments")
-	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
-	defer cleanup()
-
+// configureFakeS3Storage makes the fake S3 bucket "file-server-attachments"
+// the instance's default attachment storage.
+func configureFakeS3Storage(ctx context.Context, t *testing.T, stores *store.Store, fake *fakes3.Server) {
+	t.Helper()
 	configuredStorage := &storepb.Storage{
 		Id:     "s3-files",
 		Name:   "File server S3",
@@ -58,6 +56,29 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 		}},
 	})
 	require.NoError(t, err)
+}
+
+// configureLocalStorage makes the data directory the instance's default
+// attachment storage.
+func configureLocalStorage(ctx context.Context, t *testing.T, stores *store.Store) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			Storages:         []*storepb.Storage{{Id: "local", Name: "Local", Type: storepb.StorageType_STORAGE_TYPE_LOCAL}},
+			DefaultStorageId: "local",
+		}},
+	})
+	require.NoError(t, err)
+}
+
+func TestServeAttachmentFile_S3(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configureFakeS3Storage(ctx, t, stores, fake)
 
 	creator, err := stores.CreateUser(ctx, &store.User{
 		Username: "s3-file-owner",
@@ -80,14 +101,14 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	}})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	recorder := httptest.NewRecorder()
 	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
 
 	require.Equal(t, http.StatusOK, recorder.Code)
 	require.Equal(t, content, recorder.Body.Bytes())
-	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get(echo.HeaderContentType))
+	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get("Content-Type"))
 
 	// S3 cannot produce multipart range responses. The fileserver may ignore a
 	// Range request and send the complete representation instead of forwarding
@@ -99,6 +120,76 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	require.Equal(t, http.StatusOK, multiRangeRecorder.Code)
 	require.Equal(t, content, multiRangeRecorder.Body.Bytes())
 	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
+}
+
+// A failed media fetch must answer with the JSON error it actually is, not the
+// attachment's media type: browsers route a Content-Type like application/pdf
+// to their document viewer, which then reports a misleading "Failed to load
+// PDF document" for the JSON body (usememos/memos#6515).
+func TestServeAttachmentFile_StorageFailureIsAJSONError(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configureFakeS3Storage(ctx, t, stores, fake)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-failure-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-failure-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	var attachments []*apipb.Attachment
+	for _, spec := range []struct{ filename, contentType string }{
+		{"document.pdf", "application/pdf"},
+		{"archive.zip", "application/zip"},
+	} {
+		attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+			Filename: spec.filename,
+			Type:     spec.contentType,
+			Content:  []byte("s3 bytes"),
+		}})
+		require.NoError(t, err)
+		attachments = append(attachments, attachment)
+	}
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content:     "public S3 attachments",
+		Visibility:  apipb.Visibility_PUBLIC,
+		Attachments: []*apipb.Attachment{{Name: attachments[0].Name}, {Name: attachments[1].Name}},
+	}})
+	require.NoError(t, err)
+
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
+
+	// Healthy PDFs keep their media type and are served inline so a new tab
+	// renders them in the browser's document viewer.
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachments[0].Name, attachments[0].Filename), nil))
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, "application/pdf", recorder.Header().Get("Content-Type"))
+	require.Empty(t, recorder.Header().Get("Content-Disposition"))
+
+	// Drop the backing objects so the S3 reads fail after the handler has
+	// already prepared the attachments' media headers.
+	for _, attachment := range attachments {
+		uid := strings.TrimPrefix(attachment.Name, "attachments/")
+		stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, err)
+		require.NoError(t, fake.DeleteObject("file-server-attachments", stored.Payload.GetS3Object().Key))
+	}
+
+	for _, attachment := range attachments {
+		recorder := httptest.NewRecorder()
+		e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+		require.Equal(t, http.StatusInternalServerError, recorder.Code)
+		require.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
+		require.Empty(t, recorder.Header().Get("Content-Disposition"))
+		require.Contains(t, recorder.Body.String(), "failed to stream from S3")
+	}
 }
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
@@ -142,8 +233,8 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 	require.NoError(t, err)
 	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?share_token=%s", attachment.Name, attachment.Filename, shareToken), nil)
 	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
@@ -179,14 +270,14 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 	}})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := "/file/" + attachment.Name
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, "canonical image", rec.Body.String())
-	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get("Cache-Control"))
 
 	_, err = svc.UpdateMemo(creatorCtx, &apipb.UpdateMemoRequest{
 		Memo:       &apipb.Memo{Name: memo.Name, Visibility: apipb.Visibility_PROTECTED},
@@ -196,7 +287,7 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 	rec = httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
 	require.Equal(t, http.StatusUnauthorized, rec.Code)
-	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get("Cache-Control"))
 }
 
 func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
@@ -218,8 +309,8 @@ func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
 	}})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
 	archived := store.Archived
 	_, err = stores.UpdateUser(ctx, &store.UpdateUser{ID: creator.ID, RowStatus: &archived})
@@ -269,8 +360,8 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := "/file/" + attachment.Name
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
@@ -284,7 +375,7 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	rec = httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
 	require.Equal(t, http.StatusOK, rec.Code, "changing the context memo must not change attachment access")
-	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get("Cache-Control"))
 
 	_, err = svc.UpdateMemo(commenterCtx, &apipb.UpdateMemoRequest{
 		Memo:       &apipb.Memo{Name: comment.Name, Visibility: apipb.Visibility_PROTECTED},
@@ -294,7 +385,7 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	rec = httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
 	require.Equal(t, http.StatusUnauthorized, rec.Code)
-	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get("Cache-Control"))
 }
 
 func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) {
@@ -330,8 +421,8 @@ func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) 
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil)
 	req.Header.Set("Range", "bytes=2-5")
@@ -400,8 +491,8 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	require.NoError(t, err)
 	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?share_token=%s", commentAttachment.Name, commentAttachment.Filename, shareToken), nil)
 	rec := httptest.NewRecorder()
@@ -443,8 +534,8 @@ func TestServeAttachmentFile_MotionClip(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?motion=true", attachment.Name, attachment.Filename), nil)
 	rec := httptest.NewRecorder()
@@ -489,8 +580,8 @@ func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *tes
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
 	rec := httptest.NewRecorder()
@@ -538,8 +629,8 @@ func TestServeAttachmentFile_ThumbnailWithSensitiveMetadataServesOriginal(t *tes
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
 	rec := httptest.NewRecorder()
@@ -698,8 +789,8 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
 
 	anonymousGet := func() int {
@@ -742,8 +833,8 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 
 	anonymousGet := func() *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
@@ -755,7 +846,7 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	publicRec := anonymousGet()
 	require.Equal(t, http.StatusOK, publicRec.Code)
-	require.Equal(t, cacheMaxAge, publicRec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, cacheMaxAge, publicRec.Header().Get("Cache-Control"))
 
 	// A stale browser session must not turn a public avatar request into an
 	// authentication error.
@@ -764,7 +855,7 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
+	require.Equal(t, "image/png", rec.Header().Get("Content-Type"))
 
 	// Private instance: anonymous avatar access is denied.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
@@ -785,7 +876,7 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	privateRec := httptest.NewRecorder()
 	e.ServeHTTP(privateRec, privateReq)
 	require.Equal(t, http.StatusOK, privateRec.Code)
-	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get("Cache-Control"))
 }
 
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
@@ -833,8 +924,8 @@ func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
 
 	// Without credentials, the private attachment is denied.
@@ -877,8 +968,8 @@ func TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
 	getAs := func(user *store.User) int {
 		req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -968,13 +1059,13 @@ func TestServeAttachmentFile_ThumbnailRefusesOversizedImage(t *testing.T) {
 	bomb := oversizedPNGHeader(100_000, 100_000)
 	attachment := createPublicImageMemo(ctx, t, svc, "bomb-owner", "bomb.png", "image/png", bomb)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	for range 2 {
 		rec := httptest.NewRecorder()
 		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/bomb.png?thumbnail=true", attachment.Name), nil))
 		require.Equal(t, http.StatusOK, rec.Code)
-		require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
+		require.Equal(t, "image/png", rec.Header().Get("Content-Type"))
 		require.Equal(t, bomb, rec.Body.Bytes(), "original is served instead of a thumbnail")
 	}
 	uid := strings.TrimPrefix(attachment.Name, "attachments/")
@@ -1024,12 +1115,12 @@ func TestDeleteAttachmentRemovesCachedThumbnail(t *testing.T) {
 	owner, err := svc.Store.GetUser(ctx, &store.FindUser{Username: func() *string { s := "thumb-owner"; return &s }()})
 	require.NoError(t, err)
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/small.png?thumbnail=true", attachment.Name), nil))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
+	require.Equal(t, "image/jpeg", rec.Header().Get("Content-Type"))
 	uid := strings.TrimPrefix(attachment.Name, "attachments/")
 	thumbnailPath := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg")
 	require.FileExists(t, thumbnailPath)
@@ -1046,14 +1137,7 @@ func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
 	defer cleanup()
-	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
-			Storages:         []*storepb.Storage{{Id: "local", Name: "Local", Type: storepb.StorageType_STORAGE_TYPE_LOCAL}},
-			DefaultStorageId: "local",
-		}},
-	})
-	require.NoError(t, err)
+	configureLocalStorage(ctx, t, svc.Store)
 
 	var pngBuf bytes.Buffer
 	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
@@ -1065,8 +1149,8 @@ func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
 	localPath := fs.resolveLocalPath(stored.Reference)
 	require.NoError(t, os.Rename(localPath, localPath+".away"))
 
-	e := echo.New()
-	fs.RegisterRoutes(e)
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
 	marker := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"+thumbnailFailedMarkerSuffix)
@@ -1077,5 +1161,34 @@ func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
 	rec = httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
+	require.Equal(t, "image/jpeg", rec.Header().Get("Content-Type"))
+}
+
+// A local attachment whose file is gone from disk answers with the JSON error
+// envelope like every other storage failure, not net/http's plain-text page.
+func TestServeAttachmentFile_MissingLocalFileIsAJSONError(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+	configureLocalStorage(ctx, t, svc.Store)
+
+	attachment := createPublicImageMemo(ctx, t, svc, "local-owner", "report.pdf", "application/pdf", []byte("%PDF-1.4 local bytes"))
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+	require.Equal(t, storepb.AttachmentStorageType_LOCAL, stored.StorageType)
+
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/report.pdf", attachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "application/pdf", rec.Header().Get("Content-Type"))
+
+	require.NoError(t, os.Remove(fs.resolveLocalPath(stored.Reference)))
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/report.pdf", attachment.Name), nil))
+	require.Equal(t, http.StatusNotFound, rec.Code)
+	require.Equal(t, "application/json", rec.Header().Get("Content-Type"))
+	require.JSONEq(t, `{"message":"attachment file not found"}`, rec.Body.String())
 }

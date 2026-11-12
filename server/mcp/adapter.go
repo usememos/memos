@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
 
@@ -20,11 +19,11 @@ import (
 )
 
 type apiAdapter struct {
-	echoServer *echo.Echo
+	handler http.Handler
 }
 
-func newAPIAdapter(echoServer *echo.Echo) *apiAdapter {
-	return &apiAdapter{echoServer: echoServer}
+func newAPIAdapter(handler http.Handler) *apiAdapter {
+	return &apiAdapter{handler: handler}
 }
 
 func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, arguments map[string]any, authorization string) (*sdkmcp.CallToolResult, error) {
@@ -34,7 +33,7 @@ func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, a
 	}
 
 	recorder := httptest.NewRecorder()
-	a.echoServer.ServeHTTP(recorder, req)
+	a.handler.ServeHTTP(recorder, req)
 
 	value, err := decodeJSONValue(recorder.Body.Bytes())
 	if err != nil {

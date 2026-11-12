@@ -8,7 +8,7 @@ vi.mock("exifr", () => ({
   parse: mocks.parseExif,
 }));
 
-import { mediaMetadataService } from "@/components/MemoEditor/services/mediaMetadataService";
+import { mediaMetadataService } from "@/components/MemoEditor/edit/services/mediaMetadataService";
 
 describe("mediaMetadataService", () => {
   beforeEach(() => {

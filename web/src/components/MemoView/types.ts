@@ -15,6 +15,9 @@ export interface MemoViewProps {
   parentPage?: string;
   shareImageDialogOpen?: boolean;
   onShareImageDialogOpenChange?: (open: boolean) => void;
+  /** Controls whether tag-blurred content is revealed; uncontrolled when omitted. */
+  showBlurredContent?: boolean;
+  onShowBlurredContentChange?: (show: boolean) => void;
 }
 
 export interface MemoViewHandle {
@@ -30,4 +33,6 @@ export interface MemoHeaderProps {
 
 export interface MemoBodyProps {
   compact?: boolean;
+  /** Mirrors the header's: while editing, the session's timestamp row leads with the creator. */
+  showCreator?: boolean;
 }

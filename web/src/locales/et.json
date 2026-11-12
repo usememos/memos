@@ -6,7 +6,6 @@
     "api-docs": "API Dokumendid",
     "api-docs-note": "REST ja gRPC viide",
     "build": "Ehitus",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Avatud lähtekoodiga ruum sinu serveris märkmete, ideede ja igapäevaste mõtete jaoks.",
     "distribution": "Levitamine",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Sisselogimist ei õnnestunud lõpetada",
     "create-your-account": "Looge oma konto",
+    "hide-password": "Peida parool",
+    "incorrect-credentials": "Vale kasutajanimi või parool.",
     "new-password": "Uus parool",
     "repeat-new-password": "Korrake uut parooli",
+    "show-password": "Näita parooli",
     "sign-in-tip": "Kas teil on juba konto?",
     "sign-up-tip": "Kas teil pole veel kontot?",
     "admin-sign-in": "Administraatori sisselogimine",
-    "admin-sign-in-tip": "Parooliga sisselogimine jääb administraatoritele kättesaadavaks.",
     "back-to-sign-in": "Tagasi sisselogimiseks",
     "continue-with": "Jätka {{provider}}-ga",
     "create-admin-account": "Loo administraatori konto",
-    "explore-public-memos": "Avasta selle eksemplari avalikke memosid",
-    "first-run": "Esimene käivitus",
     "setup-description": "Loo selle eksemplari jaoks administraatori konto.",
-    "setup-note": "See konto omab eksemplari seadeid, liikmeid ja identiteedipakkujaid.",
     "setup-title": "Seadistage oma eksemplar",
     "signin-unavailable-description": "Parooliga sisselogimine on välja lülitatud ja ühtegi identiteedipakkujat pole konfigureeritud. Paluge administraatoril sisselogimismeetod lubada.",
     "signin-unavailable-title": "Sisselogimine pole saadaval",
-    "signup-unavailable-description": "Paroolikontod on välja lülitatud ja ühtegi identiteedipakkujat pole konfigureeritud. Küsige administraatorilt juurdepääsu.",
-    "signup-unavailable-title": "Registreerumine pole saadaval",
-    "signups-closed-description": "Uued kontod on selles eksemplaris keelatud. Kui vajate juurdepääsu, võtke ühendust administraatoriga.",
-    "signups-closed-title": "Registreerumine on suletud",
-    "sso-signup-tip": "Konto loomiseks logige sisse alloleva teenusepakkujaga.",
-    "welcome-back": "Tere tulemast tagasi."
+    "signups-closed-description": "Uued kontod on selles eksemplaris keelatud. Kui vajate juurdepääsu, võtke ühendust administraatoriga."
   },
   "demo": {
     "banner-description": "Muudatused on ajutised ja neid võidakse lähtestada.",
@@ -142,7 +136,6 @@
     "profile": "Profiil",
     "referenced-by": "Viidatud",
     "referencing": "Viitamine",
-    "relations": "Suhted",
     "resources": "Vahendid",
     "restore": "Taasta",
     "role": "Roll",
@@ -177,7 +170,24 @@
     "resize-panel": "Paneeli suuruse muutmine",
     "resize-sidebar": "Külgriba suuruse muutmine",
     "sign-in-to-memos": "Logi sisse Memos",
-    "view-all": "Kuva kõik"
+    "open-navigation": "Ava navigeerimine",
+    "navigation": "Navigeerimine",
+    "primary-navigation": "Peamine",
+    "download": "Laadi alla",
+    "download-name": "Laadi alla {{name}}",
+    "open-name": "Ava {{name}}",
+    "preview-name": "Eelvaade: {{name}}",
+    "no-content": "Sisu puudub",
+    "previous": "Eelmine",
+    "next": "Järgmine",
+    "retry": "Proovi uuesti",
+    "docs": "Dokumentatsioon",
+    "calendar-for-month": "Kalender: {{month}}",
+    "date-at-time": "{{date}} kell {{time}}",
+    "selected-location": "Valitud asukoht",
+    "choose-location": "Valige asukoht",
+    "unknown-error": "Tundmatu viga",
+    "error-occurred": "Ilmnes viga"
   },
   "locale-picker": {
     "no-language-feedback": "Keelt ei leitud? Esitage tagasisidet"
@@ -188,6 +198,7 @@
     "any-thoughts": "Mingid mõtted...",
     "exit-focus-mode": "Välju teravustamisrežiimist",
     "focus-mode": "Fookusrežiim",
+    "markdown-mode": "Markdown-režiim",
     "insert-menu": {
       "add-location": "Lisa asukoht",
       "link-memo": "Lingi memo",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Mõnda pilti ei õnnestunud üles laadida. Proovige uuesti või hoidke üleslaaditud failid manusena.",
       "image-upload-stopped": "Pildi üleslaadimine peatatud {{completed}}/{{total}}",
       "insert-image": "Lisa pilt",
+      "drawing": "Joonistus",
       "keep-as-attachments": "Säilita manusena",
       "uploading-inline-image": "Üleslaadimine sisusse",
       "uploading-images": "Piltide üleslaadimine {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Uus joonistus",
+      "edit": "Muuda joonistust",
+      "tools": "Tööriistad",
+      "tool-select": "Vali",
+      "tool-pen": "Pliiats",
+      "tool-eraser": "Kustutuskumm",
+      "tool-rectangle": "Ristkülik",
+      "tool-ellipse": "Ellips",
+      "tool-arrow": "Nool",
+      "tool-text": "Tekst",
+      "style": "Värv ja jämedus",
+      "color": "Värv",
+      "width": "Jämedus",
+      "width-thin": "Peenike",
+      "width-medium": "Keskmine",
+      "width-thick": "Jäme",
+      "color-ink": "Tint",
+      "color-gray": "Hall",
+      "color-red": "Punane",
+      "color-orange": "Oranž",
+      "color-green": "Roheline",
+      "color-teal": "Sinakasroheline",
+      "color-blue": "Sinine",
+      "color-violet": "Violetne",
+      "undo": "Võta tagasi",
+      "redo": "Tee uuesti",
+      "zoom-to-fit": "Sobita aknasse",
+      "done": "Valmis",
+      "discard-title": "Kas loobuda sellest joonistusest?",
+      "discard-description": "Seda pole veel memole lisatud.",
+      "discard-edit-title": "Kas loobuda muudatustest?",
+      "discard-edit-description": "Joonistus jääb selliseks, nagu see oli enne avamist.",
+      "keep-drawing": "Jätka joonistamist",
+      "discard": "Loobu",
+      "open-failed": "Joonistust ei õnnestunud avada. Proovige uuesti.",
+      "export-failed": "Joonistust ei õnnestunud salvestada. Proovige uuesti.",
+      "image-failed": "Pilti ei õnnestunud joonistusele lisada.",
+      "saved-without-drawing": "Memo on salvestatud, kuid joonistus mitte. Salvestage veel kord, et uuesti proovida."
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Koodiplokk",
       "link": "Link",
-      "heading": "Pealkiri",
       "paragraph": "Lõik",
       "heading-1": "Pealkiri 1",
       "heading-2": "Pealkiri 2",
       "heading-3": "Pealkiri 3",
+      "heading-4": "Pealkiri 4",
       "bold": "Paks kiri",
       "italic": "Kursiiv",
       "strikethrough": "Läbikriipsutatud kiri",
       "bullet-list": "Täpploend",
       "ordered-list": "Numberloend",
-      "task-list": "Ülesannete loend",
-      "more": "Rohkem vormindust"
+      "task-list": "Ülesannete loend"
     },
     "comment": "Kommentaar",
-    "formatting-toolbar": "Vormindamise tööriistariba",
+    "footnotes": "Allmärkused",
+    "back-to-reference": "Tagasi viite juurde",
     "new-memo": "Uus memo",
     "saved": "Salvestatud",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Salvestamine pooleli",
       "unsupported-attachment-image-url": "Toetamata manuse pildi URL: {{url}}",
       "wait-for-upload": "Oota üleslaadimise lõppemist"
-    }
+    },
+    "blocks": {
+      "task": "Ülesanne",
+      "quote": "Tsitaat",
+      "callout": "Esiletõste",
+      "callout-note": "Märkus",
+      "callout-tip": "Nõuanne",
+      "callout-important": "Oluline",
+      "callout-warning": "Hoiatus",
+      "callout-caution": "Ettevaatust",
+      "collapsible-section": "Kokkupandav jaotis",
+      "table": "Tabel",
+      "divider": "Eraldaja",
+      "no-results": "Tulemusi pole",
+      "commands": "Käsud",
+      "loading": "Laadimine…",
+      "duplicate": "Dubleeri",
+      "inline-code": "Kood",
+      "link-placeholder": "Kleebi või sisesta link…",
+      "remove-link": "Eemalda link",
+      "open-link": "Ava link",
+      "copy-link": "Kopeeri link",
+      "edit-link": "Muuda linki",
+      "emoji": "Emoji",
+      "block-menu": "Ava ploki menüü",
+      "list-hint": "Loend",
+      "plain-text": "tekst",
+      "add-row-above": "Lisa rida ülespoole",
+      "add-row-below": "Lisa rida allapoole",
+      "add-column-left": "Lisa veerg vasakule",
+      "add-column-right": "Lisa veerg paremale",
+      "delete-row": "Kustuta rida",
+      "delete-column": "Kustuta veerg",
+      "align": "Joondus",
+      "align-left": "Vasak",
+      "align-center": "Keskel",
+      "align-right": "Parem",
+      "image-align-left": "Joonda vasakule",
+      "image-align-center": "Joonda keskele",
+      "image-align-right": "Joonda paremale",
+      "text-style": "Teksti stiil",
+      "image": "Pilt",
+      "reset-image-size": "Lähtesta suurus",
+      "alt-text": "Alternatiivtekst",
+      "alt-text-placeholder": "Kirjelda pilti…",
+      "image-unavailable": "Pilt pole saadaval",
+      "resize-image": "Muuda pildi suurust"
+    },
+    "attachments": {
+      "edited": "Muudetud",
+      "new": "Uus",
+      "remove": "Eemalda manus",
+      "reorder": "Muuda järjekorda: {{name}}",
+      "reorder-hint": "Lohista või kasuta nooleklahve"
+    },
+    "remove-relation": "Eemalda seos",
+    "remove-location": "Eemalda asukoht",
+    "recording-unsupported": "See brauser ei toeta helisalvestust.",
+    "microphone-denied": "Mikrofoni luba keelati.",
+    "recording-failed": "Helisalvestuse alustamine ebaõnnestus."
   },
   "inbox": {
     "failed-to-load": "Postkasti üksuse laadimine ebaõnnestus",
@@ -256,7 +367,16 @@
     "unread": "Lugemata",
     "space-invitation": "kutsus teid ruumiga liituma",
     "space-invitation-accepted": "Liitusite selle ruumiga.",
-    "space-invitation-open": "Avatud ruum"
+    "space-invitation-open": "Avatud ruum",
+    "commented-on-memo": "kommenteeris teie memot",
+    "mentioned-in-comment": "mainis teid kommentaaris",
+    "mentioned-in-memo": "mainis teid memos",
+    "original": "Algne:",
+    "memo-label": "Memo:",
+    "comment-heading": "Kommentaar",
+    "memo-heading": "Memo",
+    "empty-memo": "Tühi memo",
+    "empty-comment": "Tühi kommentaar"
   },
   "live-update": {
     "connected": "Reaalajas värskendused on aktiivsed",
@@ -264,11 +384,16 @@
     "disconnected": "Reaalajas värskendused pole saadaval"
   },
   "memo": {
+    "no-memos-yet": "Memosid veel pole",
+    "no-matching-memos": "Vastavaid memosid pole",
+    "clear-filters": "Tühjenda filtrid",
     "pinned": "Kinnitatud",
     "click-to-show-sensitive-content": "Tundliku sisu kuvamiseks klõpsake",
     "comment": {
       "self": "Kommentaarid",
-      "write-a-comment": "Kirjutage kommentaar"
+      "write-a-comment": "Kirjutage kommentaar",
+      "view-all-count_one": "Kuva {{count}} kommentaar",
+      "view-all-count_other": "Kuva kõik {{count}} kommentaari"
     },
     "copy-content": "Kopeeri sisu",
     "copy-link": "Kopeeri link",
@@ -278,10 +403,13 @@
     "delete-confirm-description": "See toiming on pöördumatu. Samuti eemaldatakse manused, lingid ja viited.",
     "direction": "Suund",
     "filters": {
+      "has-attachments": "on manuseid",
       "has-code": "hasCode",
+      "has-image": "on pilt",
       "has-link": "hasLink",
       "has-location": "on asukoht",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Eemalda filter"
     },
     "compact-mode": "Kompaktne režiim",
     "link-preview": "Lingi eelvaade",
@@ -366,7 +494,9 @@
     "restored-successfully": "Taastatud edukalt",
     "succeed-copy-content": "Sisu kopeerimine õnnestus.",
     "succeed-copy-link": "Link on edukalt kopeeritud.",
-    "update-succeed": "Värskendus õnnestus"
+    "update-succeed": "Värskendus õnnestus",
+    "not-signed-in": "Te pole sisse logitud.",
+    "invalid-datetime": "Vigane kuupäev ja kellaaeg. Kasutage vormingut 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Memosid ei leitud",
@@ -436,7 +566,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Teie manuste salvestusruum pole saadaval.",
-      "email-in-use": "Seda e-posti aadressi kasutab juba teine ​​konto."
+      "email-in-use": "Seda e-posti aadressi kasutab juba teine ​​konto.",
+      "avatar-too-large": "Vali pilt, mille suurus on kuni 2 MB.",
+      "avatar-unreadable": "Seda pilti ei saa lugeda. Proovi mõnda teist faili."
     },
     "ai": {
       "add-provider": "Lisa teenusepakkuja",
@@ -518,13 +650,15 @@
       "restore-success": "{{username}} taastati edukalt",
       "summary-column": "Kokkuvõte",
       "user": "Kasutaja",
-      "no-members-found": "Ühtegi liiget ei leitud"
+      "no-members-found": "Ühtegi liiget ei leitud",
+      "export-memos": "Ekspordi märkmed",
+      "username-password-required": "Kasutajanimi ja parool ei tohi olla tühjad",
+      "create-success": "Kasutaja loodud",
+      "update-success": "Kasutaja uuendatud"
     },
     "memo": {
       "add-reaction": "Lisa reaktsioon",
       "configured-reactions": "Konfigureeritud reaktsioonid",
-      "double-click-edit-description": "Lubage kasutajatel memo redigeerimist avada, topeltklõpsates memo.",
-      "editing-title": "Redigeerimine",
       "label": "Memo",
       "reaction-placeholder": "nt. 👍",
       "reactions-description": "Määratlege reaktsioonivalikud, mida kasutajad saavad memodele rakendada.",
@@ -575,22 +709,162 @@
       "appearance-title": "Välimus",
       "default-memo-visibility": "Memode vaikenähtavus",
       "default-memo-visibility-description": "Nähtavus rakendatakse äsja loodud memodele, kui seda pole redaktoris muudetud.",
+      "device-description": "Lugemis- ja muutmisvalikud, mida hoitakse ainult selles brauseris. Neid ei salvestata teie kontole.",
+      "device-title": "See seade",
+      "double-click-edit": "Topeltklõps muutmiseks",
+      "double-click-edit-description": "Ava oma memod redaktoris topeltklõpsuga.",
       "label": "Eelistused",
       "language-description": "Värskendab koheselt liidese keelt ja salvestab selle teie kontole.",
+      "link-preview-description": "Näita eelvaatekaarti paljaste linkide all kõikjal, kus memosid kuvatakse.",
       "memo-defaults-description": "Määrake uute memode koostamisel kasutatavad vaikeseaded.",
       "memo-defaults-title": "Memo vaikeseaded",
-      "theme-description": "Rakendab valitud teema kohe selles seadmes.",
-      "theme": "Teema",
       "save-media-metadata": "Salvesta meedia metaandmed",
       "save-media-metadata-description": "Tulevaste üleslaadimiste jaoks salvesta saadaolev kaamera, võtteaeg, asukoht, pildi mõõtmed ja video põhiandmed. Kõik, kes saavad manust vaadata, saavad selle metateabe kätte. Olemasolevad manused jäävad muutmata.",
+      "theme-description": "Rakendab valitud teema kohe selles seadmes.",
+      "theme": "Teema",
       "uploads-privacy-description": "Kontrolli üleslaaditud meediaga esitatud privaatsustundlikku teavet.",
-      "uploads-privacy-title": "Üleslaadimised ja privaatsus"
+      "uploads-privacy-title": "Üleslaadimised ja privaatsus",
+      "theme-system": "Süsteemi järgi",
+      "theme-system-short": "Süsteem",
+      "theme-light": "Hele",
+      "theme-dark": "Tume",
+      "theme-paper": "Paber"
+    },
+    "editor": {
+      "label": "Redaktor",
+      "markdown-mode-description": "Kirjuta ja muuda memosid Markdown-tekstina vormindatud teksti asemel."
     },
     "memo-view": {
       "create": "Loo vaade",
       "delete-confirm": "Kas olete kindel, et soovite vaate `{{title}}` kustutada?",
       "delete-success": "Vaade `{{title}}` kustutati edukalt",
-      "change-icon": "Muuda vaate ikooni"
+      "change-icon": "Muuda vaate ikooni",
+      "page-description": "Looge korduvkasutatavaid vaateid väljade, operaatorite, ajafunktsioonide ja siltide sobitamisega. Alustage näidetest ja kontrollige enne salvestamist.",
+      "edit": "Muuda vaadet",
+      "form-description": "Pange vaatele nimi ja määrake memofiltri avaldis, mida see rakendab.",
+      "title-placeholder": "Kinnitatud, Hiljutised märkmed, Töö",
+      "filter-help": "Kombineerige avaldisi operaatoritega {{and}}, {{or}} ja {{not}}. Ajaväljad on ajatemplid — kasutage {{now}}, {{duration}}, {{timestamp}} ja juurdepääsufunktsioone nagu {{year}}. Sildid toetavad {{sets}} ja {{size}} mõõdab pikkust.",
+      "validate": "Kontrolli",
+      "all": "Kõik vaated",
+      "loading": "Vaadete laadimine…",
+      "load-failed": "Vaateid ei õnnestunud laadida.",
+      "empty-title": "Vaateid veel pole",
+      "empty-description": "Salvestage filter, et vajalike memode juurde kiiresti naasta.",
+      "examples-title": "Avaldiste näited",
+      "fields-title": "Toetatud väljad",
+      "title-filter-required": "Pealkiri ja filter ei tohi olla tühjad",
+      "filter-valid": "Filtri avaldis tundub korrektne",
+      "create-success": "Vaade loodud",
+      "update-success": "Vaade uuendatud",
+      "examples": {
+        "pinned": {
+          "title": "Kinnitatud",
+          "description": "Ainult kinnitatud memod."
+        },
+        "recent": {
+          "title": "Hiljutised märkmed",
+          "description": "Viimase tunni jooksul loodud memod."
+        },
+        "public": {
+          "title": "Avalikud memod",
+          "description": "Ainult avalikud memod."
+        },
+        "project-tags": {
+          "title": "Projektisildid",
+          "description": "Sobitab ühe või mitu täpset silti."
+        },
+        "untagged": {
+          "title": "Sildita",
+          "description": "Memod, millel pole ühtegi silti."
+        },
+        "archive-tree": {
+          "title": "Arhiivipuu",
+          "description": "Sobitab hierarhilisi silte eesliite järgi."
+        },
+        "unassigned": {
+          "title": "Määramata",
+          "description": "Memod, mis pole üheski ruumis."
+        },
+        "one-space": {
+          "title": "Ühes ruumis",
+          "description": "Ruumi paigutatud memod. Kasutage ruumi ID-d selle URL-ist või seadetest."
+        },
+        "open-tasks": {
+          "title": "Avatud ülesanded",
+          "description": "Lõpetamata ülesannetega memod."
+        },
+        "links-or-code": {
+          "title": "Lingid või kood",
+          "description": "Linke või koodiplokke sisaldavad memod."
+        },
+        "no-location": {
+          "title": "Asukohata",
+          "description": "Memod, millele pole asukohta lisatud."
+        },
+        "with-attachments": {
+          "title": "Manustega",
+          "description": "Memod, millel on vähemalt üks manusfail."
+        },
+        "photos": {
+          "title": "Fotod",
+          "description": "Memod, mis näitavad pilti sisus või manusfailina."
+        },
+        "content-search": {
+          "title": "Sisuotsing",
+          "description": "Otsib teksti memo sisust."
+        },
+        "starts-with": {
+          "title": "Algab tekstiga",
+          "description": "Memod, mille sisu algab kindla tekstiga (ka endsWith)."
+        },
+        "regex": {
+          "title": "Regexi vaste",
+          "description": "Sobitab sisu regulaaravaldisega."
+        },
+        "all-tags-complete": {
+          "title": "Kõik sildid tehtud",
+          "description": "Iga silt lõpeb järelliitega -done (ainult siltidega memod)."
+        },
+        "one-project-tag": {
+          "title": "Üks projektisilt",
+          "description": "Tingimusele vastab täpselt üks silt."
+        },
+        "any-tags": {
+          "title": "Mõni neist siltidest",
+          "description": "Sildid lõikuvad antud hulgaga."
+        },
+        "exact-tags": {
+          "title": "Täpselt need sildid",
+          "description": "Täpselt see siltide hulk, mitte rohkem."
+        },
+        "year-2024": {
+          "title": "2024. aasta memod",
+          "description": "Filtreerib kalendriaasta järgi."
+        },
+        "weekend": {
+          "title": "Nädalavahetuse märkmed",
+          "description": "Loodud pühapäeval või laupäeval (0 = pühapäev)."
+        },
+        "long": {
+          "title": "Pikad märkmed",
+          "description": "Üle 280 tähemärgi pikkused memod."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguratsioon",
+      "description": "Konfiguratsioonifailidega määratud ressursid. Nende muutmiseks muutke faili ja rakendage see; ülejäänud eksemplar jääb siin muudetavaks.",
+      "managed-by": "Hallatud konfiguratsiooniga",
+      "managed-tooltip": "Määratud failis {{source}}. Selle muutmiseks muutke faili ja rakendage see.",
+      "resource": "Ressurss",
+      "source": "Fail",
+      "managed-fields": "Hallatud väljad",
+      "whole-resource": "Kõik väljad",
+      "ignored-fields": "Siin muudetav",
+      "serial": "Järjekorranumber",
+      "last-apply": "Viimati rakendatud",
+      "applied-by": "Rakendaja",
+      "nothing-managed": "Konfiguratsiooni pole rakendatud. Kõik määratakse siin."
     },
     "sso": {
       "account": "konto",
@@ -651,7 +925,9 @@
       "token-endpoint": "Märgi lõpp-punkt",
       "update-sso": "Värskendage SSO",
       "update-sso-description": "Vaadake üle teenusepakkuja konfiguratsioon ja seejärel salvestage väljad, mida tuleks muuta.",
-      "user-endpoint": "Kasutaja lõpp-punkt"
+      "user-endpoint": "Kasutaja lõpp-punkt",
+      "invalid-config": "Identiteedipakkuja seadistus on vigane.",
+      "provider-id-placeholder": "nt github, okta-corp"
     },
     "storage": {
       "accesskey": "Juurdepääsuvõti",
@@ -702,47 +978,56 @@
       "customize-server": {
         "description": "Kirjeldus",
         "icon-url": "Ikoon URL",
-        "title": "Serveri kohandamine"
+        "title": "Serveri kohandamine",
+        "dialog-description": "Kohandage oma eksemplari välimust ja seadeid."
       },
       "custom-code-description": "Valikuline kogu eksemplari hõlmav CSS ja JavaScript, mida rakendatakse esiservale.",
       "custom-code-title": "Kohandatud kood",
-      "enable-double-click-to-edit": "Redigeerimiseks lubage topeltklõps",
       "label": "Süsteem",
       "server-name": "Serveri nimi"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1130,9 @@
       "review-existing": "Juba teie kontol",
       "review-exported": "Eksporditud",
       "review-memos": "Memos failis",
-      "review-new": "Luuakse"
+      "review-new": "Luuakse",
+      "export-admin-only": "Märkmeid saavad eksportida ainult administraatorid. Küsi oma ekspordifaili administraatorilt.",
+      "export-busy": "Teine eksport on pooleli. Proovi hetke pärast uuesti."
     },
     "spaces": {
       "general": "Kindral",
@@ -931,7 +1218,8 @@
   },
   "tooltip": {
     "link-memo": "Link Memo",
-    "select-location": "Asukoht"
+    "select-location": "Asukoht",
+    "link-memo-description": "Otsige ja valige memo, mida linkida"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1284,12 @@
     "loading": "Memosid laaditakse…",
     "new-here": "Kirjuta siia",
     "saved-outside-filter": "Salvestatud. See memo on väljaspool praeguseid kaarditulemusi.",
-    "open-memo": "Ava memo"
+    "open-memo": "Ava memo",
+    "open-in-google-maps": "Ava Google Mapsis",
+    "location-description": "Valige kaardil asukoht või sisestage koordinaadid käsitsi",
+    "latitude": "Laiuskraad",
+    "longitude": "Pikkuskraad",
+    "place-placeholder": "Valige kõigepealt asukoht."
   },
   "calendar": {
     "new-memo-on-day": "Uus memo sel päeval",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "nt Toode",
     "spaces": "Ruumid",
     "switch": "Vaheta ruumi"
+  },
+  "welcome": {
+    "title": "Tere tulemast rakendusse Memos",
+    "headline": "Lihtsad märkmed sinu igapäevastele mõtetele.",
+    "intro-write": "Üks lause võib olla terve memo.",
+    "intro-keep": "Iga memo jääb selle päeva juurde, mil sa selle kirjutasid.",
+    "intro-share": "Sina otsustad, mis jääb privaatseks.",
+    "write": "Kirjuta",
+    "write-sub": "Üks lause võib olla terve memo.",
+    "no-title": "Pealkirjata",
+    "no-title-text": "Memo algab mõttest endast. Pealkirja pole vaja täita.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown annab sinu sõnadele struktuuri, kui sa seda soovid.",
+    "attach": "Lisa manus",
+    "attach-text": "Pildid, failid, heli ja koht lisatakse ＋ kaudu.",
+    "keep": "Hoia alles",
+    "keep-sub": "Iga memo jääb selle päeva juurde, mil sa selle kirjutasid.",
+    "calendar-text": "Kalender viib tagasi mis tahes päeva juurde.",
+    "tags-text": "Sõna pärast # muutub sildiks ja silt filtreerib ajajoont.",
+    "views-text": "Kohandatud vaade salvestab filtri.",
+    "map-text": "Kohaga memod asuvad kaardil.",
+    "share": "Jaga",
+    "share-sub": "Memod algavad privaatsena. Sina otsustad, mida jagada ja mida avaldada.",
+    "visibility-text": "Igal memol on oma säte. Uued algavad privaatsena, ainult sulle; avalikul on link, mille igaüks saab avada.",
+    "spaces-text": "Ruumis kirjutavad liikmed sinu kõrval ja igaüks hoiab oma memosid.",
+    "comments": "Kommentaarid",
+    "comments-text": "Igaüks, kes memot näeb, saab selle alla vastata.",
+    "skip": "Jäta vahele",
+    "next": "Edasi",
+    "done": "Valmis",
+    "page-of": "Leht {{current}} / {{total}}",
+    "reopen": "Tervitusjuhend",
+    "reopen-note": "Neli kuva, mida uus konto esimesena näeb.",
+    "sample": {
+      "today": "Täna, 10:42",
+      "today-early": "Täna, 9:18",
+      "yesterday": "Eile, 15:20",
+      "comment-age": "2 t",
+      "memo-preview": "Lihtsam esimene kuva. Üks sisend, seejärel eelvaade.",
+      "memo-release": "Enne järgmist väljalaset",
+      "task-sketch": "Visanda esimene kuva",
+      "task-polish": "Lihvi eelvaadet",
+      "write-lead": "Hoia esimene samm väike.",
+      "write-strong": "Näita üksikasju",
+      "write-tail": "siis, kui neid vaja on.",
+      "write-task": "Kirjuta lühike muudatuste logi",
+      "view": "Lõpetamata ülesanded",
+      "space": "Toode",
+      "share-memo": "Proovi näidata tulemust enne, kui palud inimestel registreeruda.",
+      "comment": "Nõus. Eelvaade oli see, mis veenis.",
+      "tag-design": "disain",
+      "tag-project": "projekt",
+      "tag-reading": "lugemine",
+      "tag-ideas": "ideed"
+    }
+  },
+  "error": {
+    "title": "Midagi läks valesti",
+    "description": "Ilmnes ootamatu viga. Selle põhjuseks võib olla võrguprobleem või rakenduse viga.",
+    "description-update": "Ilmnes ootamatu viga. Selle põhjuseks võib olla võrguprobleem või rakenduse uuendus. Tavaliselt aitab uuesti laadimine.",
+    "details": "Vea üksikasjad",
+    "reload": "Laadi rakendus uuesti",
+    "not-found": "Otsitavat lehte ei leitud.",
+    "permission-denied": "Juurdepääs keelatud",
+    "too-many-requests": "Liiga palju päringuid. Proovige uuesti {{wait}} pärast.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Läbige kinnituskontroll ja proovige uuesti.",
+    "quota-memo-count": "Olete jõudnud oma {{limit}} memo piirini. Uute loomiseks kustutage mõned memod.",
+    "quota-storage": "See üleslaadimine ületaks teie {{limit}} salvestusruumi piiri. Kasutate praegu {{usage}}.",
+    "quota-upload": "See fail on suurem kui teie piir {{limit}} faili kohta.",
+    "quota-memo-content": "See memo on suurem kui teie piir {{limit}} memo kohta. Salvestamiseks lühendage sisu.",
+    "quota-generic": "Olete jõudnud kasutuspiirini.",
+    "sign-in-failed": "Sisselogimine ebaõnnestus.",
+    "sign-up-failed": "Registreerumine ebaõnnestus",
+    "authenticate-failed": "Autentimine ebaõnnestus.",
+    "update-profile-failed": "Profiili uuendamine ebaõnnestus",
+    "unlink-identity-failed": "Identiteedipakkuja lahtiühendamine ebaõnnestus.",
+    "link-identity-failed": "Konto sidumist ei õnnestunud alustada. Proovi uuesti."
+  },
+  "attachment-preview": {
+    "title": "Manuse eelvaade",
+    "description": "Manuse eelvaate dialoog. Sulgemiseks vajutage Escape, üksuste vahetamiseks kasutage vasak- ja paremnoolt ning suumige pilte nuppude, hiireratta, topeltpuudutuse või näpistusžestiga.",
+    "close": "Sulge eelvaade",
+    "previous": "Eelmine üksus",
+    "next": "Järgmine üksus",
+    "reset-zoom": "Lähtesta suum",
+    "image-alt": "Eelvaate pilt {{index}}/{{count}}",
+    "live-photo-alt": "Eelvaate Live Photo {{index}}/{{count}}",
+    "play-live-photo": "Live Photo esitamiseks liikuge kursoriga peale või vajutage"
+  },
+  "audio-player": {
+    "seek": "Keri faili {{name}}",
+    "back": "{{seconds}} sekundit tagasi",
+    "forward": "{{seconds}} sekundit edasi",
+    "speed": "Taasesituse kiirus {{rate}}x"
   }
 }

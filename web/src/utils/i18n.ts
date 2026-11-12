@@ -80,8 +80,12 @@ type NestedKeyOf<T, K = keyof T> = K extends keyof T & (string | number)
   ? `${K}` | (T[K] extends object ? `${K}.${NestedKeyOf<T[K]>}` : never)
   : never;
 
+// A plural message is stored as `key_one`, `key_other`, … and looked up by its base `key`
+// with a `count`, so i18next picks each language's own plural form.
+type PluralBase<K> = K extends `${infer Base}_other` ? Base : never;
+
 // Represents the keys of nested translation objects.
-export type Translations = NestedKeyOf<typeof enTranslation>;
+export type Translations = NestedKeyOf<typeof enTranslation> | PluralBase<NestedKeyOf<typeof enTranslation>>;
 
 // Represents a typed translation function.
 type TypedT = (key: Translations, params?: Record<string, unknown>) => string;
@@ -90,6 +94,9 @@ export const useTranslate = (): TypedT => {
   const { t } = useTranslation<Translations>();
   return t;
 };
+
+/** The same typed lookup for code outside React components, such as error helpers. */
+export const translate: TypedT = (key, params) => i18n.t(key, params);
 
 export const isValidLocale = (locale: string | undefined | null): boolean => {
   if (!locale) return false;

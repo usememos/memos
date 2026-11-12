@@ -12,6 +12,15 @@ import (
 
 // CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
 func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store.InstanceSetting) (bool, error) {
+	return createInstanceSettingIfNotExists(ctx, d.db, create)
+}
+
+// CreateInstanceSettingIfNotExistsTx is CreateInstanceSettingIfNotExists within tx.
+func (*DB) CreateInstanceSettingIfNotExistsTx(ctx context.Context, tx *sql.Tx, create *store.InstanceSetting) (bool, error) {
+	return createInstanceSettingIfNotExists(ctx, tx, create)
+}
+
+func createInstanceSettingIfNotExists(ctx context.Context, executor instanceSettingExecer, create *store.InstanceSetting) (bool, error) {
 	stmt := `
 		INSERT INTO system_setting (
 			name, value, description
@@ -19,7 +28,7 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 		VALUES ($1, $2, $3)
 		ON CONFLICT(name) DO NOTHING
 	`
-	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
+	result, err := executor.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to conditionally create instance setting")
 	}
@@ -33,7 +42,16 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 // UpdateInstanceSettingIfUnchanged replaces the setting value only when the
 // stored value still equals oldValue, and reports whether it did.
 func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error) {
-	result, err := d.db.ExecContext(ctx, "UPDATE system_setting SET value = $1 WHERE name = $2 AND value = $3", newValue, name, oldValue)
+	return updateInstanceSettingIfUnchanged(ctx, d.db, name, oldValue, newValue)
+}
+
+// UpdateInstanceSettingIfUnchangedTx is UpdateInstanceSettingIfUnchanged within tx.
+func (*DB) UpdateInstanceSettingIfUnchangedTx(ctx context.Context, tx *sql.Tx, name, oldValue, newValue string) (bool, error) {
+	return updateInstanceSettingIfUnchanged(ctx, tx, name, oldValue, newValue)
+}
+
+func updateInstanceSettingIfUnchanged(ctx context.Context, executor instanceSettingExecer, name, oldValue, newValue string) (bool, error) {
+	result, err := executor.ExecContext(ctx, "UPDATE system_setting SET value = $1 WHERE name = $2 AND value = $3", newValue, name, oldValue)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to conditionally update instance setting")
 	}
@@ -42,6 +60,22 @@ func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValu
 		return false, errors.Wrap(err, "failed to inspect conditional instance setting update")
 	}
 	return rowsAffected == 1, nil
+}
+
+// GetInstanceSettingTx reads and locks one setting within tx, or returns nil
+// when it is absent.
+func (*DB) GetInstanceSettingTx(ctx context.Context, tx *sql.Tx, name string) (*store.InstanceSetting, error) {
+	setting := &store.InstanceSetting{}
+	err := tx.QueryRowContext(ctx, "SELECT name, value, description FROM system_setting WHERE name = $1 FOR UPDATE", name).Scan(
+		&setting.Name, &setting.Value, &setting.Description,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read instance setting")
+	}
+	return setting, nil
 }
 
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
@@ -115,7 +149,16 @@ func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceS
 }
 
 func (d *DB) DeleteInstanceSetting(ctx context.Context, delete *store.DeleteInstanceSetting) error {
+	return deleteInstanceSetting(ctx, d.db, delete)
+}
+
+// DeleteInstanceSettingTx is DeleteInstanceSetting within tx.
+func (*DB) DeleteInstanceSettingTx(ctx context.Context, tx *sql.Tx, delete *store.DeleteInstanceSetting) error {
+	return deleteInstanceSetting(ctx, tx, delete)
+}
+
+func deleteInstanceSetting(ctx context.Context, q dbExecutor, delete *store.DeleteInstanceSetting) error {
 	stmt := `DELETE FROM system_setting WHERE name = $1`
-	_, err := d.db.ExecContext(ctx, stmt, delete.Name)
+	_, err := q.ExecContext(ctx, stmt, delete.Name)
 	return err
 }

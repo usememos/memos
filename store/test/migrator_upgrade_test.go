@@ -42,7 +42,7 @@ func TestUpgradeFromBaselineRelease(t *testing.T) {
 	require.Equal(t, "0.31.8", baseline.SchemaVersion)
 
 	requireUpgradePreservesData(ctx, t, previous, &profile.Profile{
-		Data: t.TempDir(), DSN: hostDSN, Driver: driver, Version: "26.10",
+		Data: t.TempDir(), DSN: hostDSN, Driver: driver, Version: "26.10.0",
 	})
 }
 
@@ -51,10 +51,10 @@ func TestUpgradeFromBaselineRelease(t *testing.T) {
 // only migrations do.
 func TestUpgradeFromCalendarRelease(t *testing.T) {
 	for _, tc := range []struct{ previous, candidate string }{
-		{previous: "26.09", candidate: "26.10"},
-		{previous: "26.10", candidate: "26.10.1"},
-		{previous: "26.10-rc.1", candidate: "26.10"},
-		{previous: "26.12.9", candidate: "27.01"},
+		{previous: "26.09.0", candidate: "26.10.0"},
+		{previous: "26.10.0", candidate: "26.10.1"},
+		{previous: "26.10.0-rc.1", candidate: "26.10.0"},
+		{previous: "26.12.9", candidate: "27.01.0"},
 	} {
 		t.Run(tc.previous+"-to-"+tc.candidate, func(t *testing.T) {
 			t.Parallel()

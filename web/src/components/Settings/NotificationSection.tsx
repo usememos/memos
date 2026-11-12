@@ -1,16 +1,14 @@
 import { create } from "@bufbuild/protobuf";
+import { Badge, Button, Checkbox, Input } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import type { ChangeEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { instanceServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import {
   InstanceSetting_Key,
   InstanceSetting_NotificationSetting,
@@ -21,10 +19,24 @@ import {
   TestInstanceEmailSettingRequestSchema,
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
+
+const EMAIL_FIELDS = [
+  "enabled",
+  "smtpHost",
+  "smtpPort",
+  "smtpUsername",
+  "smtpPassword",
+  "fromEmail",
+  "fromName",
+  "replyTo",
+  "useTls",
+  "useSsl",
+];
 
 const defaultEmailSetting = () =>
   create(InstanceSetting_NotificationSetting_EmailSettingSchema, {
@@ -58,17 +70,14 @@ type Requirement = "required" | "optional" | "gmail" | "recommended";
 const FieldLabel = ({ label, requirementLabel, requirement }: { label: string; requirementLabel: string; requirement: Requirement }) => (
   <span className="inline-flex min-w-0 flex-wrap items-center gap-1.5">
     <span>{label}</span>
-    <Badge
-      variant={requirement === "optional" ? "outline" : "secondary"}
-      className="rounded-md px-1.5 py-0 text-[10px] font-normal leading-4 text-muted-foreground"
-    >
-      {requirementLabel}
-    </Badge>
+    <Badge tone={requirement === "optional" ? "outline" : "neutral"}>{requirementLabel}</Badge>
   </span>
 );
 
 const NotificationSection = () => {
   const t = useTranslate();
+  const managed = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.NOTIFICATION));
+  const emailLocked = (field: string) => isFieldManaged(managed, `notificationSetting.email.${field}`);
   const saveInstanceSetting = useInstanceSettingUpdater();
   const currentUser = useCurrentUser();
   const { notificationSetting: originalSetting } = useInstance();
@@ -151,7 +160,7 @@ const NotificationSection = () => {
 
   const testEmailSetting = async () => {
     if (!currentUser?.email) {
-      toast.error(t("setting.notification.test-email-missing-recipient"));
+      showErrorToast(t("setting.notification.test-email-missing-recipient"));
       return;
     }
 
@@ -163,9 +172,9 @@ const NotificationSection = () => {
           recipientEmail: currentUser.email,
         }),
       );
-      toast.success(t("setting.notification.test-email-success", { email: currentUser.email }));
+      toast.add({ title: t("setting.notification.test-email-success", { email: currentUser.email }), type: "success" });
     } catch (error: unknown) {
-      await handleError(error, toast.error, { context: "Send test email" });
+      await handleError(error, showErrorToast, { context: "Send test email" });
     } finally {
       setIsTestingEmail(false);
     }
@@ -173,9 +182,17 @@ const NotificationSection = () => {
 
   return (
     <SettingSection title={t("setting.notification.label")}>
-      <SettingGroup title={t("setting.notification.email-title")} description={t("setting.notification.email-description")}>
+      <SettingGroup
+        title={t("setting.notification.email-title")}
+        description={t("setting.notification.email-description")}
+        actions={EMAIL_FIELDS.some(emailLocked) ? <ManagedByConfigurationChip resource={managed} /> : undefined}
+      >
         <SettingRow label={t("setting.notification.email-enabled")} description={t("setting.notification.email-enabled-description")}>
-          <Switch checked={emailSetting.enabled} onCheckedChange={(enabled) => updateEmailSetting({ enabled })} />
+          <Checkbox
+            disabled={emailLocked("enabled")}
+            checked={emailSetting.enabled}
+            onCheckedChange={(enabled) => updateEmailSetting({ enabled })}
+          />
         </SettingRow>
 
         <SettingRow
@@ -185,6 +202,7 @@ const NotificationSection = () => {
           <Input
             className="w-full sm:w-80"
             value={emailSetting.smtpHost}
+            disabled={emailLocked("smtpHost")}
             placeholder="smtp.gmail.com"
             aria-required={emailSetting.enabled}
             onChange={(e) => updateEmailSetting({ smtpHost: e.target.value })}
@@ -201,6 +219,7 @@ const NotificationSection = () => {
             min={1}
             max={65535}
             value={emailSetting.smtpPort}
+            disabled={emailLocked("smtpPort")}
             placeholder="587"
             aria-required={emailSetting.enabled}
             onChange={handlePortChanged}
@@ -215,6 +234,7 @@ const NotificationSection = () => {
             className="w-full sm:w-80"
             type="email"
             value={emailSetting.smtpUsername}
+            disabled={emailLocked("smtpUsername")}
             placeholder="your.name@gmail.com"
             autoComplete="username"
             onChange={(e) => updateEmailSetting({ smtpUsername: e.target.value })}
@@ -233,6 +253,7 @@ const NotificationSection = () => {
             className="w-full sm:w-80"
             type="password"
             value={emailSetting.smtpPassword}
+            disabled={emailLocked("smtpPassword")}
             placeholder={hasExistingEmailSetting ? t("setting.notification.smtp-password-placeholder-existing") : "abcd efgh ijkl mnop"}
             autoComplete="new-password"
             onChange={(e) => updateEmailSetting({ smtpPassword: e.target.value })}
@@ -247,6 +268,7 @@ const NotificationSection = () => {
             className="w-full sm:w-80"
             type="email"
             value={emailSetting.fromEmail}
+            disabled={emailLocked("fromEmail")}
             placeholder="your.name@gmail.com"
             aria-required={emailSetting.enabled}
             onChange={(e) => updateEmailSetting({ fromEmail: e.target.value })}
@@ -260,6 +282,7 @@ const NotificationSection = () => {
           <Input
             className="w-full sm:w-80"
             value={emailSetting.fromName}
+            disabled={emailLocked("fromName")}
             placeholder="Memos"
             onChange={(e) => updateEmailSetting({ fromName: e.target.value })}
           />
@@ -273,6 +296,7 @@ const NotificationSection = () => {
             className="w-full sm:w-80"
             type="email"
             value={emailSetting.replyTo}
+            disabled={emailLocked("replyTo")}
             placeholder="support@example.com"
             onChange={(e) => updateEmailSetting({ replyTo: e.target.value })}
           />
@@ -282,22 +306,22 @@ const NotificationSection = () => {
           label={fieldLabel(t("setting.notification.use-tls"), "recommended")}
           description={t("setting.notification.use-tls-description")}
         >
-          <Switch checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
+          <Checkbox disabled={emailLocked("useTls")} checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
         </SettingRow>
 
         <SettingRow
           label={fieldLabel(t("setting.notification.use-ssl"), "optional")}
           description={t("setting.notification.use-ssl-description")}
         >
-          <Switch checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
+          <Checkbox disabled={emailLocked("useSsl")} checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
         </SettingRow>
       </SettingGroup>
 
       <div className="w-full flex flex-col justify-end gap-2 sm:flex-row">
-        <Button variant="outline" disabled={!canTestEmail || isTestingEmail} onClick={testEmailSetting}>
+        <Button variant="neutral" disabled={!canTestEmail || isTestingEmail} onClick={testEmailSetting}>
           {isTestingEmail ? t("setting.notification.test-email-sending") : t("setting.notification.test-email")}
         </Button>
-        <Button disabled={!allowSave} onClick={saveNotificationSetting}>
+        <Button variant="primary" disabled={!allowSave} onClick={saveNotificationSetting}>
           {t("common.save")}
         </Button>
       </div>

@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenter",
     "api-docs-note": "REST- og gRPC-reference",
     "build": "Bygg",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Et sted med åben kildekode på din egen server til dine noter, idéer og hverdagstanker.",
     "distribution": "Distribution",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Login kunne ikke fuldføres",
     "create-your-account": "Opret din konto",
+    "hide-password": "Skjul adgangskode",
+    "incorrect-credentials": "Forkert brugernavn eller adgangskode.",
     "new-password": "Ny adgangskode",
     "repeat-new-password": "Gentag den nye adgangskode",
+    "show-password": "Vis adgangskode",
     "sign-in-tip": "Har du allerede en konto?",
     "sign-up-tip": "Har du ikke en konto endnu?",
     "admin-sign-in": "Administratorlogin",
-    "admin-sign-in-tip": "Adgangskodelogin forbliver tilgængelig for administratorer.",
     "back-to-sign-in": "Tilbage til login",
     "continue-with": "Fortsæt med {{provider}}",
     "create-admin-account": "Opret administratorkonto",
-    "explore-public-memos": "Udforsk offentlige notater på denne instans",
-    "first-run": "Første kørsel",
     "setup-description": "Opret administratorkontoen for denne instans.",
-    "setup-note": "Denne konto ejer instansindstillinger, medlemmer og identitetsudbydere.",
     "setup-title": "Konfigurer din instans",
     "signin-unavailable-description": "Adgangskodelogin er deaktiveret, og der er ingen konfigurerede identitetsudbydere. Bed din administrator om at aktivere en loginmetode.",
     "signin-unavailable-title": "Login er ikke tilgængelig",
-    "signup-unavailable-description": "Adgangskodekonti er deaktiveret, og der er ingen konfigurerede identitetsudbydere. Bed din administrator om adgang.",
-    "signup-unavailable-title": "Tilmelding er ikke tilgængelig",
-    "signups-closed-description": "Nye konti er deaktiveret på denne instans. Kontakt din administrator, hvis du har brug for adgang.",
-    "signups-closed-title": "Tilmeldinger er lukket",
-    "sso-signup-tip": "Log ind med en udbyder nedenfor for at oprette din konto.",
-    "welcome-back": "Velkommen tilbage."
+    "signups-closed-description": "Nye konti er deaktiveret på denne instans. Kontakt din administrator, hvis du har brug for adgang."
   },
   "demo": {
     "banner-description": "Ændringer er midlertidige og kan blive nulstillet.",
@@ -142,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Refereret af",
     "referencing": "Referencer",
-    "relations": "Relationer",
     "resources": "Ressourcer",
     "restore": "Gendan",
     "role": "Rolle",
@@ -177,7 +170,24 @@
     "resize-panel": "Tilpas størrelse på panel",
     "resize-sidebar": "Tilpas størrelse på sidebjælke",
     "sign-in-to-memos": "Log ind på Memos",
-    "view-all": "Vis alle"
+    "open-navigation": "Åbn navigation",
+    "navigation": "Navigation",
+    "primary-navigation": "Primær",
+    "download": "Download",
+    "download-name": "Download {{name}}",
+    "open-name": "Åbn {{name}}",
+    "preview-name": "Forhåndsvis {{name}}",
+    "no-content": "Intet indhold",
+    "previous": "Forrige",
+    "next": "Næste",
+    "retry": "Prøv igen",
+    "docs": "Dokumentation",
+    "calendar-for-month": "Kalender for {{month}}",
+    "date-at-time": "{{date}} kl. {{time}}",
+    "selected-location": "Valgt placering",
+    "choose-location": "Vælg en placering",
+    "unknown-error": "Ukendt fejl",
+    "error-occurred": "Der opstod en fejl"
   },
   "locale-picker": {
     "no-language-feedback": "Sprog ikke fundet? Send feedback"
@@ -188,6 +198,7 @@
     "any-thoughts": "Nogen tanker...",
     "exit-focus-mode": "Afslut fokustilstand",
     "focus-mode": "Fokustilstand",
+    "markdown-mode": "Markdown-tilstand",
     "insert-menu": {
       "add-location": "Tilføj placering",
       "link-memo": "Link memo",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Nogle billeder kunne ikke uploades. Prøv igen, eller behold de uploadede filer som vedhæftede filer.",
       "image-upload-stopped": "Billedupload stoppet {{completed}}/{{total}}",
       "insert-image": "Indsæt billede",
+      "drawing": "Tegning",
       "keep-as-attachments": "Behold som vedhæftede filer",
       "uploading-inline-image": "Uploader til indhold",
       "uploading-images": "Uploader billeder {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Ny tegning",
+      "edit": "Rediger tegning",
+      "tools": "Værktøjer",
+      "tool-select": "Vælg",
+      "tool-pen": "Pen",
+      "tool-eraser": "Viskelæder",
+      "tool-rectangle": "Rektangel",
+      "tool-ellipse": "Ellipse",
+      "tool-arrow": "Pil",
+      "tool-text": "Tekst",
+      "style": "Farve og tykkelse",
+      "color": "Farve",
+      "width": "Tykkelse",
+      "width-thin": "Tynd",
+      "width-medium": "Mellem",
+      "width-thick": "Tyk",
+      "color-ink": "Blæk",
+      "color-gray": "Grå",
+      "color-red": "Rød",
+      "color-orange": "Orange",
+      "color-green": "Grøn",
+      "color-teal": "Blågrøn",
+      "color-blue": "Blå",
+      "color-violet": "Violet",
+      "undo": "Fortryd",
+      "redo": "Gentag",
+      "zoom-to-fit": "Tilpas til vindue",
+      "done": "Færdig",
+      "discard-title": "Kassér denne tegning?",
+      "discard-description": "Den er endnu ikke føjet til notatet.",
+      "discard-edit-title": "Kassér dine ændringer?",
+      "discard-edit-description": "Tegningen forbliver, som den var, før du åbnede den.",
+      "keep-drawing": "Fortsæt med at tegne",
+      "discard": "Kassér",
+      "open-failed": "Tegningen kunne ikke åbnes. Prøv igen.",
+      "export-failed": "Tegningen kunne ikke gemmes. Prøv igen.",
+      "image-failed": "Billedet kunne ikke føjes til tegningen.",
+      "saved-without-drawing": "Notatet er gemt, men det er tegningen ikke. Gem igen for at prøve en gang til."
     },
     "no-changes-detected": "Ingen ændringer registreret",
     "save": "Spare",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Kodeblok",
       "link": "Forbindelse",
-      "heading": "Overskrift",
       "paragraph": "Afsnit",
       "heading-1": "Overskrift 1",
       "heading-2": "Overskrift 2",
       "heading-3": "Overskrift 3",
+      "heading-4": "Overskrift 4",
       "bold": "Fed",
       "italic": "Kursiv",
       "strikethrough": "Gennemstreget",
       "bullet-list": "Punkttegn liste",
       "ordered-list": "Nummereret liste",
-      "task-list": "Opgaveliste",
-      "more": "Mere formatering"
+      "task-list": "Opgaveliste"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formateringsværktøjslinje",
+    "footnotes": "Fodnoter",
+    "back-to-reference": "Tilbage til referencen",
     "new-memo": "Nyt notat",
     "saved": "Gemt",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Gemning i gang",
       "unsupported-attachment-image-url": "Ikke-understøttet URL til vedhæftet billede: {{url}}",
       "wait-for-upload": "Vent på, at uploaden er fuldført"
-    }
+    },
+    "blocks": {
+      "task": "Opgave",
+      "quote": "Citat",
+      "callout": "Fremhævet boks",
+      "callout-note": "Note",
+      "callout-tip": "Tip",
+      "callout-important": "Vigtigt",
+      "callout-warning": "Advarsel",
+      "callout-caution": "Forsigtig",
+      "collapsible-section": "Sammenfoldelig sektion",
+      "table": "Tabel",
+      "divider": "Skillelinje",
+      "no-results": "Ingen resultater",
+      "commands": "Kommandoer",
+      "loading": "Indlæser…",
+      "duplicate": "Dupliker",
+      "inline-code": "Kode",
+      "link-placeholder": "Indsæt eller skriv et link…",
+      "remove-link": "Fjern link",
+      "open-link": "Åbn link",
+      "copy-link": "Kopiér link",
+      "edit-link": "Rediger link",
+      "emoji": "Emoji",
+      "block-menu": "Åbn blokmenu",
+      "list-hint": "Liste",
+      "plain-text": "tekst",
+      "add-row-above": "Tilføj række over",
+      "add-row-below": "Tilføj række under",
+      "add-column-left": "Tilføj kolonne til venstre",
+      "add-column-right": "Tilføj kolonne til højre",
+      "delete-row": "Slet række",
+      "delete-column": "Slet kolonne",
+      "align": "Justering",
+      "align-left": "Venstre",
+      "align-center": "Centreret",
+      "align-right": "Højre",
+      "image-align-left": "Venstrejuster",
+      "image-align-center": "Centrer",
+      "image-align-right": "Højrejuster",
+      "text-style": "Tekststil",
+      "image": "Billede",
+      "reset-image-size": "Nulstil størrelse",
+      "alt-text": "Alternativ tekst",
+      "alt-text-placeholder": "Beskriv billedet…",
+      "image-unavailable": "Billedet er ikke tilgængeligt",
+      "resize-image": "Tilpas billedets størrelse"
+    },
+    "attachments": {
+      "edited": "Redigeret",
+      "new": "Ny",
+      "remove": "Fjern vedhæftet fil",
+      "reorder": "Flyt {{name}}",
+      "reorder-hint": "Træk, eller brug piletasterne"
+    },
+    "remove-relation": "Fjern relation",
+    "remove-location": "Fjern placering",
+    "recording-unsupported": "Lydoptagelse understøttes ikke i denne browser.",
+    "microphone-denied": "Adgang til mikrofonen blev nægtet.",
+    "recording-failed": "Kunne ikke starte lydoptagelsen."
   },
   "inbox": {
     "failed-to-load": "Indbakkeelementet kunne ikke indlæses",
@@ -256,7 +367,16 @@
     "unread": "Ulæst",
     "space-invitation": "inviterede dig til at deltage i et rum",
     "space-invitation-accepted": "Du har deltaget i dette rum.",
-    "space-invitation-open": "Åbent rum"
+    "space-invitation-open": "Åbent rum",
+    "commented-on-memo": "kommenterede dit notat",
+    "mentioned-in-comment": "nævnte dig i en kommentar",
+    "mentioned-in-memo": "nævnte dig i et notat",
+    "original": "Original:",
+    "memo-label": "Notat:",
+    "comment-heading": "Kommentar",
+    "memo-heading": "Notat",
+    "empty-memo": "Tomt notat",
+    "empty-comment": "Tom kommentar"
   },
   "live-update": {
     "connected": "Liveopdateringer aktive",
@@ -264,11 +384,16 @@
     "disconnected": "Liveopdateringer er ikke tilgængelige"
   },
   "memo": {
+    "no-memos-yet": "Ingen notater endnu",
+    "no-matching-memos": "Ingen matchende notater",
+    "clear-filters": "Ryd filtre",
     "pinned": "Fastgjort",
     "click-to-show-sensitive-content": "Klik for at vise følsomt indhold",
     "comment": {
       "self": "Kommentarer",
-      "write-a-comment": "Skriv en kommentar"
+      "write-a-comment": "Skriv en kommentar",
+      "view-all-count_one": "Vis {{count}} kommentar",
+      "view-all-count_other": "Vis alle {{count}} kommentarer"
     },
     "copy-content": "Kopier indhold",
     "copy-link": "Kopiér link",
@@ -278,10 +403,13 @@
     "delete-confirm-description": "Denne handling er irreversibel. Vedhæftede filer, links og referencer vil også blive fjernet.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "har vedhæftninger",
       "has-code": "hasCode",
+      "has-image": "har billede",
       "has-link": "harLink",
       "has-location": "har placering",
-      "has-task-list": "har Opgaveliste"
+      "has-task-list": "har Opgaveliste",
+      "remove": "Fjern filter"
     },
     "compact-mode": "Kompakt tilstand",
     "link-preview": "Linkforhåndsvisning",
@@ -366,7 +494,9 @@
     "restored-successfully": "Gendannet med succes",
     "succeed-copy-content": "Indholdet blev kopieret.",
     "succeed-copy-link": "Linket blev kopieret.",
-    "update-succeed": "Opdatering lykkedes"
+    "update-succeed": "Opdatering lykkedes",
+    "not-signed-in": "Du er ikke logget ind.",
+    "invalid-datetime": "Ugyldig dato og tid. Brug formatet 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Ingen memoer fundet",
@@ -436,7 +566,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Din lagerplads for vedhæftede filer er ikke tilgængelig.",
-      "email-in-use": "Denne e-mail bruges allerede af en anden konto."
+      "email-in-use": "Denne e-mail bruges allerede af en anden konto.",
+      "avatar-too-large": "Vælg et billede på højst 2 MB.",
+      "avatar-unreadable": "Billedet kan ikke læses. Prøv en anden fil."
     },
     "ai": {
       "add-provider": "Tilføj udbyder",
@@ -518,13 +650,15 @@
       "restore-success": "{{username}} gendannet med succes",
       "summary-column": "Oversigt",
       "user": "Bruger",
-      "no-members-found": "Ingen medlemmer fundet"
+      "no-members-found": "Ingen medlemmer fundet",
+      "export-memos": "Eksportér noter",
+      "username-password-required": "Brugernavn og adgangskode må ikke være tomme",
+      "create-success": "Bruger oprettet",
+      "update-success": "Bruger opdateret"
     },
     "memo": {
       "add-reaction": "Tilføj reaktion",
       "configured-reactions": "Konfigurerede reaktioner",
-      "double-click-edit-description": "Tillad brugere at åbne notatredigering ved at dobbeltklikke på et memo.",
-      "editing-title": "Redigering",
       "label": "Memo",
       "reaction-placeholder": "f.eks. 👍",
       "reactions-description": "Definer de reaktionsmuligheder, som brugere kan anvende på notater.",
@@ -575,22 +709,162 @@
       "appearance-title": "Udseende",
       "default-memo-visibility": "Standard memosynlighed",
       "default-memo-visibility-description": "Synlighed anvendt på nyoprettede notater, medmindre det ændres i editoren.",
+      "device-description": "Læse- og redigeringsvalg, der kun gemmes i denne browser. De gemmes ikke på din konto.",
+      "device-title": "Denne enhed",
+      "double-click-edit": "Dobbeltklik for at redigere",
+      "double-click-edit-description": "Åbn dine egne memoer i editoren ved at dobbeltklikke på dem.",
       "label": "Præferencer",
       "language-description": "Opdaterer grænsefladesproget med det samme og gemmer det på din konto.",
+      "link-preview-description": "Vis et forhåndsvisningskort under rene links, hvor end memoer vises.",
       "memo-defaults-description": "Indstil de standardindstillinger, der bruges, når du komponerer nye notater.",
       "memo-defaults-title": "Memo standarder",
-      "theme-description": "Anvender det valgte tema med det samme på denne enhed.",
-      "theme": "Tema",
       "save-media-metadata": "Gem mediemetadata",
       "save-media-metadata-description": "Gem tilgængeligt kamera, optagetidspunkt, placering, billeddimensioner og grundlæggende videooplysninger til fremtidige uploads. Enhver, der kan se den vedhæftede fil, kan modtage disse metadata. Eksisterende vedhæftede filer er uændrede.",
+      "theme-description": "Anvender det valgte tema med det samme på denne enhed.",
+      "theme": "Tema",
       "uploads-privacy-description": "Kontroller privatlivsfølsomme oplysninger, der indsendes med uploadede medier.",
-      "uploads-privacy-title": "Uploads og privatliv"
+      "uploads-privacy-title": "Uploads og privatliv",
+      "theme-system": "Følg systemet",
+      "theme-system-short": "System",
+      "theme-light": "Lyst",
+      "theme-dark": "Mørkt",
+      "theme-paper": "Papir"
+    },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Skriv og rediger notater som Markdown-tekst i stedet for formateret tekst."
     },
     "memo-view": {
       "create": "Opret visning",
       "delete-confirm": "Er du sikker på, at du vil slette visningen `{{title}}`?",
       "delete-success": "Visningen `{{title}}` blev slettet",
-      "change-icon": "Skift visningsikon"
+      "change-icon": "Skift visningsikon",
+      "page-description": "Opret genbrugelige visninger med felter, operatorer, tidsfunktioner og tag-matchning. Brug eksemplerne som udgangspunkt, og valider før du gemmer.",
+      "edit": "Rediger visning",
+      "form-description": "Giv visningen et navn, og angiv det filterudtryk for notater, den skal anvende.",
+      "title-placeholder": "Fastgjorte, Seneste notater, Arbejde",
+      "filter-help": "Kombiner udtryk med {{and}}, {{or}} og {{not}}. Tidsfelter er tidsstempler — brug {{now}}, {{duration}}, {{timestamp}} og accessorer som {{year}}. Tags understøtter {{sets}}, og {{size}} måler længde.",
+      "validate": "Valider",
+      "all": "Alle visninger",
+      "loading": "Indlæser visninger…",
+      "load-failed": "Kunne ikke indlæse visninger.",
+      "empty-title": "Ingen visninger endnu",
+      "empty-description": "Gem et filter for hurtigt at vende tilbage til de notater, du har brug for.",
+      "examples-title": "Eksempler på udtryk",
+      "fields-title": "Understøttede felter",
+      "title-filter-required": "Titel og filter må ikke være tomme",
+      "filter-valid": "Filterudtrykket ser gyldigt ud",
+      "create-success": "Visning oprettet",
+      "update-success": "Visning opdateret",
+      "examples": {
+        "pinned": {
+          "title": "Fastgjorte",
+          "description": "Kun fastgjorte notater."
+        },
+        "recent": {
+          "title": "Seneste notater",
+          "description": "Notater oprettet inden for den seneste time."
+        },
+        "public": {
+          "title": "Offentlige notater",
+          "description": "Kun offentlige notater."
+        },
+        "project-tags": {
+          "title": "Projekttags",
+          "description": "Match et eller flere præcise tags."
+        },
+        "untagged": {
+          "title": "Uden tags",
+          "description": "Notater uden tags."
+        },
+        "archive-tree": {
+          "title": "Arkivtræ",
+          "description": "Match hierarkiske tags efter præfiks."
+        },
+        "unassigned": {
+          "title": "Ikke tildelt",
+          "description": "Notater, der ikke ligger i noget rum."
+        },
+        "one-space": {
+          "title": "I ét rum",
+          "description": "Notater i et rum. Brug rummets ID fra dets URL eller indstillinger."
+        },
+        "open-tasks": {
+          "title": "Åbne opgaver",
+          "description": "Notater med uafsluttede opgaver."
+        },
+        "links-or-code": {
+          "title": "Links eller kode",
+          "description": "Notater med links eller kodeblokke."
+        },
+        "no-location": {
+          "title": "Uden placering",
+          "description": "Notater uden en tilknyttet placering."
+        },
+        "with-attachments": {
+          "title": "Med vedhæftede filer",
+          "description": "Notater med mindst én vedhæftet fil."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Notater, der viser et billede, i indholdet eller som vedhæftet fil."
+        },
+        "content-search": {
+          "title": "Indholdssøgning",
+          "description": "Søg efter tekst i notaternes indhold."
+        },
+        "starts-with": {
+          "title": "Starter med",
+          "description": "Notater, hvis indhold begynder med en tekst (også endsWith)."
+        },
+        "regex": {
+          "title": "Regex-match",
+          "description": "Match indhold med et regulært udtryk."
+        },
+        "all-tags-complete": {
+          "title": "Alle tags fuldført",
+          "description": "Alle tags ender på -done (kun notater med tags)."
+        },
+        "one-project-tag": {
+          "title": "Ét projekttag",
+          "description": "Præcis ét tag opfylder betingelsen."
+        },
+        "any-tags": {
+          "title": "Et af disse tags",
+          "description": "Tags overlapper med det angivne sæt."
+        },
+        "exact-tags": {
+          "title": "Præcis disse tags",
+          "description": "Tagget med præcis dette sæt, intet andet."
+        },
+        "year-2024": {
+          "title": "Notater fra 2024",
+          "description": "Filtrer efter kalenderår."
+        },
+        "weekend": {
+          "title": "Weekendnotater",
+          "description": "Oprettet en søndag eller lørdag (0 = søndag)."
+        },
+        "long": {
+          "title": "Lange notater",
+          "description": "Notater på over 280 tegn."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguration",
+      "description": "Ressourcer angivet af konfigurationsfiler. Rediger en fil, og anvend den for at ændre dem; resten af instansen kan stadig redigeres her.",
+      "managed-by": "Styret af konfiguration",
+      "managed-tooltip": "Angivet i {{source}}. Rediger filen, og anvend den for at ændre dette.",
+      "resource": "Ressource",
+      "source": "Fil",
+      "managed-fields": "Styrede felter",
+      "whole-resource": "Alle felter",
+      "ignored-fields": "Kan redigeres her",
+      "serial": "Serienummer",
+      "last-apply": "Senest anvendt",
+      "applied-by": "Anvendt af",
+      "nothing-managed": "Der er ikke anvendt nogen konfiguration. Alt indstilles her."
     },
     "sso": {
       "account": "Konto",
@@ -651,7 +925,9 @@
       "token-endpoint": "Token slutpunkt",
       "update-sso": "Opdater SSO",
       "update-sso-description": "Gennemgå udbyderens konfiguration, og gem derefter de felter, der skal ændres.",
-      "user-endpoint": "Bruger slutpunkt"
+      "user-endpoint": "Bruger slutpunkt",
+      "invalid-config": "Konfigurationen af identitetsudbyderen er ugyldig.",
+      "provider-id-placeholder": "f.eks. github, okta-corp"
     },
     "storage": {
       "accesskey": "Adgangsnøgle",
@@ -702,47 +978,56 @@
       "customize-server": {
         "description": "Beskrivelse",
         "icon-url": "Ikon URL",
-        "title": "Tilpas server"
+        "title": "Tilpas server",
+        "dialog-description": "Tilpas din instans' udseende og indstillinger."
       },
       "custom-code-description": "Valgfri instansdækkende CSS og JavaScript anvendes på frontend.",
       "custom-code-title": "Brugerdefineret kode",
-      "enable-double-click-to-edit": "Aktiver dobbeltklik for at redigere",
       "label": "System",
       "server-name": "Servernavn"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1130,9 @@
       "review-existing": "Allerede på din konto",
       "review-exported": "Eksporteret af",
       "review-memos": "Memos i fil",
-      "review-new": "Vil blive oprettet"
+      "review-new": "Vil blive oprettet",
+      "export-admin-only": "Kun administratorer kan eksportere noter. Bed en administrator om din eksportfil.",
+      "export-busy": "En anden eksport er i gang. Prøv igen om et øjeblik."
     },
     "spaces": {
       "general": "Generel",
@@ -931,7 +1218,8 @@
   },
   "tooltip": {
     "link-memo": "Link Memo",
-    "select-location": "Beliggenhed"
+    "select-location": "Beliggenhed",
+    "link-memo-description": "Søg efter og vælg et notat, der skal linkes"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1284,12 @@
     "loading": "Indlæser notater…",
     "new-here": "Skriv her",
     "saved-outside-filter": "Gemt. Dette notat er uden for de aktuelle kortresultater.",
-    "open-memo": "Åbn notat"
+    "open-memo": "Åbn notat",
+    "open-in-google-maps": "Åbn i Google Maps",
+    "location-description": "Vælg en placering på kortet, eller indtast koordinater manuelt",
+    "latitude": "Breddegrad",
+    "longitude": "Længdegrad",
+    "place-placeholder": "Vælg først en position."
   },
   "calendar": {
     "new-memo-on-day": "Nyt notat på denne dag",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "f.eks. Produkt",
     "spaces": "Rum",
     "switch": "Skift rum"
+  },
+  "welcome": {
+    "title": "Velkommen til Memos",
+    "headline": "Enkle noter til dine daglige tanker.",
+    "intro-write": "En enkelt sætning kan være et helt memo.",
+    "intro-keep": "Hvert memo bliver hos den dag, du skrev det.",
+    "intro-share": "Du vælger, hvad der forbliver privat.",
+    "write": "Skriv",
+    "write-sub": "En enkelt sætning kan være et helt memo.",
+    "no-title": "Ingen titel",
+    "no-title-text": "Et memo begynder med selve tanken. Der er ingen titel at udfylde.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown giver dine ord struktur, når du vil have det.",
+    "attach": "Vedhæft",
+    "attach-text": "Billeder, filer, lyd og et sted kommer ind via ＋.",
+    "keep": "Behold",
+    "keep-sub": "Hvert memo bliver hos den dag, du skrev det.",
+    "calendar-text": "Kalenderen fører tilbage til enhver dag.",
+    "tags-text": "Et ord efter # bliver til et tag, og et tag filtrerer tidslinjen.",
+    "views-text": "En brugerdefineret visning gemmer et filter.",
+    "map-text": "Memos med et sted ligger på kortet.",
+    "share": "Del",
+    "share-sub": "Memos begynder privat. Du vælger, hvad du deler, og hvad du offentliggør.",
+    "visibility-text": "Hvert memo har sin egen indstilling. Nye begynder privat, kun for dig; et offentligt har et link, som alle kan åbne.",
+    "spaces-text": "I et rum skriver medlemmer ved siden af dig, og hver beholder sine egne memos.",
+    "comments": "Kommentarer",
+    "comments-text": "Alle, der kan se et memo, kan svare under det.",
+    "skip": "Spring over",
+    "next": "Næste",
+    "done": "Færdig",
+    "page-of": "Side {{current}} af {{total}}",
+    "reopen": "Velkomstguide",
+    "reopen-note": "De fire skærme, en ny konto ser først.",
+    "sample": {
+      "today": "I dag, 10:42",
+      "today-early": "I dag, 9:18",
+      "yesterday": "I går, 15:20",
+      "comment-age": "2 t",
+      "memo-preview": "En enklere første skærm. Ét inputfelt, derefter en forhåndsvisning.",
+      "memo-release": "Før næste udgivelse",
+      "task-sketch": "Skitsér den første skærm",
+      "task-polish": "Finpuds forhåndsvisningen",
+      "write-lead": "Hold det første skridt lille.",
+      "write-strong": "Vis detaljerne,",
+      "write-tail": "når der er brug for dem.",
+      "write-task": "Skriv en kort ændringslog",
+      "view": "Uafsluttede opgaver",
+      "space": "Produkt",
+      "share-memo": "Prøv at vise resultatet, før du beder folk om at oprette sig.",
+      "comment": "Enig. Forhåndsvisningen gjorde arbejdet.",
+      "tag-design": "design",
+      "tag-project": "projekt",
+      "tag-reading": "læsning",
+      "tag-ideas": "idéer"
+    }
+  },
+  "error": {
+    "title": "Noget gik galt",
+    "description": "Der opstod en uventet fejl. Det kan skyldes et netværksproblem eller et problem med programmet.",
+    "description-update": "Der opstod en uventet fejl. Det kan skyldes et netværksproblem eller en opdatering af programmet. Det hjælper som regel at genindlæse.",
+    "details": "Fejldetaljer",
+    "reload": "Genindlæs programmet",
+    "not-found": "Siden, du leder efter, kunne ikke findes.",
+    "permission-denied": "Adgang nægtet",
+    "too-many-requests": "For mange forespørgsler. Prøv igen om {{wait}}.",
+    "wait-seconds": "{{count}} sek.",
+    "wait-minutes": "{{count}} min.",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Gennemfør bekræftelsen, og prøv igen.",
+    "quota-memo-count": "Du har nået din grænse på {{limit}} notater. Slet notater for at oprette nye.",
+    "quota-storage": "Denne upload vil overskride din lagergrænse på {{limit}}. Du bruger {{usage}}.",
+    "quota-upload": "Denne fil er større end din grænse på {{limit}} pr. fil.",
+    "quota-memo-content": "Dette notat er større end din grænse på {{limit}} pr. notat. Forkort indholdet for at gemme det.",
+    "quota-generic": "Du har nået en forbrugsgrænse.",
+    "sign-in-failed": "Kunne ikke logge ind.",
+    "sign-up-failed": "Tilmelding mislykkedes",
+    "authenticate-failed": "Godkendelse mislykkedes.",
+    "update-profile-failed": "Kunne ikke opdatere profilen",
+    "unlink-identity-failed": "Kunne ikke fjerne tilknytningen til identitetsudbyderen.",
+    "link-identity-failed": "Kunne ikke starte tilknytning af kontoen. Prøv igen."
+  },
+  "attachment-preview": {
+    "title": "Forhåndsvisning af vedhæftet fil",
+    "description": "Dialog til forhåndsvisning af vedhæftede filer. Tryk på Escape for at lukke, brug venstre og højre piletast til at skifte element, og zoom i billeder med knapperne, musehjulet, dobbelttryk eller knibebevægelse.",
+    "close": "Luk forhåndsvisning",
+    "previous": "Forrige element",
+    "next": "Næste element",
+    "reset-zoom": "Nulstil zoom",
+    "image-alt": "Forhåndsvisning af billede {{index}} af {{count}}",
+    "live-photo-alt": "Forhåndsvisning af live foto {{index}} af {{count}}",
+    "play-live-photo": "Hold markøren over eller tryk for at afspille live fotoet"
+  },
+  "audio-player": {
+    "seek": "Spol i {{name}}",
+    "back": "{{seconds}} sekunder tilbage",
+    "forward": "{{seconds}} sekunder frem",
+    "speed": "Afspilningshastighed {{rate}}x"
   }
 }

@@ -46,6 +46,22 @@ const renderPage = (path = "/auth", element = <SignIn />) => {
   );
   return router;
 };
+// Sign-up hands some visitors to sign-in, so these render both routes.
+const renderAuthRoutes = (path: string) => {
+  const router = createMemoryRouter(
+    [
+      { path: "/auth", element: <SignIn /> },
+      { path: "/auth/signup", element: <SignUp /> },
+    ],
+    { initialEntries: [path] },
+  );
+  render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  );
+  return router;
+};
 describe("automatic SSO auth pages", () => {
   beforeEach(() => {
     mocks.instance.generalSetting = { disallowPasswordAuth: true, disallowUserRegistration: false };
@@ -58,19 +74,19 @@ describe("automatic SSO auth pages", () => {
     vi.mocked(signInWithSSO).mockResolvedValue();
   });
   it.each([
-    { path: "/auth", element: <SignIn /> },
-    { path: "/auth/signup", element: <SignUp /> },
-  ])("starts once on $path and replaces the entry with a bypass preserving the destination", async ({ path, element }) => {
-    const router = renderPage(`${path}?redirect=%2Fmemos%2Fexample&reason=protected-memo`, element);
+    { path: "/auth", render: (url: string) => renderPage(url) },
+    { path: "/auth/signup", render: (url: string) => renderAuthRoutes(url) },
+  ])("starts once on $path and replaces the entry with a bypass preserving the destination", async ({ path, render }) => {
+    const router = render(`${path}?redirect=%2Fmemos%2Fexample&reason=protected-memo`);
     await waitFor(() => expect(signInWithSSO).toHaveBeenCalledOnce());
     expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
     expect(router.state.historyAction).toBe("REPLACE");
     expect(new URLSearchParams(router.state.location.search).get("auto_sign_in")).toBe("false");
     expect(new URLSearchParams(router.state.location.search).get("reason")).toBe("protected-memo");
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
-    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(button.querySelector("svg")).toBeInTheDocument();
+    expect(button.querySelector(".mu-spinner")).toBeInTheDocument();
     expect(screen.queryByText("auth.redirecting-to-provider: Company SSO")).not.toBeInTheDocument();
   });
   it.each([
@@ -140,10 +156,13 @@ describe("automatic SSO auth pages", () => {
     renderPage();
     await waitFor(() => expect(signInWithSSO).toHaveBeenCalledOnce());
   });
-  it("keeps closed sign-up out of automatic SSO", () => {
+  it("keeps closed sign-up out of automatic SSO", async () => {
     mocks.instance.generalSetting.disallowUserRegistration = true;
-    renderPage("/auth/signup", <SignUp />);
-    expect(screen.getByText("auth.signups-closed-title")).toBeInTheDocument();
+    const router = renderAuthRoutes("/auth/signup?redirect=%2Fmemos%2Fexample");
+    expect(await screen.findByText("auth.signups-closed-description")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/auth");
+    expect(new URLSearchParams(router.state.location.search).get("redirect")).toBe("/memos/example");
+    await act(async () => {});
     expect(signInWithSSO).not.toHaveBeenCalled();
   });
   it("keeps administrator sign-in out of automatic SSO", () => {
@@ -165,8 +184,8 @@ describe("automatic SSO auth pages", () => {
     const otherButton = screen.getByRole("button", { name: "auth.continue-with: Other SSO" });
     fireEvent.click(button);
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(otherButton).toHaveAttribute("aria-busy", "false");
-    expect(otherButton.querySelector("svg")).not.toBeInTheDocument();
+    expect(otherButton).not.toHaveAttribute("aria-busy");
+    expect(otherButton.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(otherButton).toBeDisabled();
     fireEvent.click(otherButton);
     expect(signInWithSSO).toHaveBeenCalledOnce();
@@ -176,8 +195,8 @@ describe("automatic SSO auth pages", () => {
     renderPage();
     const button = await screen.findByRole("button", { name: "auth.continue-with: Company SSO" });
     await waitFor(() => expect(button).toBeEnabled());
-    expect(button).toHaveAttribute("aria-busy", "false");
-    expect(button.querySelector("svg")).not.toBeInTheDocument();
+    expect(button).not.toHaveAttribute("aria-busy");
+    expect(button.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(signInWithSSO).toHaveBeenCalledOnce();
     fireEvent.click(button);
     expect(signInWithSSO).toHaveBeenCalledTimes(2);
@@ -189,7 +208,7 @@ describe("automatic SSO auth pages", () => {
       window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
     });
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toHaveAttribute("aria-busy", "false");
+    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).not.toHaveAttribute("aria-busy");
     expect(signInWithSSO).toHaveBeenCalledOnce();
   });
 });

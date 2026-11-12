@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
+import { Select, Switch } from "@usememos/ui";
 import { useMemo } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
+import { updateDevicePreferences, useDevicePreferences } from "@/hooks/useDevicePreferences";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
@@ -19,6 +19,7 @@ const PreferencesSection = () => {
   const t = useTranslate();
   const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
   const { mutate: updateUserGeneralSetting, isPending: isUpdatingGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  const devicePreferences = useDevicePreferences();
 
   const handleLocaleSelectChange = (locale: Locale) => {
     // Apply locale immediately for instant UI feedback and persist to localStorage
@@ -109,25 +110,25 @@ const PreferencesSection = () => {
             label={t("setting.preference.default-memo-visibility")}
             description={t("setting.preference.default-memo-visibility-description")}
           >
-            <Select
+            <Select.Root
               value={setting.memoVisibility || "PRIVATE"}
               items={visibilityOptions}
-              onValueChange={handleDefaultMemoVisibilityChanged}
+              onValueChange={(value) => value !== null && handleDefaultMemoVisibilityChanged(value)}
             >
-              <SelectTrigger className="min-w-fit">
+              <Select.Trigger className="min-w-fit">
                 <div className="flex items-center gap-2">
                   <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
-                  <SelectValue />
+                  <Select.Value />
                 </div>
-              </SelectTrigger>
-              <SelectContent>
+              </Select.Trigger>
+              <Select.Popup>
                 {visibilityOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="whitespace-nowrap">
+                  <Select.Item key={option.value} value={option.value} className="whitespace-nowrap">
                     {option.label}
-                  </SelectItem>
+                  </Select.Item>
                 ))}
-              </SelectContent>
-            </Select>
+              </Select.Popup>
+            </Select.Root>
           </SettingListItem>
         </SettingList>
       </SettingGroup>
@@ -147,6 +148,29 @@ const PreferencesSection = () => {
               checked={setting.saveMediaMetadata}
               disabled={isUpdatingGeneralSetting}
               onCheckedChange={handleSaveMediaMetadataChange}
+            />
+          </SettingListItem>
+        </SettingList>
+      </SettingGroup>
+
+      <SettingGroup title={t("setting.preference.device-title")} description={t("setting.preference.device-description")} showSeparator>
+        <SettingList>
+          <SettingListItem label={t("memo.link-preview")} description={t("setting.preference.link-preview-description")}>
+            <Switch
+              aria-label={t("memo.link-preview")}
+              checked={devicePreferences.linkPreview}
+              onCheckedChange={(linkPreview) => updateDevicePreferences({ linkPreview })}
+            />
+          </SettingListItem>
+
+          <SettingListItem
+            label={t("setting.preference.double-click-edit")}
+            description={t("setting.preference.double-click-edit-description")}
+          >
+            <Switch
+              aria-label={t("setting.preference.double-click-edit")}
+              checked={devicePreferences.doubleClickEdit}
+              onCheckedChange={(doubleClickEdit) => updateDevicePreferences({ doubleClickEdit })}
             />
           </SettingListItem>
         </SettingList>

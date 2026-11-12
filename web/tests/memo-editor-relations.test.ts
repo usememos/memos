@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { memoService } from "@/components/MemoEditor/services/memoService";
-import { createInitialState, type EditorState } from "@/components/MemoEditor/state";
+import { memoService } from "@/components/MemoEditor/edit/services/memoService";
+import { createInitialState, type EditorState } from "@/components/MemoEditor/edit/state";
 import {
   type Memo,
   MemoRelation_MemoRefSchema,
@@ -9,6 +9,7 @@ import {
   MemoRelationSchema,
   MemoSchema,
 } from "@/types/proto/api/memo_service_pb";
+import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
 const clients = vi.hoisted(() => ({
   createMemo: vi.fn(),
@@ -62,7 +63,7 @@ describe("memo editor relation updates", () => {
     const state = createInitialState();
     state.content = "Roadmap";
 
-    await memoService.save(state, { space: "spaces/product" });
+    await memoService.save(state, { space: "spaces/product" }, ops);
 
     expect(clients.createMemo).toHaveBeenCalledWith({
       memo: expect.objectContaining({ content: "Roadmap", space: "spaces/product" }),
@@ -73,9 +74,9 @@ describe("memo editor relation updates", () => {
     const state = createInitialState();
     state.content = "Draft";
     state.metadata = { ...state.metadata, space: "spaces/work" };
-    await memoService.save(state, {});
+    await memoService.save(state, {}, ops);
     expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/work" }) });
-    await memoService.save(state, { space: "spaces/current" });
+    await memoService.save(state, { space: "spaces/current" }, ops);
     expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/current" }) });
   });
 
@@ -84,7 +85,7 @@ describe("memo editor relation updates", () => {
     state.content = "Reply";
     state.metadata = { ...state.metadata, space: "spaces/draft" };
 
-    await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" });
+    await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" }, ops);
 
     expect(clients.createMemoComment).toHaveBeenCalledOnce();
     const request = clients.createMemoComment.mock.calls[0][0];
@@ -108,7 +109,7 @@ describe("memo editor relation updates", () => {
     state.metadata.relations = [...state.metadata.relations, addedReference];
     clients.getMemo.mockResolvedValue(comment);
 
-    await memoService.save(state, { memoName: commentName });
+    await memoService.save(state, { memoName: commentName }, ops);
 
     expect(clients.updateMemo).toHaveBeenCalledOnce();
     const request = clients.updateMemo.mock.calls[0][0];
@@ -135,7 +136,7 @@ describe("memo editor relation updates", () => {
     const state = createEditorState(editorMemo);
     clients.getMemo.mockResolvedValue(freshMemo);
 
-    const result = await memoService.save(state, { memoName: parentName });
+    const result = await memoService.save(state, { memoName: parentName }, ops);
 
     expect(result).toEqual({ memoName: parentName, hasChanges: false });
     expect(clients.updateMemo).not.toHaveBeenCalled();

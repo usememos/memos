@@ -239,7 +239,7 @@ func TestConcurrentInstanceAccessInitializationKeepsFirstInsert(t *testing.T) {
 	released = true
 	require.NoError(t, <-publicMigration)
 
-	setting, err := privateStore.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{
+	setting, err := privateStore.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_ACCESS.String(),
 	})
 	require.NoError(t, err)
@@ -248,9 +248,24 @@ func TestConcurrentInstanceAccessInitializationKeepsFirstInsert(t *testing.T) {
 
 	// Re-running either initializer is also a no-op once ACCESS is persisted.
 	require.NoError(t, publicStore.Migrate(ctx))
-	setting, err = publicStore.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{
+	setting, err = publicStore.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_ACCESS.String(),
 	})
 	require.NoError(t, err)
 	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, setting.GetAccessSetting().AccessMode)
+}
+
+func TestCheckSchemaCurrent(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	t.Cleanup(func() { require.NoError(t, ts.Close()) })
+	require.NoError(t, ts.CheckSchemaCurrent(ctx), "a migrated database is current")
+
+	basic, err := ts.GetInstanceBasicSetting(ctx)
+	require.NoError(t, err)
+	basic.SchemaVersion = "0.31.8"
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_BASIC, Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: basic}})
+	require.NoError(t, err)
+	require.ErrorContains(t, ts.CheckSchemaCurrent(ctx), "start this version of Memos once to migrate it")
 }

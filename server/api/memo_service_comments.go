@@ -62,7 +62,7 @@ func (s *APIService) CreateMemoComment(ctx context.Context, request *apipb.Creat
 		return nil, err
 	}
 	// A comment is a memo row, so it counts against the memo limit too.
-	if err := s.checkMemoQuota(ctx, user); err != nil {
+	if err := s.checkMemoQuota(ctx, user.ID); err != nil {
 		return nil, err
 	}
 	if err := s.createMemoWithMutation(ctx, user, prepared.memo, &relatedMemo.ID, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {

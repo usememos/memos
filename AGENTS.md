@@ -7,8 +7,8 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 
 Memos is a self-hosted note-taking app.
 
-- Backend: Go 1.27.2, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
-- Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, React Query v5.
+- Backend: Go 1.27.2, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
+- Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, `@usememos/ui` on Base UI, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
 
@@ -24,8 +24,9 @@ Memos is a self-hosted note-taking app.
 ## Documentation
 
 - ADRs and their companion glossary have been retired. Do not recreate them unless explicitly requested.
-- Design documents in `docs/design/` are frozen after implementation. Do not update implemented designs to track later code changes.
-- New and unimplemented designs may still evolve. Frozen documents record the original design; verify current behavior in source code and tests.
+- Design documents in `docs/design/` stay editable until the feature ships in a tagged release; keep a merged-but-unreleased design in step
+  with its implementation. After release the body is frozen: record later design changes in a dated `## Amendments` section at the end, never by
+  rewriting the body. See `docs/design/README.md`. Verify current behavior in source code and tests, not in design documents.
 - Brand copy (tagline, descriptions, README intro) comes verbatim from [`BRAND.md`](https://github.com/usememos/.github/blob/main/BRAND.md) in `usememos/.github`. Change it there first; do not keep brand guidelines in this repo.
 - Keep contributor guidance in this file and package-local `README.md` or `doc.go` files current when relevant code changes.
 
@@ -36,6 +37,7 @@ Run from the repository root unless a command starts with `cd`.
 ```bash
 # Backend
 go run -buildvcs=true ./cmd/memos --port 8081 # Start backend with commit-derived CalVer
+go run -buildvcs=true ./cmd/memos config plan --data DIR --config-dir DIR # Declarative configuration: also validate, apply, state
 go test ./...                      # Run all Go tests
 go test -v ./store/...             # Store tests, including DB drivers via TestContainers
 go test -v -race ./server/...      # Server tests with race detector
@@ -49,7 +51,7 @@ golangci-lint run --fix            # Auto-fix lint, including goimports
 
 # Frontend
 cd web && pnpm install             # Install dependencies
-cd web && pnpm dev                 # Dev server on :3001, proxying API to :8081
+cd web && pnpm dev                 # Dev server on :3001, proxying API to :8081 (or $DEV_PROXY_SERVER)
 cd web && pnpm lint                # Type check + Biome lint
 cd web && pnpm test                # Vitest unit tests
 cd web && pnpm build               # Production build
@@ -68,20 +70,20 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | Path | Holds | May import |
 | --- | --- | --- |
 | `cmd/memos/` | Cobra/Viper CLI setup and server startup | anything |
-| `server/` | The HTTP process: Echo bootstrap, graceful shutdown, every transport | core, store, provider, markdown, filter, internal |
+| `server/` | The HTTP process: net/http bootstrap, graceful shutdown, every transport | core, store, provider, markdown, filter, internal |
 | `server/api/` | Connect/gRPC-Gateway services, ACL config, SSE hub. Thin handlers; rules go to `core/` | |
 | `server/fileserver/` | Native HTTP file serving, thumbnails, range requests | |
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
 | `server/mcp/` | Model Context Protocol server | |
 | `server/auth/` | JWT access tokens, refresh tokens, PAT handling | |
-| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport`, `usagelimit` | store, provider, markdown, filter, internal |
+| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport`, `usagelimit`, `identityprovider`, `instancesetting`, `user`, `configuration` | store, provider, markdown, filter, internal |
 | `store/` | Store facade, cache, migrations, `Driver` interface; `store/db/{sqlite,mysql,postgres}/` implement it | provider, markdown, filter, internal |
 | `markdown/` | Markdown engine: parser, AST, memos syntax extensions, renderer, memo payload | proto/gen, internal |
 | `filter/` | CEL filter compiler: parse to IR, render to SQL per driver, filterable field schema | internal |
 | `provider/` | Backends configured by instance settings: `ai`, `idp`, `storage` | proto/gen, internal |
 | `internal/` | Private plumbing with no memos vocabulary (`identifier`, `email`, `webhook`, `ratelimit`, …) | third party only |
 | `proto/api/`, `proto/store/` | Public API and internal storage proto sources; `proto/gen/` is generated | |
-| `web/src/` | React SPA: `connect.ts` clients, `auth-state.ts`, `hooks/`, `contexts/`, `components/`, `themes/` | |
+| `web/src/` | React SPA: `connect.ts` clients, `auth-state.ts`, `hooks/`, `contexts/`, `components/`, `lib/`, `locales/`, `themes/` | |
 
 Layering rules, enforced by `depguard` in `.golangci.yaml`:
 
@@ -93,6 +95,8 @@ Layering rules, enforced by `depguard` in `.golangci.yaml`:
 
 File convention inside `server/api/`: `<resource>_service.go` holds the RPC handlers, `<resource>_service_converters.go` the
 store↔proto conversion, and `<resource>_service_<topic>.go` further splits. Extend the matching file; do not add `*_helpers2.go`.
+Identity providers and instance settings are the exception: declarative configuration files use their API messages, so their
+conversion lives in `core/identityprovider` and `core/instancesetting`, and `server/api` keeps only response redaction.
 Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## Change Routing
@@ -121,9 +125,25 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Use `@/` for absolute imports.
 - Follow Biome formatting: 2-space indent, double quotes, semicolons, 140-character line width.
 - Put server data in React Query hooks under `web/src/hooks/`; keep UI-only state in contexts or component state.
-- Use Tailwind CSS v4 utilities, `cn()` for class merging, and CVA for variants.
-- Reuse Base UI primitives and existing components before adding new UI primitives.
+- Show, edit and compose memos through `web/src/components/MemoEditor` (a name or draft seed plus a mode); see its `README.md`.
 - Keep generated proto TypeScript under `web/src/types/proto/` out of manual edits and Biome rewrites.
+- UI work reads `web/node_modules/@usememos/ui/llms.txt` first: `@usememos/ui` is the design system (tokens, type classes,
+  components). Controls come from the package; build a part it lacks on Base UI as its `custom-components.md` describes.
+- Use a package component when one fits (`Button`, `Link`, `Spinner`, `Badge`). Its class functions (`buttonClasses()`,
+  `menuClasses()`, `badgeClasses()`) are for elements it can't render, such as a router link or a Base UI trigger.
+- Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-ink-muted`, `rounded-mu-md`),
+  text with its type classes (`mu-caption`, `mu-body`, `mu-label`, `mu-title`), and `cn()` for class merging. No Tailwind
+  text sizes or old color names (`muted-foreground`, `destructive`, `popover`). The exceptions are the brand wordmark and
+  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`).
+- Focus shows through `mu-focus`. Never add `ring-*` or `focus-visible:ring-*`, and never pair `mu-focus` with
+  `outline-none`, which overrides it. Visually hidden text uses `mu-visually-hidden`; a control that appears on focus keeps
+  Tailwind's `sr-only focus-visible:not-sr-only` pair.
+- Report failures with `showErrorToast` from `web/src/lib/toast.ts`. A form's own validation errors go under the field
+  (`Field.Error`, kept in `useFieldErrors`), not in a toast.
+- Every new key in `web/src/locales/en.json` is translated into all locales; `tests/locale-resources.test.ts` fails
+  otherwise. A plural message is stored as `key_one`, `key_other`, … and looked up by its base key with `count`.
+- Lucide icons outside a package control take a size class that sets box and stroke together: `mu-icon-xs` (12px),
+  `mu-icon-sm` (14px) or `mu-icon` (16px). No Tailwind sizes on 12–16px icons and no `strokeWidth`.
 
 ## Database And Proto Rules
 
@@ -142,15 +162,17 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## CI Reference
 
-- Releases are cut by pushing a `YY.MM[.N][-rc.N]` tag. To cut, promote, or check a release, follow
+- Releases are cut by pushing a `YY.MM.N[-rc.K]` tag. To cut, promote, or check a release, follow
   `.agents/skills/release/SKILL.md`.
-- Development builds use the HEAD committer date in UTC as `YY.MM`; release builds inject the CalVer tag.
+- Development builds use the HEAD committer date in UTC as `YY.MM.D-dev.<sha7>`; release builds inject the CalVer tag.
 - `go build` embeds Git metadata automatically; `go run` needs `-buildvcs=true`. Builds without Git metadata must inject
   `github.com/usememos/memos/internal/version.Version` through `-ldflags`.
 - Docker excludes `.git`; pass `--build-arg VERSION="$(bash scripts/release_version.sh development-version)"` and
   `--build-arg COMMIT="$(git rev-parse HEAD)"` when building locally (build frontend assets first).
 
-- Backend CI: Go 1.27.2, `go mod tidy -go=1.27.2`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
+- Workflows install toolchains through `.github/actions/setup-go` (Go version from `go.mod`) and `.github/actions/setup-web`
+  (pnpm from `web/package.json`, Node 24, `pnpm install`); change versions there, not per workflow.
+- Backend CI: Go 1.27.2, `go mod tidy`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
   `store`, `server`, `internal`, `other` (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.

@@ -22,8 +22,12 @@ const state = vi.hoisted(() => ({
   toastError: vi.fn(),
 }));
 
-vi.mock("react-hot-toast", () => ({
-  default: { error: state.toastError, success: state.toastSuccess },
+vi.mock("@/lib/toast", () => ({
+  toast: {
+    add: (options: { title: string; type?: string }) => (options.type === "danger" ? state.toastError : state.toastSuccess)(options.title),
+    close: vi.fn(),
+  },
+  showErrorToast: state.toastError,
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
@@ -54,6 +58,7 @@ vi.mock("@/components/UserAvatar", () => ({
 
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string, params?: Record<string, string>) => (params ? `${key}:${Object.values(params).join(",")}` : key),
+  translate: (key: string) => key,
 }));
 
 const space: Space = create(SpaceSchema, { name: "spaces/design", title: "Design team", description: "Product design notes" });

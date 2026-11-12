@@ -1,190 +1,180 @@
+import { Button, Combobox, Dialog, Field, Input } from "@usememos/ui";
+import { XIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { findUsageLimit, USAGE_LIMIT_METRICS, useSetUsageLimit, useUsageLimits } from "@/hooks/useUsageLimitQueries";
-import { handleError } from "@/lib/error";
-import { UsageLimit_Metric } from "@/types/proto/api/instance_service_pb";
+import UserAvatar from "@/components/UserAvatar";
+import type { UsageLimitEntry } from "@/hooks/useUsageLimitQueries";
+import { extractUsernameFromName } from "@/lib/resource-names";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { parseLimitInput, toLimitInput } from "./usageLimitValues";
+import { newUsageLimitEntry, parseLimitInput, toLimitInput, USAGE_METRICS, type UsageMetric } from "./usageLimitValues";
 
-type Inputs = Record<UsageLimit_Metric, string>;
+type Inputs = Record<UsageMetric, string>;
 
-/** Which row the dialog edits: the limits for all users, one user's limits, or a user still to pick. */
-export type UsageLimitDialogTarget = { kind: "all" } | { kind: "user"; user: User } | { kind: "add" };
+interface CandidateItem {
+  value: string;
+  label: string;
+}
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  target: UsageLimitDialogTarget;
-  /** The users that can be added, which are those without limits of their own. */
-  candidates: User[];
+  /** The entry to edit, or undefined to add one. */
+  entry?: UsageLimitEntry;
+  /** The all-users entry, which pre-fills a new entry's fields. */
+  defaults: UsageLimitEntry;
+  users: User[];
+  saving: boolean;
+  onSave: (entry: UsageLimitEntry) => Promise<void>;
 }
 
 const userLabel = (user: User) => (user.displayName ? `${user.displayName} (@${user.username})` : `@${user.username}`);
 
+const inputsOf = (entry: UsageLimitEntry): Inputs =>
+  Object.fromEntries(USAGE_METRICS.map((metric) => [metric, toLimitInput(metric, entry[metric])])) as Inputs;
+
 /**
- * Edits one row of the usage limits table. For all users, an empty field
- * means no limit. For one user, an empty field means the all-users limit
- * applies, and 0 means no limit for that user.
+ * Edits one entry of the usage limits list: the users it names and one value
+ * per metric. An empty field means no limit. A new entry starts from the
+ * default's values so that leaving a field alone keeps the default rather than
+ * removing the limit.
  */
-function UsageLimitDialog({ open, onOpenChange, target, candidates }: Props) {
+function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, onSave }: Props) {
   const t = useTranslate();
-  const { data: limits } = useUsageLimits({ enabled: open });
-  const [pickedName, setPickedName] = useState("");
-  const setUsageLimit = useSetUsageLimit();
+  const forAll = entry?.allUsers === true;
+  // The entry the fields start from: the one being edited, or the default
+  // for a new entry.
+  const source = entry ?? defaults;
+  const sourceInputs = useMemo(() => inputsOf(source), [source]);
+  const [names, setNames] = useState<string[]>([]);
+  const [inputs, setInputs] = useState<Inputs>(sourceInputs);
 
   useEffect(() => {
-    if (open) setPickedName("");
-  }, [open]);
+    if (!open) return;
+    setNames(entry?.users ?? []);
+    setInputs(sourceInputs);
+  }, [open, entry, sourceInputs]);
 
-  const forAll = target.kind === "all";
-  const user = target.kind === "user" ? target.user : candidates.find((candidate) => candidate.name === pickedName);
-  // The user the limits belong to: empty for all users, undefined until a user is picked.
-  const owner = forAll ? "" : user?.name;
+  const usersByName = useMemo(() => new Map(users.map((user) => [user.name, user])), [users]);
+  const candidateItems = useMemo((): CandidateItem[] => {
+    const taken = new Set(names);
+    return users.filter((user) => !taken.has(user.name)).map((user) => ({ value: user.name, label: userLabel(user) }));
+  }, [users, names]);
 
-  const savedInputs = useMemo(
-    () =>
-      Object.fromEntries(
-        USAGE_LIMIT_METRICS.map((metric) => {
-          const value = owner === undefined ? undefined : findUsageLimit(limits, metric, owner)?.value;
-          // For a user, empty means "use the all-users limit", so a user limit of 0 (no limit) shows as 0.
-          return [metric, !forAll && value === 0n ? "0" : toLimitInput(metric, value)];
-        }),
-      ) as Inputs,
-    [limits, owner, forAll],
-  );
-  const [inputs, setInputs] = useState<Inputs>(savedInputs);
-  useEffect(() => setInputs(savedInputs), [savedInputs]);
+  const parsed = (metric: UsageMetric) => parseLimitInput(metric, inputs[metric]);
+  const isInvalid = (metric: UsageMetric) => parsed(metric) === null;
+  const isValid = USAGE_METRICS.every((metric) => !isInvalid(metric)) && (forAll || names.length > 0);
 
-  /** The value to save: undefined removes the limit. */
-  const savedValue = (metric: UsageLimit_Metric): bigint | undefined => {
-    const value = parseLimitInput(metric, inputs[metric]);
-    // A limit of 0 for all users is the same as none, so it is removed.
-    if (forAll) return value ? value : undefined;
-    return inputs[metric].trim() === "" ? undefined : value;
-  };
-  const isInvalid = (metric: UsageLimit_Metric) => parseLimitInput(metric, inputs[metric]) === undefined;
-  const placeholder = (metric: UsageLimit_Metric) => {
-    if (forAll) return t("setting.usage-limits.unlimited");
-    const value = findUsageLimit(limits, metric)?.value;
-    return t("setting.usage-limits.all-users-placeholder", {
-      value: value ? toLimitInput(metric, value) : t("setting.usage-limits.unlimited"),
-    });
-  };
-  const warning = (metric: UsageLimit_Metric) => (isInvalid(metric) ? t("setting.usage-limits.invalid") : undefined);
-
-  const hasChanges = USAGE_LIMIT_METRICS.some((metric) => inputs[metric] !== savedInputs[metric]);
-  const isValid = USAGE_LIMIT_METRICS.every((metric) => !isInvalid(metric));
+  // The field text is a rounded view of a byte count, so a field the admin
+  // did not touch keeps the stored value instead of a re-parsed one.
+  const savedValue = (metric: UsageMetric) => (inputs[metric] === sourceInputs[metric] ? source[metric] : (parsed(metric) ?? undefined));
 
   const handleSave = async () => {
-    if (owner === undefined) return;
-    try {
-      for (const metric of USAGE_LIMIT_METRICS) {
-        if (inputs[metric] === savedInputs[metric]) continue;
-        await setUsageLimit.mutateAsync({
-          metric,
-          user: owner,
-          value: savedValue(metric),
-          existing: findUsageLimit(limits, metric, owner),
-        });
-      }
-      toast.success(t("setting.usage-limits.saved"));
-      onOpenChange(false);
-    } catch (error) {
-      handleError(error, toast.error, { context: "Update usage limits" });
-    }
+    const next = newUsageLimitEntry({
+      users: forAll ? [] : names,
+      allUsers: forAll,
+      ...Object.fromEntries(USAGE_METRICS.map((metric) => [metric, savedValue(metric)])),
+    });
+    await onSave(next);
   };
 
-  const fields = [
-    { metric: UsageLimit_Metric.MEMO_COUNT, label: t("setting.usage-limits.memos"), help: t("setting.usage-limits.memos-description") },
-    {
-      metric: UsageLimit_Metric.MEMO_CONTENT_BYTES,
-      label: t("setting.usage-limits.content-size"),
-      help: t("setting.usage-limits.content-size-description"),
-    },
-    {
-      metric: UsageLimit_Metric.STORAGE_BYTES,
-      label: t("setting.usage-limits.storage"),
-      help: t("setting.usage-limits.storage-description"),
-    },
-    { metric: UsageLimit_Metric.UPLOAD_BYTES, label: t("setting.usage-limits.file-size"), help: undefined },
+  const fields: { metric: UsageMetric; label: string; help?: string }[] = [
+    { metric: "memoCount", label: t("setting.usage-limits.memos"), help: t("setting.usage-limits.memos-description") },
+    { metric: "memoContentBytes", label: t("setting.usage-limits.content-size"), help: t("setting.usage-limits.content-size-description") },
+    { metric: "storageBytes", label: t("setting.usage-limits.storage"), help: t("setting.usage-limits.storage-description") },
+    { metric: "uploadBytes", label: t("setting.usage-limits.file-size") },
   ];
-  const userItems = candidates.map((candidate) => ({ value: candidate.name, label: userLabel(candidate) }));
-  const title =
-    target.kind === "all"
-      ? t("setting.usage-limits.all-users-title")
-      : target.kind === "user"
-        ? t("setting.usage-limits.user-title", { user: target.user.displayName || target.user.username })
-        : t("setting.usage-limits.add-user");
+  const title = forAll
+    ? t("setting.usage-limits.default-title")
+    : entry
+      ? t("setting.usage-limits.edit-title")
+      : t("setting.usage-limits.add-title");
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>{title}</Dialog.Title>
         <div className="flex flex-col gap-4">
-          {target.kind === "add" && (
-            <div className="grid gap-2">
-              <Label>{t("setting.usage-limits.user")}</Label>
-              <Select value={pickedName} items={userItems} onValueChange={setPickedName}>
-                <SelectTrigger className="w-full" aria-label={t("setting.usage-limits.user")}>
-                  <SelectValue placeholder={t("setting.usage-limits.select-user")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {userItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {userItems.length === 0 && <p className="text-xs text-muted-foreground">{t("setting.usage-limits.no-candidates")}</p>}
-            </div>
+          {!forAll && (
+            <Field.Root>
+              <Field.Label>{t("setting.usage-limits.users")}</Field.Label>
+              {names.length > 0 && (
+                <ul className="flex flex-wrap gap-1.5">
+                  {names.map((name) => {
+                    const user = usersByName.get(name);
+                    const label = user ? user.displayName || user.username : extractUsernameFromName(name);
+                    return (
+                      <li
+                        key={name}
+                        className="flex items-center gap-1.5 rounded-full border border-mu-line bg-mu-well/40 py-0.5 pr-1 pl-0.5 mu-caption"
+                      >
+                        <UserAvatar className="h-5 w-5 shrink-0" avatarUrl={user?.avatarUrl} name={label} />
+                        <span className="max-w-40 truncate">{label}</span>
+                        <button
+                          type="button"
+                          className="rounded-full p-0.5 text-mu-ink-muted hover:bg-mu-hover hover:text-mu-ink"
+                          aria-label={t("setting.usage-limits.remove-user", { name: label })}
+                          onClick={() => setNames((current) => current.filter((item) => item !== name))}
+                        >
+                          <XIcon className="mu-icon-xs" />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {/* People type a name to find them: the instance may have many users. */}
+              <Combobox.Root
+                items={candidateItems}
+                value={null}
+                onValueChange={(item: CandidateItem | null) => item && setNames((current) => [...current, item.value])}
+                itemToStringLabel={(item: CandidateItem) => item.label}
+              >
+                <Combobox.Input placeholder={t("setting.usage-limits.select-user")} triggerLabel={t("setting.usage-limits.users")} />
+                <Combobox.Popup>
+                  <Combobox.Empty>{t("message.no-data")}</Combobox.Empty>
+                  <Combobox.List>
+                    {(item: CandidateItem) => (
+                      <Combobox.Item key={item.value} value={item}>
+                        {item.label}
+                      </Combobox.Item>
+                    )}
+                  </Combobox.List>
+                </Combobox.Popup>
+              </Combobox.Root>
+              <Field.Description>
+                {names.length === 0 ? t("setting.usage-limits.users-required") : t("setting.usage-limits.users-description")}
+              </Field.Description>
+            </Field.Root>
           )}
-          {fields.map(({ metric, label, help }) => {
-            const message = warning(metric) ?? help;
-            return (
-              <div key={metric} className="grid gap-2">
-                <Label htmlFor={`usage-limit-${metric}`}>{label}</Label>
-                <Input
-                  id={`usage-limit-${metric}`}
-                  className="font-mono"
-                  inputMode="decimal"
-                  disabled={owner === undefined}
-                  placeholder={placeholder(metric)}
-                  value={inputs[metric]}
-                  aria-invalid={isInvalid(metric)}
-                  aria-describedby={message ? `usage-limit-help-${metric}` : undefined}
-                  onChange={(event) => setInputs((current) => ({ ...current, [metric]: event.target.value }))}
-                />
-                {message && (
-                  <p id={`usage-limit-help-${metric}`} className="text-xs text-muted-foreground">
-                    {message}
-                  </p>
-                )}
-              </div>
-            );
-          })}
-          <p className="text-xs text-muted-foreground">
-            {forAll ? t("setting.usage-limits.all-users-hint") : t("setting.usage-limits.user-hint")}
+          {fields.map(({ metric, label, help }) => (
+            <Field.Root key={metric} invalid={isInvalid(metric)}>
+              <Field.Label>{label}</Field.Label>
+              <Input
+                id={`usage-limit-${metric}`}
+                className="font-mono"
+                inputMode="decimal"
+                placeholder={t("setting.usage-limits.unlimited")}
+                value={inputs[metric]}
+                onChange={(event) => setInputs((current) => ({ ...current, [metric]: event.target.value }))}
+              />
+              {help && <Field.Description>{help}</Field.Description>}
+              {isInvalid(metric) && <Field.Error match>{t("setting.usage-limits.invalid")}</Field.Error>}
+            </Field.Root>
+          ))}
+          <p className="mu-caption text-mu-ink-muted">
+            {forAll ? t("setting.usage-limits.default-hint") : t("setting.usage-limits.entry-hint")}
           </p>
         </div>
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button disabled={owner === undefined || !hasChanges || !isValid || setUsageLimit.isPending} onClick={handleSave}>
+          <Button variant="primary" disabled={!isValid || saving} onClick={handleSave}>
             {t("common.save")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

@@ -102,9 +102,10 @@ var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
 		required:          []string{"relations"},
 		omittedProperties: []string{"name"},
 	},
+	// The memo is the parent of its reactions; the path binds it.
 	"MemoService_UpsertMemoReaction": {
 		required:          []string{"reaction"},
-		omittedProperties: []string{"name"},
+		omittedProperties: []string{"parent"},
 	},
 	// UpdateSpace requires an update mask, which the REST gateway infers from
 	// the fields present in the body. The space name comes from the path.
@@ -162,6 +163,16 @@ func validateOperationOverrides(registry map[string]*openAPIOperation) error {
 		for _, operationID := range table.ids {
 			if _, ok := registry[operationID]; !ok {
 				return errors.Errorf("%s references unknown operation %q", table.name, operationID)
+			}
+		}
+	}
+	// An omitted property must exist in the body, or the override is stale
+	// after a binding rename and silently leaves a path-bound field exposed.
+	for operationID, override := range requestBodySchemaOverrides {
+		properties := schemaProperties(registry[operationID].RequestBodySchema["properties"])
+		for _, name := range override.omittedProperties {
+			if _, ok := properties[name]; !ok {
+				return errors.Errorf("requestBodySchemaOverrides omits property %q missing from the %s request body", name, operationID)
 			}
 		}
 	}

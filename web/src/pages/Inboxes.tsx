@@ -31,17 +31,15 @@ const Inboxes = () => {
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full border border-border flex flex-col justify-start items-start rounded-xl bg-background text-foreground overflow-hidden">
+        <div className="w-full border border-mu-line flex flex-col justify-start items-start rounded-mu-xl bg-mu-canvas text-mu-ink overflow-hidden">
           {/* Header */}
-          <div className="w-full px-4 py-4 border-b border-border">
+          <div className="w-full px-4 py-4 border-b border-mu-line">
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row items-center gap-2">
-                <BellIcon className="w-5 h-auto text-muted-foreground" />
-                <h1 className="text-xl font-semibold">{t("common.inbox")}</h1>
+                <BellIcon className="mu-icon w-5 h-auto text-mu-ink-muted" />
+                <h1 className="mu-heading">{t("common.inbox")}</h1>
                 {unreadCount > 0 && (
-                  <span className="ml-1 px-2 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
-                    {unreadCount}
-                  </span>
+                  <span className="ml-1 px-2 py-0.5 mu-label-sm rounded-full bg-mu-primary text-mu-on-primary">{unreadCount}</span>
                 )}
               </div>
             </div>

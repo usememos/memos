@@ -8,14 +8,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRemovedAPIVersionRoutesReturnGone(t *testing.T) {
 	svc, _ := newUploadTestService(t)
-	e := echo.New()
-	require.NoError(t, svc.RegisterGateway(context.Background(), e))
+	e := http.NewServeMux()
+	apiHandler, handlerErr := svc.NewHandler(context.Background())
+	require.NoError(t, handlerErr)
+	e.Handle("/", apiHandler)
 
 	tests := []struct {
 		method   string

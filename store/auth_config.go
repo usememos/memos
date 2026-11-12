@@ -2,15 +2,14 @@ package store
 
 import (
 	"context"
-	"time"
+	"database/sql"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
-
-const authenticationMutationMaxAttempts = 3
 
 // ErrUnsafeAuthenticationConfiguration indicates a mutation would lock regular users out.
 var ErrUnsafeAuthenticationConfiguration = errors.New("password authentication for regular users cannot be disabled without an effective identity provider")
@@ -41,13 +40,13 @@ func (s *Store) UpsertInstanceGeneralSettingSafely(ctx context.Context, setting 
 	mutation := &AuthenticationConfigMutation{
 		UpsertGeneralSetting: raw,
 		Validate: func(state *AuthenticationConfigState) error {
-			return s.validateAuthenticationMutationState(state, setting.GetGeneralSetting(), nil)
+			return validateAuthenticationMutationState(state, setting.GetGeneralSetting(), nil)
 		},
 	}
 	if err := s.applyAuthenticationConfigMutation(ctx, mutation); err != nil {
 		return nil, err
 	}
-	result := cloneInstanceSetting(setting)
+	result := proto.CloneOf(setting)
 	s.cacheInstanceSetting(ctx, result)
 	return result, nil
 }
@@ -60,7 +59,7 @@ func (s *Store) DeleteIdentityProviderSafely(ctx context.Context, delete *Delete
 	mutation := &AuthenticationConfigMutation{
 		DeleteIdentityProviderID: &delete.ID,
 		Validate: func(state *AuthenticationConfigState) error {
-			return s.validateAuthenticationMutationState(state, nil, &delete.ID)
+			return validateAuthenticationMutationState(state, nil, &delete.ID)
 		},
 	}
 	return s.applyAuthenticationConfigMutation(ctx, mutation)
@@ -70,22 +69,12 @@ func (s *Store) applyAuthenticationConfigMutation(ctx context.Context, mutation 
 	s.authConfigMu.Lock()
 	defer s.authConfigMu.Unlock()
 
-	var err error
-	for attempt := range authenticationMutationMaxAttempts {
-		err = s.driver.ApplyAuthenticationConfigMutation(ctx, mutation)
-		if err == nil || !s.driver.IsRetryableAuthenticationMutationError(err) {
-			return err
-		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(time.Duration(attempt+1) * 10 * time.Millisecond):
-		}
-	}
-	return errors.Wrap(err, "authentication configuration mutation failed after retries")
+	return s.runSerializable(ctx, func(tx *sql.Tx) error {
+		return s.driver.ApplyAuthenticationConfigMutationTx(ctx, tx, mutation)
+	})
 }
 
-func (s *Store) validateAuthenticationMutationState(state *AuthenticationConfigState, proposedGeneral *storepb.InstanceGeneralSetting, deletedProviderID *int32) error {
+func validateAuthenticationMutationState(state *AuthenticationConfigState, proposedGeneral *storepb.InstanceGeneralSetting, deletedProviderID *int32) error {
 	var storedGeneral *storepb.InstanceGeneralSetting
 	if state.GeneralSetting != nil {
 		stored, err := convertInstanceSettingFromRaw(state.GeneralSetting)
@@ -95,49 +84,21 @@ func (s *Store) validateAuthenticationMutationState(state *AuthenticationConfigS
 		storedGeneral = stored.GetGeneralSetting()
 	}
 
-	storedUIDs := make(map[string]struct{}, len(state.IdentityProviders))
+	oldUIDs := make(map[string]struct{}, len(state.IdentityProviders))
+	newUIDs := make(map[string]struct{}, len(state.IdentityProviders))
 	for _, provider := range state.IdentityProviders {
-		storedUIDs[provider.UID] = struct{}{}
-	}
-	effectiveUIDs := make(map[string]struct{}, len(state.IdentityProviders))
-	for _, provider := range state.IdentityProviders {
+		oldUIDs[provider.UID] = struct{}{}
 		if deletedProviderID != nil && provider.ID == *deletedProviderID {
 			continue
 		}
-		effectiveUIDs[provider.UID] = struct{}{}
-	}
-	for _, provider := range s.listDeploymentIdentityProviders() {
-		effectiveUIDs[provider.Uid] = struct{}{}
+		newUIDs[provider.UID] = struct{}{}
 	}
 
-	configuredGeneral := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey_GENERAL)
-	if proposedGeneral != nil && configuredGeneral != nil {
-		// A deployment-managed GENERAL setting keeps the proposal from becoming
-		// effective now, but the stored fallback must not move from safe to unsafe
-		// if the deployment file is removed later.
-		if isUnsafeAuthenticationState(proposedGeneral, storedUIDs) && !isUnsafeAuthenticationState(storedGeneral, storedUIDs) {
-			return ErrUnsafeAuthenticationConfiguration
-		}
-		return nil
-	}
-
-	oldGeneral := storedGeneral
-	if configuredGeneral != nil {
-		oldGeneral = configuredGeneral.GetGeneralSetting()
-	}
-	newGeneral := oldGeneral
+	newGeneral := storedGeneral
 	if proposedGeneral != nil {
 		newGeneral = proposedGeneral
 	}
-
-	oldEffectiveUIDs := make(map[string]struct{}, len(storedUIDs))
-	for uid := range storedUIDs {
-		oldEffectiveUIDs[uid] = struct{}{}
-	}
-	for _, provider := range s.listDeploymentIdentityProviders() {
-		oldEffectiveUIDs[provider.Uid] = struct{}{}
-	}
-	if isUnsafeAuthenticationState(newGeneral, effectiveUIDs) && !isUnsafeAuthenticationState(oldGeneral, oldEffectiveUIDs) {
+	if isUnsafeAuthenticationState(newGeneral, newUIDs) && !isUnsafeAuthenticationState(storedGeneral, oldUIDs) {
 		return ErrUnsafeAuthenticationConfiguration
 	}
 	return nil

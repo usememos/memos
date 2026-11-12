@@ -12,8 +12,17 @@ import (
 
 // CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
 func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store.InstanceSetting) (bool, error) {
+	return createInstanceSettingIfNotExists(ctx, d.db, create)
+}
+
+// CreateInstanceSettingIfNotExistsTx is CreateInstanceSettingIfNotExists within tx.
+func (*DB) CreateInstanceSettingIfNotExistsTx(ctx context.Context, tx *sql.Tx, create *store.InstanceSetting) (bool, error) {
+	return createInstanceSettingIfNotExists(ctx, tx, create)
+}
+
+func createInstanceSettingIfNotExists(ctx context.Context, executor instanceSettingExecer, create *store.InstanceSetting) (bool, error) {
 	stmt := "INSERT IGNORE INTO `system_setting` (`name`, `value`, `description`) VALUES (?, ?, ?)"
-	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
+	result, err := executor.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to conditionally create instance setting")
 	}
@@ -27,14 +36,23 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 // UpdateInstanceSettingIfUnchanged replaces the setting value only when the
 // stored value still equals oldValue, and reports whether it did.
 func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error) {
+	return updateInstanceSettingIfUnchanged(ctx, d.db, name, oldValue, newValue)
+}
+
+// UpdateInstanceSettingIfUnchangedTx is UpdateInstanceSettingIfUnchanged within tx.
+func (*DB) UpdateInstanceSettingIfUnchangedTx(ctx context.Context, tx *sql.Tx, name, oldValue, newValue string) (bool, error) {
+	return updateInstanceSettingIfUnchanged(ctx, tx, name, oldValue, newValue)
+}
+
+func updateInstanceSettingIfUnchanged(ctx context.Context, executor instanceSettingExecer, name, oldValue, newValue string) (bool, error) {
 	// MySQL reports zero affected rows when the new value equals the stored
 	// one, which would read as a conflict. An unchanged write is a no-op.
 	if oldValue == newValue {
-		return d.instanceSettingHasValue(ctx, name, oldValue)
+		return instanceSettingHasValue(ctx, executor, name, oldValue)
 	}
 	// A binary comparison is exact; the column collation may ignore case
 	// and trailing spaces.
-	result, err := d.db.ExecContext(ctx, "UPDATE `system_setting` SET `value` = ? WHERE `name` = ? AND `value` = CAST(? AS BINARY)", newValue, name, oldValue)
+	result, err := executor.ExecContext(ctx, "UPDATE `system_setting` SET `value` = ? WHERE `name` = ? AND `value` = CAST(? AS BINARY)", newValue, name, oldValue)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to conditionally update instance setting")
 	}
@@ -45,12 +63,28 @@ func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValu
 	return rowsAffected == 1, nil
 }
 
-func (d *DB) instanceSettingHasValue(ctx context.Context, name, value string) (bool, error) {
+func instanceSettingHasValue(ctx context.Context, executor instanceSettingExecer, name, value string) (bool, error) {
 	var count int
-	if err := d.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM `system_setting` WHERE `name` = ? AND `value` = CAST(? AS BINARY)", name, value).Scan(&count); err != nil {
+	if err := executor.QueryRowContext(ctx, "SELECT COUNT(*) FROM `system_setting` WHERE `name` = ? AND `value` = CAST(? AS BINARY)", name, value).Scan(&count); err != nil {
 		return false, errors.Wrap(err, "failed to read instance setting")
 	}
 	return count == 1, nil
+}
+
+// GetInstanceSettingTx reads and locks one setting within tx, or returns nil
+// when it is absent.
+func (*DB) GetInstanceSettingTx(ctx context.Context, tx *sql.Tx, name string) (*store.InstanceSetting, error) {
+	setting := &store.InstanceSetting{}
+	err := tx.QueryRowContext(ctx, "SELECT `name`, `value`, `description` FROM `system_setting` WHERE `name` = ? FOR UPDATE", name).Scan(
+		&setting.Name, &setting.Value, &setting.Description,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read instance setting")
+	}
+	return setting, nil
 }
 
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
@@ -67,6 +101,7 @@ func (*DB) UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *stor
 
 type instanceSettingExecer interface {
 	ExecContext(context.Context, string, ...any) (sql.Result, error)
+	QueryRowContext(context.Context, string, ...any) *sql.Row
 }
 
 func upsertInstanceSetting(ctx context.Context, executor instanceSettingExecer, upsert *store.InstanceSetting) error {
@@ -117,7 +152,16 @@ func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceS
 }
 
 func (d *DB) DeleteInstanceSetting(ctx context.Context, delete *store.DeleteInstanceSetting) error {
+	return deleteInstanceSetting(ctx, d.db, delete)
+}
+
+// DeleteInstanceSettingTx is DeleteInstanceSetting within tx.
+func (*DB) DeleteInstanceSettingTx(ctx context.Context, tx *sql.Tx, delete *store.DeleteInstanceSetting) error {
+	return deleteInstanceSetting(ctx, tx, delete)
+}
+
+func deleteInstanceSetting(ctx context.Context, q dbExecutor, delete *store.DeleteInstanceSetting) error {
 	stmt := "DELETE FROM `system_setting` WHERE `name` = ?"
-	_, err := d.db.ExecContext(ctx, stmt, delete.Name)
+	_, err := q.ExecContext(ctx, stmt, delete.Name)
 	return err
 }

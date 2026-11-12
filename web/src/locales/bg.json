@@ -6,7 +6,6 @@
     "api-docs": "API Документация",
     "api-docs-note": "Справка за REST и gRPC",
     "build": "Компилация",
-    "commit": "Commit",
     "demo": "Демо",
     "description": "Място с отворен код на собствен сървър за вашите бележки, идеи и ежедневни мисли.",
     "distribution": "Разпространение",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Влизането не можа да завърши",
     "create-your-account": "Създайте своя акаунт",
+    "hide-password": "Скриване на паролата",
+    "incorrect-credentials": "Грешно потребителско име или парола.",
     "new-password": "Нова парола",
     "repeat-new-password": "Повторете новата парола",
+    "show-password": "Показване на паролата",
     "sign-in-tip": "Вече имате акаунт?",
     "sign-up-tip": "Все още нямате акаунт?",
     "admin-sign-in": "Вход като администратор",
-    "admin-sign-in-tip": "Входът с парола остава достъпен за администратори.",
     "back-to-sign-in": "Обратно към влизане",
     "continue-with": "Продължете с {{provider}}",
     "create-admin-account": "Създаване на администраторски акаунт",
-    "explore-public-memos": "Разглеждане на публични бележки за този екземпляр",
-    "first-run": "Първо изпълнение",
     "setup-description": "Създаване на администраторски акаунт за този екземпляр.",
-    "setup-note": "Този акаунт притежава настройките на екземпляра, членовете и доставчиците на самоличност.",
     "setup-title": "Настройване на вашия екземпляр",
     "signin-unavailable-description": "Влизането с парола е изключено и не са конфигурирани доставчици на самоличност. Помолете вашия администратор да активира метод за влизане.",
     "signin-unavailable-title": "Влизането не е налично",
-    "signup-unavailable-description": "Акаунтите с парола са изключени и не са конфигурирани доставчици на самоличност. Помолете вашия администратор за достъп.",
-    "signup-unavailable-title": "Регистрацията не е налична",
-    "signups-closed-description": "Новите акаунти са деактивирани за този екземпляр. Свържете се с вашия администратор, ако имате нужда от достъп.",
-    "signups-closed-title": "Регистрациите са затворени",
-    "sso-signup-tip": "Влезте с доставчик по-долу, за да създадете профил.",
-    "welcome-back": "Добре дошли отново."
+    "signups-closed-description": "Новите акаунти са деактивирани за този екземпляр. Свържете се с вашия администратор, ако имате нужда от достъп."
   },
   "demo": {
     "banner-description": "Промените са временни и могат да бъдат нулирани.",
@@ -142,7 +136,6 @@
     "profile": "Профил",
     "referenced-by": "Позовава се от",
     "referencing": "Рефериране",
-    "relations": "Връзки",
     "resources": "Ресурси",
     "restore": "Възстановяване",
     "role": "Роля",
@@ -177,7 +170,24 @@
     "resize-panel": "Панел за преоразмеряване",
     "resize-sidebar": "Преоразмеряване на страничната лента",
     "sign-in-to-memos": "Влизане в Memos",
-    "view-all": "Вижте всички"
+    "open-navigation": "Отваряне на навигацията",
+    "navigation": "Навигация",
+    "primary-navigation": "Основна",
+    "download": "Изтегляне",
+    "download-name": "Изтегляне на {{name}}",
+    "open-name": "Отваряне на {{name}}",
+    "preview-name": "Преглед на {{name}}",
+    "no-content": "Няма съдържание",
+    "previous": "Предишен",
+    "next": "Следващ",
+    "retry": "Опитайте отново",
+    "docs": "Документация",
+    "calendar-for-month": "Календар за {{month}}",
+    "date-at-time": "{{date}} в {{time}}",
+    "selected-location": "Избрано местоположение",
+    "choose-location": "Изберете местоположение",
+    "unknown-error": "Неизвестна грешка",
+    "error-occurred": "Възникна грешка"
   },
   "locale-picker": {
     "no-language-feedback": "Езикът не е намерен? Изпратете обратна връзка"
@@ -188,6 +198,7 @@
     "any-thoughts": "Някакви мисли...",
     "exit-focus-mode": "Излезте от режима на фокусиране",
     "focus-mode": "Режим на фокусиране",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Добавете местоположение",
       "link-memo": "Бележка за връзка",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Някои изображения не можаха да бъдат качени. Опитайте отново или запазете качените файлове като прикачени файлове.",
       "image-upload-stopped": "Качването на изображение спря {{completed}}/{{total}}",
       "insert-image": "Вмъкване на изображение",
+      "drawing": "Рисунка",
       "keep-as-attachments": "Запазване като прикачени файлове",
       "uploading-inline-image": "Качване в съдържание",
       "uploading-images": "Качване на изображения {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Нова рисунка",
+      "edit": "Редактиране на рисунката",
+      "tools": "Инструменти",
+      "tool-select": "Избор",
+      "tool-pen": "Писалка",
+      "tool-eraser": "Гума",
+      "tool-rectangle": "Правоъгълник",
+      "tool-ellipse": "Елипса",
+      "tool-arrow": "Стрелка",
+      "tool-text": "Текст",
+      "style": "Цвят и дебелина",
+      "color": "Цвят",
+      "width": "Дебелина",
+      "width-thin": "Тънка",
+      "width-medium": "Средна",
+      "width-thick": "Дебела",
+      "color-ink": "Мастило",
+      "color-gray": "Сиво",
+      "color-red": "Червено",
+      "color-orange": "Оранжево",
+      "color-green": "Зелено",
+      "color-teal": "Синьозелено",
+      "color-blue": "Синьо",
+      "color-violet": "Виолетово",
+      "undo": "Отмяна",
+      "redo": "Повторение",
+      "zoom-to-fit": "Побиране в прозореца",
+      "done": "Готово",
+      "discard-title": "Отхвърляне на тази рисунка?",
+      "discard-description": "Все още не е добавена към бележката.",
+      "discard-edit-title": "Отхвърляне на промените?",
+      "discard-edit-description": "Рисунката остава такава, каквато беше, преди да я отворите.",
+      "keep-drawing": "Продължаване на рисуването",
+      "discard": "Отхвърляне",
+      "open-failed": "Рисунката не можа да бъде отворена. Опитайте отново.",
+      "export-failed": "Рисунката не можа да бъде запазена. Опитайте отново.",
+      "image-failed": "Изображението не можа да бъде добавено към рисунката.",
+      "saved-without-drawing": "Бележката е запазена, но рисунката не е. Запазете отново, за да опитате пак."
     },
     "no-changes-detected": "Не са открити промени",
     "save": "Запазване",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Кодов блок",
       "link": "Връзка",
-      "heading": "Заглавие",
       "paragraph": "Абзац",
       "heading-1": "Заглавие 1",
       "heading-2": "Заглавие 2",
       "heading-3": "Заглавие 3",
+      "heading-4": "Заглавие 4",
       "bold": "Удебелен шрифт",
       "italic": "Курсив",
       "strikethrough": "Зачеркнато",
       "bullet-list": "Водещ символ списък",
       "ordered-list": "Номериран списък",
-      "task-list": "Списък със задачи",
-      "more": "Допълнително форматиране"
+      "task-list": "Списък със задачи"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Лента с инструменти за форматиране",
+    "footnotes": "Бележки под линия",
+    "back-to-reference": "Назад към препратката",
     "new-memo": "Нова бележка",
     "saved": "Запазена",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Запазването е в процес",
       "unsupported-attachment-image-url": "Неподдържан URL адрес на прикаченото изображение: {{url}}",
       "wait-for-upload": "Изчакайте качването да завърши"
-    }
+    },
+    "blocks": {
+      "task": "Задача",
+      "quote": "Цитат",
+      "callout": "Акцентиран блок",
+      "callout-note": "Бележка",
+      "callout-tip": "Съвет",
+      "callout-important": "Важно",
+      "callout-warning": "Предупреждение",
+      "callout-caution": "Внимание",
+      "collapsible-section": "Сгъваем раздел",
+      "table": "Таблица",
+      "divider": "Разделител",
+      "no-results": "Няма резултати",
+      "commands": "Команди",
+      "loading": "Зареждане…",
+      "duplicate": "Дублиране",
+      "inline-code": "Код",
+      "link-placeholder": "Поставете или въведете връзка…",
+      "remove-link": "Премахване на връзката",
+      "open-link": "Отвори връзката",
+      "copy-link": "Копирай връзката",
+      "edit-link": "Редактирай връзката",
+      "emoji": "Емоджи",
+      "block-menu": "Отваряне на менюто на блока",
+      "list-hint": "Списък",
+      "plain-text": "текст",
+      "add-row-above": "Добавяне на ред отгоре",
+      "add-row-below": "Добавяне на ред отдолу",
+      "add-column-left": "Добавяне на колона вляво",
+      "add-column-right": "Добавяне на колона вдясно",
+      "delete-row": "Изтриване на реда",
+      "delete-column": "Изтриване на колоната",
+      "align": "Подравняване",
+      "align-left": "Вляво",
+      "align-center": "Центрирано",
+      "align-right": "Вдясно",
+      "image-align-left": "Подравняване вляво",
+      "image-align-center": "Центриране",
+      "image-align-right": "Подравняване вдясно",
+      "text-style": "Стил на текста",
+      "image": "Изображение",
+      "reset-image-size": "Нулиране на размера",
+      "alt-text": "Алтернативен текст",
+      "alt-text-placeholder": "Опишете изображението…",
+      "image-unavailable": "Изображението не е налично",
+      "resize-image": "Преоразмеряване на изображението"
+    },
+    "attachments": {
+      "edited": "Редактирано",
+      "new": "Ново",
+      "remove": "Премахване на прикачения файл",
+      "reorder": "Преподреждане на {{name}}",
+      "reorder-hint": "Плъзнете или използвайте клавишите със стрелки"
+    },
+    "remove-relation": "Премахване на връзката",
+    "remove-location": "Премахване на местоположението",
+    "recording-unsupported": "Аудиозаписът не се поддържа в този браузър.",
+    "microphone-denied": "Достъпът до микрофона е отказан.",
+    "recording-failed": "Неуспешно стартиране на аудиозаписа."
   },
   "inbox": {
     "failed-to-load": "Неуспешно зареждане на елемент от входящата кутия",
@@ -256,7 +367,16 @@
     "unread": "Непрочетено",
     "space-invitation": "ви покани да се присъедините към пространство",
     "space-invitation-accepted": "Присъединихте се към това пространство.",
-    "space-invitation-open": "Отворено пространство"
+    "space-invitation-open": "Отворено пространство",
+    "commented-on-memo": "коментира ваша бележка",
+    "mentioned-in-comment": "ви спомена в коментар",
+    "mentioned-in-memo": "ви спомена в бележка",
+    "original": "Оригинал:",
+    "memo-label": "Бележка:",
+    "comment-heading": "Коментар",
+    "memo-heading": "Бележка",
+    "empty-memo": "Празна бележка",
+    "empty-comment": "Празен коментар"
   },
   "live-update": {
     "connected": "Активни актуализации на живо",
@@ -264,11 +384,16 @@
     "disconnected": "Не са налични актуализации на живо"
   },
   "memo": {
+    "no-memos-yet": "Все още няма бележки",
+    "no-matching-memos": "Няма съответстващи бележки",
+    "clear-filters": "Изчистване на филтрите",
     "pinned": "Закачено",
     "click-to-show-sensitive-content": "Кликнете, за да покажете чувствително съдържание",
     "comment": {
       "self": "Коментари",
-      "write-a-comment": "Напишете коментар"
+      "write-a-comment": "Напишете коментар",
+      "view-all-count_one": "Вижте {{count}} коментар",
+      "view-all-count_other": "Вижте всички {{count}} коментара"
     },
     "copy-content": "Копиране на съдържание",
     "copy-link": "Копиране на връзката",
@@ -278,10 +403,13 @@
     "delete-confirm-description": "Това действие е необратимо. Прикачените файлове, връзките и препратките също ще бъдат премахнати.",
     "direction": "Посока",
     "filters": {
+      "has-attachments": "има прикачени файлове",
       "has-code": "hasCode",
+      "has-image": "има изображение",
       "has-link": "hasLink",
       "has-location": "има местоположение",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Премахване на филтъра"
     },
     "compact-mode": "Компактен режим",
     "link-preview": "Преглед на връзка",
@@ -366,7 +494,9 @@
     "restored-successfully": "Възстановен успешно",
     "succeed-copy-content": "Съдържанието е копирано успешно.",
     "succeed-copy-link": "Връзката е копирана успешно.",
-    "update-succeed": "Актуализацията е успешна"
+    "update-succeed": "Актуализацията е успешна",
+    "not-signed-in": "Не сте влезли в системата.",
+    "invalid-datetime": "Невалидни дата и час. Използвайте формата 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Няма намерени бележки",
@@ -436,7 +566,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Вашето хранилище за прикачени файлове не е налично.",
-      "email-in-use": "Този имейл вече се използва от друг акаунт."
+      "email-in-use": "Този имейл вече се използва от друг акаунт.",
+      "avatar-too-large": "Изберете изображение до 2 MB.",
+      "avatar-unreadable": "Това изображение не може да бъде прочетено. Опитайте с друг файл."
     },
     "ai": {
       "add-provider": "Добавяне на доставчик",
@@ -518,13 +650,15 @@
       "restore-success": "{{username}} възстановен успешно",
       "summary-column": "Резюме",
       "user": "Потребител",
-      "no-members-found": "Няма намерени членове"
+      "no-members-found": "Няма намерени членове",
+      "export-memos": "Експортиране на бележки",
+      "username-password-required": "Потребителското име и паролата не могат да бъдат празни",
+      "create-success": "Потребителят е създаден",
+      "update-success": "Потребителят е обновен"
     },
     "memo": {
       "add-reaction": "Добавете реакция",
       "configured-reactions": "Конфигурирани реакции",
-      "double-click-edit-description": "Позволете на потребителите да отварят редактиране на бележки чрез двукратно щракване върху бележка.",
-      "editing-title": "Редактиране",
       "label": "Бележка",
       "reaction-placeholder": "напр. 👍",
       "reactions-description": "Определете опциите за реакция, които потребителите могат да прилагат към бележките.",
@@ -575,22 +709,162 @@
       "appearance-title": "Външен вид",
       "default-memo-visibility": "Видимост на бележката по подразбиране",
       "default-memo-visibility-description": "Видимостта се прилага към новосъздадените бележки, освен ако не е променена в редактора.",
+      "device-description": "Настройки за четене и редактиране, запазени само в този браузър. Не се записват в профила ви.",
+      "device-title": "Това устройство",
+      "double-click-edit": "Двойно щракване за редактиране",
+      "double-click-edit-description": "Отваряйте собствените си бележки в редактора с двойно щракване.",
       "label": "Предпочитания",
       "language-description": "Незабавно актуализира езика на интерфейса и го записва във вашия акаунт.",
+      "link-preview-description": "Показвай карта за преглед под голите връзки навсякъде, където се показват бележки.",
       "memo-defaults-description": "Задайте настройките по подразбиране, използвани при съставяне на нови бележки.",
       "memo-defaults-title": "Мемо по подразбиране",
-      "theme-description": "Прилага избраната тема веднага на това устройство.",
-      "theme": "Тема",
       "save-media-metadata": "Запазване на медийни метаданни",
       "save-media-metadata-description": "За бъдещи качвания, запазете наличната камера, времето на заснемане, местоположението, размерите на изображението и основните подробности за видеото. Всеки, който може да преглежда прикачения файл, може да получи тези метаданни. Съществуващите прикачени файлове остават непроменени.",
+      "theme-description": "Прилага избраната тема веднага на това устройство.",
+      "theme": "Тема",
       "uploads-privacy-description": "Контролирайте поверителната информация, изпратена с качените медийни файлове.",
-      "uploads-privacy-title": "Качвания и поверителност"
+      "uploads-privacy-title": "Качвания и поверителност",
+      "theme-system": "Според системата",
+      "theme-system-short": "Системна",
+      "theme-light": "Светла",
+      "theme-dark": "Тъмна",
+      "theme-paper": "Хартия"
+    },
+    "editor": {
+      "label": "Редактор",
+      "markdown-mode-description": "Пишете и редактирайте бележки като Markdown текст вместо форматиран текст."
     },
     "memo-view": {
       "create": "Създаване на изглед",
       "delete-confirm": "Сигурни ли сте, че искате да изтриете изгледа `{{title}}`?",
       "delete-success": "Изгледът `{{title}}` е изтрит успешно",
-      "change-icon": "Промяна на иконата на изгледа"
+      "change-icon": "Промяна на иконата на изгледа",
+      "page-description": "Създавайте изгледи за многократна употреба с полета, оператори, времеви функции и съвпадение на етикети. Започнете от примерите, след това проверете преди запазване.",
+      "edit": "Редактиране на изгледа",
+      "form-description": "Наименувайте изгледа и задайте израза за филтриране на бележки, който да прилага.",
+      "title-placeholder": "Закачени, Скорошни бележки, Работа",
+      "filter-help": "Комбинирайте изрази с {{and}}, {{or}} и {{not}}. Времевите полета са времеви отпечатъци — използвайте {{now}}, {{duration}}, {{timestamp}} и функции за достъп като {{year}}. Етикетите поддържат {{sets}}, а {{size}} измерва дължина.",
+      "validate": "Проверка",
+      "all": "Всички изгледи",
+      "loading": "Зареждане на изгледите…",
+      "load-failed": "Изгледите не можаха да се заредят.",
+      "empty-title": "Все още няма изгледи",
+      "empty-description": "Запазете филтър, за да се връщате бързо към бележките, които ви трябват.",
+      "examples-title": "Примерни изрази",
+      "fields-title": "Поддържани полета",
+      "title-filter-required": "Заглавието и филтърът не могат да бъдат празни",
+      "filter-valid": "Изразът за филтриране изглежда валиден",
+      "create-success": "Изгледът е създаден",
+      "update-success": "Изгледът е обновен",
+      "examples": {
+        "pinned": {
+          "title": "Закачени",
+          "description": "Само закачени бележки."
+        },
+        "recent": {
+          "title": "Скорошни бележки",
+          "description": "Бележки, създадени през последния час."
+        },
+        "public": {
+          "title": "Публични бележки",
+          "description": "Само публични бележки."
+        },
+        "project-tags": {
+          "title": "Етикети на проекти",
+          "description": "Съвпадение с един или повече точни етикета."
+        },
+        "untagged": {
+          "title": "Без етикети",
+          "description": "Бележки без етикети."
+        },
+        "archive-tree": {
+          "title": "Дърво на архива",
+          "description": "Съвпадение с йерархични етикети по префикс."
+        },
+        "unassigned": {
+          "title": "Неразпределени",
+          "description": "Бележки, които не са поставени в никое пространство."
+        },
+        "one-space": {
+          "title": "В едно пространство",
+          "description": "Бележки, поставени в пространство. Използвайте ID на пространството от неговия URL адрес или настройки."
+        },
+        "open-tasks": {
+          "title": "Отворени задачи",
+          "description": "Бележки с незавършени задачи."
+        },
+        "links-or-code": {
+          "title": "Връзки или код",
+          "description": "Бележки с връзки или блокове код."
+        },
+        "no-location": {
+          "title": "Без местоположение",
+          "description": "Бележки без прикачено местоположение."
+        },
+        "with-attachments": {
+          "title": "С прикачени файлове",
+          "description": "Бележки с поне един прикачен файл."
+        },
+        "photos": {
+          "title": "Снимки",
+          "description": "Бележки, които показват изображение – в съдържанието или като прикачен файл."
+        },
+        "content-search": {
+          "title": "Търсене в съдържанието",
+          "description": "Търсене на текст в съдържанието на бележките."
+        },
+        "starts-with": {
+          "title": "Започва с",
+          "description": "Бележки, чието съдържание започва с даден текст (също endsWith)."
+        },
+        "regex": {
+          "title": "Съвпадение с regex",
+          "description": "Съвпадение на съдържанието с регулярен израз."
+        },
+        "all-tags-complete": {
+          "title": "Всички етикети завършени",
+          "description": "Всеки етикет завършва на -done (само бележки с етикети)."
+        },
+        "one-project-tag": {
+          "title": "Един етикет на проект",
+          "description": "Точно един етикет отговаря на условието."
+        },
+        "any-tags": {
+          "title": "Някой от тези етикети",
+          "description": "Етикетите се пресичат със зададеното множество."
+        },
+        "exact-tags": {
+          "title": "Точно тези етикети",
+          "description": "С точно това множество етикети, нищо повече."
+        },
+        "year-2024": {
+          "title": "Бележки от 2024",
+          "description": "Филтриране по календарна година."
+        },
+        "weekend": {
+          "title": "Бележки от уикенда",
+          "description": "Създадени в неделя или събота (0 = неделя)."
+        },
+        "long": {
+          "title": "Дълги бележки",
+          "description": "Бележки, по-дълги от 280 знака."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Конфигурация",
+      "description": "Ресурси, зададени от конфигурационни файлове. Редактирайте файл и го приложете, за да ги промените; останалата част от инстанцията остава редактируема тук.",
+      "managed-by": "Управлява се от конфигурация",
+      "managed-tooltip": "Зададено в {{source}}. Редактирайте файла и го приложете, за да промените това.",
+      "resource": "Ресурс",
+      "source": "Файл",
+      "managed-fields": "Управлявани полета",
+      "whole-resource": "Всички полета",
+      "ignored-fields": "Редактируеми тук",
+      "serial": "Сериен номер",
+      "last-apply": "Последно приложено",
+      "applied-by": "Приложено от",
+      "nothing-managed": "Не е приложена конфигурация. Всичко се задава тук."
     },
     "sso": {
       "account": "акаунт",
@@ -651,7 +925,9 @@
       "token-endpoint": "Крайна точка на токена",
       "update-sso": "Актуализирайте SSO",
       "update-sso-description": "Прегледайте конфигурацията на доставчика, след което запазете полетата, които трябва да се променят.",
-      "user-endpoint": "Потребителска крайна точка"
+      "user-endpoint": "Потребителска крайна точка",
+      "invalid-config": "Конфигурацията на доставчика на самоличност е невалидна.",
+      "provider-id-placeholder": "напр. github, okta-corp"
     },
     "storage": {
       "accesskey": "Ключ за достъп",
@@ -702,47 +978,56 @@
       "customize-server": {
         "description": "Описание",
         "icon-url": "Икона URL",
-        "title": "Персонализиране на сървъра"
+        "title": "Персонализиране на сървъра",
+        "dialog-description": "Персонализирайте външния вид и настройките на вашия екземпляр."
       },
       "custom-code-description": "Незадължителни CSS и JavaScript за целия екземпляр, приложени към интерфейса.",
       "custom-code-title": "Персонализиран код",
-      "enable-double-click-to-edit": "Активирайте двойното щракване за редактиране",
       "label": "система",
       "server-name": "Име на сървъра"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1130,9 @@
       "review-existing": "Вече е във вашия акаунт",
       "review-exported": "Експортирано от",
       "review-memos": "Memos в файла",
-      "review-new": "Ще бъде създадено"
+      "review-new": "Ще бъде създадено",
+      "export-admin-only": "Само администратори могат да експортират бележки. Поискайте експортния си файл от администратор.",
+      "export-busy": "В момента се изпълнява друг експорт. Опитайте отново след малко."
     },
     "spaces": {
       "general": "генерал",
@@ -931,7 +1218,8 @@
   },
   "tooltip": {
     "link-memo": "Бележка за връзка",
-    "select-location": "Местоположение"
+    "select-location": "Местоположение",
+    "link-memo-description": "Потърсете и изберете бележка за свързване"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1284,12 @@
     "loading": "Зареждане на бележки…",
     "new-here": "Пишете тук",
     "saved-outside-filter": "Запазено. Тази бележка е извън текущите резултати на картата.",
-    "open-memo": "Отваряне на бележка"
+    "open-memo": "Отваряне на бележка",
+    "open-in-google-maps": "Отваряне в Google Maps",
+    "location-description": "Изберете местоположение на картата или въведете координати ръчно",
+    "latitude": "Географска ширина",
+    "longitude": "Географска дължина",
+    "place-placeholder": "Първо изберете позиция."
   },
   "calendar": {
     "new-memo-on-day": "Нова бележка на този ден",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "напр. Продукт",
     "spaces": "Пространства",
     "switch": "Превключване на пространството"
+  },
+  "welcome": {
+    "title": "Добре дошли в Memos",
+    "headline": "Прости бележки за ежедневните ви мисли.",
+    "intro-write": "Едно-единствено изречение може да бъде цяла бележка.",
+    "intro-keep": "Всяка бележка остава при деня, в който сте я написали.",
+    "intro-share": "Вие избирате какво остава лично.",
+    "write": "Писане",
+    "write-sub": "Едно-единствено изречение може да бъде цяла бележка.",
+    "no-title": "Без заглавие",
+    "no-title-text": "Бележката започва със самата мисъл. Няма заглавие за попълване.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown дава структура на думите ви, когато я искате.",
+    "attach": "Прикачване",
+    "attach-text": "Изображения, файлове, аудио и място се добавят през ＋.",
+    "keep": "Запазване",
+    "keep-sub": "Всяка бележка остава при деня, в който сте я написали.",
+    "calendar-text": "Календарът води обратно към всеки ден.",
+    "tags-text": "Дума след # става етикет, а етикетът филтрира хронологията.",
+    "views-text": "Персонализираният изглед запазва филтър.",
+    "map-text": "Бележките с място стоят на картата.",
+    "share": "Споделяне",
+    "share-sub": "Бележките започват като лични. Вие избирате какво да споделите и какво да публикувате.",
+    "visibility-text": "Всяка бележка има своя собствена настройка. Новите започват като лични, само за вас; публичната има връзка, която всеки може да отвори.",
+    "spaces-text": "В пространство членовете пишат редом с вас, като всеки пази своите собствени бележки.",
+    "comments": "Коментари",
+    "comments-text": "Всеки, който може да види бележка, може да отговори под нея.",
+    "skip": "Пропускане",
+    "next": "Напред",
+    "done": "Готово",
+    "page-of": "Страница {{current}} от {{total}}",
+    "reopen": "Ръководство за начало",
+    "reopen-note": "Четирите екрана, които новият акаунт вижда първи.",
+    "sample": {
+      "today": "Днес, 10:42",
+      "today-early": "Днес, 9:18",
+      "yesterday": "Вчера, 15:20",
+      "comment-age": "2 ч",
+      "memo-preview": "По-прост първи екран. Едно поле, после преглед.",
+      "memo-release": "Преди следващото издание",
+      "task-sketch": "Скициране на първия екран",
+      "task-polish": "Изглаждане на прегледа",
+      "write-lead": "Първата стъпка да е малка.",
+      "write-strong": "Подробностите да се показват,",
+      "write-tail": "когато са нужни.",
+      "write-task": "Кратък списък с промени",
+      "view": "Незавършени задачи",
+      "space": "Продукт",
+      "share-memo": "Да покажем резултата, преди да молим хората да се регистрират.",
+      "comment": "Точно така. Прегледът беше убедителен.",
+      "tag-design": "дизайн",
+      "tag-project": "проект",
+      "tag-reading": "четене",
+      "tag-ideas": "идеи"
+    }
+  },
+  "error": {
+    "title": "Нещо се обърка",
+    "description": "Възникна неочаквана грешка. Причината може да е проблем с мрежата или с приложението.",
+    "description-update": "Възникна неочаквана грешка. Причината може да е проблем с мрежата или обновяване на приложението. Презареждането обикновено решава проблема.",
+    "details": "Подробности за грешката",
+    "reload": "Презареждане на приложението",
+    "not-found": "Страницата, която търсите, не може да бъде намерена.",
+    "permission-denied": "Достъпът е отказан",
+    "too-many-requests": "Твърде много заявки. Опитайте отново след {{wait}}.",
+    "wait-seconds": "{{count}} с",
+    "wait-minutes": "{{count}} мин",
+    "wait-hours": "{{count}} ч",
+    "challenge-required": "Завършете проверката и опитайте отново.",
+    "quota-memo-count": "Достигнахте лимита си от {{limit}} бележки. Изтрийте бележки, за да създавате нови.",
+    "quota-storage": "Това качване ще надхвърли лимита ви за съхранение от {{limit}}. Използвате {{usage}}.",
+    "quota-upload": "Този файл е по-голям от лимита ви от {{limit}} на файл.",
+    "quota-memo-content": "Тази бележка е по-голяма от лимита ви от {{limit}} на бележка. Съкратете съдържанието, за да я запазите.",
+    "quota-generic": "Достигнахте лимит за използване.",
+    "sign-in-failed": "Неуспешно влизане.",
+    "sign-up-failed": "Неуспешна регистрация",
+    "authenticate-failed": "Неуспешно удостоверяване.",
+    "update-profile-failed": "Неуспешно обновяване на профила",
+    "unlink-identity-failed": "Неуспешно премахване на връзката с доставчика на самоличност.",
+    "link-identity-failed": "Неуспешно започване на свързването на акаунта. Опитайте отново."
+  },
+  "attachment-preview": {
+    "title": "Преглед на прикачен файл",
+    "description": "Диалог за преглед на прикачени файлове. Натиснете Escape, за да затворите, използвайте клавишите със стрелки наляво и надясно, за да превключвате елементите, и увеличавайте изображенията с бутоните, колелцето на мишката, двойно докосване или жест с два пръста.",
+    "close": "Затваряне на прегледа",
+    "previous": "Предишен елемент",
+    "next": "Следващ елемент",
+    "reset-zoom": "Нулиране на мащаба",
+    "image-alt": "Преглед на изображение {{index}} от {{count}}",
+    "live-photo-alt": "Преглед на снимка на живо {{index}} от {{count}}",
+    "play-live-photo": "Посочете или натиснете, за да пуснете снимката на живо"
+  },
+  "audio-player": {
+    "seek": "Превъртане на {{name}}",
+    "back": "Назад с {{seconds}} секунди",
+    "forward": "Напред с {{seconds}} секунди",
+    "speed": "Скорост на възпроизвеждане {{rate}}x"
   }
 }

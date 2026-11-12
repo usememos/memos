@@ -1,14 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import MemoEditor from "@/components/MemoEditor";
-import { uploadService } from "@/components/MemoEditor/services";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
+import { uploadService } from "@/components/MemoEditor/edit/services";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: {} }),
+  useUsersByUsernames: () => ({ data: undefined }),
+  useUpdateUserEditorSetting: () => ({ mutate: vi.fn() }),
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -32,20 +36,23 @@ URL.revokeObjectURL = () => {};
 const paste = (target: Element, files: File[]) => {
   const event = new Event("paste", { bubbles: true, cancelable: true });
   Object.defineProperty(event, "clipboardData", {
-    value: { items: files.map((file) => ({ kind: "file", getAsFile: () => file })) },
+    value: { files, items: files.map((file) => ({ kind: "file", getAsFile: () => file })), getData: () => "" },
   });
   target.dispatchEvent(event);
   return event;
 };
 
+// The editing session loads lazily; loaded once, it renders without suspending.
+beforeAll(() => preloadMemoEditing());
+
 const mount = () => {
   const client = new QueryClient();
   const result = render(
     <QueryClientProvider client={client}>
-      <MemoEditor cacheKey="paste-test" />
+      <MemoEditor draft={{ scope: "paste-test" }} />
     </QueryClientProvider>,
   );
-  const content = result.container.querySelector<HTMLElement>(".cm-content");
+  const content = result.container.querySelector<HTMLElement>(".memo-editor-root");
   expect(content).not.toBeNull();
   return { ...result, content: content! };
 };
@@ -60,8 +67,9 @@ describe("MemoEditor paste", () => {
     const event = paste(content, [pdf, image]);
 
     expect(event.defaultPrevented).toBe(true);
-    await waitFor(() => expect(container.textContent).toContain(image.name));
-    expect(container.textContent).toContain(pdf.name);
+    // The image joins the gallery as a tile; the PDF is a row with its name.
+    await waitFor(() => expect(container.textContent).toContain(pdf.name));
+    expect(container.querySelectorAll("[data-reorder-key] img")).toHaveLength(1);
     // A paste has no placement gesture: the image is attached rather than
     // inlined, so no inline upload starts and the text stays untouched.
     expect(content.textContent).toBe("");

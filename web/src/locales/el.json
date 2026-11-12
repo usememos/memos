@@ -6,7 +6,6 @@
     "api-docs": "API Έγγραφα",
     "api-docs-note": "Αναφορά REST και gRPC",
     "build": "Δημιουργία",
-    "commit": "Commit",
     "demo": "Επίδειξη",
     "description": "Ένας χώρος ανοιχτού κώδικα στον δικό σας διακομιστή για τις σημειώσεις, τις ιδέες και τις καθημερινές σας σκέψεις.",
     "distribution": "Διανομή",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Δεν ήταν δυνατή η ολοκλήρωση της σύνδεσης",
     "create-your-account": "Δημιουργήστε τον λογαριασμό σας",
+    "hide-password": "Απόκρυψη κωδικού πρόσβασης",
+    "incorrect-credentials": "Λανθασμένο όνομα χρήστη ή κωδικός πρόσβασης.",
     "new-password": "Νέος κωδικός πρόσβασης",
     "repeat-new-password": "Επαναλάβετε τον νέο κωδικό πρόσβασης",
+    "show-password": "Εμφάνιση κωδικού πρόσβασης",
     "sign-in-tip": "Έχετε ήδη λογαριασμό;",
     "sign-up-tip": "Δεν έχετε λογαριασμό ακόμα;",
     "admin-sign-in": "Σύνδεση διαχειριστή",
-    "admin-sign-in-tip": "Η σύνδεση με κωδικό πρόσβασης παραμένει διαθέσιμη για τους διαχειριστές.",
     "back-to-sign-in": "Επιστροφή στη σύνδεση",
     "continue-with": "Συνέχεια με {{provider}}",
     "create-admin-account": "Δημιουργία λογαριασμού διαχειριστή",
-    "explore-public-memos": "Εξερεύνηση δημόσιων σημειώσεων σε αυτήν την παρουσία",
-    "first-run": "Πρώτη εκτέλεση",
     "setup-description": "Δημιουργία λογαριασμού διαχειριστή για αυτήν την παρουσία.",
-    "setup-note": "Αυτός ο λογαριασμός κατέχει ρυθμίσεις παρουσίας, μέλη και παρόχους ταυτότητας.",
     "setup-title": "Ρύθμιση της παρουσίας σας",
     "signin-unavailable-description": "Η σύνδεση με κωδικό πρόσβασης είναι απενεργοποιημένη και δεν έχουν ρυθμιστεί πάροχοι ταυτότητας. Ζητήστε από τον διαχειριστή σας να ενεργοποιήσει μια μέθοδο σύνδεσης.",
     "signin-unavailable-title": "Η σύνδεση δεν είναι διαθέσιμη",
-    "signup-unavailable-description": "Οι λογαριασμοί με κωδικό πρόσβασης είναι απενεργοποιημένοι και δεν έχουν ρυθμιστεί πάροχοι ταυτότητας. Ζητήστε από τον διαχειριστή σας πρόσβαση.",
-    "signup-unavailable-title": "Η εγγραφή δεν είναι διαθέσιμη",
-    "signups-closed-description": "Οι νέοι λογαριασμοί είναι απενεργοποιημένοι σε αυτήν την παρουσία. Επικοινωνήστε με τον διαχειριστή σας εάν χρειάζεστε πρόσβαση.",
-    "signups-closed-title": "Οι εγγραφές έχουν κλείσει",
-    "sso-signup-tip": "Συνδεθείτε με έναν πάροχο παρακάτω για να δημιουργήσετε τον λογαριασμό σας.",
-    "welcome-back": "Καλώς ορίσατε και πάλι."
+    "signups-closed-description": "Οι νέοι λογαριασμοί είναι απενεργοποιημένοι σε αυτήν την παρουσία. Επικοινωνήστε με τον διαχειριστή σας εάν χρειάζεστε πρόσβαση."
   },
   "demo": {
     "banner-description": "Οι αλλαγές είναι προσωρινές και ενδέχεται να επαναφερθούν.",
@@ -142,7 +136,6 @@
     "profile": "Προφίλ",
     "referenced-by": "Αναφέρεται από",
     "referencing": "Αναφορά",
-    "relations": "Συγγένειες",
     "resources": "Πόροι",
     "restore": "Επαναφέρω",
     "role": "Ρόλος",
@@ -177,7 +170,24 @@
     "resize-panel": "Αλλαγή μεγέθους πίνακα",
     "resize-sidebar": "Αλλαγή μεγέθους πλευρικής γραμμής",
     "sign-in-to-memos": "Σύνδεση στο Memos",
-    "view-all": "Προβολή όλων"
+    "open-navigation": "Άνοιγμα πλοήγησης",
+    "navigation": "Πλοήγηση",
+    "primary-navigation": "Κύρια",
+    "download": "Λήψη",
+    "download-name": "Λήψη {{name}}",
+    "open-name": "Άνοιγμα {{name}}",
+    "preview-name": "Προεπισκόπηση {{name}}",
+    "no-content": "Χωρίς περιεχόμενο",
+    "previous": "Προηγούμενο",
+    "next": "Επόμενο",
+    "retry": "Επανάληψη",
+    "docs": "Τεκμηρίωση",
+    "calendar-for-month": "Ημερολόγιο για {{month}}",
+    "date-at-time": "{{date}} στις {{time}}",
+    "selected-location": "Επιλεγμένη τοποθεσία",
+    "choose-location": "Επιλέξτε τοποθεσία",
+    "unknown-error": "Άγνωστο σφάλμα",
+    "error-occurred": "Παρουσιάστηκε σφάλμα"
   },
   "locale-picker": {
     "no-language-feedback": "Δεν βρέθηκε η γλώσσα; Υποβολή σχολίων"
@@ -188,6 +198,7 @@
     "any-thoughts": "Οποιαδήποτε σκέψη...",
     "exit-focus-mode": "Έξοδος από τη λειτουργία εστίασης",
     "focus-mode": "Λειτουργία εστίασης",
+    "markdown-mode": "Λειτουργία Markdown",
     "insert-menu": {
       "add-location": "Προσθήκη τοποθεσίας",
       "link-memo": "Σημείωμα σύνδεσης",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Δεν ήταν δυνατή η μεταφόρτωση ορισμένων εικόνων. Δοκιμάστε ξανά ή διατηρήστε τα μεταφορτωμένα αρχεία ως συνημμένα.",
       "image-upload-stopped": "Η μεταφόρτωση εικόνας διακόπηκε {{completed}}/{{total}}",
       "insert-image": "Εισαγωγή εικόνας",
+      "drawing": "Σχέδιο",
       "keep-as-attachments": "Διατήρηση ως συνημμένα",
       "uploading-inline-image": "Μεταφόρτωση σε περιεχόμενο",
       "uploading-images": "Μεταφόρτωση εικόνων {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Νέο σχέδιο",
+      "edit": "Επεξεργασία σχεδίου",
+      "tools": "Εργαλεία",
+      "tool-select": "Επιλογή",
+      "tool-pen": "Στυλό",
+      "tool-eraser": "Γόμα",
+      "tool-rectangle": "Ορθογώνιο",
+      "tool-ellipse": "Έλλειψη",
+      "tool-arrow": "Βέλος",
+      "tool-text": "Κείμενο",
+      "style": "Χρώμα και πάχος",
+      "color": "Χρώμα",
+      "width": "Πάχος",
+      "width-thin": "Λεπτό",
+      "width-medium": "Μεσαίο",
+      "width-thick": "Παχύ",
+      "color-ink": "Μελάνι",
+      "color-gray": "Γκρι",
+      "color-red": "Κόκκινο",
+      "color-orange": "Πορτοκαλί",
+      "color-green": "Πράσινο",
+      "color-teal": "Γαλαζοπράσινο",
+      "color-blue": "Μπλε",
+      "color-violet": "Βιολετί",
+      "undo": "Αναίρεση",
+      "redo": "Επανάληψη",
+      "zoom-to-fit": "Προσαρμογή στο παράθυρο",
+      "done": "Τέλος",
+      "discard-title": "Απόρριψη αυτού του σχεδίου;",
+      "discard-description": "Δεν έχει προστεθεί ακόμη στο σημείωμα.",
+      "discard-edit-title": "Απόρριψη των αλλαγών;",
+      "discard-edit-description": "Το σχέδιο θα παραμείνει όπως ήταν πριν το ανοίξετε.",
+      "keep-drawing": "Συνέχεια σχεδίασης",
+      "discard": "Απόρριψη",
+      "open-failed": "Δεν ήταν δυνατό το άνοιγμα του σχεδίου. Δοκιμάστε ξανά.",
+      "export-failed": "Δεν ήταν δυνατή η αποθήκευση του σχεδίου. Δοκιμάστε ξανά.",
+      "image-failed": "Δεν ήταν δυνατή η προσθήκη της εικόνας στο σχέδιο.",
+      "saved-without-drawing": "Το σημείωμα αποθηκεύτηκε, αλλά το σχέδιο όχι. Αποθηκεύστε ξανά για νέα προσπάθεια."
     },
     "no-changes-detected": "Δεν εντοπίστηκαν αλλαγές",
     "save": "Εκτός",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Μπλοκ κωδικών",
       "link": "Σύνδεσμος",
-      "heading": "Επικεφαλίδα",
       "paragraph": "Παράγραφος",
       "heading-1": "Επικεφαλίδα 1",
       "heading-2": "Επικεφαλίδα 2",
       "heading-3": "Επικεφαλίδα 3",
+      "heading-4": "Επικεφαλίδα 4",
       "bold": "Έντονη γραφή",
       "italic": "Πλάγια γραφή",
       "strikethrough": "Διακριτή γραφή",
       "bullet-list": "Λίστα με κουκκίδες",
       "ordered-list": "Λίστα με αρίθμηση",
-      "task-list": "Λίστα υποχρεώσεων",
-      "more": "Περισσότερη μορφοποίηση"
+      "task-list": "Λίστα υποχρεώσεων"
     },
     "comment": "Σχόλιο",
-    "formatting-toolbar": "Γραμμή εργαλείων μορφοποίησης",
+    "footnotes": "Υποσημειώσεις",
+    "back-to-reference": "Επιστροφή στην αναφορά",
     "new-memo": "Νέο σημείωμα",
     "saved": "Αποθηκεύτηκε",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Αποθήκευση σε εξέλιξη",
       "unsupported-attachment-image-url": "Μη υποστηριζόμενη διεύθυνση URL εικόνας συνημμένου: {{url}}",
       "wait-for-upload": "Περιμένετε να ολοκληρωθεί η μεταφόρτωση"
-    }
+    },
+    "blocks": {
+      "task": "Εργασία",
+      "quote": "Παράθεση",
+      "callout": "Πλαίσιο επισήμανσης",
+      "callout-note": "Σημείωση",
+      "callout-tip": "Συμβουλή",
+      "callout-important": "Σημαντικό",
+      "callout-warning": "Προειδοποίηση",
+      "callout-caution": "Προσοχή",
+      "collapsible-section": "Πτυσσόμενη ενότητα",
+      "table": "Πίνακας",
+      "divider": "Διαχωριστικό",
+      "no-results": "Κανένα αποτέλεσμα",
+      "commands": "Εντολές",
+      "loading": "Φόρτωση…",
+      "duplicate": "Δημιουργία αντιγράφου",
+      "inline-code": "Κώδικας",
+      "link-placeholder": "Επικολλήστε ή πληκτρολογήστε έναν σύνδεσμο…",
+      "remove-link": "Κατάργηση συνδέσμου",
+      "open-link": "Άνοιγμα συνδέσμου",
+      "copy-link": "Αντιγραφή συνδέσμου",
+      "edit-link": "Επεξεργασία συνδέσμου",
+      "emoji": "Emoji",
+      "block-menu": "Άνοιγμα μενού μπλοκ",
+      "list-hint": "Λίστα",
+      "plain-text": "κείμενο",
+      "add-row-above": "Προσθήκη γραμμής από πάνω",
+      "add-row-below": "Προσθήκη γραμμής από κάτω",
+      "add-column-left": "Προσθήκη στήλης αριστερά",
+      "add-column-right": "Προσθήκη στήλης δεξιά",
+      "delete-row": "Διαγραφή γραμμής",
+      "delete-column": "Διαγραφή στήλης",
+      "align": "Στοίχιση",
+      "align-left": "Αριστερά",
+      "align-center": "Κέντρο",
+      "align-right": "Δεξιά",
+      "image-align-left": "Στοίχιση αριστερά",
+      "image-align-center": "Στοίχιση στο κέντρο",
+      "image-align-right": "Στοίχιση δεξιά",
+      "text-style": "Στυλ κειμένου",
+      "image": "Εικόνα",
+      "reset-image-size": "Επαναφορά μεγέθους",
+      "alt-text": "Εναλλακτικό κείμενο",
+      "alt-text-placeholder": "Περιγράψτε την εικόνα…",
+      "image-unavailable": "Η εικόνα δεν είναι διαθέσιμη",
+      "resize-image": "Αλλαγή μεγέθους εικόνας"
+    },
+    "attachments": {
+      "edited": "Επεξεργασμένο",
+      "new": "Νέο",
+      "remove": "Αφαίρεση συνημμένου",
+      "reorder": "Αναδιάταξη {{name}}",
+      "reorder-hint": "Σύρετε ή χρησιμοποιήστε τα πλήκτρα βέλους"
+    },
+    "remove-relation": "Αφαίρεση συσχέτισης",
+    "remove-location": "Αφαίρεση τοποθεσίας",
+    "recording-unsupported": "Η εγγραφή ήχου δεν υποστηρίζεται σε αυτό το πρόγραμμα περιήγησης.",
+    "microphone-denied": "Η άδεια χρήσης μικροφώνου απορρίφθηκε.",
+    "recording-failed": "Η έναρξη της εγγραφής ήχου απέτυχε."
   },
   "inbox": {
     "failed-to-load": "Η φόρτωση του στοιχείου των εισερχομένων απέτυχε",
@@ -256,7 +367,16 @@
     "unread": "Αδιάβαστος",
     "space-invitation": "σας προσκάλεσε να συμμετάσχετε σε έναν χώρο",
     "space-invitation-accepted": "Συμμετέχετε σε αυτόν τον χώρο.",
-    "space-invitation-open": "Ανοιχτός χώρος"
+    "space-invitation-open": "Ανοιχτός χώρος",
+    "commented-on-memo": "σχολίασε το σημείωμά σας",
+    "mentioned-in-comment": "σας ανέφερε σε ένα σχόλιο",
+    "mentioned-in-memo": "σας ανέφερε σε ένα σημείωμα",
+    "original": "Αρχικό:",
+    "memo-label": "Σημείωμα:",
+    "comment-heading": "Σχόλιο",
+    "memo-heading": "Σημείωμα",
+    "empty-memo": "Κενό σημείωμα",
+    "empty-comment": "Κενό σχόλιο"
   },
   "live-update": {
     "connected": "Ενεργές ζωντανές ενημερώσεις",
@@ -264,11 +384,16 @@
     "disconnected": "Οι ζωντανές ενημερώσεις δεν είναι διαθέσιμες"
   },
   "memo": {
+    "no-memos-yet": "Δεν υπάρχουν σημειώματα ακόμα",
+    "no-matching-memos": "Δεν υπάρχουν σημειώματα που να ταιριάζουν",
+    "clear-filters": "Καθαρισμός φίλτρων",
     "pinned": "Καρφιτσωμένο",
     "click-to-show-sensitive-content": "Κάντε κλικ για εμφάνιση ευαίσθητου περιεχομένου",
     "comment": {
       "self": "Σχόλια",
-      "write-a-comment": "Γράψτε ένα σχόλιο"
+      "write-a-comment": "Γράψτε ένα σχόλιο",
+      "view-all-count_one": "Προβολή {{count}} σχολίου",
+      "view-all-count_other": "Προβολή όλων των {{count}} σχολίων"
     },
     "copy-content": "Αντιγραφή περιεχομένου",
     "copy-link": "Αντιγραφή συνδέσμου",
@@ -278,10 +403,13 @@
     "delete-confirm-description": "Αυτή η ενέργεια είναι μη αναστρέψιμη. Τα συνημμένα, οι σύνδεσμοι και οι αναφορές θα αφαιρεθούν επίσης.",
     "direction": "Κατεύθυνση",
     "filters": {
+      "has-attachments": "έχει συνημμένα",
       "has-code": "έχει Κώδικα",
+      "has-image": "έχει εικόνα",
       "has-link": "έχει Σύνδεσμο",
       "has-location": "έχει τοποθεσία",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Αφαίρεση φίλτρου"
     },
     "compact-mode": "Συμπαγής λειτουργία",
     "link-preview": "Προεπισκόπηση συνδέσμου",
@@ -366,7 +494,9 @@
     "restored-successfully": "Έγινε επαναφορά με επιτυχία",
     "succeed-copy-content": "Το περιεχόμενο αντιγράφηκε με επιτυχία.",
     "succeed-copy-link": "Ο σύνδεσμος αντιγράφηκε με επιτυχία.",
-    "update-succeed": "Η ενημέρωση ολοκληρώθηκε με επιτυχία"
+    "update-succeed": "Η ενημέρωση ολοκληρώθηκε με επιτυχία",
+    "not-signed-in": "Δεν έχετε συνδεθεί.",
+    "invalid-datetime": "Μη έγκυρη ημερομηνία και ώρα. Χρησιμοποιήστε τη μορφή 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Δεν βρέθηκαν σημειώσεις",
@@ -436,7 +566,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Ο χώρος αποθήκευσης των συνημμένων σας δεν είναι διαθέσιμος.",
-      "email-in-use": "Αυτό το email χρησιμοποιείται ήδη από άλλον λογαριασμό."
+      "email-in-use": "Αυτό το email χρησιμοποιείται ήδη από άλλον λογαριασμό.",
+      "avatar-too-large": "Επιλέξτε εικόνα έως 2 MB.",
+      "avatar-unreadable": "Δεν είναι δυνατή η ανάγνωση αυτής της εικόνας. Δοκιμάστε άλλο αρχείο."
     },
     "ai": {
       "add-provider": "Προσθήκη παρόχου",
@@ -518,13 +650,15 @@
       "restore-success": "Το {{username}} αποκαταστάθηκε με επιτυχία",
       "summary-column": "Περίληψη",
       "user": "Μεταχειριζόμενος",
-      "no-members-found": "Δεν βρέθηκαν μέλη"
+      "no-members-found": "Δεν βρέθηκαν μέλη",
+      "export-memos": "Εξαγωγή σημειώσεων",
+      "username-password-required": "Το όνομα χρήστη και ο κωδικός πρόσβασης δεν μπορούν να είναι κενά",
+      "create-success": "Ο χρήστης δημιουργήθηκε",
+      "update-success": "Ο χρήστης ενημερώθηκε"
     },
     "memo": {
       "add-reaction": "Προσθέστε την αντίδραση",
       "configured-reactions": "Διαμορφωμένες αντιδράσεις",
-      "double-click-edit-description": "Επιτρέψτε στους χρήστες να ανοίξουν την επεξεργασία σημειώσεων κάνοντας διπλό κλικ σε ένα σημείωμα.",
-      "editing-title": "Επεξεργασία",
       "label": "Σημείωμα",
       "reaction-placeholder": "π.χ. 👍",
       "reactions-description": "Καθορίστε τις επιλογές αντίδρασης που μπορούν να εφαρμόσουν οι χρήστες σε σημειώσεις.",
@@ -575,22 +709,162 @@
       "appearance-title": "Εμφάνιση",
       "default-memo-visibility": "Προεπιλεγμένη ορατότητα σημειώσεων",
       "default-memo-visibility-description": "Εφαρμόστηκε ορατότητα σε σημειώσεις που δημιουργήθηκαν πρόσφατα, εκτός και αν αλλάξει στο πρόγραμμα επεξεργασίας.",
+      "device-description": "Επιλογές ανάγνωσης και επεξεργασίας που φυλάσσονται μόνο σε αυτό το πρόγραμμα περιήγησης. Δεν αποθηκεύονται στον λογαριασμό σας.",
+      "device-title": "Αυτή η συσκευή",
+      "double-click-edit": "Διπλό κλικ για επεξεργασία",
+      "double-click-edit-description": "Ανοίξτε τα δικά σας σημειώματα στον επεξεργαστή με διπλό κλικ.",
       "label": "Προτιμήσεις",
       "language-description": "Ενημερώνει τη γλώσσα διεπαφής αμέσως και την αποθηκεύει στον λογαριασμό σας.",
+      "link-preview-description": "Εμφάνιση κάρτας προεπισκόπησης κάτω από γυμνούς συνδέσμους όπου εμφανίζονται σημειώματα.",
       "memo-defaults-description": "Ορίστε τις προεπιλογές που χρησιμοποιούνται κατά τη σύνταξη νέων σημειώσεων.",
       "memo-defaults-title": "Σημείωση προεπιλογές",
-      "theme-description": "Εφαρμόζει το επιλεγμένο θέμα αμέσως σε αυτήν τη συσκευή.",
-      "theme": "Θέμα",
       "save-media-metadata": "Αποθήκευση μεταδεδομένων πολυμέσων",
       "save-media-metadata-description": "Για μελλοντικές μεταφορτώσεις, αποθηκεύστε τη διαθέσιμη κάμερα, την ώρα λήψης, την τοποθεσία, τις διαστάσεις της εικόνας και τις βασικές λεπτομέρειες του βίντεο. Όποιος μπορεί να δει το συνημμένο μπορεί να λάβει αυτά τα μεταδεδομένα. Τα υπάρχοντα συνημμένα παραμένουν αμετάβλητα.",
+      "theme-description": "Εφαρμόζει το επιλεγμένο θέμα αμέσως σε αυτήν τη συσκευή.",
+      "theme": "Θέμα",
       "uploads-privacy-description": "Έλεγχος πληροφοριών που είναι ευαίσθητες στην προστασία της ιδιωτικής ζωής και υποβάλλονται με τα μεταφορτωμένα μέσα.",
-      "uploads-privacy-title": "Μεταφορτώσεις & απόρρητο"
+      "uploads-privacy-title": "Μεταφορτώσεις & απόρρητο",
+      "theme-system": "Συγχρονισμός με το σύστημα",
+      "theme-system-short": "Σύστημα",
+      "theme-light": "Φωτεινό",
+      "theme-dark": "Σκοτεινό",
+      "theme-paper": "Χαρτί"
+    },
+    "editor": {
+      "label": "Πρόγραμμα επεξεργασίας",
+      "markdown-mode-description": "Γράψτε και επεξεργαστείτε σημειώσεις ως κείμενο Markdown αντί για μορφοποιημένο κείμενο."
     },
     "memo-view": {
       "create": "Δημιουργία προβολής",
       "delete-confirm": "Είστε βέβαιοι ότι θέλετε να διαγράψετε την προβολή `{{title}}`;",
       "delete-success": "Η προβολή `{{title}}` διαγράφηκε με επιτυχία",
-      "change-icon": "Αλλαγή εικονιδίου προβολής"
+      "change-icon": "Αλλαγή εικονιδίου προβολής",
+      "page-description": "Δημιουργήστε επαναχρησιμοποιήσιμες προβολές με πεδία, τελεστές, χρονικές συναρτήσεις και αντιστοίχιση ετικετών. Ξεκινήστε από τα παραδείγματα και κάντε επικύρωση πριν από την αποθήκευση.",
+      "edit": "Επεξεργασία προβολής",
+      "form-description": "Ονομάστε την προβολή και ορίστε την έκφραση φίλτρου σημειωμάτων που θα εφαρμόζει.",
+      "title-placeholder": "Καρφιτσωμένα, Πρόσφατες σημειώσεις, Εργασία",
+      "filter-help": "Συνδυάστε εκφράσεις με {{and}}, {{or}} και {{not}}. Τα χρονικά πεδία είναι χρονοσφραγίδες — χρησιμοποιήστε {{now}}, {{duration}}, {{timestamp}} και συναρτήσεις πρόσβασης όπως {{year}}. Οι ετικέτες υποστηρίζουν {{sets}} και το {{size}} μετρά το μήκος.",
+      "validate": "Επικύρωση",
+      "all": "Όλες οι προβολές",
+      "loading": "Φόρτωση προβολών…",
+      "load-failed": "Δεν ήταν δυνατή η φόρτωση των προβολών.",
+      "empty-title": "Δεν υπάρχουν ακόμη προβολές",
+      "empty-description": "Αποθηκεύστε ένα φίλτρο για να επιστρέφετε γρήγορα στα σημειώματα που χρειάζεστε.",
+      "examples-title": "Παραδείγματα εκφράσεων",
+      "fields-title": "Υποστηριζόμενα πεδία",
+      "title-filter-required": "Ο τίτλος και το φίλτρο δεν μπορούν να είναι κενά",
+      "filter-valid": "Η έκφραση φίλτρου φαίνεται έγκυρη",
+      "create-success": "Η προβολή δημιουργήθηκε",
+      "update-success": "Η προβολή ενημερώθηκε",
+      "examples": {
+        "pinned": {
+          "title": "Καρφιτσωμένα",
+          "description": "Μόνο καρφιτσωμένα σημειώματα."
+        },
+        "recent": {
+          "title": "Πρόσφατες σημειώσεις",
+          "description": "Σημειώματα που δημιουργήθηκαν την τελευταία ώρα."
+        },
+        "public": {
+          "title": "Δημόσια σημειώματα",
+          "description": "Μόνο δημόσια σημειώματα."
+        },
+        "project-tags": {
+          "title": "Ετικέτες έργων",
+          "description": "Αντιστοίχιση με μία ή περισσότερες ακριβείς ετικέτες."
+        },
+        "untagged": {
+          "title": "Χωρίς ετικέτες",
+          "description": "Σημειώματα χωρίς καμία ετικέτα."
+        },
+        "archive-tree": {
+          "title": "Δέντρο αρχείου",
+          "description": "Αντιστοίχιση ιεραρχικών ετικετών βάσει προθέματος."
+        },
+        "unassigned": {
+          "title": "Χωρίς ανάθεση",
+          "description": "Σημειώματα που δεν βρίσκονται σε κανέναν χώρο."
+        },
+        "one-space": {
+          "title": "Σε έναν χώρο",
+          "description": "Σημειώματα σε έναν χώρο. Χρησιμοποιήστε το ID του χώρου από το URL ή τις ρυθμίσεις του."
+        },
+        "open-tasks": {
+          "title": "Ανοιχτές εργασίες",
+          "description": "Σημειώματα με ημιτελείς εργασίες."
+        },
+        "links-or-code": {
+          "title": "Σύνδεσμοι ή κώδικας",
+          "description": "Σημειώματα που περιέχουν συνδέσμους ή μπλοκ κώδικα."
+        },
+        "no-location": {
+          "title": "Χωρίς τοποθεσία",
+          "description": "Σημειώματα χωρίς συνημμένη τοποθεσία."
+        },
+        "with-attachments": {
+          "title": "Με συνημμένα",
+          "description": "Σημειώματα με τουλάχιστον ένα συνημμένο αρχείο."
+        },
+        "photos": {
+          "title": "Φωτογραφίες",
+          "description": "Σημειώματα που εμφανίζουν εικόνα, στο περιεχόμενο ή ως συνημμένο αρχείο."
+        },
+        "content-search": {
+          "title": "Αναζήτηση περιεχομένου",
+          "description": "Αναζήτηση κειμένου στο περιεχόμενο των σημειωμάτων."
+        },
+        "starts-with": {
+          "title": "Ξεκινά με",
+          "description": "Σημειώματα των οποίων το περιεχόμενο ξεκινά με κείμενο (επίσης endsWith)."
+        },
+        "regex": {
+          "title": "Αντιστοίχιση regex",
+          "description": "Αντιστοίχιση περιεχομένου με κανονική έκφραση."
+        },
+        "all-tags-complete": {
+          "title": "Όλες οι ετικέτες ολοκληρωμένες",
+          "description": "Κάθε ετικέτα τελειώνει σε -done (μόνο σημειώματα με ετικέτες)."
+        },
+        "one-project-tag": {
+          "title": "Μία ετικέτα έργου",
+          "description": "Ακριβώς μία ετικέτα ικανοποιεί τη συνθήκη."
+        },
+        "any-tags": {
+          "title": "Οποιαδήποτε από αυτές τις ετικέτες",
+          "description": "Οι ετικέτες τέμνονται με το δοσμένο σύνολο."
+        },
+        "exact-tags": {
+          "title": "Ακριβώς αυτές οι ετικέτες",
+          "description": "Με ακριβώς αυτό το σύνολο ετικετών, τίποτα παραπάνω."
+        },
+        "year-2024": {
+          "title": "Σημειώματα του 2024",
+          "description": "Φιλτράρισμα ανά ημερολογιακό έτος."
+        },
+        "weekend": {
+          "title": "Σημειώσεις Σαββατοκύριακου",
+          "description": "Δημιουργήθηκαν Κυριακή ή Σάββατο (0 = Κυριακή)."
+        },
+        "long": {
+          "title": "Μεγάλες σημειώσεις",
+          "description": "Σημειώματα με περισσότερους από 280 χαρακτήρες."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Διαμόρφωση",
+      "description": "Πόροι που ορίζονται από αρχεία διαμόρφωσης. Επεξεργαστείτε ένα αρχείο και εφαρμόστε το για να τους αλλάξετε· το υπόλοιπο της εγκατάστασης παραμένει επεξεργάσιμο εδώ.",
+      "managed-by": "Διαχειρίζεται από τη διαμόρφωση",
+      "managed-tooltip": "Ορίζεται στο {{source}}. Επεξεργαστείτε το αρχείο και εφαρμόστε το για να το αλλάξετε.",
+      "resource": "Πόρος",
+      "source": "Αρχείο",
+      "managed-fields": "Διαχειριζόμενα πεδία",
+      "whole-resource": "Όλα τα πεδία",
+      "ignored-fields": "Επεξεργάσιμα εδώ",
+      "serial": "Αύξων αριθμός",
+      "last-apply": "Τελευταία εφαρμογή",
+      "applied-by": "Εφαρμόστηκε από",
+      "nothing-managed": "Δεν έχει εφαρμοστεί διαμόρφωση. Όλα ορίζονται εδώ."
     },
     "sso": {
       "account": "Λογαριασμός",
@@ -651,7 +925,9 @@
       "token-endpoint": "Τελικό σημείο διακριτικού",
       "update-sso": "Ενημέρωση SSO",
       "update-sso-description": "Ελέγξτε τη διαμόρφωση του παρόχου και, στη συνέχεια, αποθηκεύστε τα πεδία που πρέπει να αλλάξουν.",
-      "user-endpoint": "Τελικό σημείο χρήστη"
+      "user-endpoint": "Τελικό σημείο χρήστη",
+      "invalid-config": "Η διαμόρφωση του παρόχου ταυτότητας δεν είναι έγκυρη.",
+      "provider-id-placeholder": "π.χ. github, okta-corp"
     },
     "storage": {
       "accesskey": "Κλειδί πρόσβασης",
@@ -702,47 +978,56 @@
       "customize-server": {
         "description": "Περιγραφή",
         "icon-url": "Εικονίδιο URL",
-        "title": "Προσαρμογή διακομιστή"
+        "title": "Προσαρμογή διακομιστή",
+        "dialog-description": "Προσαρμόστε την εμφάνιση και τις ρυθμίσεις της παρουσίας σας."
       },
       "custom-code-description": "Προαιρετικά τα CSS και JavaScript σε όλο το παράδειγμα εφαρμόζονται στο frontend.",
       "custom-code-title": "Προσαρμοσμένος κωδικός",
-      "enable-double-click-to-edit": "Ενεργοποιήστε το διπλό κλικ για επεξεργασία",
       "label": "Σύστημα",
       "server-name": "Όνομα διακομιστή"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1130,9 @@
       "review-existing": "Ήδη στον λογαριασμό σας",
       "review-exported": "Εξήχθη από",
       "review-memos": "Memos στο αρχείο",
-      "review-new": "Θα δημιουργηθεί"
+      "review-new": "Θα δημιουργηθεί",
+      "export-admin-only": "Μόνο οι διαχειριστές μπορούν να εξάγουν σημειώσεις. Ζητήστε το αρχείο εξαγωγής σας από έναν διαχειριστή.",
+      "export-busy": "Μια άλλη εξαγωγή βρίσκεται σε εξέλιξη. Δοκιμάστε ξανά σε λίγο."
     },
     "spaces": {
       "general": "Γενικός",
@@ -931,7 +1218,8 @@
   },
   "tooltip": {
     "link-memo": "Σημείωση σύνδεσης",
-    "select-location": "Τοποθεσία"
+    "select-location": "Τοποθεσία",
+    "link-memo-description": "Αναζητήστε και επιλέξτε ένα σημείωμα για σύνδεση"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1284,12 @@
     "loading": "Φόρτωση σημειωμάτων…",
     "new-here": "Γράψτε εδώ",
     "saved-outside-filter": "Αποθηκεύτηκε. Αυτό το σημειώμα βρίσκεται εκτός των τρεχόντων αποτελεσμάτων χάρτη.",
-    "open-memo": "Άνοιγμα σημειώματος"
+    "open-memo": "Άνοιγμα σημειώματος",
+    "open-in-google-maps": "Άνοιγμα στο Google Maps",
+    "location-description": "Επιλέξτε μια τοποθεσία στον χάρτη ή εισαγάγετε συντεταγμένες χειροκίνητα",
+    "latitude": "Γεωγραφικό πλάτος",
+    "longitude": "Γεωγραφικό μήκος",
+    "place-placeholder": "Επιλέξτε πρώτα μια θέση."
   },
   "calendar": {
     "new-memo-on-day": "Νέο σημείωμα αυτήν την ημέρα",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "π.χ. Προϊόν",
     "spaces": "Χώροι",
     "switch": "Αλλαγή χώρου"
+  },
+  "welcome": {
+    "title": "Καλώς ήρθατε στο Memos",
+    "headline": "Απλές σημειώσεις για τις καθημερινές σας σκέψεις.",
+    "intro-write": "Μία μόνο πρόταση μπορεί να είναι ένα ολόκληρο σημείωμα.",
+    "intro-keep": "Κάθε σημείωμα μένει με τη μέρα που το γράψατε.",
+    "intro-share": "Εσείς επιλέγετε τι μένει ιδιωτικό.",
+    "write": "Γράψιμο",
+    "write-sub": "Μία μόνο πρόταση μπορεί να είναι ένα ολόκληρο σημείωμα.",
+    "no-title": "Χωρίς τίτλο",
+    "no-title-text": "Ένα σημείωμα ξεκινά με την ίδια τη σκέψη. Δεν υπάρχει τίτλος για συμπλήρωση.",
+    "markdown": "Markdown",
+    "markdown-text": "Το Markdown δίνει δομή στα λόγια σας όταν τη θέλετε.",
+    "attach": "Επισύναψη",
+    "attach-text": "Εικόνες, αρχεία, ήχος και μια τοποθεσία μπαίνουν μέσω του ＋.",
+    "keep": "Διατήρηση",
+    "keep-sub": "Κάθε σημείωμα μένει με τη μέρα που το γράψατε.",
+    "calendar-text": "Το ημερολόγιο οδηγεί πίσω σε οποιαδήποτε μέρα.",
+    "tags-text": "Μια λέξη μετά το # γίνεται ετικέτα, και μια ετικέτα φιλτράρει το χρονολόγιο.",
+    "views-text": "Μια προσαρμοσμένη προβολή αποθηκεύει ένα φίλτρο.",
+    "map-text": "Τα σημειώματα με τοποθεσία βρίσκονται στον χάρτη.",
+    "share": "Κοινοποίηση",
+    "share-sub": "Τα σημειώματα ξεκινούν ιδιωτικά. Εσείς επιλέγετε τι θα κοινοποιήσετε και τι θα δημοσιεύσετε.",
+    "visibility-text": "Κάθε σημείωμα έχει τη δική του ρύθμιση. Τα νέα ξεκινούν ιδιωτικά, μόνο για εσάς· ένα δημόσιο έχει σύνδεσμο που μπορεί να ανοίξει ο καθένας.",
+    "spaces-text": "Σε έναν χώρο, τα μέλη γράφουν δίπλα σας, και το καθένα κρατά τα δικά του σημειώματα.",
+    "comments": "Σχόλια",
+    "comments-text": "Όποιος μπορεί να δει ένα σημείωμα μπορεί να απαντήσει από κάτω.",
+    "skip": "Παράλειψη",
+    "next": "Επόμενο",
+    "done": "Τέλος",
+    "page-of": "Σελίδα {{current}} από {{total}}",
+    "reopen": "Οδηγός καλωσορίσματος",
+    "reopen-note": "Οι τέσσερις οθόνες που βλέπει πρώτα ένας νέος λογαριασμός.",
+    "sample": {
+      "today": "Σήμερα, 10:42",
+      "today-early": "Σήμερα, 9:18",
+      "yesterday": "Χθες, 15:20",
+      "comment-age": "2 ώ",
+      "memo-preview": "Μια απλούστερη πρώτη οθόνη. Ένα πεδίο, μετά μια προεπισκόπηση.",
+      "memo-release": "Πριν από την επόμενη έκδοση",
+      "task-sketch": "Σκίτσο της πρώτης οθόνης",
+      "task-polish": "Βελτίωση της προεπισκόπησης",
+      "write-lead": "Το πρώτο βήμα να μείνει μικρό.",
+      "write-strong": "Οι λεπτομέρειες να φαίνονται",
+      "write-tail": "όταν χρειάζονται.",
+      "write-task": "Ένα σύντομο αρχείο αλλαγών",
+      "view": "Ανολοκλήρωτες εργασίες",
+      "space": "Προϊόν",
+      "share-memo": "Να δείξουμε το αποτέλεσμα πριν ζητήσουμε από τον κόσμο να εγγραφεί.",
+      "comment": "Συμφωνώ. Η προεπισκόπηση έπεισε.",
+      "tag-design": "σχεδιασμός",
+      "tag-project": "έργο",
+      "tag-reading": "ανάγνωση",
+      "tag-ideas": "ιδέες"
+    }
+  },
+  "error": {
+    "title": "Κάτι πήγε στραβά",
+    "description": "Παρουσιάστηκε απρόσμενο σφάλμα. Αυτό μπορεί να οφείλεται σε πρόβλημα δικτύου ή σε πρόβλημα της εφαρμογής.",
+    "description-update": "Παρουσιάστηκε απρόσμενο σφάλμα. Αυτό μπορεί να οφείλεται σε πρόβλημα δικτύου ή σε ενημέρωση της εφαρμογής. Η επαναφόρτωση συνήθως το διορθώνει.",
+    "details": "Λεπτομέρειες σφάλματος",
+    "reload": "Επαναφόρτωση εφαρμογής",
+    "not-found": "Η σελίδα που αναζητάτε δεν βρέθηκε.",
+    "permission-denied": "Δεν επιτρέπεται η πρόσβαση",
+    "too-many-requests": "Πάρα πολλά αιτήματα. Δοκιμάστε ξανά σε {{wait}}.",
+    "wait-seconds": "{{count}} δ",
+    "wait-minutes": "{{count}} λεπ.",
+    "wait-hours": "{{count}} ώρ.",
+    "challenge-required": "Ολοκληρώστε την επαλήθευση και δοκιμάστε ξανά.",
+    "quota-memo-count": "Φτάσατε το όριο των {{limit}} σημειωμάτων. Διαγράψτε σημειώματα για να δημιουργήσετε νέα.",
+    "quota-storage": "Αυτή η μεταφόρτωση θα ξεπερνούσε το όριο αποθηκευτικού χώρου σας των {{limit}}. Χρησιμοποιείτε {{usage}}.",
+    "quota-upload": "Αυτό το αρχείο υπερβαίνει το όριο των {{limit}} ανά αρχείο.",
+    "quota-memo-content": "Αυτό το σημείωμα υπερβαίνει το όριο των {{limit}} ανά σημείωμα. Συντομεύστε το περιεχόμενο για να το αποθηκεύσετε.",
+    "quota-generic": "Φτάσατε σε ένα όριο χρήσης.",
+    "sign-in-failed": "Η σύνδεση απέτυχε.",
+    "sign-up-failed": "Η εγγραφή απέτυχε",
+    "authenticate-failed": "Ο έλεγχος ταυτότητας απέτυχε.",
+    "update-profile-failed": "Η ενημέρωση του προφίλ απέτυχε",
+    "unlink-identity-failed": "Η αποσύνδεση του παρόχου ταυτότητας απέτυχε.",
+    "link-identity-failed": "Δεν ήταν δυνατή η έναρξη της σύνδεσης λογαριασμού. Δοκιμάστε ξανά."
+  },
+  "attachment-preview": {
+    "title": "Προεπισκόπηση συνημμένου",
+    "description": "Παράθυρο προεπισκόπησης συνημμένων. Πατήστε Escape για κλείσιμο, χρησιμοποιήστε τα πλήκτρα αριστερού ή δεξιού βέλους για εναλλαγή στοιχείων και μεγεθύνετε τις εικόνες με τα χειριστήρια, τη ροδέλα του ποντικιού, διπλό πάτημα ή τσίμπημα με δύο δάχτυλα.",
+    "close": "Κλείσιμο προεπισκόπησης",
+    "previous": "Προηγούμενο στοιχείο",
+    "next": "Επόμενο στοιχείο",
+    "reset-zoom": "Επαναφορά μεγέθυνσης",
+    "image-alt": "Προεπισκόπηση εικόνας {{index}} από {{count}}",
+    "live-photo-alt": "Προεπισκόπηση ζωντανής φωτογραφίας {{index}} από {{count}}",
+    "play-live-photo": "Τοποθετήστε τον δείκτη ή πατήστε για αναπαραγωγή της ζωντανής φωτογραφίας"
+  },
+  "audio-player": {
+    "seek": "Μετάβαση στο {{name}}",
+    "back": "Πίσω {{seconds}} δευτερόλεπτα",
+    "forward": "Μπροστά {{seconds}} δευτερόλεπτα",
+    "speed": "Ταχύτητα αναπαραγωγής {{rate}}x"
   }
 }

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 
 const MARK_SCALE = {
-  xl: { mark: "size-11 rounded-lg", icon: 24, emoji: "text-2xl" },
+  xl: { mark: "size-11 rounded-mu-lg", icon: 24, emoji: "text-2xl" },
   lg: { mark: "size-9 rounded-[7px]", icon: 20, emoji: "text-xl" },
   md: { mark: "size-7 rounded-[7px]", icon: 16, emoji: "text-base" },
   /** Primary chrome: kept in step with MemosLogo's header scale. */
@@ -22,10 +22,7 @@ const SpaceMark = ({ icon, size = "md", className }: Props) => {
   const scale = MARK_SCALE[size];
 
   return (
-    <span
-      aria-hidden
-      className={cn("flex shrink-0 items-center justify-center bg-sidebar-accent text-sidebar-accent-foreground", scale.mark, className)}
-    >
+    <span aria-hidden className={cn("flex shrink-0 items-center justify-center bg-mu-hover text-mu-ink", scale.mark, className)}>
       <SpaceIcon icon={icon} size={scale.icon} className={cn(icon?.value.case === "emoji" && scale.emoji)} />
     </span>
   );

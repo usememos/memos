@@ -6,7 +6,6 @@
     "api-docs": "API Dokument",
     "api-docs-note": "REST- och gRPC-referens",
     "build": "Bygg",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "En plats med öppen källkod på din egen server för anteckningar, idéer och vardagstankar.",
     "distribution": "Distribution",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Inloggningen kunde inte slutföras",
     "create-your-account": "Skapa ditt konto",
+    "hide-password": "Dölj lösenord",
+    "incorrect-credentials": "Fel användarnamn eller lösenord.",
     "new-password": "Nytt lösenord",
     "repeat-new-password": "Upprepa det nya lösenordet",
+    "show-password": "Visa lösenord",
     "sign-in-tip": "Har du redan ett konto?",
     "sign-up-tip": "Har du inget konto än?",
     "admin-sign-in": "Administratörsinloggning",
-    "admin-sign-in-tip": "Lösenordsinloggning förblir tillgänglig för administratörer.",
     "back-to-sign-in": "Tillbaka till inloggning",
     "continue-with": "Fortsätt med {{provider}}",
     "create-admin-account": "Skapa administratörskonto",
-    "explore-public-memos": "Utforska offentliga meddelanden på den här instansen",
-    "first-run": "Första körningen",
     "setup-description": "Skapa administratörskontot för den här instansen.",
-    "setup-note": "Det här kontot äger instansinställningar, medlemmar och identitetsleverantörer.",
     "setup-title": "Konfigurera din instans",
     "signin-unavailable-description": "Lösenordsinloggning är avstängd och inga identitetsleverantörer är konfigurerade. Be administratören att aktivera en inloggningsmetod.",
     "signin-unavailable-title": "Inloggning är inte tillgänglig",
-    "signup-unavailable-description": "Lösenordskonton är avstängda och inga identitetsleverantörer är konfigurerade. Be administratören om åtkomst.",
-    "signup-unavailable-title": "Registrering är inte tillgänglig",
-    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst.",
-    "signups-closed-title": "Registreringar är stängda",
-    "sso-signup-tip": "Logga in med en leverantör nedan för att skapa ditt konto.",
-    "welcome-back": "Välkommen tillbaka."
+    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst."
   },
   "common": {
     "about": "Om",
@@ -103,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Refererad av",
     "referencing": "Refererar",
-    "relations": "Relationer",
     "resources": "Resurser",
     "restore": "Återställ",
     "role": "Roll",
@@ -139,7 +132,24 @@
     "resize-panel": "Ändra storlek på panelen",
     "resize-sidebar": "Ändra storlek på sidofältet",
     "sign-in-to-memos": "Logga in på Memos",
-    "view-all": "Visa alla"
+    "open-navigation": "Öppna navigering",
+    "navigation": "Navigering",
+    "primary-navigation": "Huvudnavigering",
+    "download": "Ladda ned",
+    "download-name": "Ladda ned {{name}}",
+    "open-name": "Öppna {{name}}",
+    "preview-name": "Förhandsgranska {{name}}",
+    "no-content": "Inget innehåll",
+    "previous": "Föregående",
+    "next": "Nästa",
+    "retry": "Försök igen",
+    "docs": "Dokumentation",
+    "calendar-for-month": "Kalender för {{month}}",
+    "date-at-time": "{{date}} kl. {{time}}",
+    "selected-location": "Vald plats",
+    "choose-location": "Välj en plats",
+    "unknown-error": "Okänt fel",
+    "error-occurred": "Ett fel uppstod"
   },
   "locale-picker": {
     "no-language-feedback": "Språket hittades inte? Skicka feedback"
@@ -150,6 +160,7 @@
     "any-thoughts": "Några tankar...",
     "exit-focus-mode": "Avsluta fokusläge",
     "focus-mode": "Fokusläge",
+    "markdown-mode": "Markdown-läge",
     "insert-menu": {
       "add-location": "Lägg till plats",
       "link-memo": "Länkmemo",
@@ -158,9 +169,50 @@
       "image-upload-failed": "Vissa bilder kunde inte laddas upp. Försök igen eller behåll de uppladdade filerna som bilagor.",
       "image-upload-stopped": "Bilduppladdning stoppad {{completed}}/{{total}}",
       "insert-image": "Infoga bild",
+      "drawing": "Teckning",
       "keep-as-attachments": "Behåll som bilagor",
       "uploading-inline-image": "Uppladdning till innehåll",
       "uploading-images": "Uppladdning av bilder {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Ny teckning",
+      "edit": "Redigera teckning",
+      "tools": "Verktyg",
+      "tool-select": "Markera",
+      "tool-pen": "Penna",
+      "tool-eraser": "Suddgummi",
+      "tool-rectangle": "Rektangel",
+      "tool-ellipse": "Ellips",
+      "tool-arrow": "Pil",
+      "tool-text": "Text",
+      "style": "Färg och tjocklek",
+      "color": "Färg",
+      "width": "Tjocklek",
+      "width-thin": "Tunn",
+      "width-medium": "Medel",
+      "width-thick": "Tjock",
+      "color-ink": "Bläck",
+      "color-gray": "Grå",
+      "color-red": "Röd",
+      "color-orange": "Orange",
+      "color-green": "Grön",
+      "color-teal": "Blågrön",
+      "color-blue": "Blå",
+      "color-violet": "Violett",
+      "undo": "Ångra",
+      "redo": "Gör om",
+      "zoom-to-fit": "Anpassa till fönstret",
+      "done": "Klar",
+      "discard-title": "Vill du slänga teckningen?",
+      "discard-description": "Den har inte lagts till i anteckningen än.",
+      "discard-edit-title": "Vill du slänga ändringarna?",
+      "discard-edit-description": "Teckningen förblir som den var innan du öppnade den.",
+      "keep-drawing": "Fortsätt rita",
+      "discard": "Släng",
+      "open-failed": "Det gick inte att öppna teckningen. Försök igen.",
+      "export-failed": "Det gick inte att spara teckningen. Försök igen.",
+      "image-failed": "Det gick inte att lägga till bilden i teckningen.",
+      "saved-without-drawing": "Anteckningen har sparats, men inte teckningen. Spara igen för att försöka på nytt."
     },
     "no-changes-detected": "Inga ändringar upptäckta",
     "save": "Spara",
@@ -183,21 +235,21 @@
     "format": {
       "code-block": "Kodblock",
       "link": "Länk",
-      "heading": "Rubrik",
       "paragraph": "Stycke",
       "heading-1": "Rubrik 1",
       "heading-2": "Rubrik 2",
       "heading-3": "Rubrik 3",
+      "heading-4": "Rubrik 4",
       "bold": "Fet",
       "italic": "Kursiv stil",
       "strikethrough": "Genomstruken",
       "bullet-list": "Punkt lista",
       "ordered-list": "Numrerad lista",
-      "task-list": "Att-göra-lista",
-      "more": "Mer formatering"
+      "task-list": "Att-göra-lista"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formateringsverktygsfältet",
+    "footnotes": "Fotnoter",
+    "back-to-reference": "Tillbaka till referensen",
     "new-memo": "Nytt memo",
     "saved": "Sparat",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "Spara pågår",
       "unsupported-attachment-image-url": "Bild-URL för bilaga som inte stöds: {{url}}",
       "wait-for-upload": "Vänta tills uppladdningen är klar"
-    }
+    },
+    "blocks": {
+      "task": "Uppgift",
+      "quote": "Citat",
+      "callout": "Faktaruta",
+      "callout-note": "Notering",
+      "callout-tip": "Tips",
+      "callout-important": "Viktigt",
+      "callout-warning": "Varning",
+      "callout-caution": "Försiktighet",
+      "collapsible-section": "Hopfällbart avsnitt",
+      "table": "Tabell",
+      "divider": "Avdelare",
+      "no-results": "Inga resultat",
+      "commands": "Kommandon",
+      "loading": "Läser in…",
+      "duplicate": "Duplicera",
+      "inline-code": "Kod",
+      "link-placeholder": "Klistra in eller skriv en länk…",
+      "remove-link": "Ta bort länk",
+      "open-link": "Öppna länk",
+      "copy-link": "Kopiera länk",
+      "edit-link": "Redigera länk",
+      "emoji": "Emoji",
+      "block-menu": "Öppna blockmeny",
+      "list-hint": "Lista",
+      "plain-text": "text",
+      "add-row-above": "Lägg till rad ovanför",
+      "add-row-below": "Lägg till rad nedanför",
+      "add-column-left": "Lägg till kolumn till vänster",
+      "add-column-right": "Lägg till kolumn till höger",
+      "delete-row": "Radera rad",
+      "delete-column": "Radera kolumn",
+      "align": "Justering",
+      "align-left": "Vänster",
+      "align-center": "Centrerat",
+      "align-right": "Höger",
+      "image-align-left": "Vänsterjustera",
+      "image-align-center": "Centrera",
+      "image-align-right": "Högerjustera",
+      "text-style": "Textstil",
+      "image": "Bild",
+      "reset-image-size": "Återställ storlek",
+      "alt-text": "Alternativtext",
+      "alt-text-placeholder": "Beskriv bilden…",
+      "image-unavailable": "Bilden är inte tillgänglig",
+      "resize-image": "Ändra bildstorlek"
+    },
+    "attachments": {
+      "edited": "Redigerad",
+      "new": "Ny",
+      "remove": "Ta bort bilaga",
+      "reorder": "Flytta {{name}}",
+      "reorder-hint": "Dra, eller använd piltangenterna"
+    },
+    "remove-relation": "Ta bort koppling",
+    "remove-location": "Ta bort plats",
+    "recording-unsupported": "Ljudinspelning stöds inte i den här webbläsaren.",
+    "microphone-denied": "Åtkomst till mikrofonen nekades.",
+    "recording-failed": "Det gick inte att starta ljudinspelningen."
   },
   "inbox": {
     "failed-to-load": "Misslyckades att ladda inkorgsobjekt",
@@ -218,7 +329,16 @@
     "unread": "Oläst",
     "space-invitation": "bjöd in dig att gå med i ett utrymme",
     "space-invitation-accepted": "Du gick med i det här utrymmet.",
-    "space-invitation-open": "Öppet utrymme"
+    "space-invitation-open": "Öppet utrymme",
+    "commented-on-memo": "kommenterade din anteckning",
+    "mentioned-in-comment": "nämnde dig i en kommentar",
+    "mentioned-in-memo": "nämnde dig i en anteckning",
+    "original": "Original:",
+    "memo-label": "Anteckning:",
+    "comment-heading": "Kommentar",
+    "memo-heading": "Anteckning",
+    "empty-memo": "Tom anteckning",
+    "empty-comment": "Tom kommentar"
   },
   "live-update": {
     "connected": "Liveuppdateringar aktiva",
@@ -226,11 +346,16 @@
     "disconnected": "Liveuppdateringar är inte tillgängliga"
   },
   "memo": {
+    "no-memos-yet": "Inga anteckningar ännu",
+    "no-matching-memos": "Inga matchande PM",
+    "clear-filters": "Rensa filter",
     "pinned": "Fäst",
     "click-to-show-sensitive-content": "Klicka för att visa känsligt innehåll (NSFW)",
     "comment": {
       "self": "Kommentarer",
-      "write-a-comment": "Skriv en kommentar"
+      "write-a-comment": "Skriv en kommentar",
+      "view-all-count_one": "Visa {{count}} kommentar",
+      "view-all-count_other": "Visa alla {{count}} kommentarer"
     },
     "copy-content": "Kopiera innehåll",
     "copy-link": "Kopiera länk",
@@ -239,10 +364,13 @@
     "delete-confirm-description": "Denna åtgärd är oåterkallelig. Bilagor, länk och referenser kommer också att tas bort.",
     "direction": "Riktning",
     "filters": {
+      "has-attachments": "har bilagor",
       "has-code": "harKod",
+      "has-image": "har bild",
       "has-link": "harLänk",
       "has-location": "har plats",
-      "has-task-list": "harAttGöraLista"
+      "has-task-list": "harAttGöraLista",
+      "remove": "Ta bort filter"
     },
     "compact-mode": "Kompakt läge",
     "link-preview": "Förhandsvisning av länk",
@@ -328,7 +456,9 @@
     "restored-successfully": "Återställdes framgångsrikt",
     "succeed-copy-content": "Innehåll kopierades framgångsrikt.",
     "succeed-copy-link": "Länk kopierades framgångsrikt.",
-    "update-succeed": "Uppdatering lyckades"
+    "update-succeed": "Uppdatering lyckades",
+    "not-signed-in": "Du är inte inloggad.",
+    "invalid-datetime": "Ogiltigt datum och tid. Använd formatet 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Inga anteckningar hittades",
@@ -398,7 +528,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Din lagring av bilagor är inte tillgänglig.",
-      "email-in-use": "Denna e-postadress används redan av ett annat konto."
+      "email-in-use": "Denna e-postadress används redan av ett annat konto.",
+      "avatar-too-large": "Välj en bild på högst 2 MB.",
+      "avatar-unreadable": "Bilden kan inte läsas. Prova en annan fil."
     },
     "instance": {
       "disallow-change-nickname": "Förbjud ändring av smeknamn",
@@ -437,7 +569,11 @@
       "active": "Aktiv",
       "archived": "Arkiverad",
       "member-column": "Medlem",
-      "summary-column": "Sammanfattning"
+      "summary-column": "Sammanfattning",
+      "export-memos": "Exportera anteckningar",
+      "username-password-required": "Användarnamn och lösenord får inte vara tomma",
+      "create-success": "Användaren har skapats",
+      "update-success": "Användaren har uppdaterats"
     },
     "memo": {
       "label": "Anteckning",
@@ -445,8 +581,6 @@
       "reactions-required": "Reaktionslistan får inte vara tom",
       "add-reaction": "Lägg till reaktion",
       "configured-reactions": "Konfigurerade reaktioner",
-      "double-click-edit-description": "Tillåt användare att öppna memoredigering genom att dubbelklicka på ett memo.",
-      "editing-title": "Redigering",
       "reaction-placeholder": "till exempel 👍",
       "reactions-description": "Definiera reaktionsalternativen som användare kan tillämpa på anteckningar.",
       "remove-reaction": "Ta bort reaktionen"
@@ -455,26 +589,166 @@
       "label": "Mitt konto"
     },
     "preference": {
-      "default-memo-visibility": "Standard synlighet för anteckningar",
-      "label": "Preferenser",
-      "theme": "Tema",
       "appearance-description": "Välj hur appen ser ut och vilket språk den använder för ditt konto.",
       "appearance-title": "Utseende",
+      "default-memo-visibility": "Standard synlighet för anteckningar",
       "default-memo-visibility-description": "Synlighet tillämpas på nyskapade memon om de inte ändras i redigeraren.",
+      "device-description": "Läs- och redigeringsval som bara sparas i den här webbläsaren. De sparas inte på ditt konto.",
+      "device-title": "Den här enheten",
+      "double-click-edit": "Dubbelklicka för att redigera",
+      "double-click-edit-description": "Öppna dina egna memon i redigeraren genom att dubbelklicka på dem.",
+      "label": "Preferenser",
       "language-description": "Uppdaterar gränssnittsspråket omedelbart och sparar det på ditt konto.",
+      "link-preview-description": "Visa ett förhandsvisningskort under rena länkar överallt där memon visas.",
       "memo-defaults-description": "Ställ in standardinställningarna som används när du skriver nya anteckningar.",
       "memo-defaults-title": "Memo standardinställningar",
-      "theme-description": "Tillämpar det valda temat direkt på den här enheten.",
       "save-media-metadata": "Spara mediametadata",
       "save-media-metadata-description": "För framtida uppladdningar, spara tillgänglig kamera, inspelningstid, plats, bilddimensioner och grundläggande videoinformation. Alla som kan visa den bifogade filen kan ta emot dessa metadata. Befintliga bilagor ändras inte.",
+      "theme-description": "Tillämpar det valda temat direkt på den här enheten.",
+      "theme": "Tema",
       "uploads-privacy-description": "Kontrollera integritetskänslig information som skickas in med uppladdad media.",
-      "uploads-privacy-title": "Uppladdningar och sekretess"
+      "uploads-privacy-title": "Uppladdningar och sekretess",
+      "theme-system": "Följ systemet",
+      "theme-system-short": "System",
+      "theme-light": "Ljust",
+      "theme-dark": "Mörkt",
+      "theme-paper": "Papper"
+    },
+    "editor": {
+      "label": "Redigerare",
+      "markdown-mode-description": "Skriv och redigera memon som Markdown-text i stället för formaterad text."
     },
     "memo-view": {
       "create": "Skapa vy",
       "delete-confirm": "Är du säker på att du vill ta bort vyn `{{title}}`?",
       "delete-success": "Vyn `{{title}}` raderades framgångsrikt",
-      "change-icon": "Ändra vyikon"
+      "change-icon": "Ändra vyikon",
+      "page-description": "Skapa återanvändbara vyer med fält, operatorer, tidsfunktioner och taggmatchning. Utgå från exemplen och validera innan du sparar.",
+      "edit": "Redigera vy",
+      "form-description": "Namnge vyn och ange det filteruttryck för anteckningar som den ska tillämpa.",
+      "title-placeholder": "Fästa, Senaste anteckningar, Jobb",
+      "filter-help": "Kombinera uttryck med {{and}}, {{or}} och {{not}}. Tidsfält är tidsstämplar — använd {{now}}, {{duration}}, {{timestamp}} och accessorer som {{year}}. Taggar stöder {{sets}}, och {{size}} mäter längd.",
+      "validate": "Validera",
+      "all": "Alla vyer",
+      "loading": "Läser in vyer…",
+      "load-failed": "Det gick inte att läsa in vyer.",
+      "empty-title": "Inga vyer ännu",
+      "empty-description": "Spara ett filter för att snabbt komma tillbaka till de anteckningar du behöver.",
+      "examples-title": "Exempeluttryck",
+      "fields-title": "Fält som stöds",
+      "title-filter-required": "Titel och filter får inte vara tomma",
+      "filter-valid": "Filteruttrycket ser giltigt ut",
+      "create-success": "Vyn har skapats",
+      "update-success": "Vyn har uppdaterats",
+      "examples": {
+        "pinned": {
+          "title": "Fästa",
+          "description": "Endast fästa anteckningar."
+        },
+        "recent": {
+          "title": "Senaste anteckningar",
+          "description": "Anteckningar som skapats den senaste timmen."
+        },
+        "public": {
+          "title": "Offentliga anteckningar",
+          "description": "Endast offentliga anteckningar."
+        },
+        "project-tags": {
+          "title": "Projekttaggar",
+          "description": "Matcha en eller flera exakta taggar."
+        },
+        "untagged": {
+          "title": "Utan taggar",
+          "description": "Anteckningar utan taggar."
+        },
+        "archive-tree": {
+          "title": "Arkivträd",
+          "description": "Matcha hierarkiska taggar efter prefix."
+        },
+        "unassigned": {
+          "title": "Ej tilldelade",
+          "description": "Anteckningar som inte ligger i något utrymme."
+        },
+        "one-space": {
+          "title": "I ett utrymme",
+          "description": "Anteckningar i ett utrymme. Använd utrymmets ID från dess URL eller inställningar."
+        },
+        "open-tasks": {
+          "title": "Öppna uppgifter",
+          "description": "Anteckningar med ofärdiga uppgifter."
+        },
+        "links-or-code": {
+          "title": "Länkar eller kod",
+          "description": "Anteckningar som innehåller länkar eller kodblock."
+        },
+        "no-location": {
+          "title": "Utan plats",
+          "description": "Anteckningar utan bifogad plats."
+        },
+        "with-attachments": {
+          "title": "Med bilagor",
+          "description": "Anteckningar med minst en bifogad fil."
+        },
+        "photos": {
+          "title": "Foton",
+          "description": "Anteckningar som visar en bild, i innehållet eller som bifogad fil."
+        },
+        "content-search": {
+          "title": "Innehållssökning",
+          "description": "Sök efter text i anteckningarnas innehåll."
+        },
+        "starts-with": {
+          "title": "Börjar med",
+          "description": "Anteckningar vars innehåll börjar med en text (även endsWith)."
+        },
+        "regex": {
+          "title": "Regex-matchning",
+          "description": "Matcha innehåll mot ett reguljärt uttryck."
+        },
+        "all-tags-complete": {
+          "title": "Alla taggar klara",
+          "description": "Varje tagg slutar på -done (endast taggade anteckningar)."
+        },
+        "one-project-tag": {
+          "title": "En projekttagg",
+          "description": "Exakt en tagg uppfyller predikatet."
+        },
+        "any-tags": {
+          "title": "Någon av dessa taggar",
+          "description": "Taggarna överlappar den angivna mängden."
+        },
+        "exact-tags": {
+          "title": "Exakt dessa taggar",
+          "description": "Taggade med exakt den här mängden, inget mer."
+        },
+        "year-2024": {
+          "title": "Anteckningar från 2024",
+          "description": "Filtrera efter kalenderår."
+        },
+        "weekend": {
+          "title": "Helganteckningar",
+          "description": "Skapade på en söndag eller lördag (0 = söndag)."
+        },
+        "long": {
+          "title": "Långa anteckningar",
+          "description": "Anteckningar längre än 280 tecken."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguration",
+      "description": "Resurser som anges av konfigurationsfiler. Redigera en fil och tillämpa den för att ändra dem; resten av instansen går fortfarande att redigera här.",
+      "managed-by": "Styrs av konfiguration",
+      "managed-tooltip": "Anges i {{source}}. Redigera filen och tillämpa den för att ändra detta.",
+      "resource": "Resurs",
+      "source": "Fil",
+      "managed-fields": "Styrda fält",
+      "whole-resource": "Alla fält",
+      "ignored-fields": "Kan redigeras här",
+      "serial": "Serienummer",
+      "last-apply": "Senast tillämpad",
+      "applied-by": "Tillämpad av",
+      "nothing-managed": "Ingen konfiguration har tillämpats. Allt ställs in här."
     },
     "sso": {
       "authorization-endpoint": "Auktoriseringsendpoint",
@@ -535,7 +809,9 @@
       "scopes-description": "Separera omfattningar med mellanslag. De flesta leverantörer behöver bara en liten uppsättning som profil eller e-poståtkomst.",
       "template-description": "Börja från en leverantörsförinställning och justera sedan användaruppgifterna och slutpunkterna för din hyresgäst.",
       "unlink-success": "Olänkad {{name}}.",
-      "update-sso-description": "Granska leverantörskonfigurationen och spara sedan de fält som ska ändras."
+      "update-sso-description": "Granska leverantörskonfigurationen och spara sedan de fält som ska ändras.",
+      "invalid-config": "Identitetsleverantörens konfiguration är ogiltig.",
+      "provider-id-placeholder": "t.ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Åtkomstnyckel",
@@ -583,9 +859,9 @@
       "customize-server": {
         "description": "Beskrivning",
         "icon-url": "Ikon-URL",
-        "title": "Anpassa server"
+        "title": "Anpassa server",
+        "dialog-description": "Anpassa instansens utseende och inställningar."
       },
-      "enable-double-click-to-edit": "Aktivera dubbelklick för att redigera",
       "label": "System",
       "server-name": "Servernamn",
       "additional-script-description": "Injicera JavaScript i varje webbsida. Använd endast betrodd kod.",
@@ -595,38 +871,47 @@
       "custom-code-title": "Anpassad kod"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1092,9 @@
       "review-existing": "Redan i ditt konto",
       "review-exported": "Exporterad av",
       "review-memos": "Anteckningar i filen",
-      "review-new": "Kommer att skapas"
+      "review-new": "Kommer att skapas",
+      "export-admin-only": "Endast administratörer kan exportera anteckningar. Be en administratör om din exportfil.",
+      "export-busy": "En annan export pågår. Försök igen om en stund."
     },
     "spaces": {
       "general": "Allmänt",
@@ -893,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "Länk till anteckning",
-    "select-location": "Plats"
+    "select-location": "Plats",
+    "link-memo-description": "Sök efter och välj en anteckning att länka"
   },
   "demo": {
     "banner-description": "Ändringar är tillfälliga och kan återställas.",
@@ -996,7 +1284,12 @@
     "loading": "Läser in PM…",
     "new-here": "Skriv här",
     "saved-outside-filter": "Sparad. Detta PM ligger utanför de aktuella kartresultaten.",
-    "open-memo": "Öppna PM"
+    "open-memo": "Öppna PM",
+    "open-in-google-maps": "Öppna i Google Maps",
+    "location-description": "Välj en plats på kartan eller ange koordinater manuellt",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "place-placeholder": "Välj en position först."
   },
   "calendar": {
     "new-memo-on-day": "Nytt PM denna dag",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "t.ex. Produkt",
     "spaces": "Utrymmen",
     "switch": "Byt utrymme"
+  },
+  "welcome": {
+    "title": "Välkommen till Memos",
+    "headline": "Enkla anteckningar för vardagens tankar.",
+    "intro-write": "En enda mening kan vara en hel anteckning.",
+    "intro-keep": "Varje anteckning stannar hos dagen du skrev den.",
+    "intro-share": "Du väljer vad som förblir privat.",
+    "write": "Skriva",
+    "write-sub": "En enda mening kan vara en hel anteckning.",
+    "no-title": "Ingen titel",
+    "no-title-text": "En anteckning börjar med själva tanken. Det finns ingen titel att fylla i.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown ger dina ord struktur när du vill ha den.",
+    "attach": "Bifoga",
+    "attach-text": "Bilder, filer, ljud och en plats läggs till via ＋.",
+    "keep": "Behålla",
+    "keep-sub": "Varje anteckning stannar hos dagen du skrev den.",
+    "calendar-text": "Kalendern leder tillbaka till vilken dag som helst.",
+    "tags-text": "Ett ord efter # blir en tagg, och en tagg filtrerar tidslinjen.",
+    "views-text": "En egen vy sparar ett filter.",
+    "map-text": "Anteckningar med en plats finns på kartan.",
+    "share": "Dela",
+    "share-sub": "Anteckningar börjar privata. Du väljer vad du delar och vad du publicerar.",
+    "visibility-text": "Varje anteckning har sin egen inställning. Nya börjar privata, bara för dig; en offentlig har en länk som vem som helst kan öppna.",
+    "spaces-text": "I ett utrymme skriver medlemmarna vid sidan av dig, var och en med sina egna anteckningar.",
+    "comments": "Kommentarer",
+    "comments-text": "Alla som kan se en anteckning kan svara under den.",
+    "skip": "Hoppa över",
+    "next": "Nästa",
+    "done": "Klar",
+    "page-of": "Sida {{current}} av {{total}}",
+    "reopen": "Välkomstguide",
+    "reopen-note": "De fyra skärmarna som ett nytt konto ser först.",
+    "sample": {
+      "today": "Idag, 10:42",
+      "today-early": "Idag, 9:18",
+      "yesterday": "Igår, 15:20",
+      "comment-age": "2 h",
+      "memo-preview": "En enklare första skärm. Ett fält, sedan en förhandsvisning.",
+      "memo-release": "Före nästa release",
+      "task-sketch": "Skissa den första skärmen",
+      "task-polish": "Putsa förhandsvisningen",
+      "write-lead": "Håll det första steget litet.",
+      "write-strong": "Visa detaljerna",
+      "write-tail": "när de behövs.",
+      "write-task": "Skriv en kort ändringslogg",
+      "view": "Oavslutade uppgifter",
+      "space": "Produkt",
+      "share-memo": "Prova att visa resultatet innan vi ber folk registrera sig.",
+      "comment": "Håller med. Det var förhandsvisningen som övertygade.",
+      "tag-design": "design",
+      "tag-project": "projekt",
+      "tag-reading": "läsning",
+      "tag-ideas": "idéer"
+    }
+  },
+  "error": {
+    "title": "Något gick fel",
+    "description": "Ett oväntat fel uppstod. Det kan bero på ett nätverksproblem eller ett problem i appen.",
+    "description-update": "Ett oväntat fel uppstod. Det kan bero på ett nätverksproblem eller en uppdatering av appen. Att läsa in sidan igen brukar lösa det.",
+    "details": "Felinformation",
+    "reload": "Läs in appen igen",
+    "not-found": "Sidan du letar efter kunde inte hittas.",
+    "permission-denied": "Åtkomst nekad",
+    "too-many-requests": "För många förfrågningar. Försök igen om {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} tim",
+    "challenge-required": "Slutför verifieringen och försök igen.",
+    "quota-memo-count": "Du har nått din gräns på {{limit}} anteckningar. Ta bort anteckningar för att skapa nya.",
+    "quota-storage": "Uppladdningen skulle överskrida din lagringsgräns på {{limit}}. Du använder {{usage}}.",
+    "quota-upload": "Filen är större än din gräns på {{limit}} per fil.",
+    "quota-memo-content": "Anteckningen är större än din gräns på {{limit}} per anteckning. Korta ned innehållet för att spara den.",
+    "quota-generic": "Du har nått en användningsgräns.",
+    "sign-in-failed": "Det gick inte att logga in.",
+    "sign-up-failed": "Registreringen misslyckades",
+    "authenticate-failed": "Autentiseringen misslyckades.",
+    "update-profile-failed": "Det gick inte att uppdatera profilen",
+    "unlink-identity-failed": "Det gick inte att koppla från identitetsleverantören.",
+    "link-identity-failed": "Det gick inte att starta kontokopplingen. Försök igen."
+  },
+  "attachment-preview": {
+    "title": "Förhandsgranskning av bilaga",
+    "description": "Dialog för förhandsgranskning av bilagor. Tryck på Escape för att stänga, använd vänster- och högerpilarna för att byta objekt och zooma bilder med kontrollerna, mushjulet, dubbeltryck eller nypgest.",
+    "close": "Stäng förhandsgranskning",
+    "previous": "Föregående objekt",
+    "next": "Nästa objekt",
+    "reset-zoom": "Återställ zoom",
+    "image-alt": "Förhandsgranskning av bild {{index}} av {{count}}",
+    "live-photo-alt": "Förhandsgranskning av livefoto {{index}} av {{count}}",
+    "play-live-photo": "Hovra eller tryck för att spela upp livefotot"
+  },
+  "audio-player": {
+    "seek": "Spola i {{name}}",
+    "back": "Bakåt {{seconds}} sekunder",
+    "forward": "Framåt {{seconds}} sekunder",
+    "speed": "Uppspelningshastighet {{rate}}x"
   }
 }

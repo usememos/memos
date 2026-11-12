@@ -24,6 +24,21 @@ const attachment = (name: string, type: string, memo?: string): Attachment =>
 describe("buildAttachmentLibraryStats", () => {
   beforeEach(() => clients.listAttachments.mockReset());
 
+  it.each(["100% complete.txt", "ảnh#1?.png", "literal%20name.txt"])("keeps %s in attachment library URLs", async (filename) => {
+    const file = attachment("test-uid", "text/plain");
+    file.filename = filename;
+    clients.listAttachments.mockResolvedValue({ attachments: [file], nextPageToken: "" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => createElement(QueryClientProvider, { client: queryClient }, children);
+    const { result } = renderHook(() => useUnusedAttachmentLibrary("en"), { wrapper });
+
+    await waitFor(() => expect(result.current.isComplete).toBe(true));
+    const url = new URL(result.current.unusedItems[0].sourceUrl);
+    expect(decodeURIComponent(url.pathname.split("/").at(-1)!)).toBe(filename);
+    expect(url.hash).toBe("");
+    expect(url.search).toBe("");
+  });
+
   it("counts linked attachment types without expanding live-photo pairs", () => {
     const still = attachment("live.jpg", "image/jpeg", "memos/one");
     still.motionMedia = create(MotionMediaSchema, {

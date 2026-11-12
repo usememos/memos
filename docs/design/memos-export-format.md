@@ -296,3 +296,29 @@ Each version has its own schema directory, `docs/design/memo-export/<MAJOR.MINOR
 - A `SELECTION` scope for a filtered subset, for example one Space or one tag, using the same record layout.
 - Persisting a content digest on stored attachments so that import can find identical bytes anywhere in the account instead of only under the same UID.
 - Firing memo webhooks and mention notifications for imported memos. An import currently publishes one live-refresh event and nothing else.
+
+## Amendments
+
+### 2026-10-31: export is an administrator download
+
+Export left `UserService`. `ExportMemos` and `ExportMemosRequest` are removed; `ImportMemos` is unchanged and every
+member still imports into their own account.
+
+The archive is now served by the file server at `GET /file/users/{username}/export`, which authenticates like
+attachments do, with the `Authorization` header or the session cookie. Only an instance administrator may call it, for
+any user, so an administrator can hand a departing member their archive. The archive is still personal: `scope.kind` is
+`USER` and the content rules above are unchanged.
+
+Why: the RPC built the whole ZIP, attachment bytes included, in server memory before answering, and the browser then
+held it twice more. The route writes the ZIP straight into the response: attachment bytes pass through without being
+held, so server memory no longer grows with the attachments, only with the memo rows, and the browser streams the
+download to disk. One export runs per instance at a time; a second request receives
+`429` with `another export is running`. The `archive_user` budget of ten per hour still applies, charged to the
+administrator. `HEAD` runs every check and returns the headers alone, which the web client uses as a preflight so a
+refusal becomes a message rather than a downloaded error document. Every memo row the archive needs is loaded before
+the first byte, so permission, not-found, and database errors on those rows arrive as status codes. Attachment content
+is read while the archive streams; a missing file or a storage error there ends the download as a truncated ZIP, which
+the reader rejects.
+
+The export route is a plain HTTP route and no longer appears in the generated clients or the OpenAPI document. The
+`Export semantics` and `Transport` sections above describe the RPC as it shipped in 26.10.0-rc.2.

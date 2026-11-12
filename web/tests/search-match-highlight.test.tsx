@@ -1,7 +1,7 @@
 import { render, waitFor } from "@testing-library/react";
 import { useRef } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SEARCH_MATCH_HIGHLIGHT_NAME, useSearchMatchHighlight } from "@/components/MemoContent/useSearchMatchHighlight";
+import { SEARCH_MATCH_HIGHLIGHT_NAME, useSearchMatchHighlight } from "@/components/MemoEditor/view/useSearchMatchHighlight";
 
 // jsdom has no CSS Custom Highlight API; a Set-backed Highlight and a Map registry are
 // exactly the surface the hook uses (add/delete on the highlight, get/set on the registry).

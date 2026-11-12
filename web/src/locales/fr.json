@@ -6,7 +6,6 @@
     "api-docs": "Documentation API",
     "api-docs-note": "Référence REST et gRPC",
     "build": "Compiler",
-    "commit": "Commit",
     "demo": "Démo",
     "description": "Un espace libre et auto-hébergé pour vos notes, vos idées et vos pensées du quotidien.",
     "distribution": "Distribution",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Impossible de terminer la connexion",
     "create-your-account": "Créez votre compte",
+    "hide-password": "Masquer le mot de passe",
+    "incorrect-credentials": "Nom d'utilisateur ou mot de passe incorrect.",
     "new-password": "Nouveau mot de passe",
     "repeat-new-password": "Répétez le nouveau mot de passe",
+    "show-password": "Afficher le mot de passe",
     "sign-in-tip": "Vous avez déjà un compte ?",
     "sign-up-tip": "Vous n'avez pas encore de compte ?",
     "admin-sign-in": "Connexion administrateur",
-    "admin-sign-in-tip": "La connexion par mot de passe reste disponible pour les administrateurs.",
     "back-to-sign-in": "Retour à la connexion",
     "continue-with": "Continuer avec {{provider}}",
     "create-admin-account": "Créer un compte administrateur",
-    "explore-public-memos": "Consulter les notes publiques de cette instance",
-    "first-run": "Première exécution",
     "setup-description": "Créer le compte administrateur de cette instance.",
-    "setup-note": "Ce compte gère les paramètres, les membres et les fournisseurs d'identité de l'instance.",
     "setup-title": "Configurer votre instance",
     "signin-unavailable-description": "La connexion par mot de passe est désactivée et aucun fournisseur d'identité n'est configuré. Veuillez demander à votre administrateur d'activer une méthode de connexion.",
     "signin-unavailable-title": "Connexion impossible",
-    "signup-unavailable-description": "Les comptes par mot de passe sont désactivés et aucun fournisseur d'identité n'est configuré. Veuillez demander l'accès à votre administrateur.",
-    "signup-unavailable-title": "Inscription impossible",
-    "signups-closed-description": "La création de nouveaux comptes est désactivée sur cette instance. Contactez votre administrateur si vous avez besoin d'y accéder.",
-    "signups-closed-title": "Les inscriptions sont fermées.",
-    "sso-signup-tip": "Connectez-vous avec un fournisseur ci-dessous pour créer votre compte.",
-    "welcome-back": "Bienvenue."
+    "signups-closed-description": "La création de nouveaux comptes est désactivée sur cette instance. Contactez votre administrateur si vous avez besoin d'y accéder."
   },
   "common": {
     "about": "À propos",
@@ -103,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Référencé par",
     "referencing": "Référence",
-    "relations": "Relations",
     "resources": "Ressources",
     "restore": "Restaurer",
     "role": "Rôle",
@@ -139,7 +132,24 @@
     "resize-panel": "Redimensionner le panneau",
     "resize-sidebar": "Redimensionner la barre latérale",
     "sign-in-to-memos": "Se connecter à Memos",
-    "view-all": "Tout afficher"
+    "open-navigation": "Ouvrir la navigation",
+    "navigation": "Navigation",
+    "primary-navigation": "Principale",
+    "download": "Télécharger",
+    "download-name": "Télécharger {{name}}",
+    "open-name": "Ouvrir {{name}}",
+    "preview-name": "Aperçu de {{name}}",
+    "no-content": "Aucun contenu",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "retry": "Réessayer",
+    "docs": "Documentation",
+    "calendar-for-month": "Calendrier de {{month}}",
+    "date-at-time": "{{date}} à {{time}}",
+    "selected-location": "Lieu sélectionné",
+    "choose-location": "Choisissez un lieu",
+    "unknown-error": "Erreur inconnue",
+    "error-occurred": "Une erreur s'est produite"
   },
   "locale-picker": {
     "no-language-feedback": "Langue introuvable ? Soumettre des commentaires"
@@ -150,6 +160,7 @@
     "any-thoughts": "Des idées...",
     "exit-focus-mode": "Quitter le mode concentration",
     "focus-mode": "Mode concentration",
+    "markdown-mode": "Mode Markdown",
     "insert-menu": {
       "add-location": "Ajouter un emplacement",
       "link-memo": "Lien vers un mémo",
@@ -158,9 +169,50 @@
       "image-upload-failed": "Certaines images n'ont pas pu être chargées. Veuillez réessayer ou conserver les fichiers chargés en pièces jointes.",
       "image-upload-stopped": "Chargement d'image interrompu {{completed}}/{{total}}",
       "insert-image": "Insérer une image",
+      "drawing": "Dessin",
       "keep-as-attachments": "Conserver en pièces jointes",
       "uploading-inline-image": "Chargement du contenu",
       "uploading-images": "Chargement des images {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Nouveau dessin",
+      "edit": "Modifier le dessin",
+      "tools": "Outils",
+      "tool-select": "Sélection",
+      "tool-pen": "Stylo",
+      "tool-eraser": "Gomme",
+      "tool-rectangle": "Rectangle",
+      "tool-ellipse": "Ellipse",
+      "tool-arrow": "Flèche",
+      "tool-text": "Texte",
+      "style": "Couleur et épaisseur",
+      "color": "Couleur",
+      "width": "Épaisseur",
+      "width-thin": "Fine",
+      "width-medium": "Moyenne",
+      "width-thick": "Épaisse",
+      "color-ink": "Encre",
+      "color-gray": "Gris",
+      "color-red": "Rouge",
+      "color-orange": "Orange",
+      "color-green": "Vert",
+      "color-teal": "Sarcelle",
+      "color-blue": "Bleu",
+      "color-violet": "Violet",
+      "undo": "Annuler",
+      "redo": "Rétablir",
+      "zoom-to-fit": "Ajuster à la fenêtre",
+      "done": "Terminé",
+      "discard-title": "Abandonner ce dessin ?",
+      "discard-description": "Il n'a pas encore été ajouté au mémo.",
+      "discard-edit-title": "Abandonner vos modifications ?",
+      "discard-edit-description": "Le dessin reste tel qu'il était avant son ouverture.",
+      "keep-drawing": "Continuer à dessiner",
+      "discard": "Abandonner",
+      "open-failed": "Impossible d'ouvrir le dessin. Veuillez réessayer.",
+      "export-failed": "Impossible d'enregistrer le dessin. Veuillez réessayer.",
+      "image-failed": "Impossible d'ajouter l'image au dessin.",
+      "saved-without-drawing": "Le mémo est enregistré, mais pas le dessin. Enregistrez à nouveau pour réessayer."
     },
     "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",
@@ -183,21 +235,21 @@
     "format": {
       "code-block": "Bloc de code",
       "link": "Lien",
-      "heading": "Titre",
       "paragraph": "Paragraphe",
       "heading-1": "Titre 1",
       "heading-2": "Titre 2",
       "heading-3": "Titre 3",
+      "heading-4": "Titre 4",
       "bold": "Gras",
       "italic": "Italique",
       "strikethrough": "Barré",
       "bullet-list": "Liste à puces",
       "ordered-list": "Liste numérotée",
-      "task-list": "Liste de tâches",
-      "more": "Options de mise en forme supplémentaires"
+      "task-list": "Liste de tâches"
     },
     "comment": "Commentaire",
-    "formatting-toolbar": "Barre d'outils de mise en forme",
+    "footnotes": "Notes de bas de page",
+    "back-to-reference": "Retour à la référence",
     "new-memo": "Nouvelle note",
     "saved": "Enregistrée",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "Enregistrement en cours",
       "unsupported-attachment-image-url": "URL d'image de pièce jointe non prise en charge : {{url}}",
       "wait-for-upload": "Veuillez patienter jusqu'à la fin du chargement"
-    }
+    },
+    "blocks": {
+      "task": "Tâche",
+      "quote": "Citation",
+      "callout": "Encadré",
+      "callout-note": "Remarque",
+      "callout-tip": "Astuce",
+      "callout-important": "Important",
+      "callout-warning": "Avertissement",
+      "callout-caution": "Attention",
+      "collapsible-section": "Section repliable",
+      "table": "Tableau",
+      "divider": "Séparateur",
+      "no-results": "Aucun résultat",
+      "commands": "Commandes",
+      "loading": "Chargement…",
+      "duplicate": "Dupliquer",
+      "inline-code": "Code",
+      "link-placeholder": "Collez ou saisissez un lien…",
+      "remove-link": "Supprimer le lien",
+      "open-link": "Ouvrir le lien",
+      "copy-link": "Copier le lien",
+      "edit-link": "Modifier le lien",
+      "emoji": "Emoji",
+      "block-menu": "Ouvrir le menu du bloc",
+      "list-hint": "Liste",
+      "plain-text": "texte",
+      "add-row-above": "Ajouter une ligne au-dessus",
+      "add-row-below": "Ajouter une ligne en dessous",
+      "add-column-left": "Ajouter une colonne à gauche",
+      "add-column-right": "Ajouter une colonne à droite",
+      "delete-row": "Supprimer la ligne",
+      "delete-column": "Supprimer la colonne",
+      "align": "Aligner",
+      "align-left": "Gauche",
+      "align-center": "Centre",
+      "align-right": "Droite",
+      "image-align-left": "Aligner à gauche",
+      "image-align-center": "Centrer",
+      "image-align-right": "Aligner à droite",
+      "text-style": "Style de texte",
+      "image": "Image",
+      "reset-image-size": "Réinitialiser la taille",
+      "alt-text": "Texte alternatif",
+      "alt-text-placeholder": "Décrivez l'image…",
+      "image-unavailable": "Image indisponible",
+      "resize-image": "Redimensionner l'image"
+    },
+    "attachments": {
+      "edited": "Modifié",
+      "new": "Nouveau",
+      "remove": "Retirer la pièce jointe",
+      "reorder": "Réordonner {{name}}",
+      "reorder-hint": "Faites glisser, ou utilisez les touches fléchées"
+    },
+    "remove-relation": "Retirer la relation",
+    "remove-location": "Retirer l'emplacement",
+    "recording-unsupported": "L'enregistrement audio n'est pas pris en charge par ce navigateur.",
+    "microphone-denied": "L'accès au microphone a été refusé.",
+    "recording-failed": "Impossible de démarrer l'enregistrement audio."
   },
   "inbox": {
     "failed-to-load": "Échec du chargement de l'élément",
@@ -218,7 +329,16 @@
     "unread": "Non lu",
     "space-invitation": "Vous a invité à rejoindre un espace.",
     "space-invitation-accepted": "Vous avez rejoint cet espace.",
-    "space-invitation-open": "Espace ouvert"
+    "space-invitation-open": "Espace ouvert",
+    "commented-on-memo": "a commenté votre mémo",
+    "mentioned-in-comment": "vous a mentionné dans un commentaire",
+    "mentioned-in-memo": "vous a mentionné dans un mémo",
+    "original": "Original :",
+    "memo-label": "Mémo :",
+    "comment-heading": "Commentaire",
+    "memo-heading": "Mémo",
+    "empty-memo": "Mémo vide",
+    "empty-comment": "Commentaire vide"
   },
   "live-update": {
     "connected": "Mises à jour en direct actives",
@@ -226,11 +346,17 @@
     "disconnected": "Mises à jour en direct indisponibles"
   },
   "memo": {
+    "no-memos-yet": "Aucun mémo pour l’instant",
+    "no-matching-memos": "Aucun mémo correspondant",
+    "clear-filters": "Effacer les filtres",
     "pinned": "Épinglé",
     "click-to-show-sensitive-content": "Cliquez pour afficher le contenu sensible",
     "comment": {
       "self": "Commentaires",
-      "write-a-comment": "Écrire un commentaire"
+      "write-a-comment": "Écrire un commentaire",
+      "view-all-count_one": "Voir {{count}} commentaire",
+      "view-all-count_many": "Voir les {{count}} commentaires",
+      "view-all-count_other": "Voir les {{count}} commentaires"
     },
     "copy-content": "Copier le contenu",
     "copy-link": "Copier le lien",
@@ -239,10 +365,13 @@
     "delete-confirm-description": "Cette action est irréversible. Les pièces jointes, liens et références seront également supprimés.",
     "direction": "Direction",
     "filters": {
+      "has-attachments": "a des pièces jointes",
       "has-code": "aCode",
+      "has-image": "a une image",
       "has-link": "aLien",
       "has-location": "a une localisation",
-      "has-task-list": "aListeTâches"
+      "has-task-list": "aListeTâches",
+      "remove": "Retirer le filtre"
     },
     "compact-mode": "Mode compact",
     "link-preview": "Aperçu des liens",
@@ -328,7 +457,9 @@
     "restored-successfully": "Restauré avec succès",
     "succeed-copy-content": "Contenu copié avec succès.",
     "succeed-copy-link": "Lien copié avec succès.",
-    "update-succeed": "Mise à jour réussie"
+    "update-succeed": "Mise à jour réussie",
+    "not-signed-in": "Vous n'êtes pas connecté.",
+    "invalid-datetime": "Date et heure non valides. Utilisez le format 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Aucune note trouvée",
@@ -391,14 +522,16 @@
       "delete-account": "Supprimer le compte",
       "delete-account-description": "Supprimez définitivement ce compte et tous les accès associés de cette instance. Cette action ne peut pas être annulée.",
       "attachment-storage": "Stockage d'objets actuel",
-      "usage-description": "Limits set by the admin of this instance. Comments and archived memos count as memos.",
-      "usage-file-size": "Largest file",
+      "usage-description": "Limites définies par l'administrateur de cette instance. Les commentaires et les memos archivés comptent comme des memos.",
+      "usage-file-size": "Taille maximale par fichier",
       "usage-memos": "Memos",
-      "usage-of": "{{usage}} of {{limit}}",
-      "usage-storage": "Storage",
-      "usage-title": "Usage limits",
+      "usage-of": "{{usage}} sur {{limit}}",
+      "usage-storage": "Stockage",
+      "usage-title": "Limites d'utilisation",
       "storage-usage-error": "Votre espace de stockage de pièces jointes est indisponible.",
-      "email-in-use": "Ce compte de messagerie est déjà utilisé."
+      "email-in-use": "Ce compte de messagerie est déjà utilisé.",
+      "avatar-too-large": "Choisissez une image de 2 Mo maximum.",
+      "avatar-unreadable": "Impossible de lire cette image. Essayez un autre fichier."
     },
     "instance": {
       "disallow-change-nickname": "Interdire le changement de surnom",
@@ -437,7 +570,11 @@
       "active": "Active",
       "archived": "Archivé",
       "member-column": "Membre",
-      "summary-column": "Résumé"
+      "summary-column": "Résumé",
+      "export-memos": "Exporter les mémos",
+      "username-password-required": "Le nom d'utilisateur et le mot de passe ne peuvent pas être vides",
+      "create-success": "Utilisateur créé",
+      "update-success": "Utilisateur mis à jour"
     },
     "memo": {
       "label": "Note",
@@ -445,8 +582,6 @@
       "reactions-required": "La liste des réactions ne doit pas être vide",
       "add-reaction": "Ajouter une réaction",
       "configured-reactions": "Réactions configurées",
-      "double-click-edit-description": "Autorisez les utilisateurs à ouvrir l'édition d'un mémo en double-cliquant sur un mémo.",
-      "editing-title": "Édition",
       "reaction-placeholder": "par ex. 👍",
       "reactions-description": "Définissez les options de réaction que les utilisateurs peuvent appliquer aux mémos.",
       "remove-reaction": "Supprimer la réaction"
@@ -455,26 +590,166 @@
       "label": "Mon compte"
     },
     "preference": {
-      "default-memo-visibility": "Visibilité par défaut de la note",
-      "label": "Préférences",
-      "theme": "Thème",
       "appearance-description": "Choisissez l'apparence de l'application et la langue qu'elle utilise pour votre compte.",
       "appearance-title": "Apparence",
+      "default-memo-visibility": "Visibilité par défaut de la note",
       "default-memo-visibility-description": "Visibilité appliquée aux mémos nouvellement créés, sauf modification dans l'éditeur.",
+      "device-description": "Choix de lecture et d'édition conservés uniquement dans ce navigateur. Ils ne sont pas enregistrés dans votre compte.",
+      "device-title": "Cet appareil",
+      "double-click-edit": "Double-clic pour modifier",
+      "double-click-edit-description": "Ouvrez vos propres mémos dans l'éditeur en double-cliquant dessus.",
+      "label": "Préférences",
       "language-description": "Met à jour immédiatement la langue de l'interface et l'enregistre sur votre compte.",
+      "link-preview-description": "Afficher une carte d'aperçu sous les liens bruts partout où des mémos sont affichés.",
       "memo-defaults-description": "Définissez les valeurs par défaut utilisées lors de la rédaction de nouveaux mémos.",
       "memo-defaults-title": "Valeurs par défaut du mémo",
-      "theme-description": "Applique immédiatement le thème sélectionné sur cet appareil.",
       "save-media-metadata": "Enregistrer les métadonnées des médias",
       "save-media-metadata-description": "Pour les futurs chargements, enregistrer les informations de la caméra disponible, l'heure de prise de vue, le lieu, les dimensions de l'image et les détails vidéo de base. Toute personne pouvant consulter la pièce jointe peut recevoir ces métadonnées. Les pièces jointes existantes restent inchangées.",
+      "theme-description": "Applique immédiatement le thème sélectionné sur cet appareil.",
+      "theme": "Thème",
       "uploads-privacy-description": "Contrôler les informations sensibles soumises avec les médias chargés.",
-      "uploads-privacy-title": "Téléchargements et confidentialité"
+      "uploads-privacy-title": "Téléchargements et confidentialité",
+      "theme-system": "Suivre le système",
+      "theme-system-short": "Système",
+      "theme-light": "Clair",
+      "theme-dark": "Sombre",
+      "theme-paper": "Papier"
+    },
+    "editor": {
+      "label": "Éditeur",
+      "markdown-mode-description": "Rédigez et modifiez les mémos en texte Markdown plutôt qu'en texte mis en forme."
     },
     "memo-view": {
       "create": "Créer une vue",
       "delete-confirm": "Êtes-vous sûr de vouloir supprimer la vue `{{title}}` ?",
       "delete-success": "Vue `{{title}}` supprimée avec succès",
-      "change-icon": "Modifier l'icône d'affichage"
+      "change-icon": "Modifier l'icône d'affichage",
+      "page-description": "Créez des vues réutilisables avec des champs, des opérateurs, des fonctions temporelles et la correspondance de tags. Partez des exemples, puis validez avant d'enregistrer.",
+      "edit": "Modifier la vue",
+      "form-description": "Nommez la vue et définissez l'expression de filtre de mémos qu'elle doit appliquer.",
+      "title-placeholder": "Épinglés, Notes récentes, Travail",
+      "filter-help": "Combinez des expressions avec {{and}}, {{or}} et {{not}}. Les champs temporels sont des horodatages : utilisez {{now}}, {{duration}}, {{timestamp}} et des accesseurs comme {{year}}. Les tags prennent en charge {{sets}}, et {{size}} mesure la longueur.",
+      "validate": "Valider",
+      "all": "Toutes les vues",
+      "loading": "Chargement des vues…",
+      "load-failed": "Impossible de charger les vues.",
+      "empty-title": "Aucune vue pour l'instant",
+      "empty-description": "Enregistrez un filtre pour revenir rapidement aux mémos dont vous avez besoin.",
+      "examples-title": "Exemples d'expressions",
+      "fields-title": "Champs pris en charge",
+      "title-filter-required": "Le titre et le filtre ne peuvent pas être vides",
+      "filter-valid": "L'expression de filtre semble valide",
+      "create-success": "Vue créée",
+      "update-success": "Vue mise à jour",
+      "examples": {
+        "pinned": {
+          "title": "Épinglés",
+          "description": "Uniquement les mémos épinglés."
+        },
+        "recent": {
+          "title": "Notes récentes",
+          "description": "Mémos créés au cours de la dernière heure."
+        },
+        "public": {
+          "title": "Mémos publics",
+          "description": "Uniquement les mémos publics."
+        },
+        "project-tags": {
+          "title": "Tags de projet",
+          "description": "Correspond à un ou plusieurs tags exacts."
+        },
+        "untagged": {
+          "title": "Sans tag",
+          "description": "Mémos sans aucun tag."
+        },
+        "archive-tree": {
+          "title": "Arborescence d'archive",
+          "description": "Correspond aux tags hiérarchiques par préfixe."
+        },
+        "unassigned": {
+          "title": "Non attribués",
+          "description": "Mémos qui ne sont placés dans aucun espace."
+        },
+        "one-space": {
+          "title": "Dans un espace",
+          "description": "Mémos placés dans un espace. Utilisez l'ID de l'espace indiqué dans son URL ou ses paramètres."
+        },
+        "open-tasks": {
+          "title": "Tâches en cours",
+          "description": "Mémos contenant des tâches non terminées."
+        },
+        "links-or-code": {
+          "title": "Liens ou code",
+          "description": "Mémos contenant des liens ou des blocs de code."
+        },
+        "no-location": {
+          "title": "Sans emplacement",
+          "description": "Mémos sans emplacement associé."
+        },
+        "with-attachments": {
+          "title": "Avec pièces jointes",
+          "description": "Mémos avec au moins un fichier joint."
+        },
+        "photos": {
+          "title": "Photos",
+          "description": "Mémos qui affichent une image, dans le contenu ou en fichier joint."
+        },
+        "content-search": {
+          "title": "Recherche dans le contenu",
+          "description": "Rechercher du texte dans le contenu des mémos."
+        },
+        "starts-with": {
+          "title": "Commence par",
+          "description": "Mémos dont le contenu commence par un texte (voir aussi endsWith)."
+        },
+        "regex": {
+          "title": "Correspondance regex",
+          "description": "Faire correspondre le contenu avec une expression régulière."
+        },
+        "all-tags-complete": {
+          "title": "Tous les tags terminés",
+          "description": "Chaque tag se termine par -done (mémos avec tags uniquement)."
+        },
+        "one-project-tag": {
+          "title": "Un seul tag de projet",
+          "description": "Exactement un tag satisfait le prédicat."
+        },
+        "any-tags": {
+          "title": "L'un de ces tags",
+          "description": "Les tags ont une intersection avec l'ensemble donné."
+        },
+        "exact-tags": {
+          "title": "Exactement ces tags",
+          "description": "Tagués avec exactement cet ensemble, rien de plus."
+        },
+        "year-2024": {
+          "title": "Mémos de 2024",
+          "description": "Filtrer par année civile."
+        },
+        "weekend": {
+          "title": "Notes du week-end",
+          "description": "Créés un dimanche ou un samedi (0 = dimanche)."
+        },
+        "long": {
+          "title": "Notes longues",
+          "description": "Mémos de plus de 280 caractères."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Configuration",
+      "description": "Ressources définies par des fichiers de configuration. Modifiez un fichier et appliquez-le pour les changer ; le reste de l'instance reste modifiable ici.",
+      "managed-by": "Géré par la configuration",
+      "managed-tooltip": "Défini dans {{source}}. Modifiez le fichier et appliquez-le pour changer ceci.",
+      "resource": "Ressource",
+      "source": "Fichier",
+      "managed-fields": "Champs gérés",
+      "whole-resource": "Tous les champs",
+      "ignored-fields": "Modifiables ici",
+      "serial": "Numéro de série",
+      "last-apply": "Dernière application",
+      "applied-by": "Appliqué par",
+      "nothing-managed": "Aucune configuration n'a été appliquée. Tout se règle ici."
     },
     "sso": {
       "authorization-endpoint": "Point de terminaison d'autorisation",
@@ -535,7 +810,9 @@
       "scopes-description": "Séparez les étendues avec des espaces. La plupart des fournisseurs n’ont besoin que d’un petit ensemble tel qu’un profil ou un accès au courrier électronique.",
       "template-description": "Commencez à partir d’un préréglage de fournisseur, puis ajustez les informations d’identification et les points de terminaison de votre locataire.",
       "unlink-success": "{{name}} non lié.",
-      "update-sso-description": "Vérifiez la configuration du fournisseur, puis enregistrez les champs qui doivent changer."
+      "update-sso-description": "Vérifiez la configuration du fournisseur, puis enregistrez les champs qui doivent changer.",
+      "invalid-config": "La configuration du fournisseur d'identité n'est pas valide.",
+      "provider-id-placeholder": "ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Clé d'accès",
@@ -583,9 +860,9 @@
       "customize-server": {
         "description": "Description",
         "icon-url": "URL de l'icône",
-        "title": "Personnaliser le serveur"
+        "title": "Personnaliser le serveur",
+        "dialog-description": "Personnalisez l'apparence et les paramètres de votre instance."
       },
-      "enable-double-click-to-edit": "Activer le double-clic pour éditer",
       "label": "Système",
       "server-name": "Nom du serveur",
       "additional-script-description": "Injectez JavaScript dans chaque page Web. Utilisez uniquement du code fiable.",
@@ -595,38 +872,47 @@
       "custom-code-title": "Code personnalisé"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
-      "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
+      "add-entry": "Ajouter une entrée",
+      "add-title": "Ajouter une entrée",
+      "all-users": "Tous les utilisateurs",
+      "all-users-description": "Toutes les personnes non citées ci-dessus. C'est la valeur par défaut.",
+      "applies-to": "S'applique à",
+      "content-size": "Contenu du memo (Kio)",
+      "content-size-column": "Contenu du memo",
+      "content-size-description": "La taille UTF-8 du corps d'un memo, Markdown compris.",
+      "default-hint": "Laissez un champ vide pour ne pas fixer de limite.",
+      "default-title": "Limites pour tous les utilisateurs",
+      "description": "Gardez cette instance rapide et fiable en plafonnant ce que chaque utilisateur peut stocker. Chaque entrée est un ensemble complet de limites pour les utilisateurs qu'elle cite.",
+      "edit-title": "Modifier l'entrée",
+      "entry-hint": "Laissez un champ vide pour ne pas fixer de limite. Les champs partent des valeurs de Tous les utilisateurs.",
+      "file-size": "Taille maximale par fichier (Mio)",
+      "file-size-column": "Taille maximale par fichier",
+      "invalid": "Saisissez un nombre entier de memos, ou une taille dans l'unité indiquée.",
+      "label": "Limites d'utilisation",
       "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
-      "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Select a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "memos-description": "Inclut les commentaires et les memos archivés.",
+      "move-down": "Descendre",
+      "move-up": "Monter",
+      "never-applies": "Ne s'applique jamais",
+      "never-applies-description": "Chaque utilisateur cité ici est déjà couvert par une entrée précédente.",
+      "order-note": "Les entrées sont vérifiées de haut en bas. La première entrée qui cite un utilisateur définit ses limites ; les entrées suivantes sont ignorées pour lui. La dernière entrée s'applique à tous les autres.",
+      "position": "#",
+      "remove": "Supprimer",
+      "remove-description": "Les utilisateurs qu'elle cite utiliseront la prochaine entrée qui les cite, ou l'entrée Tous les utilisateurs.",
+      "remove-title": "Supprimer cette entrée ?",
+      "remove-user": "Retirer {{name}}",
+      "removed": "Entrée supprimée",
+      "row-actions": "Actions pour l'entrée {{name}}",
+      "saved": "Limites d'utilisation enregistrées",
+      "select-user": "Ajouter un utilisateur",
+      "storage": "Stockage (Mio)",
+      "storage-column": "Stockage",
+      "storage-description": "La taille totale des fichiers envoyés. Les liens externes ne comptent pas.",
+      "title": "Limites d'utilisation",
+      "unlimited": "Illimité",
+      "users": "Utilisateurs",
+      "users-description": "L'entrée s'applique à chacun de ces utilisateurs.",
+      "users-required": "Citez au moins un utilisateur."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1093,9 @@
       "review-exported": "Exporté par",
       "review-memos": "Memos dans le fichier",
       "review-new": "Sera créé",
-      "import-success": "{{created}} nouveaux mémos importés et {{updated}} mémos mis à jour."
+      "import-success": "{{created}} nouveaux mémos importés et {{updated}} mémos mis à jour.",
+      "export-admin-only": "Seuls les administrateurs peuvent exporter les mémos. Demandez votre fichier d'export à un administrateur.",
+      "export-busy": "Un autre export est en cours. Réessayez dans un instant."
     },
     "spaces": {
       "general": "Général",
@@ -893,7 +1181,8 @@
   },
   "tooltip": {
     "link-memo": "Lier une note",
-    "select-location": "Localisation"
+    "select-location": "Localisation",
+    "link-memo-description": "Recherchez et sélectionnez un mémo à lier"
   },
   "demo": {
     "banner-description": "Les modifications sont temporaires et peuvent être réinitialisées.",
@@ -996,7 +1285,12 @@
     "loading": "Chargement des mémos…",
     "new-here": "Écrire ici",
     "saved-outside-filter": "Enregistré. Ce mémo se trouve en dehors des résultats de la carte.",
-    "open-memo": "Ouvrir le mémo"
+    "open-memo": "Ouvrir le mémo",
+    "open-in-google-maps": "Ouvrir dans Google Maps",
+    "location-description": "Sélectionnez un lieu sur la carte ou saisissez les coordonnées manuellement",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "place-placeholder": "Choisissez d'abord une position."
   },
   "calendar": {
     "new-memo-on-day": "Nouvelle note pour aujourd'hui",
@@ -1040,5 +1334,102 @@
     "name-placeholder": "Ex. Produit",
     "spaces": "Espaces",
     "switch": "Changer d’espace"
+  },
+  "welcome": {
+    "title": "Bienvenue dans Memos",
+    "headline": "Des notes simples pour vos pensées de tous les jours.",
+    "intro-write": "Une seule phrase peut être un memo entier.",
+    "intro-keep": "Chaque memo reste attaché au jour où vous l’avez écrit.",
+    "intro-share": "Vous choisissez ce qui reste privé.",
+    "write": "Écrire",
+    "write-sub": "Une seule phrase peut être un memo entier.",
+    "no-title": "Sans titre",
+    "no-title-text": "Un memo commence par la pensée elle-même. Il n’y a pas de titre à remplir.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown donne de la structure à vos mots quand vous le souhaitez.",
+    "attach": "Joindre",
+    "attach-text": "Les images, les fichiers, l’audio et un lieu s’ajoutent par ＋.",
+    "keep": "Garder",
+    "keep-sub": "Chaque memo reste attaché au jour où vous l’avez écrit.",
+    "calendar-text": "Le calendrier ramène à n’importe quel jour.",
+    "tags-text": "Un mot après # devient un tag, et un tag filtre la chronologie.",
+    "views-text": "Une vue personnalisée enregistre un filtre.",
+    "map-text": "Les memos avec un lieu apparaissent sur la carte.",
+    "share": "Partager",
+    "share-sub": "Les memos commencent privés. Vous choisissez ce que vous partagez et ce que vous publiez.",
+    "visibility-text": "Chaque memo a son propre réglage. Les nouveaux commencent privés, pour vous seul ; un memo public a un lien que n’importe qui peut ouvrir.",
+    "spaces-text": "Dans un espace, les membres écrivent à vos côtés, chacun gardant ses propres memos.",
+    "comments": "Commentaires",
+    "comments-text": "Toute personne qui peut voir un memo peut répondre en dessous.",
+    "skip": "Passer",
+    "next": "Suivant",
+    "done": "Terminé",
+    "page-of": "Page {{current}} sur {{total}}",
+    "reopen": "Guide de bienvenue",
+    "reopen-note": "Les quatre écrans qu’un nouveau compte voit en premier.",
+    "sample": {
+      "today": "Aujourd’hui, 10:42",
+      "today-early": "Aujourd’hui, 9:18",
+      "yesterday": "Hier, 15:20",
+      "comment-age": "2 h",
+      "memo-preview": "Un premier écran plus simple. Une saisie, puis un aperçu.",
+      "memo-release": "Avant la prochaine version",
+      "task-sketch": "Esquisser le premier écran",
+      "task-polish": "Peaufiner l’aperçu",
+      "write-lead": "Garder la première étape petite.",
+      "write-strong": "Révéler les détails",
+      "write-tail": "quand ils sont nécessaires.",
+      "write-task": "Écrire un court journal des modifications",
+      "view": "Tâches inachevées",
+      "space": "Produit",
+      "share-memo": "Essayer de montrer le résultat avant de demander aux gens de s’inscrire.",
+      "comment": "D’accord. C’est l’aperçu qui a convaincu.",
+      "tag-design": "design",
+      "tag-project": "projet",
+      "tag-reading": "lecture",
+      "tag-ideas": "idées"
+    }
+  },
+  "error": {
+    "title": "Un problème est survenu",
+    "description": "Une erreur inattendue s'est produite. Elle peut être due à un problème réseau ou à un problème de l'application.",
+    "description-update": "Une erreur inattendue s'est produite. Elle peut être due à un problème réseau ou à une mise à jour de l'application. Recharger la page règle généralement le problème.",
+    "details": "Détails de l'erreur",
+    "reload": "Recharger l'application",
+    "not-found": "La page que vous recherchez est introuvable.",
+    "permission-denied": "Autorisation refusée",
+    "too-many-requests": "Trop de requêtes. Réessayez dans {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Terminez la vérification et réessayez.",
+    "quota-memo-count": "Vous avez atteint votre limite de {{limit}} mémos. Supprimez des mémos pour en créer de nouveaux.",
+    "quota-storage": "Ce téléversement dépasserait votre limite de stockage de {{limit}}. Vous utilisez {{usage}}.",
+    "quota-upload": "Ce fichier dépasse votre limite de {{limit}} par fichier.",
+    "quota-memo-content": "Ce mémo dépasse votre limite de {{limit}} par mémo. Raccourcissez le contenu pour l'enregistrer.",
+    "quota-generic": "Vous avez atteint une limite d'utilisation.",
+    "sign-in-failed": "Échec de la connexion.",
+    "sign-up-failed": "Échec de l'inscription",
+    "authenticate-failed": "Échec de l'authentification.",
+    "update-profile-failed": "Échec de la mise à jour du profil",
+    "unlink-identity-failed": "Échec de la dissociation du fournisseur d'identité.",
+    "link-identity-failed": "Impossible de lancer l’association du compte. Veuillez réessayer."
+  },
+  "attachment-preview": {
+    "title": "Aperçu de la pièce jointe",
+    "description": "Fenêtre d'aperçu des pièces jointes. Appuyez sur Échap pour fermer, utilisez les flèches gauche et droite pour changer d'élément, et zoomez sur les images avec les commandes, la molette de la souris, un double appui ou un pincement.",
+    "close": "Fermer l'aperçu",
+    "previous": "Élément précédent",
+    "next": "Élément suivant",
+    "reset-zoom": "Réinitialiser le zoom",
+    "image-alt": "Aperçu de l'image {{index}} sur {{count}}",
+    "live-photo-alt": "Aperçu de la photo en direct {{index}} sur {{count}}",
+    "play-live-photo": "Survolez ou appuyez pour lire la photo en direct"
+  },
+  "audio-player": {
+    "seek": "Se déplacer dans {{name}}",
+    "back": "Reculer de {{seconds}} secondes",
+    "forward": "Avancer de {{seconds}} secondes",
+    "speed": "Vitesse de lecture {{rate}}x"
   }
 }

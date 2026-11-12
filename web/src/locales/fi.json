@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentit",
     "api-docs-note": "REST- ja gRPC-viite",
     "build": "Rakentaminen",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Avoimen lähdekoodin tila omalla palvelimellasi muistiinpanoille, ideoille ja arjen ajatuksille.",
     "distribution": "Jakelu",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Kirjautumista ei voitu viimeistellä",
     "create-your-account": "Luo tili",
+    "hide-password": "Piilota salasana",
+    "incorrect-credentials": "Väärä käyttäjänimi tai salasana.",
     "new-password": "Uusi salasana",
     "repeat-new-password": "Toista uusi salasana",
+    "show-password": "Näytä salasana",
     "sign-in-tip": "Onko sinulla jo tili?",
     "sign-up-tip": "Eikö sinulla ole vielä tiliä?",
     "admin-sign-in": "Järjestelmänvalvojan kirjautuminen",
-    "admin-sign-in-tip": "Salasanakirjakirjautuminen on edelleen käytettävissä järjestelmänvalvojille.",
     "back-to-sign-in": "Takaisin sisäänkirjautumiseen",
     "continue-with": "Jatka kohdasta {{provider}}",
     "create-admin-account": "Luo järjestelmänvalvojan tili",
-    "explore-public-memos": "Tutustu julkisiin muistioihin tässä instanssissa",
-    "first-run": "Ensimmäinen käyttökerta",
     "setup-description": "Luo järjestelmänvalvojan tili tälle instanssille.",
-    "setup-note": "Tämä tili omistaa instanssin asetukset, jäsenet ja identiteetintarjoajat.",
     "setup-title": "Määritä instanssisi",
     "signin-unavailable-description": "Salasanakirjautuminen on poistettu käytöstä eikä identiteetintarjoajia ole määritetty. Pyydä järjestelmänvalvojaasi ottamaan sisäänkirjautumismenetelmä käyttöön.",
     "signin-unavailable-title": "Kirjautuminen ei ole käytettävissä",
-    "signup-unavailable-description": "Salasanatilit on poistettu käytöstä eikä identiteetintarjoajia ole määritetty. Pyydä järjestelmänvalvojaasi käyttöoikeutta.",
-    "signup-unavailable-title": "Rekisteröityminen ei ole käytettävissä",
-    "signups-closed-description": "Uudet tilit on poistettu käytöstä tässä instanssissa. Ota yhteyttä järjestelmänvalvojaasi, jos tarvitset käyttöoikeutta.",
-    "signups-closed-title": "Rekisteröitymiset ovat päättyneet",
-    "sso-signup-tip": "Kirjaudu sisään alla olevalla palveluntarjoajalla luodaksesi tilisi.",
-    "welcome-back": "Tervetuloa takaisin."
+    "signups-closed-description": "Uudet tilit on poistettu käytöstä tässä instanssissa. Ota yhteyttä järjestelmänvalvojaasi, jos tarvitset käyttöoikeutta."
   },
   "demo": {
     "banner-description": "Muutokset ovat väliaikaisia ​​ja ne voidaan nollata.",
@@ -142,7 +136,6 @@
     "profile": "Profiili",
     "referenced-by": "Viittannut",
     "referencing": "Viittaus",
-    "relations": "Suhteet",
     "resources": "Resurssit",
     "restore": "Palauttaa",
     "role": "Rooli",
@@ -177,7 +170,24 @@
     "resize-panel": "Muuta paneelin kokoa",
     "resize-sidebar": "Muuta sivupalkin kokoa",
     "sign-in-to-memos": "Kirjaudu sisään Memos",
-    "view-all": "Näytä kaikki"
+    "open-navigation": "Avaa navigointi",
+    "navigation": "Navigointi",
+    "primary-navigation": "Ensisijainen",
+    "download": "Lataa",
+    "download-name": "Lataa {{name}}",
+    "open-name": "Avaa {{name}}",
+    "preview-name": "Esikatsele {{name}}",
+    "no-content": "Ei sisältöä",
+    "previous": "Edellinen",
+    "next": "Seuraava",
+    "retry": "Yritä uudelleen",
+    "docs": "Dokumentaatio",
+    "calendar-for-month": "Kalenteri: {{month}}",
+    "date-at-time": "{{date}} klo {{time}}",
+    "selected-location": "Valittu sijainti",
+    "choose-location": "Valitse sijainti",
+    "unknown-error": "Tuntematon virhe",
+    "error-occurred": "Tapahtui virhe"
   },
   "locale-picker": {
     "no-language-feedback": "Eikö kieltä löydy? Lähetä palautetta"
@@ -188,6 +198,7 @@
     "any-thoughts": "Mitään ajatuksia...",
     "exit-focus-mode": "Poistu tarkennustilasta",
     "focus-mode": "Tarkennustila",
+    "markdown-mode": "Markdown-tila",
     "insert-menu": {
       "add-location": "Lisää sijainti",
       "link-memo": "Linkkimuistio",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Joidenkin kuvien lataaminen epäonnistui. Yritä uudelleen tai säilytä ladatut tiedostot liitteinä.",
       "image-upload-stopped": "Kuvan lataus pysähtynyt {{completed}}/{{total}}",
       "insert-image": "Lisää kuva",
+      "drawing": "Piirros",
       "keep-as-attachments": "Säilytä liitteinä",
       "uploading-inline-image": "Ladataan sisältöön",
       "uploading-images": "Kuvien lataus {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Uusi piirros",
+      "edit": "Muokkaa piirrosta",
+      "tools": "Työkalut",
+      "tool-select": "Valitse",
+      "tool-pen": "Kynä",
+      "tool-eraser": "Pyyhekumi",
+      "tool-rectangle": "Suorakulmio",
+      "tool-ellipse": "Ellipsi",
+      "tool-arrow": "Nuoli",
+      "tool-text": "Teksti",
+      "style": "Väri ja paksuus",
+      "color": "Väri",
+      "width": "Paksuus",
+      "width-thin": "Ohut",
+      "width-medium": "Keskipaksu",
+      "width-thick": "Paksu",
+      "color-ink": "Muste",
+      "color-gray": "Harmaa",
+      "color-red": "Punainen",
+      "color-orange": "Oranssi",
+      "color-green": "Vihreä",
+      "color-teal": "Sinivihreä",
+      "color-blue": "Sininen",
+      "color-violet": "Violetti",
+      "undo": "Kumoa",
+      "redo": "Tee uudelleen",
+      "zoom-to-fit": "Sovita näkymään",
+      "done": "Valmis",
+      "discard-title": "Hylätäänkö tämä piirros?",
+      "discard-description": "Sitä ei ole vielä lisätty muistioon.",
+      "discard-edit-title": "Hylätäänkö muutokset?",
+      "discard-edit-description": "Piirros pysyy sellaisena kuin se oli ennen avaamista.",
+      "keep-drawing": "Jatka piirtämistä",
+      "discard": "Hylkää",
+      "open-failed": "Piirroksen avaaminen epäonnistui. Yritä uudelleen.",
+      "export-failed": "Piirroksen tallentaminen epäonnistui. Yritä uudelleen.",
+      "image-failed": "Kuvan lisääminen piirrokseen epäonnistui.",
+      "saved-without-drawing": "Muistio on tallennettu, mutta piirrosta ei. Tallenna uudelleen yrittääksesi uudestaan."
     },
     "no-changes-detected": "Muutoksia ei havaittu",
     "save": "Tallentaa",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Koodilohko",
       "link": "Linkki",
-      "heading": "Otsikko",
       "paragraph": "Kappale",
       "heading-1": "Otsikko 1",
       "heading-2": "Otsikko 2",
       "heading-3": "Otsikko 3",
+      "heading-4": "Otsikko 4",
       "bold": "Lihavoitu",
       "italic": "Kursiivi",
       "strikethrough": "Yliviivaus",
       "bullet-list": "Luettelomerkkiluettelo",
       "ordered-list": "Numeroitu luettelo",
-      "task-list": "Tehtävälista",
-      "more": "Lisää muotoiluja"
+      "task-list": "Tehtävälista"
     },
     "comment": "Kommentti",
-    "formatting-toolbar": "Muotoilupalkki",
+    "footnotes": "Alaviitteet",
+    "back-to-reference": "Takaisin viitteeseen",
     "new-memo": "Uusi muistio",
     "saved": "Tallennettu",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Tallennus käynnissä",
       "unsupported-attachment-image-url": "Liitteenä olevan kuvan URL-osoitetta ei tueta: {{url}}",
       "wait-for-upload": "Odota latauksen valmistumista"
-    }
+    },
+    "blocks": {
+      "task": "Tehtävä",
+      "quote": "Lainaus",
+      "callout": "Huomiolaatikko",
+      "callout-note": "Huomautus",
+      "callout-tip": "Vinkki",
+      "callout-important": "Tärkeää",
+      "callout-warning": "Varoitus",
+      "callout-caution": "Varo",
+      "collapsible-section": "Kutistettava osio",
+      "table": "Taulukko",
+      "divider": "Erotin",
+      "no-results": "Ei tuloksia",
+      "commands": "Komennot",
+      "loading": "Ladataan…",
+      "duplicate": "Monista",
+      "inline-code": "Koodi",
+      "link-placeholder": "Liitä tai kirjoita linkki…",
+      "remove-link": "Poista linkki",
+      "open-link": "Avaa linkki",
+      "copy-link": "Kopioi linkki",
+      "edit-link": "Muokkaa linkkiä",
+      "emoji": "Emoji",
+      "block-menu": "Avaa lohkovalikko",
+      "list-hint": "Luettelo",
+      "plain-text": "teksti",
+      "add-row-above": "Lisää rivi yläpuolelle",
+      "add-row-below": "Lisää rivi alapuolelle",
+      "add-column-left": "Lisää sarake vasemmalle",
+      "add-column-right": "Lisää sarake oikealle",
+      "delete-row": "Poista rivi",
+      "delete-column": "Poista sarake",
+      "align": "Tasaus",
+      "align-left": "Vasen",
+      "align-center": "Keskitetty",
+      "align-right": "Oikea",
+      "image-align-left": "Tasaa vasemmalle",
+      "image-align-center": "Keskitä",
+      "image-align-right": "Tasaa oikealle",
+      "text-style": "Tekstityyli",
+      "image": "Kuva",
+      "reset-image-size": "Palauta koko",
+      "alt-text": "Vaihtoehtoinen teksti",
+      "alt-text-placeholder": "Kuvaile kuvaa…",
+      "image-unavailable": "Kuva ei ole saatavilla",
+      "resize-image": "Muuta kuvan kokoa"
+    },
+    "attachments": {
+      "edited": "Muokattu",
+      "new": "Uusi",
+      "remove": "Poista liite",
+      "reorder": "Siirrä {{name}}",
+      "reorder-hint": "Vedä tai käytä nuolinäppäimiä"
+    },
+    "remove-relation": "Poista linkitys",
+    "remove-location": "Poista sijainti",
+    "recording-unsupported": "Tämä selain ei tue äänen tallennusta.",
+    "microphone-denied": "Mikrofonin käyttöoikeus evättiin.",
+    "recording-failed": "Äänen tallennuksen aloittaminen epäonnistui."
   },
   "inbox": {
     "failed-to-load": "Saapuneet-kansion kohteen lataaminen epäonnistui",
@@ -256,7 +367,16 @@
     "unread": "Lukematon",
     "space-invitation": "kutsui sinut liittymään tilaan",
     "space-invitation-accepted": "Liityit tähän tilaan.",
-    "space-invitation-open": "Avoin tila"
+    "space-invitation-open": "Avoin tila",
+    "commented-on-memo": "kommentoi muistiotasi",
+    "mentioned-in-comment": "mainitsi sinut kommentissa",
+    "mentioned-in-memo": "mainitsi sinut muistiossa",
+    "original": "Alkuperäinen:",
+    "memo-label": "Muistio:",
+    "comment-heading": "Kommentti",
+    "memo-heading": "Muistio",
+    "empty-memo": "Tyhjä muistio",
+    "empty-comment": "Tyhjä kommentti"
   },
   "live-update": {
     "connected": "Live-päivitykset aktiivisia",
@@ -264,11 +384,16 @@
     "disconnected": "Live-päivitykset eivät ole saatavilla"
   },
   "memo": {
+    "no-memos-yet": "Ei vielä muistioita",
+    "no-matching-memos": "Ei vastaavia muistioita",
+    "clear-filters": "Tyhjennä suodattimet",
     "pinned": "Kiinnitetty",
     "click-to-show-sensitive-content": "Napsauta näyttääksesi arkaluontoisen sisällön",
     "comment": {
       "self": "Kommentit",
-      "write-a-comment": "Kirjoita kommentti"
+      "write-a-comment": "Kirjoita kommentti",
+      "view-all-count_one": "Näytä {{count}} kommentti",
+      "view-all-count_other": "Näytä kaikki {{count}} kommenttia"
     },
     "copy-content": "Kopioi sisältö",
     "copy-link": "Kopioi linkki",
@@ -278,10 +403,13 @@
     "delete-confirm-description": "Tämä toimenpide on peruuttamaton. Myös liitteet, linkit ja viittaukset poistetaan.",
     "direction": "Suunta",
     "filters": {
+      "has-attachments": "on liitteitä",
       "has-code": "hasCode",
+      "has-image": "on kuva",
       "has-link": "hasLink",
       "has-location": "on sijainti",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Poista suodatin"
     },
     "compact-mode": "Tiivis tila",
     "link-preview": "Linkin esikatselu",
@@ -366,7 +494,9 @@
     "restored-successfully": "Palautettu onnistuneesti",
     "succeed-copy-content": "Sisällön kopiointi onnistui.",
     "succeed-copy-link": "Linkin kopioiminen onnistui.",
-    "update-succeed": "Päivitys onnistui"
+    "update-succeed": "Päivitys onnistui",
+    "not-signed-in": "Et ole kirjautunut sisään.",
+    "invalid-datetime": "Virheellinen päivämäärä ja aika. Käytä muotoa 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Muistioita ei löytynyt",
@@ -436,7 +566,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Liitetiedostojen tallennustila ei ole käytettävissä.",
-      "email-in-use": "Tätä sähköpostiosoitetta käyttää jo toinen tili."
+      "email-in-use": "Tätä sähköpostiosoitetta käyttää jo toinen tili.",
+      "avatar-too-large": "Valitse enintään 2 Mt:n kuva.",
+      "avatar-unreadable": "Tätä kuvaa ei voi lukea. Kokeile toista tiedostoa."
     },
     "ai": {
       "add-provider": "Lisää palveluntarjoaja",
@@ -518,13 +650,15 @@
       "restore-success": "{{username}} palautettiin onnistuneesti",
       "summary-column": "Yhteenveto",
       "user": "Käyttäjä",
-      "no-members-found": "Jäseniä ei löytynyt"
+      "no-members-found": "Jäseniä ei löytynyt",
+      "export-memos": "Vie muistiinpanot",
+      "username-password-required": "Käyttäjätunnus ja salasana eivät voi olla tyhjiä",
+      "create-success": "Käyttäjä luotu",
+      "update-success": "Käyttäjä päivitetty"
     },
     "memo": {
       "add-reaction": "Lisää reaktio",
       "configured-reactions": "Konfiguroidut reaktiot",
-      "double-click-edit-description": "Salli käyttäjien avata muistion muokkaus kaksoisnapsauttamalla muistiota.",
-      "editing-title": "Muokkaus",
       "label": "Muistio",
       "reaction-placeholder": "esim. 👍",
       "reactions-description": "Määritä reaktiovaihtoehdot, joita käyttäjät voivat soveltaa muistioihin.",
@@ -575,22 +709,162 @@
       "appearance-title": "Ulkonäkö",
       "default-memo-visibility": "Oletusmuistin näkyvyys",
       "default-memo-visibility-description": "Näkyvyys koskee äskettäin luotuja muistioita, ellei sitä ole muutettu editorissa.",
+      "device-description": "Luku- ja muokkausvalinnat, jotka tallennetaan vain tähän selaimeen. Niitä ei tallenneta tiliisi.",
+      "device-title": "Tämä laite",
+      "double-click-edit": "Muokkaa kaksoisnapsauttamalla",
+      "double-click-edit-description": "Avaa omat muistiinpanosi editorissa kaksoisnapsauttamalla niitä.",
       "label": "Asetukset",
       "language-description": "Päivittää käyttöliittymän kielen välittömästi ja tallentaa sen tilillesi.",
+      "link-preview-description": "Näytä esikatselukortti paljaiden linkkien alla kaikkialla, missä muistiinpanoja näytetään.",
       "memo-defaults-description": "Aseta oletusasetukset, joita käytetään luotaessa uusia muistioita.",
       "memo-defaults-title": "Muistiinpanon oletusasetukset",
-      "theme-description": "Ottaa valitun teeman käyttöön välittömästi tässä laitteessa.",
-      "theme": "Teema",
       "save-media-metadata": "Tallenna median metatiedot",
       "save-media-metadata-description": "Tallenna käytettävissä oleva kamera, kuvausaika, sijainti, kuvan mitat ja videon perustiedot tulevia latauksia varten. Kuka tahansa, joka voi tarkastella liitettä, voi vastaanottaa nämä metatiedot. Olemassa olevat liitteet pysyvät muuttumattomina.",
+      "theme-description": "Ottaa valitun teeman käyttöön välittömästi tässä laitteessa.",
+      "theme": "Teema",
       "uploads-privacy-description": "Hallitse ladatun median mukana lähetettyjä yksityisyyttä suojaavia tietoja.",
-      "uploads-privacy-title": "Lataukset ja tietosuoja"
+      "uploads-privacy-title": "Lataukset ja tietosuoja",
+      "theme-system": "Järjestelmän mukaan",
+      "theme-system-short": "Järjestelmä",
+      "theme-light": "Vaalea",
+      "theme-dark": "Tumma",
+      "theme-paper": "Paperi"
+    },
+    "editor": {
+      "label": "Editori",
+      "markdown-mode-description": "Kirjoita ja muokkaa muistioita Markdown-tekstinä muotoillun tekstin sijaan."
     },
     "memo-view": {
       "create": "Luo näkymä",
       "delete-confirm": "Haluatko varmasti poistaa näkymän `{{title}}`?",
       "delete-success": "Näkymä `{{title}}` poistettu onnistuneesti",
-      "change-icon": "Vaihda näkymäkuvaketta"
+      "change-icon": "Vaihda näkymäkuvaketta",
+      "page-description": "Luo uudelleenkäytettäviä näkymiä kentillä, operaattoreilla, aikafunktioilla ja tunnisteiden vertailulla. Aloita esimerkeistä ja tarkista ennen tallentamista.",
+      "edit": "Muokkaa näkymää",
+      "form-description": "Nimeä näkymä ja määritä muistiosuodattimen lauseke, jota se käyttää.",
+      "title-placeholder": "Kiinnitetyt, Viimeisimmät muistiinpanot, Työ",
+      "filter-help": "Yhdistä lausekkeita operaattoreilla {{and}}, {{or}} ja {{not}}. Aikakentät ovat aikaleimoja — käytä funktioita {{now}}, {{duration}}, {{timestamp}} ja hakufunktioita kuten {{year}}. Tunnisteet tukevat funktioita {{sets}}, ja {{size}} mittaa pituuden.",
+      "validate": "Tarkista",
+      "all": "Kaikki näkymät",
+      "loading": "Ladataan näkymiä…",
+      "load-failed": "Näkymien lataaminen epäonnistui.",
+      "empty-title": "Ei vielä näkymiä",
+      "empty-description": "Tallenna suodatin, niin pääset nopeasti tarvitsemiisi muistioihin.",
+      "examples-title": "Lauseke-esimerkit",
+      "fields-title": "Tuetut kentät",
+      "title-filter-required": "Otsikko ja suodatin eivät voi olla tyhjiä",
+      "filter-valid": "Suodatinlauseke näyttää kelvolliselta",
+      "create-success": "Näkymä luotu",
+      "update-success": "Näkymä päivitetty",
+      "examples": {
+        "pinned": {
+          "title": "Kiinnitetyt",
+          "description": "Vain kiinnitetyt muistiot."
+        },
+        "recent": {
+          "title": "Viimeisimmät muistiinpanot",
+          "description": "Viimeisen tunnin aikana luodut muistiot."
+        },
+        "public": {
+          "title": "Julkiset muistiot",
+          "description": "Vain julkiset muistiot."
+        },
+        "project-tags": {
+          "title": "Projektitunnisteet",
+          "description": "Vastaa yhtä tai useampaa tarkkaa tunnistetta."
+        },
+        "untagged": {
+          "title": "Ilman tunnisteita",
+          "description": "Muistiot, joilla ei ole tunnisteita."
+        },
+        "archive-tree": {
+          "title": "Arkistopuu",
+          "description": "Vastaa hierarkkisia tunnisteita etuliitteen perusteella."
+        },
+        "unassigned": {
+          "title": "Määrittämättömät",
+          "description": "Muistiot, jotka eivät ole missään tilassa."
+        },
+        "one-space": {
+          "title": "Yhdessä tilassa",
+          "description": "Tilaan sijoitetut muistiot. Käytä tilan tunnusta sen URL-osoitteesta tai asetuksista."
+        },
+        "open-tasks": {
+          "title": "Avoimet tehtävät",
+          "description": "Muistiot, joissa on keskeneräisiä tehtäviä."
+        },
+        "links-or-code": {
+          "title": "Linkit tai koodi",
+          "description": "Muistiot, jotka sisältävät linkkejä tai koodilohkoja."
+        },
+        "no-location": {
+          "title": "Ei sijaintia",
+          "description": "Muistiot, joihin ei ole liitetty sijaintia."
+        },
+        "with-attachments": {
+          "title": "Liitteelliset",
+          "description": "Muistiot, joissa on vähintään yksi liitetiedosto."
+        },
+        "photos": {
+          "title": "Valokuvat",
+          "description": "Muistiot, jotka näyttävät kuvan sisällössä tai liitetiedostona."
+        },
+        "content-search": {
+          "title": "Sisältöhaku",
+          "description": "Hae tekstiä muistion sisällöstä."
+        },
+        "starts-with": {
+          "title": "Alkaa tekstillä",
+          "description": "Muistiot, joiden sisältö alkaa tietyllä tekstillä (myös endsWith)."
+        },
+        "regex": {
+          "title": "Regex-vastaavuus",
+          "description": "Vertaa sisältöä säännölliseen lausekkeeseen."
+        },
+        "all-tags-complete": {
+          "title": "Kaikki tunnisteet valmiit",
+          "description": "Jokainen tunniste päättyy -done (vain tunnisteelliset muistiot)."
+        },
+        "one-project-tag": {
+          "title": "Yksi projektitunniste",
+          "description": "Täsmälleen yksi tunniste täyttää ehdon."
+        },
+        "any-tags": {
+          "title": "Mikä tahansa näistä tunnisteista",
+          "description": "Tunnisteilla on yhteisiä alkioita annetun joukon kanssa."
+        },
+        "exact-tags": {
+          "title": "Täsmälleen nämä tunnisteet",
+          "description": "Täsmälleen tämä tunnistejoukko, ei mitään muuta."
+        },
+        "year-2024": {
+          "title": "Muistiot vuodelta 2024",
+          "description": "Suodata kalenterivuoden mukaan."
+        },
+        "weekend": {
+          "title": "Viikonlopun muistiinpanot",
+          "description": "Luotu sunnuntaina tai lauantaina (0 = sunnuntai)."
+        },
+        "long": {
+          "title": "Pitkät muistiinpanot",
+          "description": "Yli 280 merkin muistiot."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguraatio",
+      "description": "Konfiguraatiotiedostoilla määritetyt resurssit. Muuta niitä muokkaamalla tiedostoa ja ottamalla se käyttöön; muuta instanssia voi edelleen muokata täällä.",
+      "managed-by": "Konfiguraation hallitsema",
+      "managed-tooltip": "Määritetty tiedostossa {{source}}. Muuta tätä muokkaamalla tiedostoa ja ottamalla se käyttöön.",
+      "resource": "Resurssi",
+      "source": "Tiedosto",
+      "managed-fields": "Hallitut kentät",
+      "whole-resource": "Kaikki kentät",
+      "ignored-fields": "Muokattavissa täällä",
+      "serial": "Sarjanumero",
+      "last-apply": "Viimeksi otettu käyttöön",
+      "applied-by": "Käyttöön ottanut",
+      "nothing-managed": "Konfiguraatiota ei ole otettu käyttöön. Kaikki asetetaan täällä."
     },
     "sso": {
       "account": "Tili",
@@ -651,7 +925,9 @@
       "token-endpoint": "Token-päätepiste",
       "update-sso": "Päivitä SSO",
       "update-sso-description": "Tarkista palveluntarjoajan asetukset ja tallenna sitten kentät, joiden pitäisi muuttua.",
-      "user-endpoint": "Käyttäjän päätepiste"
+      "user-endpoint": "Käyttäjän päätepiste",
+      "invalid-config": "Identiteetintarjoajan määritys on virheellinen.",
+      "provider-id-placeholder": "esim. github, okta-corp"
     },
     "storage": {
       "accesskey": "Pääsyavain",
@@ -702,47 +978,56 @@
       "customize-server": {
         "description": "Kuvaus",
         "icon-url": "Kuvake URL",
-        "title": "Mukauta palvelinta"
+        "title": "Mukauta palvelinta",
+        "dialog-description": "Mukauta instanssisi ulkoasua ja asetuksia."
       },
       "custom-code-description": "Valinnainen ilmentymänlaajuinen CSS ja JavaScript käytetty käyttöliittymässä.",
       "custom-code-title": "Mukautettu koodi",
-      "enable-double-click-to-edit": "Ota muokkaus käyttöön kaksoisnapsauttamalla",
       "label": "Järjestelmä",
       "server-name": "Palvelimen nimi"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1130,9 @@
       "review-existing": "Jo tililläsi.",
       "review-exported": "Vienti.",
       "review-memos": "Memos tiedostossa.",
-      "review-new": "Luodaan."
+      "review-new": "Luodaan.",
+      "export-admin-only": "Vain järjestelmänvalvojat voivat viedä muistiinpanoja. Pyydä vientitiedostosi järjestelmänvalvojalta.",
+      "export-busy": "Toinen vienti on käynnissä. Yritä hetken päästä uudelleen."
     },
     "spaces": {
       "general": "Kenraali",
@@ -931,7 +1218,8 @@
   },
   "tooltip": {
     "link-memo": "Linkkimuistio",
-    "select-location": "Sijainti"
+    "select-location": "Sijainti",
+    "link-memo-description": "Hae ja valitse linkitettävä muistio"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1284,12 @@
     "loading": "Muistionneja ladataan…",
     "new-here": "Kirjoita tähän.",
     "saved-outside-filter": "Tallennettu. Tämä muistio on nykyisten karttatulosten ulkopuolella.",
-    "open-memo": "Avaa muistio"
+    "open-memo": "Avaa muistio",
+    "open-in-google-maps": "Avaa Google Mapsissa",
+    "location-description": "Valitse sijainti kartalta tai syötä koordinaatit käsin",
+    "latitude": "Leveysaste",
+    "longitude": "Pituusaste",
+    "place-placeholder": "Valitse ensin sijainti."
   },
   "calendar": {
     "new-memo-on-day": "Uusi muistio tänä päivänä",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "esim. Tuote",
     "spaces": "Tilat",
     "switch": "Vaihda tilaa"
+  },
+  "welcome": {
+    "title": "Tervetuloa Memos-sovellukseen",
+    "headline": "Yksinkertaisia muistiinpanoja arjen ajatuksiin.",
+    "intro-write": "Yksi lause voi olla kokonainen muistio.",
+    "intro-keep": "Jokainen muistio pysyy sen päivän kohdalla, jona kirjoitit sen.",
+    "intro-share": "Sinä valitset, mikä pysyy yksityisenä.",
+    "write": "Kirjoita",
+    "write-sub": "Yksi lause voi olla kokonainen muistio.",
+    "no-title": "Ei otsikkoa",
+    "no-title-text": "Muistio alkaa itse ajatuksesta. Otsikkoa ei tarvitse täyttää.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown antaa sanoillesi rakenteen, kun haluat sitä.",
+    "attach": "Liitä",
+    "attach-text": "Kuvat, tiedostot, ääni ja paikka lisätään ＋-valikosta.",
+    "keep": "Säilytä",
+    "keep-sub": "Jokainen muistio pysyy sen päivän kohdalla, jona kirjoitit sen.",
+    "calendar-text": "Kalenteri vie takaisin mihin tahansa päivään.",
+    "tags-text": "Sana #-merkin jälkeen muuttuu tunnisteeksi, ja tunniste suodattaa aikajanaa.",
+    "views-text": "Oma näkymä tallentaa suodattimen.",
+    "map-text": "Muistiot, joilla on paikka, näkyvät kartalla.",
+    "share": "Jaa",
+    "share-sub": "Muistiot alkavat yksityisinä. Sinä valitset, mitä jaat ja mitä julkaiset.",
+    "visibility-text": "Jokaisella muistiolla on oma asetuksensa. Uudet alkavat yksityisinä, vain sinulle; julkisella on linkki, jonka kuka tahansa voi avata.",
+    "spaces-text": "Tilassa jäsenet kirjoittavat rinnallasi, ja jokainen säilyttää omat muistionsa.",
+    "comments": "Kommentit",
+    "comments-text": "Jokainen, joka näkee muistion, voi vastata sen alle.",
+    "skip": "Ohita",
+    "next": "Seuraava",
+    "done": "Valmis",
+    "page-of": "Sivu {{current}} / {{total}}",
+    "reopen": "Tervetulo-opas",
+    "reopen-note": "Neljä näyttöä, jotka uusi tili näkee ensin.",
+    "sample": {
+      "today": "Tänään, 10:42",
+      "today-early": "Tänään, 9:18",
+      "yesterday": "Eilen, 15:20",
+      "comment-age": "2 t",
+      "memo-preview": "Yksinkertaisempi ensimmäinen näyttö. Yksi syöte, sitten esikatselu.",
+      "memo-release": "Ennen seuraavaa julkaisua",
+      "task-sketch": "Luonnostele ensimmäinen näyttö",
+      "task-polish": "Viimeistele esikatselu",
+      "write-lead": "Pidä ensimmäinen askel pienenä.",
+      "write-strong": "Näytä yksityiskohdat vasta,",
+      "write-tail": "kun niitä tarvitaan.",
+      "write-task": "Kirjoita lyhyt muutosloki",
+      "view": "Keskeneräiset tehtävät",
+      "space": "Tuote",
+      "share-memo": "Kokeile näyttää tulos ennen kuin pyydät ihmisiä rekisteröitymään.",
+      "comment": "Samaa mieltä. Esikatselu teki vaikutuksen.",
+      "tag-design": "suunnittelu",
+      "tag-project": "projekti",
+      "tag-reading": "lukeminen",
+      "tag-ideas": "ideat"
+    }
+  },
+  "error": {
+    "title": "Jokin meni vikaan",
+    "description": "Tapahtui odottamaton virhe. Syynä voi olla verkko-ongelma tai sovelluksen ongelma.",
+    "description-update": "Tapahtui odottamaton virhe. Syynä voi olla verkko-ongelma tai sovelluksen päivitys. Uudelleenlataus yleensä korjaa tilanteen.",
+    "details": "Virheen tiedot",
+    "reload": "Lataa sovellus uudelleen",
+    "not-found": "Etsimääsi sivua ei löydy.",
+    "permission-denied": "Käyttöoikeus evätty",
+    "too-many-requests": "Liian monta pyyntöä. Yritä uudelleen {{wait}} kuluttua.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Suorita vahvistus ja yritä uudelleen.",
+    "quota-memo-count": "Olet saavuttanut {{limit}} muistion rajasi. Poista muistioita luodaksesi uusia.",
+    "quota-storage": "Tämä lataus ylittäisi {{limit}} tallennustilarajasi. Käytät {{usage}}.",
+    "quota-upload": "Tämä tiedosto on suurempi kuin tiedostokohtainen rajasi {{limit}}.",
+    "quota-memo-content": "Tämä muistio on suurempi kuin muistiokohtainen rajasi {{limit}}. Lyhennä sisältöä tallentaaksesi sen.",
+    "quota-generic": "Olet saavuttanut käyttörajan.",
+    "sign-in-failed": "Kirjautuminen epäonnistui.",
+    "sign-up-failed": "Rekisteröityminen epäonnistui",
+    "authenticate-failed": "Todennus epäonnistui.",
+    "update-profile-failed": "Profiilin päivittäminen epäonnistui",
+    "unlink-identity-failed": "Identiteetintarjoajan yhteyden poistaminen epäonnistui.",
+    "link-identity-failed": "Tilin linkittämisen aloittaminen epäonnistui. Yritä uudelleen."
+  },
+  "attachment-preview": {
+    "title": "Liitteen esikatselu",
+    "description": "Liitteen esikatseluikkuna. Sulje painamalla Escape, vaihda kohdetta vasemmalla ja oikealla nuolinäppäimellä ja zoomaa kuvia säätimillä, hiiren rullalla, kaksoisnapautuksella tai nipistyseleellä.",
+    "close": "Sulje esikatselu",
+    "previous": "Edellinen kohde",
+    "next": "Seuraava kohde",
+    "reset-zoom": "Palauta zoomaus",
+    "image-alt": "Esikatselukuva {{index}}/{{count}}",
+    "live-photo-alt": "Live-valokuvan esikatselu {{index}}/{{count}}",
+    "play-live-photo": "Toista live-valokuva viemällä osoitin sen päälle tai painamalla"
+  },
+  "audio-player": {
+    "seek": "Siirry kohdassa {{name}}",
+    "back": "{{seconds}} sekuntia taaksepäin",
+    "forward": "{{seconds}} sekuntia eteenpäin",
+    "speed": "Toistonopeus {{rate}}x"
   }
 }

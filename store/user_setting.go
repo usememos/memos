@@ -126,20 +126,24 @@ func (s *Store) DeleteUserSettings(ctx context.Context, delete *DeleteUserSettin
 	return nil
 }
 
-// GetUserByPATHash finds a user by PAT hash.
+// GetUserByPATHash finds the user owning the personal access token with the
+// given hash. It returns (nil, nil) when no token matches or its user no longer
+// exists, and an error only when the lookup itself fails.
 func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error) {
 	result, err := s.driver.GetUserByPATHash(ctx, tokenHash)
 	if err != nil {
 		return nil, err
 	}
+	if result == nil {
+		return nil, nil
+	}
 
-	// Fetch user info
 	user, err := s.GetUser(ctx, &FindUser{ID: &result.UserID})
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found for PAT")
+		return nil, nil
 	}
 	result.User = user
 
@@ -652,6 +656,12 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 			return nil, errors.Wrap(err, "unmarshal tags user setting")
 		}
 		userSetting.Value = &storepb.UserSetting_Tags{Tags: tagsUserSetting}
+	case storepb.UserSetting_EDITOR:
+		editorUserSetting := &storepb.EditorUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), editorUserSetting); err != nil {
+			return nil, errors.Wrap(err, "unmarshal editor user setting")
+		}
+		userSetting.Value = &storepb.UserSetting_Editor{Editor: editorUserSetting}
 	case storepb.UserSetting_REFRESH_TOKENS:
 		refreshTokensUserSetting := &storepb.RefreshTokensUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), refreshTokensUserSetting); err != nil {
@@ -702,6 +712,12 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 		value, err := protojson.Marshal(tagsUserSetting)
 		if err != nil {
 			return nil, errors.Wrap(err, "marshal tags user setting")
+		}
+		raw.Value = string(value)
+	case storepb.UserSetting_EDITOR:
+		value, err := protojson.Marshal(userSetting.GetEditor())
+		if err != nil {
+			return nil, errors.Wrap(err, "marshal editor user setting")
 		}
 		raw.Value = string(value)
 	case storepb.UserSetting_REFRESH_TOKENS:

@@ -12,7 +12,16 @@ import (
 )
 
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
-	if err := insertUser(ctx, d.db, create); err != nil {
+	return createUser(ctx, d.db, create)
+}
+
+// CreateUserTx is CreateUser within tx.
+func (*DB) CreateUserTx(ctx context.Context, tx *sql.Tx, create *store.User) (*store.User, error) {
+	return createUser(ctx, tx, create)
+}
+
+func createUser(ctx context.Context, q dbExecutor, create *store.User) (*store.User, error) {
+	if err := insertUser(ctx, q, create); err != nil {
 		return nil, err
 	}
 	return create, nil
@@ -24,6 +33,22 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
+	user, err := updateUser(ctx, tx, update)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// UpdateUserTx is UpdateUser within tx.
+func (*DB) UpdateUserTx(ctx context.Context, tx *sql.Tx, update *store.UpdateUser) (*store.User, error) {
+	return updateUser(ctx, tx, update)
+}
+
+func updateUser(ctx context.Context, tx *sql.Tx, update *store.UpdateUser) (*store.User, error) {
 	if update.RemovesInstanceAdmin() {
 		if err := ensureInstanceAdminRetained(ctx, tx, update.ID); err != nil {
 			return nil, err
@@ -88,9 +113,6 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	user.Email = email.String
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
 	return user, nil
 }
 
@@ -145,6 +167,15 @@ func ensureInstanceAdminRetained(ctx context.Context, tx dbExecutor, userID int3
 }
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
+	return listUsers(ctx, d.db, find)
+}
+
+// ListUsersTx is ListUsers within tx.
+func (*DB) ListUsersTx(ctx context.Context, tx *sql.Tx, find *store.FindUser) ([]*store.User, error) {
+	return listUsers(ctx, tx, find)
+}
+
+func listUsers(ctx context.Context, q dbExecutor, find *store.FindUser) ([]*store.User, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	orderBy := []string{"created_ts DESC", "row_status DESC", "id DESC"}
 
@@ -229,7 +260,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		}
 	}
 
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	rows, err := q.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}

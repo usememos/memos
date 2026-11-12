@@ -3,8 +3,6 @@ import SidebarSectionHeader from "./SidebarSectionHeader";
 
 export const SIDEBAR_SECTION_STACK_CLASSES = "flex flex-col gap-3";
 export const SIDEBAR_SECTION_CONTENT_CLASSES = "flex flex-col gap-0.5";
-// Section actions are the kit's quiet `icon-sm` buttons; only their glyph is section-specific.
-export const SIDEBAR_SECTION_ACTION_ICON_CLASSES = "size-3.5";
 
 interface Props {
   label?: ReactNode;

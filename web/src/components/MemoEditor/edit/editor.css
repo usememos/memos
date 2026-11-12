@@ -1,0 +1,164 @@
+@reference "../../../index.css";
+
+/*
+ * Composer layout around @usememos/editor. Colors, fonts and block rhythm come
+ * from MEMO_EDITOR_THEME (lib/memo-markdown.ts); this file only sizes the
+ * editor in the composer, aligns its floating UI with the app, and styles upload widgets.
+ */
+.memo-editor-content {
+  & .memo-editor-scroller {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  /* Focus mode fills the frame, and so does the editable root: a click anywhere
+     below the text lands in the editor, which puts the caret at the end. */
+  &[data-focus-mode] .memo-editor-scroller {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: none;
+  }
+  &[data-focus-mode] .memo-editor-root {
+    flex: 1 0 auto;
+  }
+  & .memo-editor-root {
+    caret-color: var(--mu-ink);
+    outline: none;
+  }
+  & .memo-editor-root ::selection {
+    background: var(--mu-selection);
+  }
+}
+
+/*
+ * Focus mode's toggle (useFocusMode): the frame's box moves and resizes between its
+ * place on the page and the sheet, its two looks cross-fading inside it at their
+ * own size, top-left anchored and clipped to the box, so text never stretches.
+ * The page cross-fades under it (the default root fade), which fades the backdrop in and out.
+ */
+::view-transition-group(memo-focus-mode) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  overflow: clip;
+  border-radius: var(--mu-radius-lg);
+}
+::view-transition-old(memo-focus-mode),
+::view-transition-new(memo-focus-mode) {
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+}
+::view-transition-old(memo-focus-mode) {
+  animation: 120ms ease-out both memo-focus-mode-fade-out;
+}
+::view-transition-new(memo-focus-mode) {
+  animation: 200ms ease-out 60ms both memo-focus-mode-fade-in;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(memo-focus-mode),
+  ::view-transition-old(memo-focus-mode),
+  ::view-transition-new(memo-focus-mode) {
+    animation: none !important;
+  }
+}
+@keyframes memo-focus-mode-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes memo-focus-mode-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* An upload started in the text: a rail on the left, then the progress or the failure in caption
+   type, and once it failed, Retry and Keep as kit ghost buttons (uploadAnchors.ts). */
+.memo-upload-anchor {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 1.75rem;
+  align-items: center;
+  gap: 0.25rem 0.375rem;
+  margin: 0.375rem 0;
+  padding-left: 1rem;
+  font: 400 13px / 18px var(--mu-font-sans);
+}
+
+.memo-upload-anchor-rail {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--mu-primary);
+}
+
+.memo-upload-anchor-rail::after {
+  position: absolute;
+  top: 50%;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--mu-surface);
+  border-radius: 999px;
+  background: var(--mu-primary);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.memo-upload-anchor-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-inline-end: 0.125rem;
+  color: var(--mu-ink-muted);
+}
+
+.memo-upload-anchor[data-status="failed"] .memo-upload-anchor-message {
+  color: var(--mu-danger);
+}
+
+.memo-upload-anchor-message svg {
+  width: var(--mu-icon-sm);
+  height: var(--mu-icon-sm);
+  flex: none;
+}
+
+.memo-upload-anchor-message svg * {
+  stroke-width: var(--mu-icon-stroke);
+  vector-effect: non-scaling-stroke;
+}
+
+/* The editor portals its own UI outside the composer. Its menus, toolbars and cards take the
+   @usememos/ui popup surface and its tooltips the package's tooltip, so they line up with the
+   app's own popups, without changing document typography or package internals. */
+.mbe-ui:is(.mbe-menu, .mbe-toolbar, .mbe-image-toolbar, .mbe-link-card, .mbe-input-popover) {
+  border: 0;
+  border-radius: var(--mu-radius-xl);
+  background: var(--mu-surface);
+  box-shadow: var(--mu-shadow-pop);
+  color: var(--mu-ink);
+  font: 400 13px / 18px var(--mu-font-sans);
+  letter-spacing: 0;
+}
+
+.mbe-ui.mbe-menu {
+  padding: var(--mu-space-1);
+}
+
+.mbe-ui.mbe-tooltip {
+  max-width: min(var(--mu-tooltip-width), calc(100vw - 1rem));
+  padding: var(--mu-space-1) var(--mu-space-2);
+  border: 0;
+  border-radius: var(--mu-radius-md);
+  background: var(--mu-primary);
+  box-shadow: none;
+  color: var(--mu-on-primary);
+  font: 500 13px / 18px var(--mu-font-sans);
+  letter-spacing: 0;
+  white-space: normal;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}

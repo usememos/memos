@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, type RouteObject, useLocation } from "react-router-dom";
 import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
+import { preloadMemoEditing } from "@/components/MemoEditor";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import MainLayout from "@/layouts/MainLayout";
@@ -18,6 +19,9 @@ const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const MemoMap = lazyWithReload(() => import("@/pages/Map"));
 const Calendar = lazyWithReload(() => import("@/pages/Calendar"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
+// A signed-in user's Home composes at once, so the page's code arrives together with the
+// editing session's and the composer renders with the page, never after it.
+const ComposingHome = lazyWithReload(() => Promise.all([import("@/pages/Home"), preloadMemoEditing()]).then(([page]) => page));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
@@ -36,14 +40,15 @@ const HomeRoute = () => {
   if (!currentUser && !getCollectionCreator(location.search)) {
     return <Navigate to={{ pathname: ROUTES.EXPLORE, search: location.search, hash: location.hash }} replace />;
   }
-  return <Home />;
+  return currentUser ? <ComposingHome /> : <Home />;
 };
 
 const ExploreRoute = () => {
+  const currentUser = useCurrentUser();
   const location = useLocation();
   const search = withCollectionCreator(location.search);
   if (search !== location.search) return <Navigate to={{ pathname: location.pathname, search, hash: location.hash }} replace />;
-  return <Home />;
+  return currentUser ? <ComposingHome /> : <Home />;
 };
 
 // Backward compatibility alias.

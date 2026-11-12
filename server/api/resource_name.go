@@ -10,24 +10,26 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/core/identityprovider"
+	"github.com/usememos/memos/core/instancesetting"
+	coreuser "github.com/usememos/memos/core/user"
 	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/internal/random"
 )
 
 const (
-	InstanceSettingNamePrefix  = "instance/settings/"
-	UserNamePrefix             = "users/"
+	InstanceSettingNamePrefix  = instancesetting.NamePrefix
+	UserNamePrefix             = coreuser.NamePrefix
 	MemoNamePrefix             = "memos/"
 	MemoShareNamePrefix        = "shares/"
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
-	IdentityProviderNamePrefix = "identity-providers/"
+	IdentityProviderNamePrefix = identityprovider.NamePrefix
 	WebhookNamePrefix          = "webhooks/"
 	SpaceNamePrefix            = "spaces/"
 	SpaceMemberNamePrefix      = "members/"
 	SpaceInvitationNamePrefix  = "invitations/"
-	UsageLimitNamePrefix       = "usageLimits/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -166,16 +168,6 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 
 func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, IdentityProviderNamePrefix)
-	if err != nil {
-		return "", err
-	}
-	return tokens[0], nil
-}
-
-// ExtractUsageLimitIDFromName returns the usage limit ID from a resource name.
-// e.g., "usageLimits/default-memos" -> "default-memos".
-func ExtractUsageLimitIDFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, UsageLimitNamePrefix)
 	if err != nil {
 		return "", err
 	}

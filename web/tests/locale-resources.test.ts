@@ -31,6 +31,7 @@ const referenceFor = (key: string) => source[key] ?? (pluralSuffix.test(key) ? s
 // when the matching t() call exists; never exempt an entire namespace from checks.
 const dynamicKeyParts: Record<string, readonly string[]> = {
   "attachment-library.tabs.${}": ["audio", "documents", "media"],
+  "editor.drawing.color-${}": ["blue", "gray", "green", "ink", "orange", "red", "teal", "violet"],
   "live-update.${}": ["connected", "connecting", "disconnected"],
   "memo.${}": ["layout-auto", "layout-columns", "layout-list"],
   "memo.${}-description": ["layout-auto", "layout-columns", "layout-list"],

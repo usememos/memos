@@ -9,7 +9,6 @@ import (
 	context "context"
 	errors "errors"
 	api "github.com/usememos/memos/proto/gen/api"
-	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -125,8 +124,6 @@ const (
 	// UserServiceDeletePersonalAccessTokenProcedure is the fully-qualified name of the UserService's
 	// DeletePersonalAccessToken RPC.
 	UserServiceDeletePersonalAccessTokenProcedure = "/memos.api.UserService/DeletePersonalAccessToken"
-	// UserServiceExportMemosProcedure is the fully-qualified name of the UserService's ExportMemos RPC.
-	UserServiceExportMemosProcedure = "/memos.api.UserService/ExportMemos"
 	// UserServiceImportMemosProcedure is the fully-qualified name of the UserService's ImportMemos RPC.
 	UserServiceImportMemosProcedure = "/memos.api.UserService/ImportMemos"
 )
@@ -228,11 +225,6 @@ type UserServiceClient interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -446,12 +438,6 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 			connect.WithClientOptions(opts...),
 		),
-		exportMemos: connect.NewClient[api.ExportMemosRequest, httpbody.HttpBody](
-			httpClient,
-			baseURL+UserServiceExportMemosProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
-			connect.WithClientOptions(opts...),
-		),
 		importMemos: connect.NewClient[api.ImportMemosRequest, api.ImportMemosResponse](
 			httpClient,
 			baseURL+UserServiceImportMemosProcedure,
@@ -495,7 +481,6 @@ type userServiceClient struct {
 	listPersonalAccessTokens    *connect.Client[api.ListPersonalAccessTokensRequest, api.ListPersonalAccessTokensResponse]
 	createPersonalAccessToken   *connect.Client[api.CreatePersonalAccessTokenRequest, api.CreatePersonalAccessTokenResponse]
 	deletePersonalAccessToken   *connect.Client[api.DeletePersonalAccessTokenRequest, emptypb.Empty]
-	exportMemos                 *connect.Client[api.ExportMemosRequest, httpbody.HttpBody]
 	importMemos                 *connect.Client[api.ImportMemosRequest, api.ImportMemosResponse]
 }
 
@@ -659,11 +644,6 @@ func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, req *
 	return c.deletePersonalAccessToken.CallUnary(ctx, req)
 }
 
-// ExportMemos calls memos.api.UserService.ExportMemos.
-func (c *userServiceClient) ExportMemos(ctx context.Context, req *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	return c.exportMemos.CallUnary(ctx, req)
-}
-
 // ImportMemos calls memos.api.UserService.ImportMemos.
 func (c *userServiceClient) ImportMemos(ctx context.Context, req *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error) {
 	return c.importMemos.CallUnary(ctx, req)
@@ -766,11 +746,6 @@ type UserServiceHandler interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -980,12 +955,6 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceExportMemosHandler := connect.NewUnaryHandler(
-		UserServiceExportMemosProcedure,
-		svc.ExportMemos,
-		connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
-		connect.WithHandlerOptions(opts...),
-	)
 	userServiceImportMemosHandler := connect.NewUnaryHandler(
 		UserServiceImportMemosProcedure,
 		svc.ImportMemos,
@@ -1058,8 +1027,6 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceCreatePersonalAccessTokenHandler.ServeHTTP(w, r)
 		case UserServiceDeletePersonalAccessTokenProcedure:
 			userServiceDeletePersonalAccessTokenHandler.ServeHTTP(w, r)
-		case UserServiceExportMemosProcedure:
-			userServiceExportMemosHandler.ServeHTTP(w, r)
 		case UserServiceImportMemosProcedure:
 			userServiceImportMemosHandler.ServeHTTP(w, r)
 		default:
@@ -1197,10 +1164,6 @@ func (UnimplementedUserServiceHandler) CreatePersonalAccessToken(context.Context
 
 func (UnimplementedUserServiceHandler) DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeletePersonalAccessToken is not implemented"))
-}
-
-func (UnimplementedUserServiceHandler) ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ExportMemos is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ImportMemos(context.Context, *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error) {

@@ -12,7 +12,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// GetUserUsage returns a user's usage and the usage limits in effect for the
+// GetUserUsage returns a user's usage and the limit set in effect for the
 // user. Only the user or an admin may call it.
 func (s *APIService) GetUserUsage(ctx context.Context, request *apipb.GetUserUsageRequest) (*apipb.UserUsage, error) {
 	parent, ok := strings.CutSuffix(request.Name, "/usage")
@@ -48,13 +48,18 @@ func (s *APIService) GetUserUsage(ctx context.Context, request *apipb.GetUserUsa
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get usage: %v", err)
 	}
+	limits := &apipb.UserUsage_Limits{}
+	if entry := usage.Limits.Entry; entry != nil {
+		limits.MemoCount = entry.MemoCount
+		limits.MemoContentBytes = entry.MemoContentBytes
+		limits.StorageBytes = entry.StorageBytes
+		limits.UploadBytes = entry.UploadBytes
+	}
 	return &apipb.UserUsage{
-		Name:                  BuildUserName(user.Username) + "/usage",
-		MemoCount:             usage.MemoCount,
-		StorageBytes:          usage.StorageBytes,
-		MemoCountLimit:        convertEffectiveLimitToProto(usage.Limits.MemoCount),
-		StorageBytesLimit:     convertEffectiveLimitToProto(usage.Limits.StorageBytes),
-		UploadBytesLimit:      convertEffectiveLimitToProto(usage.Limits.UploadBytes),
-		MemoContentBytesLimit: convertEffectiveLimitToProto(usage.Limits.MemoContentBytes),
+		Name:         BuildUserName(user.Username) + "/usage",
+		MemoCount:    usage.MemoCount,
+		StorageBytes: usage.StorageBytes,
+		Limits:       limits,
+		LimitIndex:   int32(usage.Limits.Index),
 	}, nil
 }

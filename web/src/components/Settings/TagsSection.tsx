@@ -1,12 +1,8 @@
 import { create } from "@bufbuild/protobuf";
+import { Badge, Button, Checkbox, Field, Input, List, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
@@ -50,6 +46,7 @@ const toLocalTagMeta = (meta: {
 
 const TagsSection = () => {
   const t = useTranslate();
+  const configuredRulesId = useId();
   const { currentUser, userTagsSetting, refetchSettings } = useAuth();
   const { mutateAsync: updateUserSetting } = useUpdateUserSetting();
   const { data: tagCounts = {} } = useTagCounts(true);
@@ -60,6 +57,7 @@ const TagsSection = () => {
     Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])),
   );
   const [newTagName, setNewTagName] = useState("");
+  const [newTagError, setNewTagError] = useState<string>();
   const [newTagColor, setNewTagColor] = useState<string | undefined>(undefined);
   const [newTagBlur, setNewTagBlur] = useState(false);
 
@@ -114,11 +112,11 @@ const TagsSection = () => {
     const name = newTagName.trim();
     if (!name) return;
     if (Object.hasOwn(localTags, name)) {
-      toast.error(t("setting.tags.tag-already-exists"));
+      setNewTagError(t("setting.tags.tag-already-exists"));
       return;
     }
     if (!isValidTagPattern(name)) {
-      toast.error(t("setting.tags.invalid-regex"));
+      setNewTagError(t("setting.tags.invalid-regex"));
       return;
     }
     setLocalTags((prev) => ({ ...prev, [name]: { color: newTagColor, blur: newTagBlur } }));
@@ -158,26 +156,29 @@ const TagsSection = () => {
   return (
     <SettingSection title={t("setting.tags.label")}>
       <SettingGroup title={t("setting.tags.title")} description={t("setting.tags.description")}>
-        <SettingPanel footer={<span className="text-xs text-muted-foreground">{t("setting.tags.tag-pattern-hint")}</span>}>
-          <div className="flex flex-col gap-3 px-3 py-3">
+        <SettingPanel footer={<span className="mu-caption text-mu-ink-muted">{t("setting.tags.tag-pattern-hint")}</span>}>
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <PlusIcon className="size-3.5" />
+              <div className="flex items-center gap-2 mu-label text-mu-ink">
+                <PlusIcon className="mu-icon-sm" />
                 <span>{t("setting.tags.add-rule")}</span>
               </div>
-              <Button variant="outline" onClick={handleAddTag} disabled={!newTagName.trim()}>
-                <PlusIcon className="w-4 h-4 mr-1.5" />
+              <Button variant="neutral" onClick={handleAddTag} disabled={!newTagName.trim()} icon={<PlusIcon />}>
                 {t("common.add")}
               </Button>
             </div>
 
             <div className="grid gap-2 lg:grid-cols-[minmax(16rem,1fr)_auto_auto] lg:items-center">
-              <div className="min-w-0">
+              <Field.Root className="min-w-0" invalid={!!newTagError}>
                 <Input
                   className="font-mono"
+                  aria-label={t("setting.tags.label")}
                   placeholder={t("setting.tags.tag-name-placeholder")}
                   value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
+                  onChange={(e) => {
+                    setNewTagName(e.target.value);
+                    setNewTagError(undefined);
+                  }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
                   list="known-tags"
                 />
@@ -188,97 +189,111 @@ const TagsSection = () => {
                       <option key={tag} value={tag} />
                     ))}
                 </datalist>
-              </div>
+                {newTagError && <Field.Error match>{newTagError}</Field.Error>}
+              </Field.Root>
 
-              <div className="flex h-8 items-center gap-2 rounded-md border border-border bg-background px-2 text-sm text-muted-foreground">
-                <PaletteIcon className="size-4" />
+              <div className="flex h-8 items-center gap-2 rounded-mu-md border border-mu-line bg-mu-canvas px-2 mu-body text-mu-ink-muted">
+                <PaletteIcon className="mu-icon" />
                 <span>{t("setting.tags.background-color")}</span>
                 <input
                   type="color"
-                  className="size-6 cursor-pointer rounded border border-border bg-transparent p-0.5"
+                  className="size-6 cursor-pointer rounded border border-mu-line bg-transparent p-0.5"
                   value={newTagColor ?? DEFAULT_TAG_COLOR}
                   onChange={(e) => setNewTagColor(e.target.value)}
                   aria-label={t("setting.tags.background-color")}
                 />
-                <Button variant="ghost" size="sm" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor} className="h-6 px-1.5">
+                <Button variant="ghost" size="xs" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
                   {t("common.clear")}
                 </Button>
               </div>
 
-              <label className="flex h-8 items-center gap-2 rounded-md border border-border bg-background px-2 text-sm text-muted-foreground">
-                <EyeOffIcon className="size-4" />
-                <span>{t("setting.tags.blur-content")}</span>
-                <Switch checked={newTagBlur} onCheckedChange={setNewTagBlur} />
-              </label>
+              <Field.Root>
+                <Field.Label>
+                  <Checkbox checked={newTagBlur} onCheckedChange={setNewTagBlur} />
+                  <EyeOffIcon className="mu-icon text-mu-ink-muted" />
+                  {t("setting.tags.blur-content")}
+                </Field.Label>
+              </Field.Root>
             </div>
           </div>
         </SettingPanel>
 
         <div className="flex items-center justify-between gap-3">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("setting.tags.configured-rules")}</h4>
-          <Badge variant="outline" className="rounded-md px-2 py-0 text-xs font-normal">
-            {configuredEntries.length}
-          </Badge>
+          <h4 id={configuredRulesId} className="mu-label text-mu-ink-muted">
+            {t("setting.tags.configured-rules")}
+          </h4>
+          <Badge tone="outline">{configuredEntries.length}</Badge>
         </div>
 
-        <SettingList>
-          {configuredEntries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 px-4 py-8 text-center">
-              <TagIcon className="size-5 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">{t("setting.tags.no-tags-configured")}</p>
-            </div>
-          ) : (
-            <>
-              {configuredEntries.map((row) => (
-                <div key={row.name} className="grid gap-3 px-3 py-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
-                  <div className="min-w-0">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <TagIcon className="size-4 shrink-0 text-muted-foreground" />
-                      <span className="truncate font-mono text-sm text-foreground">{row.name}</span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 text-xs text-muted-foreground">
-                      <span>{t("setting.tags.matching-rule")}</span>
-                      <span className="text-border">/</span>
-                      <span>{t("setting.tags.used-count", { count: row.count })}</span>
-                    </div>
+        {configuredEntries.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 rounded-mu-lg border border-dashed border-mu-line px-4 py-8 text-center">
+            <TagIcon className="mu-icon size-5 text-mu-ink-muted" />
+            <p className="mu-body text-mu-ink-muted">{t("setting.tags.no-tags-configured")}</p>
+          </div>
+        ) : (
+          <SettingList aria-labelledby={configuredRulesId}>
+            {configuredEntries.map((row) => (
+              <List.Item key={row.name} className="grid gap-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <TagIcon className="mu-icon shrink-0 text-mu-ink-muted" />
+                    <span className="truncate font-mono mu-body text-mu-ink">{row.name}</span>
                   </div>
-
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span
-                      className={cn("size-5 rounded-md border border-border", !localTags[row.name].color && "bg-background")}
-                      style={{ backgroundColor: localTags[row.name].color ?? DEFAULT_TAG_COLOR }}
-                      aria-hidden
-                    />
-                    <input
-                      type="color"
-                      className="size-8 cursor-pointer rounded-md border border-border bg-transparent p-0.5"
-                      value={localTags[row.name].color ?? DEFAULT_TAG_COLOR}
-                      onChange={(e) => handleColorChange(row.name, e.target.value)}
-                      aria-label={t("setting.tags.background-color")}
-                    />
-                    <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
-                      {localTags[row.name].color ?? t("setting.tags.default-color")}
-                    </Button>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 mu-caption text-mu-ink-muted">
+                    <span>{t("setting.tags.matching-rule")}</span>
+                    <span className="text-mu-line">/</span>
+                    <span>{t("setting.tags.used-count", { count: row.count })}</span>
                   </div>
+                </div>
 
-                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <EyeOffIcon className="size-4" />
-                    {t("setting.tags.blur-content")}
-                    <Switch checked={localTags[row.name].blur} onCheckedChange={(checked) => handleBlurChange(row.name, checked)} />
-                  </label>
-
-                  <Button variant="ghost" size="sm" onClick={() => handleRemoveTag(row.name)} aria-label={t("common.delete")}>
-                    <TrashIcon className="w-4 h-4 text-destructive" />
+                <div className="flex items-center gap-2 mu-body text-mu-ink-muted">
+                  <span
+                    className={cn("size-5 rounded-mu-md border border-mu-line", !localTags[row.name].color && "bg-mu-canvas")}
+                    style={{ backgroundColor: localTags[row.name].color ?? DEFAULT_TAG_COLOR }}
+                    aria-hidden
+                  />
+                  <input
+                    type="color"
+                    className="size-8 cursor-pointer rounded-mu-md border border-mu-line bg-transparent p-0.5"
+                    value={localTags[row.name].color ?? DEFAULT_TAG_COLOR}
+                    onChange={(e) => handleColorChange(row.name, e.target.value)}
+                    aria-label={t("setting.tags.background-color")}
+                  />
+                  <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
+                    {localTags[row.name].color ?? t("setting.tags.default-color")}
                   </Button>
                 </div>
-              ))}
-            </>
-          )}
-        </SettingList>
+
+                <Field.Root>
+                  <Field.Label>
+                    <Checkbox checked={localTags[row.name].blur} onCheckedChange={(checked) => handleBlurChange(row.name, checked)} />
+                    <EyeOffIcon className="mu-icon text-mu-ink-muted" />
+                    {t("setting.tags.blur-content")}
+                  </Field.Label>
+                </Field.Root>
+
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => handleRemoveTag(row.name)}
+                        aria-label={t("common.delete")}
+                        icon={<TrashIcon />}
+                      />
+                    }
+                  />
+                  <Tooltip.Popup>{t("common.delete")}</Tooltip.Popup>
+                </Tooltip.Root>
+              </List.Item>
+            ))}
+          </SettingList>
+        )}
       </SettingGroup>
 
       <div className="w-full flex justify-end">
-        <Button disabled={!hasChanges || !currentUser} onClick={handleSave}>
+        <Button variant="primary" disabled={!hasChanges || !currentUser} onClick={handleSave}>
           {t("common.save")}
         </Button>
       </div>

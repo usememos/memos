@@ -2,6 +2,8 @@ package filter
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -16,9 +18,7 @@ type renderer struct {
 }
 
 type renderResult struct {
-	sql           string
-	trivial       bool
-	unsatisfiable bool
+	sql string
 }
 
 func newRenderer(schema Schema, opts RenderOptions) *renderer {
@@ -30,6 +30,17 @@ func newRenderer(schema Schema, opts RenderOptions) *renderer {
 }
 
 func (r *renderer) Render(cond Condition) (Statement, error) {
+	// Fold boolean constants first: a subtree that folds away must never reach
+	// the renderer, or its arguments would outlive its discarded SQL and shift
+	// every later positional bind.
+	cond = foldConstants(cond)
+	if c, ok := cond.(*ConstantCondition); ok {
+		if c.Value {
+			return Statement{SQL: "", Args: []any{}}, nil
+		}
+		return Statement{SQL: "1 = 0", Args: []any{}}, nil
+	}
+
 	result, err := r.renderCondition(cond)
 	if err != nil {
 		return Statement{}, err
@@ -38,24 +49,71 @@ func (r *renderer) Render(cond Condition) (Statement, error) {
 	if args == nil {
 		args = []any{}
 	}
-
-	switch {
-	case result.unsatisfiable:
-		return Statement{
-			SQL:  "1 = 0",
-			Args: args,
-		}, nil
-	case result.trivial:
-		return Statement{
-			SQL:  "",
-			Args: args,
-		}, nil
-	default:
-		return Statement{
-			SQL:  result.sql,
-			Args: args,
-		}, nil
+	if err := checkPlaceholderParity(result.sql, args, r.dialect, r.placeholderOffset); err != nil {
+		return Statement{}, err
 	}
+	return Statement{SQL: result.sql, Args: args}, nil
+}
+
+// foldConstants removes boolean constants from the condition tree, so every
+// subtree the renderer visits contributes its SQL and its arguments together.
+// The result is either a single ConstantCondition or a tree with no constants.
+func foldConstants(cond Condition) Condition {
+	switch c := cond.(type) {
+	case *LogicalCondition:
+		left := foldConstants(c.Left)
+		right := foldConstants(c.Right)
+		leftConst, leftOK := left.(*ConstantCondition)
+		rightConst, rightOK := right.(*ConstantCondition)
+		// AND is decided by a false operand, OR by a true one; the other
+		// constant is the operator's identity and drops out.
+		decisive := c.Operator == LogicalOr
+		if (leftOK && leftConst.Value == decisive) || (rightOK && rightConst.Value == decisive) {
+			return &ConstantCondition{Value: decisive}
+		}
+		if leftOK {
+			return right
+		}
+		if rightOK {
+			return left
+		}
+		return &LogicalCondition{Operator: c.Operator, Left: left, Right: right}
+	case *NotCondition:
+		child := foldConstants(c.Expr)
+		if childConst, ok := child.(*ConstantCondition); ok {
+			return &ConstantCondition{Value: !childConst.Value}
+		}
+		return &NotCondition{Expr: child}
+	default:
+		return cond
+	}
+}
+
+var postgresPlaceholderPattern = regexp.MustCompile(`\$(\d+)`)
+
+// checkPlaceholderParity rejects a fragment whose placeholders and arguments
+// disagree. Callers bind positionally after appending their own predicates, so
+// a surplus argument would silently bind to a later placeholder.
+func checkPlaceholderParity(sql string, args []any, dialect DialectName, offset int) error {
+	if dialect != DialectPostgres {
+		if count := strings.Count(sql, "?"); count != len(args) {
+			return errors.Errorf("filter rendered %d placeholders for %d arguments", count, len(args))
+		}
+		return nil
+	}
+	matches := postgresPlaceholderPattern.FindAllStringSubmatch(sql, -1)
+	if len(matches) != len(args) {
+		return errors.Errorf("filter rendered %d placeholders for %d arguments", len(matches), len(args))
+	}
+	seen := make(map[int]bool, len(matches))
+	for _, match := range matches {
+		n, err := strconv.Atoi(match[1])
+		if err != nil || n <= offset || n > offset+len(args) || seen[n] {
+			return errors.Errorf("filter rendered out-of-range placeholder $%s", match[1])
+		}
+		seen[n] = true
+	}
+	return nil
 }
 
 func (r *renderer) renderCondition(cond Condition) (renderResult, error) {
@@ -79,10 +137,7 @@ func (r *renderer) renderCondition(cond Condition) (renderResult, error) {
 	case *ListComprehensionCondition:
 		return r.renderListComprehension(c)
 	case *ConstantCondition:
-		if c.Value {
-			return renderResult{trivial: true}, nil
-		}
-		return renderResult{sql: "1 = 0", unsatisfiable: true}, nil
+		return renderResult{}, errors.New("constant condition must be folded before rendering")
 	default:
 		return renderResult{}, errors.Errorf("unsupported condition type %T", c)
 	}
@@ -99,10 +154,8 @@ func (r *renderer) renderLogicalCondition(cond *LogicalCondition) (renderResult,
 	}
 
 	switch cond.Operator {
-	case LogicalAnd:
-		return combineAnd(left, right), nil
-	case LogicalOr:
-		return combineOr(left, right), nil
+	case LogicalAnd, LogicalOr:
+		return renderResult{sql: fmt.Sprintf("(%s %s %s)", left.sql, cond.Operator, right.sql)}, nil
 	default:
 		return renderResult{}, errors.Errorf("unsupported logical operator %s", cond.Operator)
 	}
@@ -114,12 +167,6 @@ func (r *renderer) renderNotCondition(cond *NotCondition) (renderResult, error) 
 		return renderResult{}, err
 	}
 
-	if child.trivial {
-		return renderResult{sql: "1 = 0", unsatisfiable: true}, nil
-	}
-	if child.unsatisfiable {
-		return renderResult{trivial: true}, nil
-	}
 	return renderResult{
 		sql: fmt.Sprintf("NOT (%s)", child.sql),
 	}, nil
@@ -149,6 +196,12 @@ func (r *renderer) renderFieldPredicate(cond *FieldPredicateCondition) (renderRe
 			return renderResult{}, errors.Wrap(err, "failed to render JSON existence predicate")
 		}
 		return renderResult{sql: sql}, nil
+	case FieldKindExists:
+		sql, err := r.existsPredicate(field)
+		if err != nil {
+			return renderResult{}, errors.Wrap(err, "failed to render existence predicate")
+		}
+		return renderResult{sql: sql}, nil
 	default:
 		return renderResult{}, errors.Errorf("field %q cannot be used as a predicate", cond.Field)
 	}
@@ -168,6 +221,8 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 			return r.renderJSONBoolComparison(field, cond.Operator, cond.Right)
 		case FieldKindJSONExists:
 			return r.renderJSONExistsComparison(field, cond.Operator, cond.Right)
+		case FieldKindExists:
+			return r.renderExistsComparison(field, cond.Operator, cond.Right)
 		case FieldKindScalar:
 			return r.renderScalarComparison(field, cond.Operator, cond.Right)
 		default:
@@ -726,6 +781,49 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 	return renderPredicateComparison(field, op, value, existsSQL)
 }
 
+// existsPredicate renders a FieldKindExists field: an EXISTS subquery over the
+// related rows, OR-ed with the field's JSON boolean flag when it has one. The
+// flag goes through jsonBoolPredicate, so a missing key or NULL payload reads
+// as false and the whole expression stays two-valued under NOT.
+func (r *renderer) existsPredicate(field Field) (string, error) {
+	related := field.Related
+	if related == nil {
+		return "", errors.Errorf("field %q has no related rows", field.Name)
+	}
+	where := fmt.Sprintf("%s = %s",
+		qualifyColumn(r.dialect, Column{Table: related.Table, Name: related.ForeignKey}),
+		qualifyColumn(r.dialect, related.Owner))
+	if related.PrefixColumn != "" {
+		if related.Prefix == "" || strings.ContainsAny(related.Prefix, `'"%_\`) {
+			return "", errors.Errorf("field %q has an unsafe prefix %q", field.Name, related.Prefix)
+		}
+		where += fmt.Sprintf(" AND LOWER(%s) LIKE '%s%%'",
+			qualifyColumn(r.dialect, Column{Table: related.Table, Name: related.PrefixColumn}),
+			strings.ToLower(related.Prefix))
+	}
+	exists := fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s)", quoteTable(r.dialect, related.Table), where)
+	if len(field.JSONPath) == 0 {
+		return exists, nil
+	}
+	flag, err := r.jsonBoolPredicate(field)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%s OR %s)", flag, exists), nil
+}
+
+func (r *renderer) renderExistsComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
+	value, err := expectBool(right)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "existence comparison requires a boolean value")
+	}
+	predicate, err := r.existsPredicate(field)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "failed to render existence comparison")
+	}
+	return renderPredicateComparison(field, op, value, predicate)
+}
+
 // renderPredicateComparison renders `field == value` or `field != value` for a
 // field whose truth is fully described by predicate: the predicate itself when
 // the comparison asks for true, its negation when it asks for false.
@@ -755,36 +853,6 @@ func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
 		return fmt.Sprintf("(%s)::boolean IS TRUE", expr), nil
 	default:
 		return "", errors.Errorf("unsupported dialect %s", r.dialect)
-	}
-}
-
-func combineAnd(left, right renderResult) renderResult {
-	if left.unsatisfiable || right.unsatisfiable {
-		return renderResult{sql: "1 = 0", unsatisfiable: true}
-	}
-	if left.trivial {
-		return right
-	}
-	if right.trivial {
-		return left
-	}
-	return renderResult{
-		sql: fmt.Sprintf("(%s AND %s)", left.sql, right.sql),
-	}
-}
-
-func combineOr(left, right renderResult) renderResult {
-	if left.trivial || right.trivial {
-		return renderResult{trivial: true}
-	}
-	if left.unsatisfiable {
-		return right
-	}
-	if right.unsatisfiable {
-		return left
-	}
-	return renderResult{
-		sql: fmt.Sprintf("(%s OR %s)", left.sql, right.sql),
 	}
 }
 
@@ -863,6 +931,15 @@ func toInt64(value any) (int64, error) {
 
 func sqlOperator(op ComparisonOperator) string {
 	return string(op)
+}
+
+func quoteTable(d DialectName, table string) string {
+	switch d {
+	case DialectPostgres:
+		return table
+	default:
+		return fmt.Sprintf("`%s`", table)
+	}
 }
 
 func qualifyColumn(d DialectName, col Column) string {

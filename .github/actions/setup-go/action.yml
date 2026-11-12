@@ -1,0 +1,12 @@
+name: Setup Go
+description: Install the Go version declared in go.mod and restore the module and build cache.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+        cache: true
+        cache-dependency-path: go.sum

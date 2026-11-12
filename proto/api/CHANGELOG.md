@@ -6,33 +6,61 @@ Record schema, REST route, and behavior breaks here. API compatibility is checke
 
 Add entries under a `## Unreleased` heading. After the release ships, rename it to the release tag.
 
+`IdentityProvider`, `InstanceSetting`, and `User` are also the declarative configuration file format. When a break removes or
+renames a field a configuration file can set, say that files setting it are rejected from this release and what to write
+instead, and update `core/configuration/testdata/compat/` in the same change. After a release ships, copy
+`testdata/compat/unreleased/` to a directory named for the release tag.
+
 ```markdown
 ## Unreleased
 
 ### Breaking
 
 - `MemoService.ListShortcuts`: removed. Use `UserService.ListMemoViews`.
+- `InstanceSetting.StorageSetting.upload_size_limit_mb`: removed. Configuration files that set `uploadSizeLimitMb` are
+  rejected from this release; set the `UPLOAD_BYTES` usage limit instead.
 
 ### Deprecated
 
 - `Memo.unassigned`: use an unset `Memo.space`. Removed in a later release.
 ```
 
-## Unreleased
+## 26.10.0
 
 ### Breaking
 
+- `UserService.ExportMemos` and `ExportMemosRequest` are removed. Export is an instance-administrator download at
+  `GET /file/users/{username}/export`, authenticated like attachments (Bearer header or session cookie), streaming the
+  archive with `Content-Disposition`. One export runs at a time per instance; a second request receives `429`. Members
+  ask an administrator for their archive. `ImportMemos` is unchanged.
 - Access tokens are now bound to the user's password hash and become invalid immediately after a password change or
   an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
   again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.
-- Memo content size now uses the `MEMO_CONTENT_BYTES` usage limit, including creates, edits, comments, and imports.
-  The default is 8 KiB when the usage limits setting is absent. `MemoRelatedSetting.content_length_limit` is removed;
-  old values are not migrated. Exceeding the content limit returns `RESOURCE_EXHAUSTED`
-  with quota details.
-  `MemoRelatedSetting` fields are now `enable_double_click_edit = 1` and `reactions = 2`, matching the storage proto.
-- The memo-count usage metric is now `MEMO_COUNT`, and `UserUsage.memos_limit` is now `memo_count_limit`.
-  Metric values are `MEMO_COUNT = 1`, `MEMO_CONTENT_BYTES = 2`, `STORAGE_BYTES = 3`, and `UPLOAD_BYTES = 4`.
-
+- Usage limits replace the instance-wide upload size and memo content caps. `StorageSetting.upload_size_limit_mb`
+  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated. The limits are the
+  `USAGE_LIMITS` instance setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole
+  through `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry
+  applies to all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns
+  the limit set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
+  `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
+- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
+  the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`.
+- The deployment configuration files under `/etc/secrets` (`memos-idp-*.json`, `memos-instance-setting-*.json`)
+  introduced in v0.31.0 are no longer read, and the stored values they overrode take effect again. Identity providers,
+  instance settings, bootstrap users, and their linked identities are declared instead as `memos.api.Configuration`
+  documents in the configuration directory (`--config-dir` or `MEMOS_CONFIG_DIR`, default `/etc/memos/config`), applied
+  at startup unless `--config-apply=off`, or through `memos config plan` and `memos config apply`. Keep an identity
+  provider's UID when moving it so linked accounts keep working. An API write that changes a field a file manages
+  returns `FAILED_PRECONDITION` with `ErrorInfo{reason: MANAGED_BY_CONFIGURATION}` naming the file and fields;
+  `GET /api/instance/configuration` (administrators) lists what is managed.
+- `CreateIdentityProvider` and `UpdateIdentityProvider` validate the provider as it will be stored and return
+  `INVALID_ARGUMENT` when it has no title, an invalid `identifier_filter`, no `client_id`, a non-absolute or non-HTTP(S)
+  `auth_url`, `token_url`, or `user_info_url`, an empty scope entry, or no `field_mapping.identifier`. A request that
+  omitted `config` or `field_mapping` previously failed with `INTERNAL`.
+- `UpdateInstanceSetting` for `STORAGE` requires every new or changed S3 storage to have `endpoint`, `region`, `bucket`,
+  `access_key_id`, and `access_key_secret` (an empty secret still keeps the stored one). For `GENERAL`,
+  `week_start_day_offset` must be between -1 and 6. `BASIC` cannot be written. Notification validation errors name
+  fields in proto form (`smtp_host`, `use_tls`).
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from
     `/api/v1/sse` to `/api/sse`.

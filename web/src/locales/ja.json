@@ -3,7 +3,6 @@
     "api-docs": "APIドキュメント",
     "api-docs-note": "RESTとgRPCのリファレンス",
     "build": "ビルド",
-    "commit": "コミット",
     "demo": "デモ",
     "description": "メモやアイデア、日々の思いを残すための、オープンソースでセルフホストできる場所。",
     "distribution": "ディストリビューション",
@@ -23,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "管理者サインイン",
-    "admin-sign-in-tip": "管理者はパスワードでのサインインを引き続き利用できます。",
     "back-to-sign-in": "サインインに戻る",
+    "callback-failed-title": "サインインを完了できませんでした",
     "continue-with": "{{provider}}で続行",
     "create-admin-account": "管理者アカウントを作成",
     "create-your-account": "アカウントを作成",
-    "explore-public-memos": "このインスタンスの公開メモを見る",
-    "first-run": "初回起動",
+    "hide-password": "パスワードを隠す",
+    "incorrect-credentials": "ユーザーネームまたはパスワードが正しくありません。",
     "new-password": "新しいパスワード",
     "repeat-new-password": "新しいパスワードを再入力",
     "setup-description": "このインスタンスの管理者アカウントを作成します。",
-    "setup-note": "このアカウントはインスタンスの設定、メンバー、IDプロバイダーを管理します。",
     "setup-title": "インスタンスをセットアップ",
+    "show-password": "パスワードを表示",
     "sign-in-tip": "すでにアカウントを持っていますか?",
     "sign-up-tip": "アカウントを持っていませんか?",
     "signin-unavailable-description": "パスワードでのサインインが無効になっており、IDプロバイダーも設定されていません。サインイン方法を有効にするよう管理者に依頼してください。",
     "signin-unavailable-title": "サインインは利用できません",
-    "signup-unavailable-description": "パスワードアカウントが無効になっており、IDプロバイダーも設定されていません。アクセスが必要な場合は管理者にお問い合わせください。",
-    "signup-unavailable-title": "登録は利用できません",
-    "signups-closed-description": "このインスタンスでは新規アカウントの作成が無効になっています。アクセスが必要な場合は管理者にお問い合わせください。",
-    "signups-closed-title": "新規登録は受け付けていません",
-    "sso-signup-tip": "以下のプロバイダーでサインインしてアカウントを作成してください。",
-    "welcome-back": "おかえりなさい。"
+    "signups-closed-description": "このインスタンスでは新規アカウントの作成が無効になっています。アクセスが必要な場合は管理者にお問い合わせください。"
   },
   "common": {
     "about": "Memos について",
@@ -107,7 +101,6 @@
     "profile": "プロフィール",
     "referenced-by": "参照元",
     "referencing": "参照先",
-    "relations": "関連",
     "resize-sidebar": "サイドバーの幅を変更",
     "resources": "リソース",
     "restore": "復元",
@@ -139,7 +132,24 @@
     "collapse-panel": "パネルを折りたたむ",
     "expand-panel": "パネルを展開する",
     "resize-panel": "パネルのサイズを変更する",
-    "view-all": "すべて表示"
+    "open-navigation": "ナビゲーションを開く",
+    "navigation": "ナビゲーション",
+    "primary-navigation": "メイン",
+    "download": "ダウンロード",
+    "download-name": "{{name}} をダウンロード",
+    "open-name": "{{name}} を開く",
+    "preview-name": "{{name}} をプレビュー",
+    "no-content": "内容なし",
+    "previous": "前へ",
+    "next": "次へ",
+    "retry": "再試行",
+    "docs": "ドキュメント",
+    "calendar-for-month": "{{month}}のカレンダー",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "選択した場所",
+    "choose-location": "場所を選択",
+    "unknown-error": "不明なエラー",
+    "error-occurred": "エラーが発生しました"
   },
   "locale-picker": {
     "no-language-feedback": "言語が見つかりませんか? フィードバックを送信する"
@@ -150,7 +160,7 @@
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
     "focus-mode": "フォーカスモード",
-    "formatting-toolbar": "書式ツールバー",
+    "markdown-mode": "Markdown モード",
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "insert-menu": {
@@ -161,9 +171,50 @@
       "image-upload-failed": "一部の画像はアップロードできませんでした。再試行するか、アップロード済みのファイルを添付ファイルとして保存してください。",
       "image-upload-stopped": "画像アップロードが停止しました {{completed}}/{{total}}",
       "insert-image": "画像を挿入",
+      "drawing": "描画",
       "keep-as-attachments": "添付ファイルとして保存",
       "uploading-inline-image": "コンテンツにアップロード中",
       "uploading-images": "画像 {{completed}}/{{total}} をアップロード中"
+    },
+    "drawing": {
+      "new-title": "新しい描画",
+      "edit": "描画を編集",
+      "tools": "ツール",
+      "tool-select": "選択",
+      "tool-pen": "ペン",
+      "tool-eraser": "消しゴム",
+      "tool-rectangle": "長方形",
+      "tool-ellipse": "楕円",
+      "tool-arrow": "矢印",
+      "tool-text": "テキスト",
+      "style": "色と太さ",
+      "color": "色",
+      "width": "太さ",
+      "width-thin": "細い",
+      "width-medium": "普通",
+      "width-thick": "太い",
+      "color-ink": "インク",
+      "color-gray": "グレー",
+      "color-red": "赤",
+      "color-orange": "オレンジ",
+      "color-green": "緑",
+      "color-teal": "ティール",
+      "color-blue": "青",
+      "color-violet": "紫",
+      "undo": "元に戻す",
+      "redo": "やり直す",
+      "zoom-to-fit": "全体を表示",
+      "done": "完了",
+      "discard-title": "この描画を破棄しますか？",
+      "discard-description": "まだメモに追加されていません。",
+      "discard-edit-title": "変更を破棄しますか？",
+      "discard-edit-description": "描画は開く前の状態のまま残ります。",
+      "keep-drawing": "描画を続ける",
+      "discard": "破棄",
+      "open-failed": "描画を開けませんでした。もう一度お試しください。",
+      "export-failed": "描画を保存できませんでした。もう一度お試しください。",
+      "image-failed": "画像を描画に追加できませんでした。",
+      "saved-without-drawing": "メモは保存されましたが、描画は保存されていません。再試行するには、もう一度保存してください。"
     },
     "audio-recorder": {
       "attachment-label": "音声録音",
@@ -182,11 +233,11 @@
       "trigger": "音声を録音する"
     },
     "format": {
-      "heading": "見出し",
       "paragraph": "段落",
       "heading-1": "見出し1",
       "heading-2": "見出し2",
       "heading-3": "見出し3",
+      "heading-4": "見出し4",
       "bold": "太字",
       "italic": "斜体",
       "strikethrough": "取り消し線",
@@ -194,10 +245,11 @@
       "bullet-list": "箇条書きリスト",
       "ordered-list": "番号付きリスト",
       "task-list": "タスクリスト",
-      "link": "リンク",
-      "more": "その他の書式"
+      "link": "リンク"
     },
     "comment": "コメント",
+    "footnotes": "脚注",
+    "back-to-reference": "参照箇所に戻る",
     "new-memo": "新しいメモ",
     "saved": "保存済み",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "保存処理中",
       "unsupported-attachment-image-url": "サポートされていない添付ファイル画像のURL: {{url}}",
       "wait-for-upload": "アップロードが完了するまでお待ちください"
-    }
+    },
+    "blocks": {
+      "task": "タスク",
+      "quote": "引用",
+      "callout": "コールアウト",
+      "callout-note": "メモ",
+      "callout-tip": "ヒント",
+      "callout-important": "重要",
+      "callout-warning": "警告",
+      "callout-caution": "注意",
+      "collapsible-section": "折りたたみセクション",
+      "table": "表",
+      "divider": "区切り線",
+      "no-results": "結果がありません",
+      "commands": "コマンド",
+      "loading": "読み込み中…",
+      "duplicate": "複製",
+      "inline-code": "コード",
+      "link-placeholder": "リンクを貼り付けまたは入力…",
+      "remove-link": "リンクを削除",
+      "open-link": "リンクを開く",
+      "copy-link": "リンクをコピー",
+      "edit-link": "リンクを編集",
+      "emoji": "絵文字",
+      "block-menu": "ブロックメニューを開く",
+      "list-hint": "リスト",
+      "plain-text": "テキスト",
+      "add-row-above": "上に行を追加",
+      "add-row-below": "下に行を追加",
+      "add-column-left": "左に列を追加",
+      "add-column-right": "右に列を追加",
+      "delete-row": "行を削除",
+      "delete-column": "列を削除",
+      "align": "配置",
+      "align-left": "左",
+      "align-center": "中央",
+      "align-right": "右",
+      "image-align-left": "左揃え",
+      "image-align-center": "中央揃え",
+      "image-align-right": "右揃え",
+      "text-style": "テキストスタイル",
+      "image": "画像",
+      "reset-image-size": "サイズをリセット",
+      "alt-text": "代替テキスト",
+      "alt-text-placeholder": "画像の説明を入力…",
+      "image-unavailable": "画像を表示できません",
+      "resize-image": "画像のサイズを変更"
+    },
+    "attachments": {
+      "edited": "編集済み",
+      "new": "新規",
+      "remove": "添付ファイルを削除",
+      "reorder": "{{name}}を並べ替え",
+      "reorder-hint": "ドラッグするか、矢印キーを使います"
+    },
+    "remove-relation": "関連を削除",
+    "remove-location": "場所を削除",
+    "recording-unsupported": "このブラウザーは音声録音に対応していません。",
+    "microphone-denied": "マイクへのアクセスが拒否されました。",
+    "recording-failed": "音声録音を開始できませんでした。"
   },
   "inbox": {
     "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",
@@ -218,7 +329,16 @@
     "unread": "未読",
     "space-invitation": "スペースへの参加を招待されました",
     "space-invitation-accepted": "このスペースに参加しました。",
-    "space-invitation-open": "空きスペース"
+    "space-invitation-open": "空きスペース",
+    "commented-on-memo": "があなたのメモにコメントしました",
+    "mentioned-in-comment": "がコメントであなたをメンションしました",
+    "mentioned-in-memo": "がメモであなたをメンションしました",
+    "original": "元のメモ:",
+    "memo-label": "メモ:",
+    "comment-heading": "コメント",
+    "memo-heading": "メモ",
+    "empty-memo": "空のメモ",
+    "empty-comment": "空のコメント"
   },
   "live-update": {
     "connected": "ライブアップデートがアクティブです",
@@ -226,11 +346,16 @@
     "disconnected": "ライブアップデートは利用できません"
   },
   "memo": {
+    "no-memos-yet": "まだメモはありません",
+    "no-matching-memos": "一致するメモはありません",
+    "clear-filters": "フィルターをクリア",
     "pinned": "ピン留め済み",
     "click-to-show-sensitive-content": "クリックしてセンシティブな内容を表示",
     "comment": {
       "self": "コメント",
-      "write-a-comment": "コメントを書く"
+      "write-a-comment": "コメントを書く",
+      "view-all-count_one": "{{count}} 件のコメントをすべて表示",
+      "view-all-count_other": "{{count}} 件のコメントをすべて表示"
     },
     "copy-content": "コンテンツをコピー",
     "copy-link": "リンクをコピー",
@@ -239,10 +364,13 @@
     "delete-confirm-description": "この操作は元に戻せません。添付ファイル、リンク、参照も削除されます。",
     "direction": "並び順",
     "filters": {
+      "has-attachments": "添付ファイルあり",
       "has-code": "コードあり",
+      "has-image": "画像あり",
       "has-link": "リンクあり",
       "has-location": "位置情報あり",
-      "has-task-list": "タスクリストあり"
+      "has-task-list": "タスクリストあり",
+      "remove": "フィルターを削除"
     },
     "compact-mode": "コンパクト表示",
     "grid-compact-hint": "グリッドレイアウトでは常にコンパクトなカードで表示されます。",
@@ -328,7 +456,9 @@
     "restored-successfully": "復元しました",
     "succeed-copy-content": "コンテンツのコピーに成功しました。",
     "succeed-copy-link": "リンクのコピーに成功しました。",
-    "update-succeed": "変更は保存されました"
+    "update-succeed": "変更は保存されました",
+    "not-signed-in": "サインインしていません。",
+    "invalid-datetime": "日時が無効です。2023-12-31 23:59:59 の形式で入力してください。"
   },
   "reference": {
     "no-memos-found": "メモが見つかりません",
@@ -398,7 +528,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "添付ファイルストレージが利用できません。",
-      "email-in-use": "このメールアドレスは既に別のアカウントで使用されています。"
+      "email-in-use": "このメールアドレスは既に別のアカウントで使用されています。",
+      "avatar-too-large": "2 MB 以下の画像を選んでください。",
+      "avatar-unreadable": "この画像を読み込めません。別のファイルをお試しください。"
     },
     "instance": {
       "disallow-change-nickname": "ニックネーム変更を禁止",
@@ -437,7 +569,11 @@
       "active": "アクティブ",
       "archived": "アーカイブ済み",
       "member-column": "メンバー",
-      "summary-column": "まとめ"
+      "summary-column": "まとめ",
+      "export-memos": "メモをエクスポート",
+      "username-password-required": "ユーザー名とパスワードは必須です",
+      "create-success": "ユーザーを作成しました",
+      "update-success": "ユーザーを更新しました"
     },
     "memo": {
       "label": "メモ",
@@ -445,8 +581,6 @@
       "reactions-required": "リアクションリストは空にできません",
       "add-reaction": "リアクションを追加",
       "configured-reactions": "設定された反応",
-      "double-click-edit-description": "ユーザーがメモをダブルクリックしてメモ編集を開くことができるようにします。",
-      "editing-title": "編集",
       "reaction-placeholder": "例えば 👍",
       "reactions-description": "ユーザーがメモに適用できる反応オプションを定義します。",
       "remove-reaction": "反応を取り除く"
@@ -455,26 +589,166 @@
       "label": "アカウント設定"
     },
     "preference": {
-      "default-memo-visibility": "公開範囲の初期設定",
-      "label": "設定",
-      "theme": "テーマ",
       "appearance-description": "アプリの外観と、アカウントで使用する言語を選択します。",
       "appearance-title": "外観",
+      "default-memo-visibility": "公開範囲の初期設定",
       "default-memo-visibility-description": "エディターで変更しない限り、新しく作成されたメモに表示設定が適用されます。",
+      "device-description": "このブラウザーにのみ保存される閲覧・編集の設定です。アカウントには保存されません。",
+      "device-title": "このデバイス",
+      "double-click-edit": "ダブルクリックで編集",
+      "double-click-edit-description": "自分のメモをダブルクリックしてエディターで開きます。",
+      "label": "設定",
       "language-description": "インターフェイス言語をすぐに更新し、アカウントに保存します。",
+      "link-preview-description": "メモが表示されるすべての場所で、単独のリンクの下にプレビューカードを表示します。",
       "memo-defaults-description": "新しいメモを作成するときに使用するデフォルトを設定します。",
       "memo-defaults-title": "メモのデフォルト",
-      "theme-description": "選択したテーマをこのデバイスにすぐに適用します。",
       "save-media-metadata": "メディアメタデータの保存",
       "save-media-metadata-description": "今後のアップロードのために、使用可能なカメラ、撮影時間、場所、画像サイズ、および基本的なビデオの詳細を保存します。添付ファイルを閲覧できるユーザーは誰でもこのメタデータを受け取ることができます。既存の添付ファイルは変更されません。",
+      "theme-description": "選択したテーマをこのデバイスにすぐに適用します。",
+      "theme": "テーマ",
       "uploads-privacy-description": "アップロードされたメディアとともに送信されるプライバシーに配慮した情報を管理します。",
-      "uploads-privacy-title": "アップロードとプライバシー"
+      "uploads-privacy-title": "アップロードとプライバシー",
+      "theme-system": "システムに合わせる",
+      "theme-system-short": "システム",
+      "theme-light": "ライト",
+      "theme-dark": "ダーク",
+      "theme-paper": "ペーパー"
+    },
+    "editor": {
+      "label": "エディター",
+      "markdown-mode-description": "メモを書式付きテキストではなく Markdown テキストとして作成・編集します。"
     },
     "memo-view": {
       "create": "ビューを作成",
       "delete-confirm": "ビュー `{{title}}` を削除してもよろしいですか？",
       "delete-success": "ビュー `{{title}}` を削除しました",
-      "change-icon": "ビューのアイコンを変更"
+      "change-icon": "ビューのアイコンを変更",
+      "page-description": "フィールド、演算子、時間ヘルパー、タグの一致条件を使って、再利用できるビューを作成します。例を出発点にして、保存前に検証してください。",
+      "edit": "ビューを編集",
+      "form-description": "ビューに名前を付け、適用するメモのフィルター式を定義します。",
+      "title-placeholder": "ピン留め, 最近のメモ, 仕事",
+      "filter-help": "式は {{and}}、{{or}}、{{not}} で組み合わせます。時間フィールドはタイムスタンプです。{{now}}、{{duration}}、{{timestamp}} や {{year}} などのアクセサーを使ってください。タグは {{sets}} に対応し、{{size}} で長さを測れます。",
+      "validate": "検証",
+      "all": "すべてのビュー",
+      "loading": "ビューを読み込み中…",
+      "load-failed": "ビューを読み込めませんでした。",
+      "empty-title": "ビューはまだありません",
+      "empty-description": "フィルターを保存すると、必要なメモにすぐ戻れます。",
+      "examples-title": "式の例",
+      "fields-title": "対応フィールド",
+      "title-filter-required": "タイトルとフィルターは必須です",
+      "filter-valid": "フィルター式は有効です",
+      "create-success": "ビューを作成しました",
+      "update-success": "ビューを更新しました",
+      "examples": {
+        "pinned": {
+          "title": "ピン留め",
+          "description": "ピン留めしたメモのみ。"
+        },
+        "recent": {
+          "title": "最近のメモ",
+          "description": "過去 1 時間以内に作成されたメモ。"
+        },
+        "public": {
+          "title": "公開メモ",
+          "description": "公開メモのみ。"
+        },
+        "project-tags": {
+          "title": "プロジェクトタグ",
+          "description": "1 つ以上のタグに完全一致。"
+        },
+        "untagged": {
+          "title": "タグなし",
+          "description": "タグが 1 つもないメモ。"
+        },
+        "archive-tree": {
+          "title": "アーカイブツリー",
+          "description": "階層タグを接頭辞で一致させます。"
+        },
+        "unassigned": {
+          "title": "未割り当て",
+          "description": "どのスペースにも置かれていないメモ。"
+        },
+        "one-space": {
+          "title": "特定のスペース",
+          "description": "スペースに置かれたメモ。スペース ID は URL または設定で確認できます。"
+        },
+        "open-tasks": {
+          "title": "未完了のタスク",
+          "description": "未完了のタスクがあるメモ。"
+        },
+        "links-or-code": {
+          "title": "リンクまたはコード",
+          "description": "リンクまたはコードブロックを含むメモ。"
+        },
+        "no-location": {
+          "title": "場所なし",
+          "description": "場所が付いていないメモ。"
+        },
+        "with-attachments": {
+          "title": "添付ファイルあり",
+          "description": "ファイルが 1 つ以上添付されたメモ。"
+        },
+        "photos": {
+          "title": "写真",
+          "description": "本文または添付ファイルとして画像を表示するメモ。"
+        },
+        "content-search": {
+          "title": "本文検索",
+          "description": "メモの本文内のテキストを検索します。"
+        },
+        "starts-with": {
+          "title": "前方一致",
+          "description": "本文が特定のテキストで始まるメモ（endsWith もあります）。"
+        },
+        "regex": {
+          "title": "正規表現で一致",
+          "description": "正規表現で本文を照合します。"
+        },
+        "all-tags-complete": {
+          "title": "すべてのタグが完了",
+          "description": "すべてのタグが -done で終わる（タグ付きメモのみ）。"
+        },
+        "one-project-tag": {
+          "title": "プロジェクトタグが 1 つ",
+          "description": "条件に一致するタグがちょうど 1 つ。"
+        },
+        "any-tags": {
+          "title": "いずれかのタグ",
+          "description": "タグが指定した集合と重なる。"
+        },
+        "exact-tags": {
+          "title": "これらのタグのみ",
+          "description": "タグがこの集合と完全に一致し、それ以外はない。"
+        },
+        "year-2024": {
+          "title": "2024 年のメモ",
+          "description": "暦年で絞り込みます。"
+        },
+        "weekend": {
+          "title": "週末のメモ",
+          "description": "日曜日または土曜日に作成（0 = 日曜日）。"
+        },
+        "long": {
+          "title": "長いメモ",
+          "description": "280 文字を超えるメモ。"
+        }
+      }
+    },
+    "configuration": {
+      "label": "構成",
+      "description": "構成ファイルで設定されたリソースです。変更するにはファイルを編集して適用してください。インスタンスのその他の部分は引き続きここで編集できます。",
+      "managed-by": "構成で管理",
+      "managed-tooltip": "{{source}} で設定されています。変更するにはファイルを編集して適用してください。",
+      "resource": "リソース",
+      "source": "ファイル",
+      "managed-fields": "管理対象のフィールド",
+      "whole-resource": "すべてのフィールド",
+      "ignored-fields": "ここで編集可能",
+      "serial": "シリアル",
+      "last-apply": "最終適用",
+      "applied-by": "適用者",
+      "nothing-managed": "構成はまだ適用されていません。すべてここで設定します。"
     },
     "sso": {
       "authorization-endpoint": "認証エンドポイント",
@@ -535,7 +809,9 @@
       "scopes-description": "スコープはスペースで区切ります。 ほとんどのプロバイダーは、プロフィールや電子メール アクセスなどの小さなセットのみを必要とします。",
       "template-description": "プロバイダーのプリセットから開始して、テナントの資格情報とエンドポイントを調整します。",
       "unlink-success": "リンクされていない {{name}}。",
-      "update-sso-description": "プロバイダーの構成を確認し、変更する必要があるフィールドを保存します。"
+      "update-sso-description": "プロバイダーの構成を確認し、変更する必要があるフィールドを保存します。",
+      "invalid-config": "ID プロバイダーの設定が無効です。",
+      "provider-id-placeholder": "例: github, okta-corp"
     },
     "storage": {
       "accesskey": "アクセスキー",
@@ -583,9 +859,9 @@
       "customize-server": {
         "description": "説明",
         "icon-url": "アイコンURL",
-        "title": "サーバーをカスタマイズ"
+        "title": "サーバーをカスタマイズ",
+        "dialog-description": "インスタンスの外観と設定をカスタマイズします。"
       },
-      "enable-double-click-to-edit": "ダブルクリック編集を有効化",
       "label": "システム",
       "server-name": "サーバー名",
       "additional-script-description": "JavaScript をすべての Web ページに挿入します。 信頼できるコードのみを使用してください。",
@@ -595,38 +871,47 @@
       "custom-code-title": "カスタムコード"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1092,9 @@
       "review-existing": "アカウントに既に存在します",
       "review-exported": "エクスポート元",
       "review-memos": "ファイル内のメモ",
-      "review-new": "作成されます"
+      "review-new": "作成されます",
+      "export-admin-only": "メモをエクスポートできるのは管理者のみです。エクスポートファイルは管理者に依頼してください。",
+      "export-busy": "別のエクスポートが実行中です。しばらくしてからもう一度お試しください。"
     },
     "spaces": {
       "general": "全般",
@@ -893,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "メモをリンク",
-    "select-location": "場所"
+    "select-location": "場所",
+    "link-memo-description": "リンクするメモを検索して選択"
   },
   "demo": {
     "banner-description": "変更は一時的なものであり、リセットされる場合があります。",
@@ -996,7 +1284,12 @@
     "loading": "メモを読み込んでいます…",
     "new-here": "ここに記入",
     "saved-outside-filter": "保存しました。このメモは現在の地図結果の範囲外です。",
-    "open-memo": "メモを開く"
+    "open-memo": "メモを開く",
+    "open-in-google-maps": "Google Maps で開く",
+    "location-description": "地図上で場所を選択するか、座標を手動で入力してください",
+    "latitude": "緯度",
+    "longitude": "経度",
+    "place-placeholder": "先に位置を選択してください。"
   },
   "calendar": {
     "new-memo-on-day": "この日に新しいメモが作成",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "例：製品",
     "spaces": "スペース",
     "switch": "スペースを切り替え"
+  },
+  "welcome": {
+    "title": "Memos へようこそ",
+    "headline": "日々の考えを書きとめる、シンプルなメモ。",
+    "intro-write": "一文だけでも、ひとつのメモになります。",
+    "intro-keep": "それぞれのメモは、書いた日とともに残ります。",
+    "intro-share": "何を非公開にしておくかは、あなたが決めます。",
+    "write": "書く",
+    "write-sub": "一文だけでも、ひとつのメモになります。",
+    "no-title": "タイトルなし",
+    "no-title-text": "メモは考えそのものから始まります。埋めるべきタイトルはありません。",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown は、必要なときに文章へ構造を与えます。",
+    "attach": "添付",
+    "attach-text": "画像、ファイル、音声、場所は ＋ から追加できます。",
+    "keep": "残す",
+    "keep-sub": "それぞれのメモは、書いた日とともに残ります。",
+    "calendar-text": "カレンダーから、どの日にも戻れます。",
+    "tags-text": "# の後の言葉はタグになり、タグはタイムラインを絞り込みます。",
+    "views-text": "カスタムビューは、絞り込みの条件を保存します。",
+    "map-text": "場所のあるメモは、マップ上に表示されます。",
+    "share": "共有",
+    "share-sub": "メモは非公開から始まります。何を共有し、何を公開するかは、あなたが決めます。",
+    "visibility-text": "メモごとに設定があります。新しいメモはあなただけの非公開から始まり、公開メモには誰でも開けるリンクがあります。",
+    "spaces-text": "スペースでは、メンバーがあなたと並んで書き、それぞれが自分のメモを持ちます。",
+    "comments": "コメント",
+    "comments-text": "メモを見られる人は、その下に返信できます。",
+    "skip": "スキップ",
+    "next": "次へ",
+    "done": "完了",
+    "page-of": "{{total}} ページ中 {{current}} ページ",
+    "reopen": "ようこそガイド",
+    "reopen-note": "新しいアカウントが最初に見る 4 つの画面。",
+    "sample": {
+      "today": "今日 10:42",
+      "today-early": "今日 9:18",
+      "yesterday": "昨日 15:20",
+      "comment-age": "2時間",
+      "memo-preview": "もっとシンプルな最初の画面。入力欄をひとつ、そのあとにプレビュー。",
+      "memo-release": "次のリリースの前に",
+      "task-sketch": "最初の画面のスケッチ",
+      "task-polish": "プレビューの仕上げ",
+      "write-lead": "最初の一歩は小さく。",
+      "write-strong": "詳細は",
+      "write-tail": "必要になったときに見せる。",
+      "write-task": "短い変更履歴を書く",
+      "view": "未完了のタスク",
+      "space": "プロダクト",
+      "share-memo": "登録をお願いする前に、まず結果を見せてみる。",
+      "comment": "同感です。プレビューが決め手でした。",
+      "tag-design": "デザイン",
+      "tag-project": "プロジェクト",
+      "tag-reading": "読書",
+      "tag-ideas": "アイデア"
+    }
+  },
+  "error": {
+    "title": "問題が発生しました",
+    "description": "予期しないエラーが発生しました。ネットワークの問題、またはアプリケーションの問題が原因の可能性があります。",
+    "description-update": "予期しないエラーが発生しました。ネットワークの問題、またはアプリケーションの更新が原因の可能性があります。通常は再読み込みで解決します。",
+    "details": "エラーの詳細",
+    "reload": "アプリケーションを再読み込み",
+    "not-found": "お探しのページが見つかりません。",
+    "permission-denied": "権限がありません",
+    "too-many-requests": "リクエストが多すぎます。{{wait}}後にもう一度お試しください。",
+    "wait-seconds": "{{count}}秒",
+    "wait-minutes": "{{count}}分",
+    "wait-hours": "{{count}}時間",
+    "challenge-required": "認証チャレンジを完了してから、もう一度お試しください。",
+    "quota-memo-count": "メモの上限（{{limit}} 件）に達しました。新しいメモを作成するには、メモを削除してください。",
+    "quota-storage": "このアップロードはストレージの上限（{{limit}}）を超えます。現在 {{usage}} を使用しています。",
+    "quota-upload": "このファイルは 1 ファイルあたりの上限（{{limit}}）を超えています。",
+    "quota-memo-content": "このメモは 1 メモあたりの上限（{{limit}}）を超えています。保存するには内容を短くしてください。",
+    "quota-generic": "使用量の上限に達しました。",
+    "sign-in-failed": "サインインに失敗しました。",
+    "sign-up-failed": "登録に失敗しました",
+    "authenticate-failed": "認証に失敗しました。",
+    "update-profile-failed": "プロフィールの更新に失敗しました",
+    "unlink-identity-failed": "ID プロバイダーのリンク解除に失敗しました。",
+    "link-identity-failed": "アカウント連携を開始できませんでした。もう一度お試しください。"
+  },
+  "attachment-preview": {
+    "title": "添付ファイルのプレビュー",
+    "description": "添付ファイルのプレビューダイアログです。Esc キーで閉じ、左右の矢印キーで項目を切り替えます。画像はコントロール、マウスホイール、ダブルタップ、ピンチ操作で拡大できます。",
+    "close": "プレビューを閉じる",
+    "previous": "前の項目",
+    "next": "次の項目",
+    "reset-zoom": "ズームをリセット",
+    "image-alt": "プレビュー画像 {{index}}/{{count}}",
+    "live-photo-alt": "ライブフォトのプレビュー {{index}}/{{count}}",
+    "play-live-photo": "ホバーまたは押してライブフォトを再生"
+  },
+  "audio-player": {
+    "seek": "{{name}} の再生位置",
+    "back": "{{seconds}} 秒戻る",
+    "forward": "{{seconds}} 秒進む",
+    "speed": "再生速度 {{rate}}x"
   }
 }

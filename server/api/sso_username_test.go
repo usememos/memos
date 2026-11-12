@@ -2,6 +2,8 @@ package api
 
 import (
 	"testing"
+
+	coreuser "github.com/usememos/memos/core/user"
 )
 
 func TestDeriveSSOUsername(t *testing.T) {
@@ -12,7 +14,7 @@ func TestDeriveSSOUsername(t *testing.T) {
 	if len(username) != 36 {
 		t.Fatalf("deriveSSOUsername() = %q, want a 36-character UUID", username)
 	}
-	if err := validateWritableUsername(username); err != nil {
+	if err := coreuser.ValidateUsername(username); err != nil {
 		t.Fatalf("deriveSSOUsername() produced invalid username %q: %v", username, err)
 	}
 }

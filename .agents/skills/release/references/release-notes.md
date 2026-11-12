@@ -16,7 +16,7 @@ contributors: describe what changed for them, not how the code changed.
 Stable releases use these sections in this order. Omit an empty section rather than padding it.
 
 1. **Summary paragraph** (no heading): two sentences. Name the most important additions, then the areas that improved
-   overall. Use the release's tag as the version, e.g. "Memos 26.10 adds…".
+   overall. Use the release's tag as the version, e.g. "Memos 26.10.0 adds…".
 2. `## Highlights`: new capabilities, ordered writing first, then finding and browsing, then ownership and data.
 3. `## Fixes and polish`: grouped by area (Editor, Markdown, Interface and languages, …).
 4. `## Administration and integrations`: security, deployment, configuration, API, MCP, CLI.

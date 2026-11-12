@@ -3,7 +3,6 @@
     "api-docs": "API-dokumentasjon",
     "api-docs-note": "Referanse for REST og gRPC",
     "build": "Bygg",
-    "commit": "Innsjekking",
     "demo": "Demo",
     "description": "Ein stad for notata, ideane og kvardagstankane dine, med open kjeldekode og drift på eigen tenar.",
     "distribution": "Distribusjon",
@@ -89,28 +88,23 @@
   },
   "auth": {
     "admin-sign-in": "Administratorinnlogging",
-    "admin-sign-in-tip": "Administratorar kan framleis logge inn med passord.",
     "back-to-sign-in": "Attende til innlogging",
+    "callback-failed-title": "Kunne ikkje fullføre innlogginga",
     "continue-with": "Hald fram med {{provider}}",
     "create-admin-account": "Opprett administratorkonto",
     "create-your-account": "Opprett kontoen din",
-    "explore-public-memos": "Utforsk offentlege notat på denne instansen",
-    "first-run": "Fyrste oppstart",
+    "hide-password": "Skjul passord",
+    "incorrect-credentials": "Feil brukarnamn eller passord.",
     "new-password": "Nytt passord",
     "repeat-new-password": "Skriv det nye passordet ein gong til",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
-    "setup-note": "Denne kontoen rår over instansinnstillingar, medlemer og identitetstilbydarar.",
     "setup-title": "Set opp instansen din",
+    "show-password": "Vis passord",
     "sign-in-tip": "Har du alt ein konto?",
     "sign-up-tip": "Har du ikkje konto enno?",
     "signin-unavailable-description": "Passordinnlogging er slått av, og ingen identitetstilbydarar er sette opp. Be administratoren din om å slå på ein innloggingsmåte.",
     "signin-unavailable-title": "Innlogging er ikkje tilgjengeleg",
-    "signup-unavailable-description": "Passordkontoar er slått av, og ingen identitetstilbydarar er sette opp. Be administratoren din om åtgang.",
-    "signup-unavailable-title": "Registrering er ikkje tilgjengeleg",
-    "signups-closed-description": "Nye kontoar er ikkje tillatne på denne instansen. Ta kontakt med administratoren din dersom du treng åtgang.",
-    "signups-closed-title": "Registreringa er stengd",
-    "sso-signup-tip": "Logg inn med ein tilbydar nedanfor for å opprette kontoen din.",
-    "welcome-back": "Velkomen attende."
+    "signups-closed-description": "Nye kontoar er ikkje tillatne på denne instansen. Ta kontakt med administratoren din dersom du treng åtgang."
   },
   "calendar": {
     "new-memo-on-day": "Nytt notat på denne dagen",
@@ -183,7 +177,6 @@
     "profile": "Profil",
     "referenced-by": "Vist til av",
     "referencing": "Viser til",
-    "relations": "Samband",
     "resize-panel": "Endre panelstorleik",
     "resize-sidebar": "Endre storleiken på sidestolpen",
     "resources": "Ressursar",
@@ -210,10 +203,27 @@
     "user": "Brukar",
     "username": "Brukarnamn",
     "version": "Versjon",
-    "view-all": "Vis alle",
     "views": "Visingar",
     "visibility": "Synlegheit",
-    "yourself": "Deg sjølv"
+    "yourself": "Deg sjølv",
+    "open-navigation": "Opne navigasjon",
+    "navigation": "Navigasjon",
+    "primary-navigation": "Hovud",
+    "download": "Last ned",
+    "download-name": "Last ned {{name}}",
+    "open-name": "Opne {{name}}",
+    "preview-name": "Førehandsvis {{name}}",
+    "no-content": "Ikkje noko innhald",
+    "previous": "Førre",
+    "next": "Neste",
+    "retry": "Prøv att",
+    "docs": "Dokumentasjon",
+    "calendar-for-month": "Kalender for {{month}}",
+    "date-at-time": "{{date}} kl. {{time}}",
+    "selected-location": "Vald stad",
+    "choose-location": "Vel ein stad",
+    "unknown-error": "Ukjend feil",
+    "error-occurred": "Det oppstod ein feil"
   },
   "demo": {
     "banner-description": "Prøv deg gjerne fram! Denne demoen vert nullstilt med jamne mellomrom.",
@@ -240,36 +250,78 @@
       "trigger": "Ta opp ljod"
     },
     "comment": "Kommenter",
+    "footnotes": "Fotnotar",
+    "back-to-reference": "Tilbake til referansen",
     "exit-focus-mode": "Gå ut av fokusmodus",
     "focus-mode": "Fokusmodus",
+    "markdown-mode": "Markdown-modus",
     "format": {
       "bold": "Feit skrift",
       "bullet-list": "Punktliste",
       "code-block": "Kodeblokk",
-      "heading": "Overskrift",
       "heading-1": "Overskrift 1",
       "heading-2": "Overskrift 2",
       "heading-3": "Overskrift 3",
+      "heading-4": "Overskrift 4",
       "italic": "Kursiv",
       "link": "Lenkje",
-      "more": "Meir formatering",
       "ordered-list": "Nummerert liste",
       "paragraph": "Avsnitt",
       "strikethrough": "Gjennomstreking",
       "task-list": "Gjeremålsliste"
     },
-    "formatting-toolbar": "Verktyline for formatering",
     "insert-menu": {
       "add-attachment": "Legg til vedlegg",
       "add-location": "Legg til stad",
       "image-upload-failed": "Somme bilete kunne diverre ikkje lastast opp. Prøv att, eller hald på dei opplasta filene som vedlegg.",
       "image-upload-stopped": "Biletopplastinga stogga {{completed}}/{{total}}",
       "insert-image": "Set inn bilete",
+      "drawing": "Teikning",
       "keep-as-attachments": "Hald på som vedlegg",
       "link-memo": "Knyt til notat",
       "retry-image-upload": "Prøv att",
       "uploading-images": "Lastar opp bilete {{completed}}/{{total}}",
       "uploading-inline-image": "Lastar opp til innhaldet"
+    },
+    "drawing": {
+      "new-title": "Ny teikning",
+      "edit": "Rediger teikning",
+      "tools": "Verktøy",
+      "tool-select": "Vel",
+      "tool-pen": "Penn",
+      "tool-eraser": "Viskelêr",
+      "tool-rectangle": "Rektangel",
+      "tool-ellipse": "Ellipse",
+      "tool-arrow": "Pil",
+      "tool-text": "Tekst",
+      "style": "Farge og tjukkleik",
+      "color": "Farge",
+      "width": "Tjukkleik",
+      "width-thin": "Tynn",
+      "width-medium": "Middels",
+      "width-thick": "Tjukk",
+      "color-ink": "Blekk",
+      "color-gray": "Grå",
+      "color-red": "Raud",
+      "color-orange": "Oransje",
+      "color-green": "Grøn",
+      "color-teal": "Blågrøn",
+      "color-blue": "Blå",
+      "color-violet": "Fiolett",
+      "undo": "Angre",
+      "redo": "Gjer om",
+      "zoom-to-fit": "Tilpass til vindauget",
+      "done": "Ferdig",
+      "discard-title": "Forkaste denne teikninga?",
+      "discard-description": "Ho er ikkje lagd til i notatet enno.",
+      "discard-edit-title": "Forkaste endringane?",
+      "discard-edit-description": "Teikninga blir verande slik ho var før du opna ho.",
+      "keep-drawing": "Hald fram med å teikne",
+      "discard": "Forkast",
+      "open-failed": "Kunne ikkje opne teikninga. Prøv på nytt.",
+      "export-failed": "Kunne ikkje lagre teikninga. Prøv på nytt.",
+      "image-failed": "Kunne ikkje leggje biletet til i teikninga.",
+      "saved-without-drawing": "Notatet er lagra, men teikninga er ikkje det. Lagre på nytt for å prøve igjen."
     },
     "new-memo": "Nytt notat",
     "no-changes-detected": "Ingen endringar funne",
@@ -285,7 +337,66 @@
       "save-in-progress": "Lagring går føre seg",
       "unsupported-attachment-image-url": "Biletadressa til vedlegget er ikkje støtta: {{url}}",
       "wait-for-upload": "Vent til opplastinga er ferdig"
-    }
+    },
+    "blocks": {
+      "task": "Gjeremål",
+      "quote": "Sitat",
+      "callout": "Utheva boks",
+      "callout-note": "Merknad",
+      "callout-tip": "Tips",
+      "callout-important": "Viktig",
+      "callout-warning": "Åtvaring",
+      "callout-caution": "Varsam",
+      "collapsible-section": "Samanleggbar seksjon",
+      "table": "Tabell",
+      "divider": "Skiljelinje",
+      "no-results": "Ingen resultat",
+      "commands": "Kommandoar",
+      "loading": "Lastar inn…",
+      "duplicate": "Dupliser",
+      "inline-code": "Kode",
+      "link-placeholder": "Lim inn eller skriv ei lenkje…",
+      "remove-link": "Fjern lenkje",
+      "open-link": "Opne lenkje",
+      "copy-link": "Kopier lenkje",
+      "edit-link": "Rediger lenkje",
+      "emoji": "Emoji",
+      "block-menu": "Opne blokkmeny",
+      "list-hint": "Liste",
+      "plain-text": "tekst",
+      "add-row-above": "Legg til rad over",
+      "add-row-below": "Legg til rad under",
+      "add-column-left": "Legg til kolonne til venstre",
+      "add-column-right": "Legg til kolonne til høgre",
+      "delete-row": "Slett rad",
+      "delete-column": "Slett kolonne",
+      "align": "Justering",
+      "align-left": "Venstre",
+      "align-center": "Midtstilt",
+      "align-right": "Høgre",
+      "image-align-left": "Venstrejuster",
+      "image-align-center": "Midtstill",
+      "image-align-right": "Høgrejuster",
+      "text-style": "Tekststil",
+      "image": "Bilete",
+      "reset-image-size": "Tilbakestill storleik",
+      "alt-text": "Alternativ tekst",
+      "alt-text-placeholder": "Skildre biletet…",
+      "image-unavailable": "Biletet er ikkje tilgjengeleg",
+      "resize-image": "Endre biletstorleik"
+    },
+    "attachments": {
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegget",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastane"
+    },
+    "remove-relation": "Fjern koplinga",
+    "remove-location": "Fjern staden",
+    "recording-unsupported": "Ljodopptak er ikkje støtta i denne nettlesaren.",
+    "microphone-denied": "Tilgang til mikrofonen vart avslått.",
+    "recording-failed": "Klarte ikkje å starte ljodopptaket."
   },
   "inbox": {
     "failed-to-load": "Klarte diverre ikkje å laste innbokselementet",
@@ -294,7 +405,16 @@
     "space-invitation": "inviterte deg til å verte med i eit rom",
     "space-invitation-accepted": "Du vart med i dette rommet.",
     "space-invitation-open": "Opne rom",
-    "unread": "Ulesne"
+    "unread": "Ulesne",
+    "commented-on-memo": "kommenterte notatet ditt",
+    "mentioned-in-comment": "nemnde deg i ein kommentar",
+    "mentioned-in-memo": "nemnde deg i eit notat",
+    "original": "Original:",
+    "memo-label": "Notat:",
+    "comment-heading": "Kommentar",
+    "memo-heading": "Notat",
+    "empty-memo": "Tomt notat",
+    "empty-comment": "Tom kommentar"
   },
   "live-update": {
     "connected": "Sanntidsoppdateringar er på",
@@ -320,14 +440,24 @@
     "selection": "Valde notat",
     "tile-error": "Kartet kunne diverre ikkje lastast. Notata er framleis tilgjengelege.",
     "zoom-in": "Zoom inn",
-    "zoom-out": "Zoom ut"
+    "zoom-out": "Zoom ut",
+    "open-in-google-maps": "Opne i Google Maps",
+    "location-description": "Vel ein stad på kartet eller skriv inn koordinatar manuelt",
+    "latitude": "Breiddegrad",
+    "longitude": "Lengdegrad",
+    "place-placeholder": "Vel eit punkt først."
   },
   "memo": {
+    "no-memos-yet": "Ingen notat enno",
+    "no-matching-memos": "Ingen notat samsvarar",
+    "clear-filters": "Tøm filter",
     "back-to": "Attende til {{source}}",
     "click-to-show-sensitive-content": "Trykk for å vise sensitivt innhald",
     "comment": {
       "self": "Kommentarar",
-      "write-a-comment": "Skriv ein kommentar"
+      "write-a-comment": "Skriv ein kommentar",
+      "view-all-count_one": "Vis {{count}} kommentar",
+      "view-all-count_other": "Vis alle {{count}} kommentarane"
     },
     "compact-mode": "Kompakt modus",
     "connections": "Tilknytingar",
@@ -339,10 +469,13 @@
     "delete-confirm-description": "Denne handlinga kan ikkje gjerast om. Vedlegg, lenkjer og tilvisingar vert òg fjerna.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "Har vedlegg",
       "has-code": "Har kode",
+      "has-image": "Har bilete",
       "has-link": "Har lenkje",
       "has-location": "Har stad",
-      "has-task-list": "Har gjeremålsliste"
+      "has-task-list": "Har gjeremålsliste",
+      "remove": "Fjern filteret"
     },
     "grid-compact-hint": "Rutenett nyttar alltid kompakte kort.",
     "layout": "Oppsett",
@@ -425,7 +558,9 @@
     "restored-successfully": "Gjenoppretta",
     "succeed-copy-content": "Innhaldet er kopiert.",
     "succeed-copy-link": "Lenkja er kopiert.",
-    "update-succeed": "Oppdateringa lukkast"
+    "update-succeed": "Oppdateringa lukkast",
+    "not-signed-in": "Du er ikkje logga inn.",
+    "invalid-datetime": "Ugyldig dato og klokkeslett. Bruk formatet 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Ingen notat funne",
@@ -509,7 +644,9 @@
       "storage-usage-error": "Vedleggslageret ditt er ikkje tilgjengeleg.",
       "title": "Kontoopplysningar",
       "update-information": "Oppdater opplysningar",
-      "username-note": "Vert nytta til innlogging"
+      "username-note": "Vert nytta til innlogging",
+      "avatar-too-large": "Vel eit bilete på maks 2 MB.",
+      "avatar-unreadable": "Biletet kan ikkje lesast. Prøv ei anna fil."
     },
     "ai": {
       "add-provider": "Legg til tilbydar",
@@ -591,13 +728,15 @@
       "no-members-found": "Ingen medlemer funne",
       "restore-success": "{{username}} er gjenoppretta",
       "summary-column": "Samandrag",
-      "user": "Brukar"
+      "user": "Brukar",
+      "export-memos": "Eksporter notat",
+      "username-password-required": "Brukarnamn og passord kan ikkje vere tomme",
+      "create-success": "Brukaren er oppretta",
+      "update-success": "Brukaren er oppdatert"
     },
     "memo": {
       "add-reaction": "Legg til reaksjon",
       "configured-reactions": "Oppsette reaksjonar",
-      "double-click-edit-description": "Lat brukarane opne notatredigeringa ved å dobbeltklikke på eit notat.",
-      "editing-title": "Redigering",
       "label": "Notat",
       "reaction-placeholder": "t.d. 👍",
       "reactions": "Reaksjonar",
@@ -643,13 +782,126 @@
       "review-exported": "Eksportert av",
       "review-file": "Fil",
       "review-memos": "Notat i fila",
-      "review-new": "Vert oppretta"
+      "review-new": "Vert oppretta",
+      "export-admin-only": "Berre administratorar kan eksportere notat. Be ein administrator om eksportfila di.",
+      "export-busy": "Ein annan eksport køyrer. Prøv igjen om ei lita stund."
     },
     "memo-view": {
       "change-icon": "Endre visingsikon",
       "create": "Opprett vising",
       "delete-confirm": "Er du viss på at du vil slette visinga `{{title}}`?",
-      "delete-success": "Visinga `{{title}}` er sletta"
+      "delete-success": "Visinga `{{title}}` er sletta",
+      "page-description": "Lag visingar du kan bruke om att, med felt, operatorar, tidshjelparar og samsvar på emneknaggar. Bruk døma som utgangspunkt, og valider før du lagrar.",
+      "edit": "Rediger vising",
+      "form-description": "Gje visinga eit namn og definer notatfilteruttrykket ho skal bruke.",
+      "title-placeholder": "Festa, Nye notat, Jobb",
+      "filter-help": "Kombiner uttrykk med {{and}}, {{or}} og {{not}}. Tidsfelt er tidsstempel — bruk {{now}}, {{duration}}, {{timestamp}} og aksessorar som {{year}}. Emneknaggar støttar {{sets}}, og {{size}} måler lengd.",
+      "validate": "Valider",
+      "all": "Alle visingar",
+      "loading": "Lastar inn visingar …",
+      "load-failed": "Klarte ikkje å laste inn visingar.",
+      "empty-title": "Ingen visingar enno",
+      "empty-description": "Lagre eit filter for å kome raskt tilbake til notata du treng.",
+      "examples-title": "Døme på uttrykk",
+      "fields-title": "Støtta felt",
+      "title-filter-required": "Tittel og filter kan ikkje vere tomme",
+      "filter-valid": "Filteruttrykket ser gyldig ut",
+      "create-success": "Visinga er oppretta",
+      "update-success": "Visinga er oppdatert",
+      "examples": {
+        "pinned": {
+          "title": "Festa",
+          "description": "Berre festa notat."
+        },
+        "recent": {
+          "title": "Nye notat",
+          "description": "Notat oppretta den siste timen."
+        },
+        "public": {
+          "title": "Offentlege notat",
+          "description": "Berre offentlege notat."
+        },
+        "project-tags": {
+          "title": "Prosjektknaggar",
+          "description": "Samsvar med éin eller fleire eksakte emneknaggar."
+        },
+        "untagged": {
+          "title": "Utan emneknaggar",
+          "description": "Notat utan nokon emneknaggar."
+        },
+        "archive-tree": {
+          "title": "Arkivtre",
+          "description": "Samsvar med hierarkiske emneknaggar etter prefiks."
+        },
+        "unassigned": {
+          "title": "Ikkje tilordna",
+          "description": "Notat som ikkje ligg i noko rom."
+        },
+        "one-space": {
+          "title": "I eitt rom",
+          "description": "Notat som ligg i eit rom. Bruk rom-ID-en frå URL-en eller innstillingane."
+        },
+        "open-tasks": {
+          "title": "Opne gjeremål",
+          "description": "Notat med uferdige gjeremål."
+        },
+        "links-or-code": {
+          "title": "Lenkjer eller kode",
+          "description": "Notat som inneheld lenkjer eller kodeblokker."
+        },
+        "no-location": {
+          "title": "Utan stad",
+          "description": "Notat utan tilknytt stad."
+        },
+        "with-attachments": {
+          "title": "Med vedlegg",
+          "description": "Notat med minst éi vedlagd fil."
+        },
+        "photos": {
+          "title": "Bilete",
+          "description": "Notat som viser eit bilete, i innhaldet eller som vedlagd fil."
+        },
+        "content-search": {
+          "title": "Innhaldssøk",
+          "description": "Søk etter tekst i notatinnhaldet."
+        },
+        "starts-with": {
+          "title": "Byrjar med",
+          "description": "Notat der innhaldet byrjar med ein tekst (også endsWith)."
+        },
+        "regex": {
+          "title": "Regex-samsvar",
+          "description": "Samsvar innhald med eit regulært uttrykk."
+        },
+        "all-tags-complete": {
+          "title": "Alle knaggar fullførte",
+          "description": "Kvar emneknagg sluttar på -done (berre notat med emneknaggar)."
+        },
+        "one-project-tag": {
+          "title": "Éin prosjektknagg",
+          "description": "Nøyaktig éin emneknagg oppfyller vilkåret."
+        },
+        "any-tags": {
+          "title": "Nokon av desse knaggane",
+          "description": "Emneknaggane overlappar med den gjevne mengda."
+        },
+        "exact-tags": {
+          "title": "Nøyaktig desse knaggane",
+          "description": "Merkt med nøyaktig denne mengda, ingenting meir."
+        },
+        "year-2024": {
+          "title": "Notat frå 2024",
+          "description": "Filtrer etter kalenderår."
+        },
+        "weekend": {
+          "title": "Helgenotat",
+          "description": "Oppretta på ein sundag eller laurdag (0 = sundag)."
+        },
+        "long": {
+          "title": "Lange notat",
+          "description": "Notat lengre enn 280 teikn."
+        }
+      }
     },
     "my-account": {
       "label": "Kontoen min"
@@ -694,16 +946,30 @@
       "appearance-title": "Utsjånad",
       "default-memo-visibility": "Standard synlegheit for notat",
       "default-memo-visibility-description": "Synlegheita som vert nytta for nye notat dersom ho ikkje vert endra i redigeringa.",
+      "device-description": "Lese- og redigeringsval som berre vert lagra i denne nettlesaren. Dei vert ikkje lagra på kontoen din.",
+      "device-title": "Denne eininga",
+      "double-click-edit": "Dobbeltklikk for å redigere",
+      "double-click-edit-description": "Opne dine eigne notat i redigeringsverktøyet ved å dobbeltklikke på dei.",
       "label": "Brukarval",
       "language-description": "Endrar grensesnittspråket med ein gong og lagrar det på kontoen din.",
+      "link-preview-description": "Vis eit førehandsvisingskort under reine lenkjer overalt der notat vert viste.",
       "memo-defaults-description": "Vel standardane som vert nytta når du skriv nye notat.",
       "memo-defaults-title": "Notatstandardar",
       "save-media-metadata": "Lagre mediemetadata",
       "save-media-metadata-description": "Lagre tilgjengelege opplysningar om kamera, opptakstidspunkt, stad, biletdimensjonar og grunnleggjande videodetaljar for framtidige opplastingar. Alle som kan sjå vedlegget, kan få desse metadataa. Vedlegg som alt er lasta opp, vert ikkje endra.",
-      "theme": "Tema",
       "theme-description": "Tek i bruk det valde temaet med ein gong på denne eininga.",
+      "theme": "Tema",
       "uploads-privacy-description": "Styr kva personvernkjenslege opplysningar som vert sende med opplasta medium.",
-      "uploads-privacy-title": "Opplasting og personvern"
+      "uploads-privacy-title": "Opplasting og personvern",
+      "theme-system": "Følg systemet",
+      "theme-system-short": "System",
+      "theme-light": "Lyst",
+      "theme-dark": "Mørkt",
+      "theme-paper": "Papir"
+    },
+    "editor": {
+      "label": "Redigering",
+      "markdown-mode-description": "Skriv og rediger notat som Markdown-tekst i staden for formatert tekst."
     },
     "resource-stats": {
       "database": {
@@ -804,6 +1070,21 @@
       "your-access": "Åtgangen din",
       "your-spaces": "Romma dine"
     },
+    "configuration": {
+      "label": "Konfigurasjon",
+      "description": "Ressursar som er sette av konfigurasjonsfiler. Rediger ei fil og bruk henne for å endre dei; resten av instansen kan framleis redigerast her.",
+      "managed-by": "Styrt av konfigurasjon",
+      "managed-tooltip": "Sett i {{source}}. Rediger fila og bruk henne for å endre dette.",
+      "resource": "Ressurs",
+      "source": "Fil",
+      "managed-fields": "Styrte felt",
+      "whole-resource": "Alle felt",
+      "ignored-fields": "Kan redigerast her",
+      "serial": "Serienummer",
+      "last-apply": "Sist brukt",
+      "applied-by": "Brukt av",
+      "nothing-managed": "Ingen konfigurasjon er brukt. Alt blir stilt inn her."
+    },
     "sso": {
       "account": "Konto",
       "accounts-description": "Sjå gjennom kvar identitetstilbydar, sjå gjeldande tilknytingsstatus, og knyt til eller fjern eksterne identitetar frå denne kontoen.",
@@ -863,7 +1144,9 @@
       "unlink-success": "Tilknytinga til {{name}} er fjerna.",
       "update-sso": "Oppdater SSO",
       "update-sso-description": "Sjå gjennom tilbydaroppsettet, og lagre så felta som skal endrast.",
-      "user-endpoint": "Brukarendepunkt"
+      "user-endpoint": "Brukarendepunkt",
+      "invalid-config": "Konfigurasjonen av identitetsleverandøren er ugyldig.",
+      "provider-id-placeholder": "t.d. github, okta-corp"
     },
     "storage": {
       "accesskey": "Åtgangslykel",
@@ -916,11 +1199,54 @@
       "customize-server": {
         "description": "Skildring",
         "icon-url": "Ikonadresse",
-        "title": "Tilpass tenar"
+        "title": "Tilpass tenar",
+        "dialog-description": "Tilpass utsjånaden og innstillingane til instansen din."
       },
-      "enable-double-click-to-edit": "Slå på dobbeltklikk for redigering",
       "label": "System",
       "server-name": "Tenarnamn"
+    },
+    "usage-limits": {
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
+      "all-users": "All users",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
+      "file-size": "Largest file (MiB)",
+      "file-size-column": "Largest file",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
+      "label": "Usage limits",
+      "memos": "Memos",
+      "memos-description": "Includes comments and archived memos.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
+      "remove": "Remove",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
+      "saved": "Usage limits saved",
+      "select-user": "Add a user",
+      "storage": "Storage (MiB)",
+      "storage-column": "Storage",
+      "storage-description": "The total size of uploads. External links do not count.",
+      "title": "Usage limits",
+      "unlimited": "Unlimited",
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "tags": {
       "add-rule": "Legg til regel",
@@ -938,40 +1264,6 @@
       "tag-pattern-hint": "Emneknaggnamn eller regulært uttrykk (t.d. prosjekt/.* samsvarar med alle prosjekt/-emneknaggar)",
       "title": "Emneknaggmetadata",
       "used-count": "{{count}} notat"
-    },
-    "usage-limits": {
-      "add-user": "Add user limit",
-      "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
-      "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
-      "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Select a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
     },
     "webhook": {
       "create-dialog": {
@@ -1039,6 +1331,104 @@
   },
   "tooltip": {
     "link-memo": "Knyt til notat",
-    "select-location": "Stad"
+    "select-location": "Stad",
+    "link-memo-description": "Søk etter og vel eit notat å kople til"
+  },
+  "welcome": {
+    "title": "Velkomen til Memos",
+    "headline": "Enkle notat for kvardagens tankar.",
+    "intro-write": "Éi setning kan vere eit heilt notat.",
+    "intro-keep": "Kvart notat blir verande på dagen du skreiv det.",
+    "intro-share": "Du vel kva som held fram med å vere privat.",
+    "write": "Skrive",
+    "write-sub": "Éi setning kan vere eit heilt notat.",
+    "no-title": "Ingen tittel",
+    "no-title-text": "Eit notat byrjar med sjølve tanken. Det er ingen tittel å fylle ut.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown gjev orda dine struktur når du ønskjer det.",
+    "attach": "Leggje ved",
+    "attach-text": "Bilete, filer, lyd og ein stad blir lagde til via ＋.",
+    "keep": "Ta vare på",
+    "keep-sub": "Kvart notat blir verande på dagen du skreiv det.",
+    "calendar-text": "Kalenderen fører attende til kva dag som helst.",
+    "tags-text": "Eit ord etter # blir ein emneknagg, og ein emneknagg filtrerer tidslina.",
+    "views-text": "Ei eigendefinert vising lagrar eit filter.",
+    "map-text": "Notat med ein stad ligg på kartet.",
+    "share": "Dele",
+    "share-sub": "Notat startar som private. Du vel kva du deler og kva du publiserer.",
+    "visibility-text": "Kvart notat har si eiga innstilling. Nye startar som private, berre for deg; eit offentleg notat har ei lenkje kven som helst kan opne.",
+    "spaces-text": "I eit rom skriv medlemene ved sida av deg, og kvar held på sine eigne notat.",
+    "comments": "Kommentarar",
+    "comments-text": "Alle som kan sjå eit notat, kan svare under det.",
+    "skip": "Hopp over",
+    "next": "Neste",
+    "done": "Ferdig",
+    "page-of": "Side {{current}} av {{total}}",
+    "reopen": "Velkomstguide",
+    "reopen-note": "Dei fire skjermbileta ein ny konto ser først.",
+    "sample": {
+      "today": "I dag, 10:42",
+      "today-early": "I dag, 9:18",
+      "yesterday": "I går, 15:20",
+      "comment-age": "2 t",
+      "memo-preview": "Eit enklare første skjermbilete. Eitt felt, så ei førehandsvising.",
+      "memo-release": "Før neste utgjeving",
+      "task-sketch": "Skissere det første skjermbiletet",
+      "task-polish": "Finpusse førehandsvisinga",
+      "write-lead": "Hald det første steget lite.",
+      "write-strong": "Vis detaljane",
+      "write-tail": "når dei trengst.",
+      "write-task": "Skrive ein kort endringslogg",
+      "view": "Uferdige oppgåver",
+      "space": "Produkt",
+      "share-memo": "Prøv å vise resultatet før folk blir bedne om å registrere seg.",
+      "comment": "Samd. Det var førehandsvisinga som overtydde.",
+      "tag-design": "design",
+      "tag-project": "prosjekt",
+      "tag-reading": "lesing",
+      "tag-ideas": "idear"
+    }
+  },
+  "error": {
+    "title": "Noko gjekk gale",
+    "description": "Det oppstod ein uventa feil. Det kan kome av eit nettverksproblem eller eit problem med applikasjonen.",
+    "description-update": "Det oppstod ein uventa feil. Det kan kome av eit nettverksproblem eller ei oppdatering av applikasjonen. Å laste inn sida på nytt løyser det som regel.",
+    "details": "Feildetaljar",
+    "reload": "Last inn applikasjonen på nytt",
+    "not-found": "Finn ikkje sida du leitar etter.",
+    "permission-denied": "Ingen tilgang",
+    "too-many-requests": "For mange førespurnader. Prøv att om {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Fullfør verifiseringa og prøv att.",
+    "quota-memo-count": "Du har nådd grensa di på {{limit}} notat. Slett notat for å opprette nye.",
+    "quota-storage": "Denne opplastinga ville gå over lagringsgrensa di på {{limit}}. Du brukar {{usage}}.",
+    "quota-upload": "Denne fila er større enn grensa di på {{limit}} per fil.",
+    "quota-memo-content": "Dette notatet er større enn grensa di på {{limit}} per notat. Gjer innhaldet kortare for å lagre det.",
+    "quota-generic": "Du har nådd ei bruksgrense.",
+    "sign-in-failed": "Klarte ikkje å logge inn.",
+    "sign-up-failed": "Registreringa mislukkast",
+    "authenticate-failed": "Autentiseringa mislukkast.",
+    "update-profile-failed": "Klarte ikkje å oppdatere profilen",
+    "unlink-identity-failed": "Klarte ikkje å kople frå identitetsleverandøren.",
+    "link-identity-failed": "Kunne ikkje starte tilkopling av kontoen. Prøv igjen."
+  },
+  "attachment-preview": {
+    "title": "Førehandsvising av vedlegg",
+    "description": "Dialog for førehandsvising av vedlegg. Trykk Escape for å lukke, bruk venstre eller høgre piltast for å byte element, og zoom inn på bilete med kontrollane, musehjulet, dobbelttrykk eller knipe-rørsle.",
+    "close": "Lat att førehandsvisinga",
+    "previous": "Førre element",
+    "next": "Neste element",
+    "reset-zoom": "Tilbakestill zoom",
+    "image-alt": "Førehandsvising av bilete {{index}} av {{count}}",
+    "live-photo-alt": "Førehandsvising av levande bilete {{index}} av {{count}}",
+    "play-live-photo": "Hald peikaren over eller trykk for å spele av det levande biletet"
+  },
+  "audio-player": {
+    "seek": "Spol i {{name}}",
+    "back": "{{seconds}} sekund tilbake",
+    "forward": "{{seconds}} sekund fram",
+    "speed": "Avspelingsfart {{rate}}x"
   }
 }

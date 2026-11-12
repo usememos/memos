@@ -6,7 +6,6 @@
     "api-docs": "API Документација",
     "api-docs-note": "Референца за REST и gRPC",
     "build": "Израда",
-    "commit": "Commit",
     "demo": "Демо",
     "description": "Простор отвореног кода на сопственом серверу за ваше белешке, идеје и свакодневне мисли.",
     "distribution": "Дистрибуција",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Пријава није могла да се заврши",
     "create-your-account": "Креирајте свој налог",
+    "hide-password": "Сакриј лозинку",
+    "incorrect-credentials": "Погрешно корисничко име или лозинка.",
     "new-password": "Нова лозинка",
     "repeat-new-password": "Поновите нову лозинку",
+    "show-password": "Прикажи лозинку",
     "sign-in-tip": "Већ имате налог?",
     "sign-up-tip": "Још увек немате налог?",
     "admin-sign-in": "Пријава администратора",
-    "admin-sign-in-tip": "Пријава лозинком остаје доступна администраторима.",
     "back-to-sign-in": "Назад на пријаву",
     "continue-with": "Наставите са {{provider}}",
     "create-admin-account": "Креирајте администраторски налог",
-    "explore-public-memos": "Истражите јавне белешке о овој инстанци",
-    "first-run": "Прво покретање",
     "setup-description": "Креирајте администраторски налог за ову инстанцу.",
-    "setup-note": "Овај налог поседује подешавања инстанце, чланове и добављаче идентитета.",
     "setup-title": "Подесите своју инстанцу",
     "signin-unavailable-description": "Пријављивање лозинком је искључено и ниједан добављач идентитета није конфигурисан. Замолите администратора да омогући метод пријављивања.",
     "signin-unavailable-title": "Пријављивање није доступно",
-    "signup-unavailable-description": "Налози лозинком су искључени и ниједан добављач идентитета није конфигурисан. Замолите администратора за приступ.",
-    "signup-unavailable-title": "Регистрација није доступна",
-    "signups-closed-description": "Нови налози су онемогућени на овој инстанци. Контактирајте администратора ако вам је потребан приступ.",
-    "signups-closed-title": "Пријаве су затворене",
-    "sso-signup-tip": "Пријавите се са добављачем испод да бисте креирали свој налог.",
-    "welcome-back": "Добродошли назад."
+    "signups-closed-description": "Нови налози су онемогућени на овој инстанци. Контактирајте администратора ако вам је потребан приступ."
   },
   "demo": {
     "banner-description": "Промене су привремене и могу се ресетовати.",
@@ -142,7 +136,6 @@
     "profile": "Профиле",
     "referenced-by": "Референца од",
     "referencing": "Референца",
-    "relations": "Односи",
     "resources": "Ресурси",
     "restore": "Ресторе",
     "role": "Улога",
@@ -177,7 +170,24 @@
     "resize-panel": "Промени величину панела",
     "resize-sidebar": "Промени величину бочне траке",
     "sign-in-to-memos": "Пријавите се на Memos",
-    "view-all": "Погледајте све"
+    "open-navigation": "Отвори навигацију",
+    "navigation": "Навигација",
+    "primary-navigation": "Главна",
+    "download": "Преузми",
+    "download-name": "Преузми {{name}}",
+    "open-name": "Отвори {{name}}",
+    "preview-name": "Преглед {{name}}",
+    "no-content": "Нема садржаја",
+    "previous": "Претходно",
+    "next": "Следеће",
+    "retry": "Покушај поново",
+    "docs": "Документација",
+    "calendar-for-month": "Календар за {{month}}",
+    "date-at-time": "{{date}} у {{time}}",
+    "selected-location": "Изабрана локација",
+    "choose-location": "Изаберите локацију",
+    "unknown-error": "Непозната грешка",
+    "error-occurred": "Дошло је до грешке"
   },
   "locale-picker": {
     "no-language-feedback": "Језик није пронађен? Пошаљите повратне информације"
@@ -188,6 +198,7 @@
     "any-thoughts": "Било каква размишљања...",
     "exit-focus-mode": "Изађите из режима фокуса",
     "focus-mode": "Фоцус Моде",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Додајте локацију",
       "link-memo": "Меморандум о вези",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Неке слике нису могле бити отпремљене. Покушајте поново или задржите отпремљене датотеке као прилоге.",
       "image-upload-stopped": "Отпремање слике је заустављено {{completed}}/{{total}}",
       "insert-image": "Уметни слику",
+      "drawing": "Цртеж",
       "keep-as-attachments": "Сачувај као прилоге",
       "uploading-inline-image": "Отпремање у садржај",
       "uploading-images": "Отпремање слика {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Нови цртеж",
+      "edit": "Уреди цртеж",
+      "tools": "Алатке",
+      "tool-select": "Избор",
+      "tool-pen": "Оловка",
+      "tool-eraser": "Гумица",
+      "tool-rectangle": "Правоугаоник",
+      "tool-ellipse": "Елипса",
+      "tool-arrow": "Стрелица",
+      "tool-text": "Текст",
+      "style": "Боја и дебљина",
+      "color": "Боја",
+      "width": "Дебљина",
+      "width-thin": "Танка",
+      "width-medium": "Средња",
+      "width-thick": "Дебела",
+      "color-ink": "Мастило",
+      "color-gray": "Сива",
+      "color-red": "Црвена",
+      "color-orange": "Наранџаста",
+      "color-green": "Зелена",
+      "color-teal": "Тиркизна",
+      "color-blue": "Плава",
+      "color-violet": "Љубичаста",
+      "undo": "Опозови",
+      "redo": "Понови",
+      "zoom-to-fit": "Уклопи у прозор",
+      "done": "Готово",
+      "discard-title": "Одбацити овај цртеж?",
+      "discard-description": "Још није додат у белешку.",
+      "discard-edit-title": "Одбацити измене?",
+      "discard-edit-description": "Цртеж остаје какав је био пре него што сте га отворили.",
+      "keep-drawing": "Настави цртање",
+      "discard": "Одбаци",
+      "open-failed": "Цртеж није могуће отворити. Покушајте поново.",
+      "export-failed": "Цртеж није могуће сачувати. Покушајте поново.",
+      "image-failed": "Слику није могуће додати у цртеж.",
+      "saved-without-drawing": "Белешка је сачувана, али цртеж није. Сачувајте поново за нови покушај."
     },
     "no-changes-detected": "Нису откривене промене",
     "save": "Сачувај",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Блок кода",
       "link": "Линк",
-      "heading": "Наслов",
       "paragraph": "Пасус",
       "heading-1": "Наслов 1",
       "heading-2": "Наслов 2",
       "heading-3": "Наслов 3",
+      "heading-4": "Наслов 4",
       "bold": "Подебљано",
       "italic": "Курзив",
       "strikethrough": "Прецртано",
       "bullet-list": "Табла листа",
       "ordered-list": "Нумерисана листа",
-      "task-list": "Листа обавеза",
-      "more": "Више форматирања"
+      "task-list": "Листа обавеза"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Трака са алаткама за форматирање",
+    "footnotes": "Фусноте",
+    "back-to-reference": "Назад на референцу",
     "new-memo": "Нова белешка",
     "saved": "Сачувано",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Чување у току",
       "unsupported-attachment-image-url": "Неподржана URL адреса слике прилога: {{url}}",
       "wait-for-upload": "Сачекај да се отпремање заврши"
-    }
+    },
+    "blocks": {
+      "task": "Задатак",
+      "quote": "Цитат",
+      "callout": "Истакнути оквир",
+      "callout-note": "Напомена",
+      "callout-tip": "Савет",
+      "callout-important": "Важно",
+      "callout-warning": "Упозорење",
+      "callout-caution": "Опрез",
+      "collapsible-section": "Склопиви одељак",
+      "table": "Табела",
+      "divider": "Разделник",
+      "no-results": "Нема резултата",
+      "commands": "Команде",
+      "loading": "Учитавање…",
+      "duplicate": "Дуплирај",
+      "inline-code": "Код",
+      "link-placeholder": "Налепите или унесите линк…",
+      "remove-link": "Уклони линк",
+      "open-link": "Отвори линк",
+      "copy-link": "Копирај линк",
+      "edit-link": "Уреди линк",
+      "emoji": "Емоџи",
+      "block-menu": "Отвори мени блока",
+      "list-hint": "Листа",
+      "plain-text": "текст",
+      "add-row-above": "Додај ред изнад",
+      "add-row-below": "Додај ред испод",
+      "add-column-left": "Додај колону лево",
+      "add-column-right": "Додај колону десно",
+      "delete-row": "Избриши ред",
+      "delete-column": "Избриши колону",
+      "align": "Поравнање",
+      "align-left": "Лево",
+      "align-center": "Средина",
+      "align-right": "Десно",
+      "image-align-left": "Поравнај лево",
+      "image-align-center": "Поравнај по средини",
+      "image-align-right": "Поравнај десно",
+      "text-style": "Стил текста",
+      "image": "Слика",
+      "reset-image-size": "Врати величину",
+      "alt-text": "Алтернативни текст",
+      "alt-text-placeholder": "Опишите слику…",
+      "image-unavailable": "Слика није доступна",
+      "resize-image": "Промени величину слике"
+    },
+    "attachments": {
+      "edited": "Измењено",
+      "new": "Ново",
+      "remove": "Уклони прилог",
+      "reorder": "Промени редослед: {{name}}",
+      "reorder-hint": "Превуците или користите тастере са стрелицама"
+    },
+    "remove-relation": "Уклони везу",
+    "remove-location": "Уклони локацију",
+    "recording-unsupported": "Овај прегледач не подржава снимање звука.",
+    "microphone-denied": "Приступ микрофону је одбијен.",
+    "recording-failed": "Покретање снимања звука није успело."
   },
   "inbox": {
     "failed-to-load": "Учитавање ставке пријемног сандучета није успело",
@@ -256,7 +367,16 @@
     "unread": "Непрочитано",
     "space-invitation": "вас је позвао/ла да се придружите простору",
     "space-invitation-accepted": "Придружили сте се овом простору.",
-    "space-invitation-open": "Отвори простор"
+    "space-invitation-open": "Отвори простор",
+    "commented-on-memo": "је коментарисао/ла ваш мемо",
+    "mentioned-in-comment": "вас је поменуо/ла у коментару",
+    "mentioned-in-memo": "вас је поменуо/ла у мемоу",
+    "original": "Оригинал:",
+    "memo-label": "Мемо:",
+    "comment-heading": "Коментар",
+    "memo-heading": "Мемо",
+    "empty-memo": "Празан мемо",
+    "empty-comment": "Празан коментар"
   },
   "live-update": {
     "connected": "Активна ажурирања уживо",
@@ -264,11 +384,17 @@
     "disconnected": "Ажурирања уживо нису доступна"
   },
   "memo": {
+    "no-memos-yet": "Још нема белешки",
+    "no-matching-memos": "Нема одговарајућих белешки",
+    "clear-filters": "Обриши филтере",
     "pinned": "Закачено",
     "click-to-show-sensitive-content": "Кликните да бисте приказали осетљив садржај",
     "comment": {
       "self": "Коментари",
-      "write-a-comment": "Напишите коментар"
+      "write-a-comment": "Напишите коментар",
+      "view-all-count_one": "Погледајте {{count}} коментар",
+      "view-all-count_few": "Погледајте сва {{count}} коментара",
+      "view-all-count_other": "Погледајте свих {{count}} коментара"
     },
     "copy-content": "Копирај садржај",
     "copy-link": "Копирај везу",
@@ -278,10 +404,13 @@
     "delete-confirm-description": "Ова акција је неповратна. Прилози, везе и референце ће такође бити уклоњени.",
     "direction": "Правац",
     "filters": {
+      "has-attachments": "има прилоге",
       "has-code": "хасЦоде",
+      "has-image": "има слику",
       "has-link": "хасЛинк",
       "has-location": "има локацију",
-      "has-task-list": "хасТаскЛист"
+      "has-task-list": "хасТаскЛист",
+      "remove": "Уклони филтер"
     },
     "compact-mode": "Компактни режим",
     "link-preview": "Преглед везе",
@@ -366,7 +495,9 @@
     "restored-successfully": "Успешно враћено",
     "succeed-copy-content": "Садржај је успешно копиран.",
     "succeed-copy-link": "Линк је успешно копиран.",
-    "update-succeed": "Ажурирање је успело"
+    "update-succeed": "Ажурирање је успело",
+    "not-signed-in": "Нисте пријављени.",
+    "invalid-datetime": "Неисправан датум и време. Користите формат 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Нису пронађене белешке",
@@ -436,7 +567,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Складиште ваших прилога није доступно.",
-      "email-in-use": "Ову имејл адресу већ користи други налог."
+      "email-in-use": "Ову имејл адресу већ користи други налог.",
+      "avatar-too-large": "Изаберите слику од највише 2 MB.",
+      "avatar-unreadable": "Ова слика не може да се прочита. Покушајте са другом датотеком."
     },
     "ai": {
       "add-provider": "Додај провајдера",
@@ -518,13 +651,15 @@
       "restore-success": "{{username}} је успешно враћен",
       "summary-column": "Резиме",
       "user": "Корисник",
-      "no-members-found": "Није пронађен ниједан члан"
+      "no-members-found": "Није пронађен ниједан члан",
+      "export-memos": "Извези белешке",
+      "username-password-required": "Корисничко име и лозинка не могу бити празни",
+      "create-success": "Корисник је направљен",
+      "update-success": "Корисник је ажуриран"
     },
     "memo": {
       "add-reaction": "Додајте реакцију",
       "configured-reactions": "Конфигурисане реакције",
-      "double-click-edit-description": "Дозволите корисницима да отворе уређивање белешке двоструким кликом на белешку.",
-      "editing-title": "Уређивање",
       "label": "Мемо",
       "reaction-placeholder": "нпр. 👍",
       "reactions-description": "Дефинишите опције реакције које корисници могу применити на белешке.",
@@ -575,22 +710,162 @@
       "appearance-title": "Изглед",
       "default-memo-visibility": "Подразумевана видљивост белешке",
       "default-memo-visibility-description": "Видљивост се примењује на новокреиране белешке осим ако се не промени у уређивачу.",
+      "device-description": "Подешавања читања и уређивања која се чувају само у овом прегледачу. Не чувају се на вашем налогу.",
+      "device-title": "Овај уређај",
+      "double-click-edit": "Двоструки клик за уређивање",
+      "double-click-edit-description": "Отворите сопствене белешке у уређивачу двоструким кликом.",
       "label": "Преференцес",
       "language-description": "Одмах ажурира језик интерфејса и чува га на вашем налогу.",
+      "link-preview-description": "Прикажи картицу прегледа испод голих веза свуда где се приказују белешке.",
       "memo-defaults-description": "Подесите подразумеване вредности које се користе приликом састављања нових белешки.",
       "memo-defaults-title": "Подразумеване вредности за белешке",
-      "theme-description": "Одмах примењује изабрану тему на овом уређају.",
-      "theme": "Тема",
       "save-media-metadata": "Сачувајте метаподатке медија",
       "save-media-metadata-description": "За будућа отпремања, сачувајте доступну камеру, време снимања, локацију, димензије слике и основне детаље видеа. Свако ко може да види прилог може да прими ове метаподатке. Постојећи прилози се не мењају.",
+      "theme-description": "Одмах примењује изабрану тему на овом уређају.",
+      "theme": "Тема",
       "uploads-privacy-description": "Контролишите информације које су осетљиве на приватност и које се достављају уз отпремљене медије.",
-      "uploads-privacy-title": "Отпремања и приватност"
+      "uploads-privacy-title": "Отпремања и приватност",
+      "theme-system": "Прати систем",
+      "theme-system-short": "Системска",
+      "theme-light": "Светла",
+      "theme-dark": "Тамна",
+      "theme-paper": "Папир"
+    },
+    "editor": {
+      "label": "Уређивач",
+      "markdown-mode-description": "Пишите и уређујте белешке као Markdown текст уместо форматираног текста."
     },
     "memo-view": {
       "create": "Направи приказ",
       "delete-confirm": "Да ли сте сигурни да желите да избришете приказ `{{title}}`?",
       "delete-success": "Приказ `{{title}}` је успешно избрисан",
-      "change-icon": "Промени икону приказа"
+      "change-icon": "Промени икону приказа",
+      "page-description": "Направите приказе за вишекратну употребу са пољима, операторима, временским функцијама и подударањем ознака. Почните од примера, а затим проверите израз пре чувања.",
+      "edit": "Уреди приказ",
+      "form-description": "Дајте назив приказу и дефинишите израз филтера мемоа који треба да примењује.",
+      "title-placeholder": "Закачено, Недавне белешке, Посао",
+      "filter-help": "Комбинујте изразе помоћу {{and}}, {{or}} и {{not}}. Временска поља су временске ознаке — користите {{now}}, {{duration}}, {{timestamp}} и приступнике као што је {{year}}. Ознаке подржавају {{sets}}, а {{size}} мери дужину.",
+      "validate": "Провери",
+      "all": "Сви прикази",
+      "loading": "Учитавање приказа…",
+      "load-failed": "Учитавање приказа није успело.",
+      "empty-title": "Још нема приказа",
+      "empty-description": "Сачувајте филтер да бисте се брзо вратили на мемое који су вам потребни.",
+      "examples-title": "Примери израза",
+      "fields-title": "Подржана поља",
+      "title-filter-required": "Наслов и филтер не могу бити празни",
+      "filter-valid": "Израз филтера изгледа исправно",
+      "create-success": "Приказ је направљен",
+      "update-success": "Приказ је ажуриран",
+      "examples": {
+        "pinned": {
+          "title": "Закачено",
+          "description": "Само закачени мемои."
+        },
+        "recent": {
+          "title": "Недавне белешке",
+          "description": "Мемои направљени у последњих сат времена."
+        },
+        "public": {
+          "title": "Јавни мемои",
+          "description": "Само јавни мемои."
+        },
+        "project-tags": {
+          "title": "Ознаке пројекта",
+          "description": "Тачно подударање са једном или више ознака."
+        },
+        "untagged": {
+          "title": "Без ознака",
+          "description": "Мемои без иједне ознаке."
+        },
+        "archive-tree": {
+          "title": "Стабло архиве",
+          "description": "Подударање хијерархијских ознака по префиксу."
+        },
+        "unassigned": {
+          "title": "Недодељено",
+          "description": "Мемои који нису ни у једном простору."
+        },
+        "one-space": {
+          "title": "У једном простору",
+          "description": "Мемои у простору. Користите ID простора из његовог URL-а или подешавања."
+        },
+        "open-tasks": {
+          "title": "Отворени задаци",
+          "description": "Мемои са незавршеним задацима."
+        },
+        "links-or-code": {
+          "title": "Линкови или код",
+          "description": "Мемои који садрже линкове или блокове кода."
+        },
+        "no-location": {
+          "title": "Без локације",
+          "description": "Мемои без приложене локације."
+        },
+        "with-attachments": {
+          "title": "Са прилозима",
+          "description": "Мемои са бар једном приложеном датотеком."
+        },
+        "photos": {
+          "title": "Фотографије",
+          "description": "Мемои који приказују слику, у садржају или као приложену датотеку."
+        },
+        "content-search": {
+          "title": "Претрага садржаја",
+          "description": "Претрага текста у садржају мемоа."
+        },
+        "starts-with": {
+          "title": "Почиње са",
+          "description": "Мемои чији садржај почиње текстом (такође endsWith)."
+        },
+        "regex": {
+          "title": "Подударање regex-а",
+          "description": "Подударање садржаја са регуларним изразом."
+        },
+        "all-tags-complete": {
+          "title": "Све ознаке завршене",
+          "description": "Свака ознака се завршава на -done (само мемои са ознакама)."
+        },
+        "one-project-tag": {
+          "title": "Једна ознака пројекта",
+          "description": "Тачно једна ознака задовољава предикат."
+        },
+        "any-tags": {
+          "title": "Било која од ових ознака",
+          "description": "Ознаке се пресецају са задатим скупом."
+        },
+        "exact-tags": {
+          "title": "Тачно ове ознаке",
+          "description": "Означено тачно овим скупом, ништа више."
+        },
+        "year-2024": {
+          "title": "Мемои из 2024.",
+          "description": "Филтрирање по календарској години."
+        },
+        "weekend": {
+          "title": "Викенд белешке",
+          "description": "Направљено у недељу или суботу (0 = недеља)."
+        },
+        "long": {
+          "title": "Дуге белешке",
+          "description": "Мемои дужи од 280 знакова."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Конфигурација",
+      "description": "Ресурси постављени конфигурационим датотекама. Уредите датотеку и примените је да бисте их променили; остатак инстанце остаје овде уредив.",
+      "managed-by": "Управља конфигурација",
+      "managed-tooltip": "Постављено у {{source}}. Уредите датотеку и примените је да бисте ово променили.",
+      "resource": "Ресурс",
+      "source": "Датотека",
+      "managed-fields": "Управљана поља",
+      "whole-resource": "Сва поља",
+      "ignored-fields": "Уредиво овде",
+      "serial": "Серијски број",
+      "last-apply": "Последња примена",
+      "applied-by": "Применио",
+      "nothing-managed": "Није примењена ниједна конфигурација. Све се подешава овде."
     },
     "sso": {
       "account": "Рачун",
@@ -651,7 +926,9 @@
       "token-endpoint": "Крајња тачка токена",
       "update-sso": "Ажурирајте SSO",
       "update-sso-description": "Прегледајте конфигурацију добављача, а затим сачувајте поља која би требало да се промене.",
-      "user-endpoint": "Крајња тачка корисника"
+      "user-endpoint": "Крајња тачка корисника",
+      "invalid-config": "Конфигурација добављача идентитета није исправна.",
+      "provider-id-placeholder": "нпр. github, okta-corp"
     },
     "storage": {
       "accesskey": "Приступни кључ",
@@ -702,47 +979,56 @@
       "customize-server": {
         "description": "Опис",
         "icon-url": "Икона URL",
-        "title": "Прилагодите сервер"
+        "title": "Прилагодите сервер",
+        "dialog-description": "Прилагодите изглед и подешавања своје инстанце."
       },
       "custom-code-description": "Опциони CSS и JavaScript за читаву инстанцу примењени на фронтенд.",
       "custom-code-title": "Прилагођени код",
-      "enable-double-click-to-edit": "Омогућите двоструки клик за уређивање",
       "label": "Систем",
       "server-name": "Име сервера"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1131,9 @@
       "review-existing": "Већ је на вашем налогу",
       "review-exported": "Извезено од стране",
       "review-memos": "Memos у датотеци",
-      "review-new": "Биће креирано"
+      "review-new": "Биће креирано",
+      "export-admin-only": "Само администратори могу да извозе белешке. Затражите своју датотеку извоза од администратора.",
+      "export-busy": "Други извоз је у току. Покушајте поново за тренутак."
     },
     "spaces": {
       "general": "генерал",
@@ -931,7 +1219,8 @@
   },
   "tooltip": {
     "link-memo": "Линк Мемо",
-    "select-location": "Локација"
+    "select-location": "Локација",
+    "link-memo-description": "Претражите и изаберите мемо за повезивање"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1285,12 @@
     "loading": "Учитавање белешки…",
     "new-here": "Пишите овде",
     "saved-outside-filter": "Сачувано. Ова белешка је ван тренутних резултата на мапи.",
-    "open-memo": "Отвори мемо"
+    "open-memo": "Отвори мемо",
+    "open-in-google-maps": "Отвори у Google Maps",
+    "location-description": "Изаберите локацију на мапи или ручно унесите координате",
+    "latitude": "Географска ширина",
+    "longitude": "Географска дужина",
+    "place-placeholder": "Прво изаберите положај."
   },
   "calendar": {
     "new-memo-on-day": "Нова белешка на данашњи дан",
@@ -1040,5 +1334,102 @@
     "name-placeholder": "нпр. Производ",
     "spaces": "Простори",
     "switch": "Промени простор"
+  },
+  "welcome": {
+    "title": "Добро дошли у Memos",
+    "headline": "Једноставне белешке за свакодневне мисли.",
+    "intro-write": "Једна реченица може бити цео мемо.",
+    "intro-keep": "Сваки мемо остаје уз дан када сте га написали.",
+    "intro-share": "Ви бирате шта остаје приватно.",
+    "write": "Писање",
+    "write-sub": "Једна реченица може бити цео мемо.",
+    "no-title": "Без наслова",
+    "no-title-text": "Мемо почиње самом мишљу. Нема наслова који треба попунити.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown даје вашим речима структуру када то желите.",
+    "attach": "Прилози",
+    "attach-text": "Слике, датотеке, звук и место додају се преко ＋.",
+    "keep": "Чување",
+    "keep-sub": "Сваки мемо остаје уз дан када сте га написали.",
+    "calendar-text": "Календар води назад до било ког дана.",
+    "tags-text": "Реч после # постаје ознака, а ознака филтрира временску линију.",
+    "views-text": "Прилагођени приказ чува филтер.",
+    "map-text": "Мемо са местом налази се на мапи.",
+    "share": "Дељење",
+    "share-sub": "Мемо почиње као приватан. Ви бирате шта делите, а шта објављујете.",
+    "visibility-text": "Сваки мемо има своје подешавање. Нови почињу као приватни, само за вас; јавни има линк који свако може да отвори.",
+    "spaces-text": "У простору чланови пишу уз вас, а сваки задржава своје сопствене мемое.",
+    "comments": "Коментари",
+    "comments-text": "Свако ко види мемо може да одговори испод њега.",
+    "skip": "Прескочи",
+    "next": "Даље",
+    "done": "Готово",
+    "page-of": "Страна {{current}} од {{total}}",
+    "reopen": "Водич добродошлице",
+    "reopen-note": "Четири екрана које нови налог прво види.",
+    "sample": {
+      "today": "Данас, 10:42",
+      "today-early": "Данас, 9:18",
+      "yesterday": "Јуче, 15:20",
+      "comment-age": "2 ч",
+      "memo-preview": "Једноставнији први екран. Једно поље, затим преглед.",
+      "memo-release": "Пре следећег издања",
+      "task-sketch": "Скицирати први екран",
+      "task-polish": "Дотерати преглед",
+      "write-lead": "Нека први корак буде мали.",
+      "write-strong": "Детаље откривамо",
+      "write-tail": "онда када су потребни.",
+      "write-task": "Написати кратак списак измена",
+      "view": "Недовршени задаци",
+      "space": "Производ",
+      "share-memo": "Пробајмо да покажемо резултат пре него што тражимо од људи да се региструју.",
+      "comment": "Слажем се. Преглед је био оно што је убедило.",
+      "tag-design": "дизајн",
+      "tag-project": "пројекат",
+      "tag-reading": "читање",
+      "tag-ideas": "идеје"
+    }
+  },
+  "error": {
+    "title": "Нешто није у реду",
+    "description": "Дошло је до неочекиване грешке. Узрок може бити проблем са мрежом или грешка у апликацији.",
+    "description-update": "Дошло је до неочекиване грешке. Узрок може бити проблем са мрежом или ажурирање апликације. Поновно учитавање обично решава проблем.",
+    "details": "Детаљи грешке",
+    "reload": "Поново учитај апликацију",
+    "not-found": "Страница коју тражите није пронађена.",
+    "permission-denied": "Приступ одбијен",
+    "too-many-requests": "Превише захтева. Покушајте поново за {{wait}}.",
+    "wait-seconds": "{{count}} с",
+    "wait-minutes": "{{count}} мин",
+    "wait-hours": "{{count}} ч",
+    "challenge-required": "Довршите проверу и покушајте поново.",
+    "quota-memo-count": "Достигли сте ограничење од {{limit}} мемоа. Избришите мемое да бисте направили нове.",
+    "quota-storage": "Ово отпремање би премашило ваше ограничење простора од {{limit}}. Користите {{usage}}.",
+    "quota-upload": "Ова датотека премашује ваше ограничење од {{limit}} по датотеци.",
+    "quota-memo-content": "Овај мемо премашује ваше ограничење од {{limit}} по мемоу. Скратите садржај да бисте га сачували.",
+    "quota-generic": "Достигли сте ограничење коришћења.",
+    "sign-in-failed": "Пријава није успела.",
+    "sign-up-failed": "Регистрација није успела",
+    "authenticate-failed": "Аутентификација није успела.",
+    "update-profile-failed": "Ажурирање профила није успело",
+    "unlink-identity-failed": "Уклањање везе са добављачем идентитета није успело.",
+    "link-identity-failed": "Повезивање налога није могло да започне. Покушајте поново."
+  },
+  "attachment-preview": {
+    "title": "Преглед прилога",
+    "description": "Прозор за преглед прилога. Притисните Escape да затворите, користите стрелице лево и десно за прелазак између ставки, а слике увећајте контролама, точкићем миша, двоструким додиром или покретом штипања.",
+    "close": "Затвори преглед",
+    "previous": "Претходна ставка",
+    "next": "Следећа ставка",
+    "reset-zoom": "Ресетуј зум",
+    "image-alt": "Преглед слике {{index}} од {{count}}",
+    "live-photo-alt": "Преглед живе фотографије {{index}} од {{count}}",
+    "play-live-photo": "Пређите показивачем или притисните да пустите живу фотографију"
+  },
+  "audio-player": {
+    "seek": "Премотавање {{name}}",
+    "back": "Назад {{seconds}} секунди",
+    "forward": "Напред {{seconds}} секунди",
+    "speed": "Брзина репродукције {{rate}}x"
   }
 }

@@ -3,7 +3,6 @@
     "api-docs": "API 文件",
     "api-docs-note": "REST 與 gRPC 參考",
     "build": "建置資訊",
-    "commit": "提交",
     "demo": "示範",
     "description": "一個開源、自架的空間，記錄你的筆記、靈感和日常思緒。",
     "distribution": "發行版本",
@@ -23,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "管理員登入",
-    "admin-sign-in-tip": "管理員仍可使用密碼登入。",
     "back-to-sign-in": "返回登入",
+    "callback-failed-title": "無法完成登入",
     "continue-with": "使用 {{provider}} 繼續",
     "create-admin-account": "建立管理員帳號",
     "create-your-account": "建立您的帳號",
-    "explore-public-memos": "瀏覽此實例的公開備忘錄",
-    "first-run": "初次啟動",
+    "hide-password": "隱藏密碼",
+    "incorrect-credentials": "使用者名稱或密碼錯誤。",
     "new-password": "新密碼",
     "repeat-new-password": "再次輸入新密碼",
     "setup-description": "為此實例建立管理員帳號。",
-    "setup-note": "此帳號擁有實例設定、成員與身分識別提供者的管理權限。",
     "setup-title": "設定您的實例",
+    "show-password": "顯示密碼",
     "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶嗎？",
     "signin-unavailable-description": "已停用密碼登入，且尚未設定任何身分識別提供者。請要求管理員啟用登入方式。",
     "signin-unavailable-title": "無法登入",
-    "signup-unavailable-description": "已停用使用密碼註冊，且尚未設定任何身分識別提供者。請聯絡管理員以取得存取權限。",
-    "signup-unavailable-title": "無法註冊",
-    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。",
-    "signups-closed-title": "已關閉註冊",
-    "sso-signup-tip": "使用下方提供者登入以建立帳號。",
-    "welcome-back": "歡迎回來。"
+    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。"
   },
   "calendar": {
     "new-memo-on-day": "在這一天新增備忘錄",
@@ -187,7 +181,6 @@
     "profile": "個人檔案",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "關聯",
     "resize-sidebar": "調整側邊欄寬度",
     "resources": "檔案",
     "restore": "還原",
@@ -218,7 +211,24 @@
     "collapse-panel": "折疊面板",
     "expand-panel": "展開面板",
     "resize-panel": "調整面板大小",
-    "view-all": "查看全部"
+    "open-navigation": "開啟導覽",
+    "navigation": "導覽",
+    "primary-navigation": "主要導覽",
+    "download": "下載",
+    "download-name": "下載 {{name}}",
+    "open-name": "開啟 {{name}}",
+    "preview-name": "預覽 {{name}}",
+    "no-content": "沒有內容",
+    "previous": "上一個",
+    "next": "下一個",
+    "retry": "重試",
+    "docs": "文件",
+    "calendar-for-month": "{{month}}月曆",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "已選取的位置",
+    "choose-location": "選擇位置",
+    "unknown-error": "未知錯誤",
+    "error-occurred": "發生錯誤"
   },
   "locale-picker": {
     "no-language-feedback": "未找到語言？ 提交回饋"
@@ -229,13 +239,13 @@
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
-    "formatting-toolbar": "格式工具列",
+    "markdown-mode": "Markdown 模式",
     "format": {
-      "heading": "標題",
       "paragraph": "段落",
       "heading-1": "標題 1",
       "heading-2": "標題 2",
       "heading-3": "標題 3",
+      "heading-4": "標題 4",
       "bold": "粗體",
       "italic": "斜體",
       "strikethrough": "刪除線",
@@ -243,8 +253,7 @@
       "bullet-list": "項目符號清單",
       "ordered-list": "編號清單",
       "task-list": "待辦清單",
-      "link": "連結",
-      "more": "更多格式"
+      "link": "連結"
     },
     "insert-menu": {
       "add-attachment": "新增附件",
@@ -252,11 +261,52 @@
       "image-upload-failed": "部分圖片上傳失敗，請重試或將已上傳檔案保留為附件。",
       "image-upload-stopped": "圖片上傳已暫停 {{completed}}/{{total}}",
       "insert-image": "插入圖片",
+      "drawing": "繪圖",
       "keep-as-attachments": "保留為附件",
       "link-memo": "連結備忘錄",
       "retry-image-upload": "重試",
       "uploading-inline-image": "正在上傳到正文",
       "uploading-images": "正在上傳圖片 {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "新增繪圖",
+      "edit": "編輯繪圖",
+      "tools": "工具",
+      "tool-select": "選取",
+      "tool-pen": "畫筆",
+      "tool-eraser": "橡皮擦",
+      "tool-rectangle": "矩形",
+      "tool-ellipse": "橢圓",
+      "tool-arrow": "箭頭",
+      "tool-text": "文字",
+      "style": "顏色與粗細",
+      "color": "顏色",
+      "width": "粗細",
+      "width-thin": "細",
+      "width-medium": "中",
+      "width-thick": "粗",
+      "color-ink": "墨色",
+      "color-gray": "灰色",
+      "color-red": "紅色",
+      "color-orange": "橙色",
+      "color-green": "綠色",
+      "color-teal": "青色",
+      "color-blue": "藍色",
+      "color-violet": "紫色",
+      "undo": "復原",
+      "redo": "重做",
+      "zoom-to-fit": "縮放至適當大小",
+      "done": "完成",
+      "discard-title": "要捨棄此繪圖嗎？",
+      "discard-description": "它尚未加入備忘錄。",
+      "discard-edit-title": "要捨棄變更嗎？",
+      "discard-edit-description": "繪圖會維持開啟前的狀態。",
+      "keep-drawing": "繼續繪圖",
+      "discard": "捨棄",
+      "open-failed": "無法開啟繪圖，請再試一次。",
+      "export-failed": "無法儲存繪圖，請再試一次。",
+      "image-failed": "無法將圖片加入繪圖。",
+      "saved-without-drawing": "備忘錄已儲存，但繪圖尚未儲存。請再次儲存以重試。"
     },
     "new-memo": "新增備忘錄",
     "no-changes-detected": "未發現變更",
@@ -288,7 +338,68 @@
       "trigger": "錄製音訊"
     },
     "comment": "評論",
-    "saved": "已儲存"
+    "footnotes": "腳註",
+    "back-to-reference": "返回引用處",
+    "saved": "已儲存",
+    "blocks": {
+      "task": "任務",
+      "quote": "引用",
+      "callout": "標註",
+      "callout-note": "備註",
+      "callout-tip": "提示",
+      "callout-important": "重要",
+      "callout-warning": "警告",
+      "callout-caution": "注意",
+      "collapsible-section": "摺疊區塊",
+      "table": "表格",
+      "divider": "分隔線",
+      "no-results": "沒有結果",
+      "commands": "指令",
+      "loading": "載入中…",
+      "duplicate": "建立副本",
+      "inline-code": "程式碼",
+      "link-placeholder": "貼上或輸入連結…",
+      "remove-link": "移除連結",
+      "open-link": "開啟連結",
+      "copy-link": "複製連結",
+      "edit-link": "編輯連結",
+      "emoji": "表情符號",
+      "block-menu": "開啟區塊選單",
+      "list-hint": "清單",
+      "plain-text": "文字",
+      "add-row-above": "在上方插入列",
+      "add-row-below": "在下方插入列",
+      "add-column-left": "在左側插入欄",
+      "add-column-right": "在右側插入欄",
+      "delete-row": "刪除列",
+      "delete-column": "刪除欄",
+      "align": "對齊",
+      "align-left": "靠左",
+      "align-center": "置中",
+      "align-right": "靠右",
+      "image-align-left": "靠左對齊",
+      "image-align-center": "置中對齊",
+      "image-align-right": "靠右對齊",
+      "text-style": "文字樣式",
+      "image": "圖片",
+      "reset-image-size": "重設尺寸",
+      "alt-text": "替代文字",
+      "alt-text-placeholder": "描述這張圖片…",
+      "image-unavailable": "圖片無法顯示",
+      "resize-image": "調整圖片大小"
+    },
+    "attachments": {
+      "edited": "已編輯",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "調整 {{name}} 的順序",
+      "reorder-hint": "拖曳，或使用方向鍵"
+    },
+    "remove-relation": "移除關聯",
+    "remove-location": "移除位置",
+    "recording-unsupported": "此瀏覽器不支援錄音。",
+    "microphone-denied": "麥克風權限遭拒。",
+    "recording-failed": "無法開始錄音。"
   },
   "inbox": {
     "failed-to-load": "載入失敗",
@@ -297,7 +408,16 @@
     "unread": "未讀",
     "space-invitation": "已邀請您加入空間",
     "space-invitation-accepted": "您已加入此空間。",
-    "space-invitation-open": "開啟空間"
+    "space-invitation-open": "開啟空間",
+    "commented-on-memo": "在您的備忘錄留言",
+    "mentioned-in-comment": "在留言中提及您",
+    "mentioned-in-memo": "在備忘錄中提及您",
+    "original": "原文：",
+    "memo-label": "備忘錄：",
+    "comment-heading": "留言",
+    "memo-heading": "備忘錄",
+    "empty-memo": "空白備忘錄",
+    "empty-comment": "空白留言"
   },
   "live-update": {
     "connected": "即時更新已啟用",
@@ -305,11 +425,16 @@
     "disconnected": "即時更新無法使用"
   },
   "memo": {
+    "no-memos-yet": "還沒有備忘錄",
+    "no-matching-memos": "沒有符合的備忘錄",
+    "clear-filters": "清除篩選條件",
     "pinned": "已置頂",
     "click-to-show-sensitive-content": "點擊顯示敏感內容",
     "comment": {
       "self": "評論",
-      "write-a-comment": "寫下評論"
+      "write-a-comment": "寫下評論",
+      "view-all-count_one": "查看全部 {{count}} 則評論",
+      "view-all-count_other": "查看全部 {{count}} 則評論"
     },
     "copy-content": "複製內容",
     "copy-link": "複製連結",
@@ -319,10 +444,13 @@
     "delete-confirm-description": "此操作無法恢復。附件、連結和引用將一併被移除。",
     "direction": "排序",
     "filters": {
+      "has-attachments": "有附件",
       "has-code": "有程式碼",
+      "has-image": "有圖片",
       "has-link": "有連結",
       "has-location": "有位置",
-      "has-task-list": "有待辦事項"
+      "has-task-list": "有待辦事項",
+      "remove": "移除篩選條件"
     },
     "compact-mode": "精簡模式",
     "grid-compact-hint": "網格版面一律使用精簡卡片。",
@@ -407,7 +535,9 @@
     "restored-successfully": "還原成功",
     "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "not-signed-in": "您尚未登入。",
+    "invalid-datetime": "日期和時間無效。請使用 2023-12-31 23:59:59 格式。"
   },
   "reference": {
     "no-memos-found": "未找到任何備忘錄",
@@ -477,7 +607,9 @@
       "title": "帳號資訊",
       "update-information": "更新個人資訊",
       "username-note": "用於登入",
-      "email-in-use": "此信箱已被其他帳號使用。"
+      "email-in-use": "此信箱已被其他帳號使用。",
+      "avatar-too-large": "請選擇不超過 2 MB 的圖片。",
+      "avatar-unreadable": "無法讀取此圖片，請換一個檔案。"
     },
     "ai": {
       "add-provider": "新增服務供應商",
@@ -559,13 +691,15 @@
       "restore-success": "{{username}} 恢復成功",
       "summary-column": "摘要",
       "user": "使用者",
-      "no-members-found": "沒有找到成員"
+      "no-members-found": "沒有找到成員",
+      "export-memos": "匯出備忘錄",
+      "username-password-required": "使用者名稱和密碼不可為空白",
+      "create-success": "已建立使用者",
+      "update-success": "已更新使用者"
     },
     "memo": {
       "add-reaction": "新增表情回應",
       "configured-reactions": "已設定的表情回應",
-      "double-click-edit-description": "允許使用者雙擊備忘錄以開啟編輯。",
-      "editing-title": "編輯",
       "label": "備忘錄",
       "reaction-placeholder": "例如 👍",
       "reactions-description": "定義使用者可以對備忘錄套用的表情回應選項。",
@@ -616,8 +750,13 @@
       "appearance-title": "外觀",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
       "default-memo-visibility-description": "套用於新建立的備忘錄，除非在編輯器中變更。",
+      "device-description": "僅保存在此瀏覽器中的閱讀與編輯選項，不會儲存到你的帳號。",
+      "device-title": "此裝置",
+      "double-click-edit": "雙擊編輯",
+      "double-click-edit-description": "雙擊自己的 Memo 即可在編輯器中開啟。",
       "label": "偏好設定",
       "language-description": "立即更新介面語言並儲存至您的帳號。",
+      "link-preview-description": "在顯示 Memo 的任何位置，為單獨的連結顯示預覽卡片。",
       "memo-defaults-description": "設定撰寫新備忘錄時使用的預設值。",
       "memo-defaults-title": "備忘錄預設值",
       "save-media-metadata": "儲存媒體中繼資料",
@@ -625,13 +764,148 @@
       "theme-description": "立即在此裝置上套入選定的主題。",
       "theme": "主題",
       "uploads-privacy-description": "控制上傳媒體時提交的隱私敏感資訊。",
-      "uploads-privacy-title": "上傳與隱私"
+      "uploads-privacy-title": "上傳與隱私",
+      "theme-system": "跟隨系統",
+      "theme-system-short": "系統",
+      "theme-light": "淺色",
+      "theme-dark": "深色",
+      "theme-paper": "紙張"
+    },
+    "editor": {
+      "label": "編輯器",
+      "markdown-mode-description": "以 Markdown 文字而非格式化文字撰寫和編輯備忘錄。"
     },
     "memo-view": {
       "create": "建立檢視",
       "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",
       "delete-success": "檢視 `{{title}}` 刪除成功",
-      "change-icon": "變更檢視圖示"
+      "change-icon": "變更檢視圖示",
+      "page-description": "使用欄位、運算子、時間函式和標籤比對建立可重複使用的檢視。可從範例開始，儲存前先驗證。",
+      "edit": "編輯檢視",
+      "form-description": "為檢視命名，並定義它要套用的備忘錄篩選運算式。",
+      "title-placeholder": "已釘選、近期筆記、工作",
+      "filter-help": "使用 {{and}}、{{or}} 和 {{not}} 組合運算式。時間欄位是時間戳記——可使用 {{now}}、{{duration}}、{{timestamp}} 以及 {{year}} 等存取子。標籤支援 {{sets}}，{{size}} 則用於計算長度。",
+      "validate": "驗證",
+      "all": "所有檢視",
+      "loading": "正在載入檢視…",
+      "load-failed": "無法載入檢視。",
+      "empty-title": "尚無檢視",
+      "empty-description": "儲存篩選條件，以便快速回到需要的備忘錄。",
+      "examples-title": "運算式範例",
+      "fields-title": "支援的欄位",
+      "title-filter-required": "標題和篩選條件不可為空白",
+      "filter-valid": "篩選運算式看起來有效",
+      "create-success": "已建立檢視",
+      "update-success": "已更新檢視",
+      "examples": {
+        "pinned": {
+          "title": "已釘選",
+          "description": "僅限已釘選的備忘錄。"
+        },
+        "recent": {
+          "title": "近期筆記",
+          "description": "過去一小時內建立的備忘錄。"
+        },
+        "public": {
+          "title": "公開備忘錄",
+          "description": "僅限公開的備忘錄。"
+        },
+        "project-tags": {
+          "title": "專案標籤",
+          "description": "完全符合一個或多個標籤。"
+        },
+        "untagged": {
+          "title": "無標籤",
+          "description": "沒有任何標籤的備忘錄。"
+        },
+        "archive-tree": {
+          "title": "封存樹狀結構",
+          "description": "依前綴比對階層式標籤。"
+        },
+        "unassigned": {
+          "title": "未歸入空間",
+          "description": "未放入任何空間的備忘錄。"
+        },
+        "one-space": {
+          "title": "單一空間內",
+          "description": "放入某個空間的備忘錄。請使用該空間網址或設定中的空間 ID。"
+        },
+        "open-tasks": {
+          "title": "未完成的任務",
+          "description": "含有未完成任務的備忘錄。"
+        },
+        "links-or-code": {
+          "title": "連結或程式碼",
+          "description": "含有連結或程式碼區塊的備忘錄。"
+        },
+        "no-location": {
+          "title": "無位置",
+          "description": "未附加位置的備忘錄。"
+        },
+        "with-attachments": {
+          "title": "含附件",
+          "description": "至少附有一個檔案的備忘錄。"
+        },
+        "photos": {
+          "title": "相片",
+          "description": "在內容中或以附加檔案顯示圖片的備忘錄。"
+        },
+        "content-search": {
+          "title": "內容搜尋",
+          "description": "搜尋備忘錄內容中的文字。"
+        },
+        "starts-with": {
+          "title": "開頭符合",
+          "description": "內容以指定文字開頭的備忘錄（也可用 endsWith）。"
+        },
+        "regex": {
+          "title": "正規表示式比對",
+          "description": "以正規表示式比對內容。"
+        },
+        "all-tags-complete": {
+          "title": "所有標籤皆已完成",
+          "description": "每個標籤都以 -done 結尾（僅限有標籤的備忘錄）。"
+        },
+        "one-project-tag": {
+          "title": "單一專案標籤",
+          "description": "恰好有一個標籤符合條件。"
+        },
+        "any-tags": {
+          "title": "包含任一標籤",
+          "description": "標籤與指定集合有交集。"
+        },
+        "exact-tags": {
+          "title": "恰好這些標籤",
+          "description": "標籤恰好為此集合，不多也不少。"
+        },
+        "year-2024": {
+          "title": "2024 年的備忘錄",
+          "description": "依日曆年份篩選。"
+        },
+        "weekend": {
+          "title": "週末筆記",
+          "description": "建立於週日或週六（0 = 週日）。"
+        },
+        "long": {
+          "title": "長篇筆記",
+          "description": "超過 280 個字元的備忘錄。"
+        }
+      }
+    },
+    "configuration": {
+      "label": "設定檔",
+      "description": "由設定檔設定的資源。若要變更，請編輯檔案並套用；執行個體的其餘部分仍可在此編輯。",
+      "managed-by": "由設定檔管理",
+      "managed-tooltip": "在 {{source}} 中設定。若要變更，請編輯該檔案並套用。",
+      "resource": "資源",
+      "source": "檔案",
+      "managed-fields": "受管理的欄位",
+      "whole-resource": "所有欄位",
+      "ignored-fields": "可在此編輯",
+      "serial": "序號",
+      "last-apply": "上次套用",
+      "applied-by": "套用者",
+      "nothing-managed": "尚未套用任何設定。所有設定都在這裡完成。"
     },
     "sso": {
       "account": "帳號",
@@ -692,7 +966,9 @@
       "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
       "update-sso-description": "檢視身分識別提供者設定，然後儲存需要變更的欄位。",
-      "user-endpoint": "使用者端點（User Endpoint）"
+      "user-endpoint": "使用者端點（User Endpoint）",
+      "invalid-config": "身分提供者設定無效。",
+      "provider-id-placeholder": "例如 github, okta-corp"
     },
     "spaces": {
       "accept": "接受",
@@ -824,47 +1100,56 @@
       "customize-server": {
         "description": "說明",
         "icon-url": "圖示網址",
-        "title": "自訂伺服器"
+        "title": "自訂伺服器",
+        "dialog-description": "自訂執行個體的外觀與設定。"
       },
       "custom-code-description": "套用至前端的選擇性全實例 CSS 和 JavaScript。",
       "custom-code-title": "自訂代碼",
-      "enable-double-click-to-edit": "啟用雙擊編輯",
       "label": "系統",
       "server-name": "伺服器名稱"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -967,7 +1252,9 @@
       "review-existing": "您的帳號中已存在",
       "review-exported": "匯出者",
       "review-memos": "檔案中的備忘錄",
-      "review-new": "將建立"
+      "review-new": "將建立",
+      "export-admin-only": "只有管理員可以匯出備忘錄。請向管理員索取你的匯出檔案。",
+      "export-busy": "另一個匯出正在進行。請稍後再試。"
     }
   },
   "space": {
@@ -1007,7 +1294,8 @@
   },
   "tooltip": {
     "link-memo": "連結備忘錄",
-    "select-location": "位置"
+    "select-location": "位置",
+    "link-memo-description": "搜尋並選擇要連結的備忘錄"
   },
   "search": {
     "retry": "重試",
@@ -1039,6 +1327,108 @@
     "loading": "正在載入備忘錄…",
     "new-here": "在此記錄",
     "saved-outside-filter": "已儲存。此備忘錄不在目前的地圖結果中。",
-    "open-memo": "開啟備忘錄"
+    "open-memo": "開啟備忘錄",
+    "open-in-google-maps": "在 Google Maps 中開啟",
+    "location-description": "在地圖上選擇位置，或手動輸入座標",
+    "latitude": "緯度",
+    "longitude": "經度",
+    "place-placeholder": "請先選擇一個位置。"
+  },
+  "welcome": {
+    "title": "歡迎使用 Memos",
+    "headline": "為日常想法而生的簡單筆記。",
+    "intro-write": "一句話就可以是一則完整的備忘錄。",
+    "intro-keep": "每則備忘錄都留在你寫下它的那一天。",
+    "intro-share": "什麼保持私人，由你決定。",
+    "write": "寫作",
+    "write-sub": "一句話就可以是一則完整的備忘錄。",
+    "no-title": "無標題",
+    "no-title-text": "備忘錄從想法本身開始，沒有需要填寫的標題。",
+    "markdown": "Markdown",
+    "markdown-text": "需要時，Markdown 能讓文字有結構。",
+    "attach": "附件",
+    "attach-text": "圖片、檔案、音訊和位置都透過 ＋ 加入。",
+    "keep": "保存",
+    "keep-sub": "每則備忘錄都留在你寫下它的那一天。",
+    "calendar-text": "日曆能帶你回到任何一天。",
+    "tags-text": "# 後面的詞會成為標籤，標籤可以篩選時間軸。",
+    "views-text": "自訂檢視會儲存一組篩選條件。",
+    "map-text": "附有位置的備忘錄會顯示在地圖上。",
+    "share": "分享",
+    "share-sub": "備忘錄預設為私人。分享什麼、公開什麼，由你決定。",
+    "visibility-text": "每則備忘錄都有自己的設定。新的備忘錄預設為私人，只有你看得到；公開的備忘錄有一個任何人都能開啟的連結。",
+    "spaces-text": "在空間裡，成員與你一同寫作，各自保留自己的備忘錄。",
+    "comments": "評論",
+    "comments-text": "看得到備忘錄的人都可以在下方回覆。",
+    "skip": "略過",
+    "next": "下一步",
+    "done": "完成",
+    "page-of": "第 {{current}} 頁，共 {{total}} 頁",
+    "reopen": "歡迎指南",
+    "reopen-note": "新帳號最先看到的四個畫面。",
+    "sample": {
+      "today": "今天 10:42",
+      "today-early": "今天 9:18",
+      "yesterday": "昨天 15:20",
+      "comment-age": "2 小時",
+      "memo-preview": "更簡單的首頁畫面。一個輸入框，然後是預覽。",
+      "memo-release": "下個版本發布之前",
+      "task-sketch": "畫出首頁畫面草圖",
+      "task-polish": "打磨預覽",
+      "write-lead": "第一步保持小一點。",
+      "write-strong": "細節",
+      "write-tail": "在需要時再展開。",
+      "write-task": "寫一份簡短的更新日誌",
+      "view": "未完成的任務",
+      "space": "產品",
+      "share-memo": "先把結果展示出來，再邀請大家註冊。",
+      "comment": "同意。真正打動人的是預覽。",
+      "tag-design": "設計",
+      "tag-project": "專案",
+      "tag-reading": "閱讀",
+      "tag-ideas": "想法"
+    }
+  },
+  "error": {
+    "title": "發生問題",
+    "description": "發生未預期的錯誤，可能是網路問題或應用程式出現問題。",
+    "description-update": "發生未預期的錯誤，可能是網路問題或應用程式已更新。重新載入通常即可解決。",
+    "details": "錯誤詳細資料",
+    "reload": "重新載入應用程式",
+    "not-found": "找不到您要找的頁面。",
+    "permission-denied": "權限不足",
+    "too-many-requests": "請求過於頻繁，請於 {{wait}} 後再試。",
+    "wait-seconds": "{{count}} 秒",
+    "wait-minutes": "{{count}} 分鐘",
+    "wait-hours": "{{count}} 小時",
+    "challenge-required": "請完成驗證後再試一次。",
+    "quota-memo-count": "您已達到 {{limit}} 則備忘錄的上限。請刪除部分備忘錄後再建立新的。",
+    "quota-storage": "這次上傳將超過您 {{limit}} 的儲存空間上限。您目前已使用 {{usage}}。",
+    "quota-upload": "此檔案超過每個檔案 {{limit}} 的上限。",
+    "quota-memo-content": "此備忘錄超過每則備忘錄 {{limit}} 的上限。請縮短內容後再儲存。",
+    "quota-generic": "您已達到使用量上限。",
+    "sign-in-failed": "登入失敗。",
+    "sign-up-failed": "註冊失敗",
+    "authenticate-failed": "驗證失敗。",
+    "update-profile-failed": "更新個人資料失敗",
+    "unlink-identity-failed": "解除身分提供者連結失敗。",
+    "link-identity-failed": "無法開始連結帳號，請再試一次。"
+  },
+  "attachment-preview": {
+    "title": "附件預覽",
+    "description": "附件預覽對話框。按 Esc 關閉，使用左右方向鍵切換項目，並可透過控制項、滑鼠滾輪、點兩下或雙指縮放手勢縮放圖片。",
+    "close": "關閉預覽",
+    "previous": "上一個項目",
+    "next": "下一個項目",
+    "reset-zoom": "重設縮放",
+    "image-alt": "預覽圖片 {{index}}/{{count}}",
+    "live-photo-alt": "預覽 Live Photo {{index}}/{{count}}",
+    "play-live-photo": "懸停或按下以播放 Live Photo"
+  },
+  "audio-player": {
+    "seek": "調整 {{name}} 的播放位置",
+    "back": "倒退 {{seconds}} 秒",
+    "forward": "快轉 {{seconds}} 秒",
+    "speed": "播放速度 {{rate}}x"
   }
 }

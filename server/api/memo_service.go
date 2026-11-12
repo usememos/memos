@@ -46,7 +46,7 @@ func (s *APIService) CreateMemo(ctx context.Context, request *apipb.CreateMemoRe
 	if err != nil {
 		return nil, err
 	}
-	if err := s.checkMemoQuota(ctx, user); err != nil {
+	if err := s.checkMemoQuota(ctx, user.ID); err != nil {
 		return nil, err
 	}
 

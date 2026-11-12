@@ -16,7 +16,7 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("@/components/MemoEditor", () => ({
-  default: (props: Record<string, unknown>) => {
+  MemoEditor: (props: Record<string, unknown>) => {
     state.editorProps = props;
     return <div data-testid="memo-editor" />;
   },
@@ -47,6 +47,12 @@ vi.mock("@/components/PagedMemoList", () => ({
     );
   },
   getMemoKey: (memo: { name: string }) => memo.name,
+  EmptyLine: () => null,
+}));
+
+vi.mock("@/components/WelcomeGuide", () => ({
+  WelcomeGuideDialog: () => null,
+  useWelcomeGuide: () => ({ open: false, onOpenChange: () => {} }),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -110,7 +116,7 @@ describe("<Home>", () => {
     expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
     expect(screen.getByTestId("memo-view")).toBeInTheDocument();
     expect(state.listProps).toMatchObject({ contextFilter: undefined });
-    expect(state.editorProps).toMatchObject({ cacheKey: "home-memo-editor", defaultSpace: undefined });
+    expect(state.editorProps).toMatchObject({ draft: { scope: "home", space: undefined } });
     expect(state.editorProps?.autoFocus).toEqual(expect.any(Function));
     expect(state.editorProps?.suggestions).toEqual([{ id: "tag:work" }]);
     expect(state.filterOptions).not.toHaveProperty("creatorName");
@@ -131,8 +137,7 @@ describe("<Home>", () => {
 
     expect(state.listProps).toMatchObject({ contextFilter: 'space == "spaces/product"' });
     expect(state.editorProps).toMatchObject({
-      cacheKey: "home-memo-editor:spaces/product",
-      defaultSpace: "spaces/product",
+      draft: { scope: "home", space: "spaces/product" },
     });
   });
 });

@@ -89,10 +89,12 @@ describe("memo views", () => {
           { factor: "property.hasTaskList", value: "" },
           { factor: "property.hasCode", value: "" },
           { factor: "property.hasLocation", value: "" },
+          { factor: "property.hasAttachments", value: "" },
+          { factor: "property.hasImage", value: "" },
         ],
         includePinned: false,
       }),
-    ).toBe("(has_link) && (has_task_list) && (has_code) && (has_location)");
+    ).toBe("(has_link) && (has_task_list) && (has_code) && (has_location) && (has_attachments) && (has_image)");
   });
 
   it("uses a saved memo view filter", () => {

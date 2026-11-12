@@ -13,10 +13,12 @@ import (
 )
 
 func TestDevelopmentVersion(t *testing.T) {
+	original := version.Version
+	t.Cleanup(func() { version.Version = original })
 	for _, tc := range []struct{ date, version string }{
-		{"2026-09-27T14:58:52Z", "26.09"},
-		{"2026-10-01T00:30:00+08:00", "26.09"},
-		{"2026-12-31T23:30:00-08:00", "27.01"},
+		{"2026-09-27T14:58:52Z", "26.09.27"},
+		{"2026-10-01T00:30:00+08:00", "26.09.30"},
+		{"2026-12-31T23:30:00-08:00", "27.01.1"},
 	} {
 		t.Run(tc.date, func(t *testing.T) {
 			repo := t.TempDir()
@@ -29,11 +31,17 @@ func TestDevelopmentVersion(t *testing.T) {
 			}
 			check := func(repo string) {
 				t.Helper()
+				sha, err := exec.Command("git", "-C", repo, "rev-parse", "HEAD").Output()
+				require.NoError(t, err)
 				cmd := exec.Command("bash", "release_version.sh", "development-version", repo)
 				cmd.Env = append(os.Environ(), "TZ=Pacific/Honolulu")
 				out, err := cmd.CombinedOutput()
 				require.NoError(t, err, string(out))
-				require.Equal(t, tc.version+"\n", string(out))
+				want := tc.version + "-dev." + strings.TrimSpace(string(sha))[:7] + "\n"
+				require.Equal(t, want, string(out))
+				// The script and the binary must name the same development build.
+				version.Version = strings.TrimSpace(string(out))
+				require.NoError(t, version.Validate())
 			}
 			runGit("init", "-b", "main")
 			runGit("commit", "--allow-empty", "-m", "source")
@@ -58,12 +66,12 @@ func TestReleaseVersions(t *testing.T) {
 	for _, tc := range []struct {
 		tag, series, prerelease, images string
 	}{
-		{"26.09", "26.09", "false", "26.09\nstable\n"},
+		{"26.09.0", "26.09", "false", "26.09.0\n26.09\nstable\n"},
 		{"26.09.1", "26.09", "false", "26.09.1\n26.09\nstable\n"},
 		{"26.09.10", "26.09", "false", "26.09.10\n26.09\nstable\n"},
 		{"26.10.1", "26.10", "false", "26.10.1\n26.10\nstable\n"},
-		{"27.01", "27.01", "false", "27.01\nstable\n"},
-		{"26.09-rc.1", "26.09", "true", "26.09-rc.1\n"},
+		{"27.01.0", "27.01", "false", "27.01.0\n27.01\nstable\n"},
+		{"26.09.0-rc.1", "26.09", "true", "26.09.0-rc.1\n"},
 		{"26.09.1-rc.2", "26.09", "true", "26.09.1-rc.2\n"},
 	} {
 		t.Run(tc.tag, func(t *testing.T) {
@@ -75,27 +83,33 @@ func TestReleaseVersions(t *testing.T) {
 			require.Equal(t, tc.images, string(out))
 		})
 	}
-	for _, tag := range []string{"v0.31.0", "v26.09", "v26.09.1", "v26.09-rc.1", "26.9", "26.00", "26.13", "2026.09", "26.09.0", "26.09.01", "26.09-rc.0", "26.09-rc.01", "26.09beta", "26.09.1+build"} {
+	for _, tag := range []string{
+		"v0.31.0", "v26.09.0", "v26.09.1", "v26.09.0-rc.1", "26.09", "26.09-rc.1", "26.9.0", "26.00.0", "26.13.0", "2026.09.0",
+		"26.09.01", "26.09.0-rc.0", "26.09.0-rc.01", "26.09.0beta", "26.09.1+build", "26.09.1-dev.abc1234",
+	} {
 		out, err := exec.Command("bash", "release_version.sh", "version", tag).CombinedOutput()
 		require.Error(t, err, tag)
 		require.Contains(t, string(out), "Unsupported release tag")
 	}
 }
 
-// The script and the binary must accept the same versions, or a tag could
-// build a binary that refuses to start.
+// The script and the binary must accept the same release tags, or a tag could
+// build a binary that refuses to start. Development versions are binary-only.
 func TestReleaseTagsMatchBinaryVersions(t *testing.T) {
 	original := version.Version
 	t.Cleanup(func() { version.Version = original })
 	for _, tag := range []string{
-		"26.09", "26.09.1", "26.09.10", "27.01", "26.09-rc.1", "26.09.1-rc.2",
-		"v26.09", "0.31.0", "26.9", "26.00", "26.13", "2026.09", "26.09.0", "26.09.01", "26.09-rc.0", "26.09-rc.01",
-		"26.09-dev.1", "26.09-dirty", "26.09beta", "26.09.1+build", "dev",
+		"26.09.0", "26.09.1", "26.09.10", "27.01.0", "26.09.0-rc.1", "26.09.1-rc.2",
+		"v26.09.0", "0.31.0", "26.09", "26.9.0", "26.00.0", "26.13.0", "2026.09.0", "26.09.01", "26.09-rc.1", "26.09.0-rc.0", "26.09.0-rc.01",
+		"26.09.1-dev.1", "26.09.1-dirty", "26.09.0beta", "26.09.1+build", "dev",
 	} {
 		scriptErr := exec.Command("bash", "release_version.sh", "version", tag).Run()
 		version.Version = tag
 		require.Equal(t, scriptErr == nil, version.Validate() == nil, tag)
 	}
+	version.Version = "26.09.1-dev.abc1234"
+	require.NoError(t, version.Validate())
+	require.Error(t, exec.Command("bash", "release_version.sh", "version", version.Version).Run())
 }
 
 func TestPreviousReleaseImage(t *testing.T) {
@@ -121,28 +135,29 @@ func TestPreviousReleaseImage(t *testing.T) {
 	runGit("commit", "--allow-empty", "-m", "baseline")
 	runGit("tag", "v0.31.0")
 	runGit("commit", "--allow-empty", "-m", "first calendar release")
-	runGit("tag", "26.09")
+	runGit("tag", "26.09.0")
 	check("v0.31.0")
 	runGit("commit", "--allow-empty", "-m", "point release")
 	runGit("tag", "26.09.2")
-	check("26.09")
+	check("26.09.0")
 	runGit("commit", "--allow-empty", "-m", "tenth point release")
 	runGit("tag", "26.09.10")
+	// Two-part tags are image aliases, never releases.
 	runGit("tag", "99.99")
 	runGit("commit", "--allow-empty", "-m", "release candidate")
-	runGit("tag", "26.10-rc.1")
+	runGit("tag", "26.10.0-rc.1")
 	check("26.09.10")
 	runGit("commit", "--allow-empty", "-m", "after release candidate")
 	check("26.09.10")
 	runGit("checkout", "--orphan", "unrelated")
 	runGit("commit", "--allow-empty", "-m", "unrelated release")
-	runGit("tag", "29.01")
+	runGit("tag", "29.01.0")
 	runGit("checkout", "main")
 	check("26.09.10")
-	runGit("tag", "26.10")
+	runGit("tag", "26.10.0")
 	runGit("commit", "--allow-empty", "-m", "next year")
-	runGit("tag", "27.01")
-	check("26.10")
+	runGit("tag", "27.01.0")
+	check("26.10.0")
 	// The floor excludes pre-baseline tags even if no supported release exists.
 	repo = t.TempDir()
 	runGit("init", "-b", "main")

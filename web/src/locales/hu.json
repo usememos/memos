@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentációk",
     "api-docs-note": "REST és gRPC referencia",
     "build": "Build",
-    "commit": "Commit",
     "demo": "Demó",
     "description": "Nyílt forráskódú, saját szerveren futó hely a jegyzeteidnek, ötleteidnek és mindennapi gondolataidnak.",
     "distribution": "Terjesztés",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "A bejelentkezést nem sikerült befejezni",
     "create-your-account": "Fiók létrehozása",
+    "hide-password": "Jelszó elrejtése",
+    "incorrect-credentials": "Hibás felhasználónév vagy jelszó.",
     "new-password": "Új jelszó",
     "repeat-new-password": "Jelszó ismét",
+    "show-password": "Jelszó megjelenítése",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?",
     "admin-sign-in": "Rendszergazdai bejelentkezés",
-    "admin-sign-in-tip": "A jelszóval történő bejelentkezés továbbra is elérhető a rendszergazdák számára.",
     "back-to-sign-in": "Vissza a bejelentkezéshez",
     "continue-with": "Folytatás ezzel: {{provider}}",
     "create-admin-account": "Rendszergazdai fiók létrehozása",
-    "explore-public-memos": "Nyilvános feljegyzések megtekintése ezen a példányon",
-    "first-run": "Első futtatás",
     "setup-description": "Rendszergazdai fiók létrehozása ehhez a példányhoz.",
-    "setup-note": "Ez a fiók birtokolja a példánybeállításokat, a tagokat és az identitásszolgáltatókat.",
     "setup-title": "Példány beállítása",
     "signin-unavailable-description": "A jelszóval történő bejelentkezés ki van kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát, hogy engedélyezze a bejelentkezési módszert.",
     "signin-unavailable-title": "Bejelentkezés nem érhető el",
-    "signup-unavailable-description": "A jelszóval védett fiókok ki vannak kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát a hozzáférésért.",
-    "signup-unavailable-title": "A regisztráció nem érhető el",
-    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához.",
-    "signups-closed-title": "A regisztráció lezárult.",
-    "sso-signup-tip": "Jelentkezzen be az alábbi szolgáltatóval a fiók létrehozásához.",
-    "welcome-back": "Üdvözöljük ismét."
+    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához."
   },
   "common": {
     "about": "Névjegy",
@@ -103,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
-    "relations": "Kapcsolatok",
     "resources": "Állományok",
     "restore": "Helyreállítás",
     "role": "Jogosultság",
@@ -139,7 +132,24 @@
     "resize-panel": "Panel átméretezése",
     "resize-sidebar": "Oldalsáv átméretezése",
     "sign-in-to-memos": "Bejelentkezés a következőbe: Memos",
-    "view-all": "Összes megtekintése"
+    "open-navigation": "Navigáció megnyitása",
+    "navigation": "Navigáció",
+    "primary-navigation": "Fő",
+    "download": "Letöltés",
+    "download-name": "{{name}} letöltése",
+    "open-name": "{{name}} megnyitása",
+    "preview-name": "{{name}} előnézete",
+    "no-content": "Nincs tartalom",
+    "previous": "Előző",
+    "next": "Következő",
+    "retry": "Újra",
+    "docs": "Dokumentáció",
+    "calendar-for-month": "Naptár: {{month}}",
+    "date-at-time": "{{date}}, {{time}}",
+    "selected-location": "Kiválasztott hely",
+    "choose-location": "Válassz helyet",
+    "unknown-error": "Ismeretlen hiba",
+    "error-occurred": "Hiba történt"
   },
   "locale-picker": {
     "no-language-feedback": "Nem található a nyelv? Visszajelzés küldése"
@@ -150,6 +160,7 @@
     "any-thoughts": "Bármi ami a fejedben jár...",
     "exit-focus-mode": "Kilépés a fókusz módból",
     "focus-mode": "Fókusz mód",
+    "markdown-mode": "Markdown mód",
     "insert-menu": {
       "add-location": "Hely hozzáadása",
       "link-memo": "Linkjegyzet",
@@ -158,9 +169,50 @@
       "image-upload-failed": "Néhány kép feltöltése sikertelen. Próbálja újra, vagy tartsa meg a feltöltött fájlokat mellékletként.",
       "image-upload-stopped": "Képfeltöltés leállítva {{completed}}/{{total}}",
       "insert-image": "Kép beszúrása",
+      "drawing": "Rajz",
       "keep-as-attachments": "Megtartás mellékletként",
       "uploading-inline-image": "Feltöltés a tartalomhoz",
       "uploading-images": "Képek feltöltése {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Új rajz",
+      "edit": "Rajz szerkesztése",
+      "tools": "Eszközök",
+      "tool-select": "Kijelölés",
+      "tool-pen": "Toll",
+      "tool-eraser": "Radír",
+      "tool-rectangle": "Téglalap",
+      "tool-ellipse": "Ellipszis",
+      "tool-arrow": "Nyíl",
+      "tool-text": "Szöveg",
+      "style": "Szín és vastagság",
+      "color": "Szín",
+      "width": "Vastagság",
+      "width-thin": "Vékony",
+      "width-medium": "Közepes",
+      "width-thick": "Vastag",
+      "color-ink": "Tinta",
+      "color-gray": "Szürke",
+      "color-red": "Piros",
+      "color-orange": "Narancs",
+      "color-green": "Zöld",
+      "color-teal": "Kékeszöld",
+      "color-blue": "Kék",
+      "color-violet": "Ibolya",
+      "undo": "Visszavonás",
+      "redo": "Újra",
+      "zoom-to-fit": "Igazítás az ablakhoz",
+      "done": "Kész",
+      "discard-title": "Elveti ezt a rajzot?",
+      "discard-description": "Még nincs hozzáadva a jegyzethez.",
+      "discard-edit-title": "Elveti a módosításokat?",
+      "discard-edit-description": "A rajz olyan marad, amilyen a megnyitása előtt volt.",
+      "keep-drawing": "Rajzolás folytatása",
+      "discard": "Elvetés",
+      "open-failed": "Nem sikerült megnyitni a rajzot. Próbálja újra.",
+      "export-failed": "Nem sikerült menteni a rajzot. Próbálja újra.",
+      "image-failed": "Nem sikerült hozzáadni a képet a rajzhoz.",
+      "saved-without-drawing": "A jegyzet mentve, de a rajz nem. Mentse újra az újrapróbálkozáshoz."
     },
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
@@ -182,22 +234,22 @@
     },
     "format": {
       "code-block": "Kódblokk",
-      "heading": "Címsor",
       "paragraph": "Bekezdés",
       "heading-1": "1. címsor",
       "heading-2": "2. címsor",
       "heading-3": "3. címsor",
+      "heading-4": "4. címsor",
       "bold": "Félkövér",
       "italic": "Dőlt",
       "strikethrough": "Áthúzott",
       "bullet-list": "Felsorolás",
       "ordered-list": "Számozott lista",
       "task-list": "Tennivalók",
-      "link": "Link",
-      "more": "További formázás"
+      "link": "Link"
     },
     "comment": "Megjegyzés",
-    "formatting-toolbar": "Formázási eszköztár",
+    "footnotes": "Lábjegyzetek",
+    "back-to-reference": "Vissza a hivatkozáshoz",
     "new-memo": "Új feljegyzés",
     "saved": "Mentve",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "Mentés folyamatban",
       "unsupported-attachment-image-url": "Nem támogatott mellékletkép URL: {{url}}",
       "wait-for-upload": "Várja meg a feltöltés befejezését"
-    }
+    },
+    "blocks": {
+      "task": "Feladat",
+      "quote": "Idézet",
+      "callout": "Kiemelés",
+      "callout-note": "Megjegyzés",
+      "callout-tip": "Tipp",
+      "callout-important": "Fontos",
+      "callout-warning": "Figyelmeztetés",
+      "callout-caution": "Vigyázat",
+      "collapsible-section": "Összecsukható szakasz",
+      "table": "Táblázat",
+      "divider": "Elválasztó",
+      "no-results": "Nincs találat",
+      "commands": "Parancsok",
+      "loading": "Betöltés…",
+      "duplicate": "Duplikálás",
+      "inline-code": "Kód",
+      "link-placeholder": "Illessz be vagy írj be egy linket…",
+      "remove-link": "Link eltávolítása",
+      "open-link": "Link megnyitása",
+      "copy-link": "Link másolása",
+      "edit-link": "Link szerkesztése",
+      "emoji": "Emoji",
+      "block-menu": "Blokkmenü megnyitása",
+      "list-hint": "Lista",
+      "plain-text": "szöveg",
+      "add-row-above": "Sor beszúrása fölé",
+      "add-row-below": "Sor beszúrása alá",
+      "add-column-left": "Oszlop beszúrása balra",
+      "add-column-right": "Oszlop beszúrása jobbra",
+      "delete-row": "Sor törlése",
+      "delete-column": "Oszlop törlése",
+      "align": "Igazítás",
+      "align-left": "Balra",
+      "align-center": "Középre",
+      "align-right": "Jobbra",
+      "image-align-left": "Balra igazítás",
+      "image-align-center": "Középre igazítás",
+      "image-align-right": "Jobbra igazítás",
+      "text-style": "Szövegstílus",
+      "image": "Kép",
+      "reset-image-size": "Méret visszaállítása",
+      "alt-text": "Helyettesítő szöveg",
+      "alt-text-placeholder": "Írd le a képet…",
+      "image-unavailable": "A kép nem érhető el",
+      "resize-image": "Kép átméretezése"
+    },
+    "attachments": {
+      "edited": "Szerkesztve",
+      "new": "Új",
+      "remove": "Melléklet eltávolítása",
+      "reorder": "{{name}} áthelyezése",
+      "reorder-hint": "Húzza, vagy használja a nyílbillentyűket"
+    },
+    "remove-relation": "Kapcsolat eltávolítása",
+    "remove-location": "Hely eltávolítása",
+    "recording-unsupported": "Ez a böngésző nem támogatja a hangfelvételt.",
+    "microphone-denied": "A mikrofonhoz való hozzáférés megtagadva.",
+    "recording-failed": "Nem sikerült elindítani a hangfelvételt."
   },
   "inbox": {
     "failed-to-load": "Nem sikerült betölteni az értesítést",
@@ -218,7 +329,16 @@
     "unread": "Olvasatlan",
     "space-invitation": "meghívott egy térbe.",
     "space-invitation-accepted": "Csatlakoztál ehhez a térhez.",
-    "space-invitation-open": "Megnyitott tér"
+    "space-invitation-open": "Megnyitott tér",
+    "commented-on-memo": "hozzászólt a jegyzetedhez",
+    "mentioned-in-comment": "megemlített egy hozzászólásban",
+    "mentioned-in-memo": "megemlített egy jegyzetben",
+    "original": "Eredeti:",
+    "memo-label": "Jegyzet:",
+    "comment-heading": "Hozzászólás",
+    "memo-heading": "Jegyzet",
+    "empty-memo": "Üres jegyzet",
+    "empty-comment": "Üres hozzászólás"
   },
   "live-update": {
     "connected": "Élő frissítések aktívak",
@@ -226,11 +346,16 @@
     "disconnected": "Élő frissítések nem érhetők el"
   },
   "memo": {
+    "no-memos-yet": "Még nincsenek feljegyzések",
+    "no-matching-memos": "Nincsenek egyező feljegyzések",
+    "clear-filters": "Szűrők törlése",
     "pinned": "Rögzítve",
     "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
     "comment": {
       "self": "Hozzászólások",
-      "write-a-comment": "Írj hozzászólást"
+      "write-a-comment": "Írj hozzászólást",
+      "view-all-count_one": "Összes hozzászólás megtekintése ({{count}})",
+      "view-all-count_other": "Összes hozzászólás megtekintése ({{count}})"
     },
     "copy-content": "Tartalom másolása",
     "copy-link": "Hivatkozás másolása",
@@ -239,10 +364,13 @@
     "delete-confirm-description": "Ez a művelet visszafordíthatatlan. A mellékletek, hivatkozások és referenciák is törlődnek.",
     "direction": "Irány",
     "filters": {
+      "has-attachments": "van melléklet",
       "has-code": "vanKód",
+      "has-image": "van kép",
       "has-link": "vanLink",
       "has-location": "van helyadat",
-      "has-task-list": "vanFeladatLista"
+      "has-task-list": "vanFeladatLista",
+      "remove": "Szűrő eltávolítása"
     },
     "compact-mode": "Kompakt mód",
     "link-preview": "Hivatkozás előnézete",
@@ -328,7 +456,9 @@
     "restored-successfully": "Sikeres visszaállítás",
     "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
-    "update-succeed": "Sikeres frissítés"
+    "update-succeed": "Sikeres frissítés",
+    "not-signed-in": "Nem vagy bejelentkezve.",
+    "invalid-datetime": "Érvénytelen dátum és idő. Használd a 2023-12-31 23:59:59 formátumot."
   },
   "reference": {
     "no-memos-found": "Nem található jegyzet",
@@ -398,7 +528,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "A mellékletek tárhelye nem érhető el.",
-      "email-in-use": "Ezt az e-mail címet már egy másik fiók használja."
+      "email-in-use": "Ezt az e-mail címet már egy másik fiók használja.",
+      "avatar-too-large": "Válassz legfeljebb 2 MB-os képet.",
+      "avatar-unreadable": "Ez a kép nem olvasható. Próbálj meg egy másik fájlt."
     },
     "instance": {
       "disallow-change-nickname": "Becenév módosításának tiltása",
@@ -437,7 +569,11 @@
       "active": "Aktív",
       "archived": "Archivált",
       "member-column": "Tag",
-      "summary-column": "Összegzés"
+      "summary-column": "Összegzés",
+      "export-memos": "Jegyzetek exportálása",
+      "username-password-required": "A felhasználónév és a jelszó nem lehet üres",
+      "create-success": "Felhasználó létrehozva",
+      "update-success": "Felhasználó frissítve"
     },
     "memo": {
       "label": "Jegyzet",
@@ -445,8 +581,6 @@
       "reactions-required": "A reakciólista nem lehet üres",
       "add-reaction": "Adja hozzá a reakciót",
       "configured-reactions": "Konfigurált reakciók",
-      "double-click-edit-description": "Lehetővé teszi a felhasználók számára, hogy a jegyzetre duplán kattintva nyissa meg a jegyzetszerkesztést.",
-      "editing-title": "Szerkesztés",
       "reaction-placeholder": "például 👍",
       "reactions-description": "Határozza meg azokat a reakciólehetőségeket, amelyeket a felhasználók a jegyzetekre alkalmazhatnak.",
       "remove-reaction": "Távolítsa el a reakciót"
@@ -455,26 +589,166 @@
       "label": "Fiókom"
     },
     "preference": {
-      "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
-      "label": "Preferenciák",
-      "theme": "Téma",
       "appearance-description": "Válassza ki, hogyan nézzen ki az alkalmazás, és melyik nyelvet használja a fiókjához.",
       "appearance-title": "Megjelenés",
+      "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
       "default-memo-visibility-description": "A láthatóság az újonnan létrehozott jegyzetekre vonatkozik, hacsak nem módosítja a szerkesztőben.",
+      "device-description": "Csak ebben a böngészőben tárolt olvasási és szerkesztési beállítások. Nem kerülnek mentésre a fiókodba.",
+      "device-title": "Ez az eszköz",
+      "double-click-edit": "Dupla kattintás a szerkesztéshez",
+      "double-click-edit-description": "Nyisd meg a saját jegyzeteidet a szerkesztőben dupla kattintással.",
+      "label": "Preferenciák",
       "language-description": "Azonnal frissíti a felület nyelvét, és elmenti a fiókjába.",
+      "link-preview-description": "Előnézeti kártya megjelenítése a csupasz hivatkozások alatt mindenhol, ahol jegyzetek jelennek meg.",
       "memo-defaults-description": "Állítsa be az új jegyzetek írásakor használt alapértelmezett értékeket.",
       "memo-defaults-title": "A jegyzet alapbeállításai",
-      "theme-description": "Azonnal alkalmazza a kiválasztott témát ezen az eszközön.",
       "save-media-metadata": "Média metaadatok mentése",
       "save-media-metadata-description": "A jövőbeli feltöltésekhez mentse el az elérhető kamerát, a felvétel idejét, a helyszínt, a kép méreteit és az alapvető videóadatokat. Bárki, aki megtekintheti a mellékletet, megkaphatja ezeket a metaadatokat. A meglévő mellékletek változatlanok maradnak.",
+      "theme-description": "Azonnal alkalmazza a kiválasztott témát ezen az eszközön.",
+      "theme": "Téma",
       "uploads-privacy-description": "A feltöltött médiával beküldött adatvédelmi szempontból érzékeny információk kezelése.",
-      "uploads-privacy-title": "Feltöltések és adatvédelem"
+      "uploads-privacy-title": "Feltöltések és adatvédelem",
+      "theme-system": "Rendszerbeállítás követése",
+      "theme-system-short": "Rendszer",
+      "theme-light": "Világos",
+      "theme-dark": "Sötét",
+      "theme-paper": "Papír"
+    },
+    "editor": {
+      "label": "Szerkesztő",
+      "markdown-mode-description": "Jegyzetek írása és szerkesztése Markdown szövegként formázott szöveg helyett."
     },
     "memo-view": {
       "create": "Nézet létrehozása",
       "delete-confirm": "Biztosan törlöd a `{{title}}` nézetet?",
       "delete-success": "`{{title}}` nézet sikeresen törölve",
-      "change-icon": "Nézet ikonjának módosítása"
+      "change-icon": "Nézet ikonjának módosítása",
+      "page-description": "Hozz létre újrahasználható nézeteket mezőkkel, operátorokkal, időfüggvényekkel és címkeillesztéssel. Indulj ki a példákból, és mentés előtt ellenőrizd őket.",
+      "edit": "Nézet szerkesztése",
+      "form-description": "Nevezd el a nézetet, és add meg a jegyzetszűrő kifejezést, amelyet alkalmaznia kell.",
+      "title-placeholder": "Rögzített, Friss jegyzetek, Munka",
+      "filter-help": "A kifejezéseket a(z) {{and}}, {{or}} és {{not}} operátorokkal kombinálhatod. Az időmezők időbélyegek — használd a(z) {{now}}, {{duration}}, {{timestamp}} függvényeket és az olyan elérőket, mint a(z) {{year}}. A címkék támogatják a(z) {{sets}} műveleteket, a(z) {{size}} pedig a hosszt méri.",
+      "validate": "Ellenőrzés",
+      "all": "Összes nézet",
+      "loading": "Nézetek betöltése…",
+      "load-failed": "Nem sikerült betölteni a nézeteket.",
+      "empty-title": "Még nincsenek nézetek",
+      "empty-description": "Ments el egy szűrőt, hogy gyorsan visszatérhess a szükséges jegyzetekhez.",
+      "examples-title": "Példakifejezések",
+      "fields-title": "Támogatott mezők",
+      "title-filter-required": "A cím és a szűrő nem lehet üres",
+      "filter-valid": "A szűrőkifejezés érvényesnek tűnik",
+      "create-success": "Nézet létrehozva",
+      "update-success": "Nézet frissítve",
+      "examples": {
+        "pinned": {
+          "title": "Rögzített",
+          "description": "Csak a rögzített jegyzetek."
+        },
+        "recent": {
+          "title": "Friss jegyzetek",
+          "description": "Az elmúlt egy órában létrehozott jegyzetek."
+        },
+        "public": {
+          "title": "Nyilvános jegyzetek",
+          "description": "Csak a nyilvános jegyzetek."
+        },
+        "project-tags": {
+          "title": "Projektcímkék",
+          "description": "Egy vagy több pontos címke egyezése."
+        },
+        "untagged": {
+          "title": "Címke nélküli",
+          "description": "Címkék nélküli jegyzetek."
+        },
+        "archive-tree": {
+          "title": "Archívumfa",
+          "description": "Hierarchikus címkék egyezése előtag alapján."
+        },
+        "unassigned": {
+          "title": "Hozzá nem rendelt",
+          "description": "Jegyzetek, amelyek egyetlen térben sincsenek."
+        },
+        "one-space": {
+          "title": "Egy térben",
+          "description": "Egy adott térben lévő jegyzetek. Használd a tér azonosítóját az URL-jéből vagy a beállításaiból."
+        },
+        "open-tasks": {
+          "title": "Nyitott feladatok",
+          "description": "Befejezetlen feladatokat tartalmazó jegyzetek."
+        },
+        "links-or-code": {
+          "title": "Linkek vagy kód",
+          "description": "Linkeket vagy kódblokkokat tartalmazó jegyzetek."
+        },
+        "no-location": {
+          "title": "Hely nélkül",
+          "description": "Csatolt hely nélküli jegyzetek."
+        },
+        "with-attachments": {
+          "title": "Melléklettel",
+          "description": "Legalább egy csatolt fájllal rendelkező jegyzetek."
+        },
+        "photos": {
+          "title": "Fotók",
+          "description": "Képet megjelenítő jegyzetek, a tartalomban vagy csatolt fájlként."
+        },
+        "content-search": {
+          "title": "Keresés a tartalomban",
+          "description": "Szöveg keresése a jegyzetek tartalmában."
+        },
+        "starts-with": {
+          "title": "Ezzel kezdődik",
+          "description": "Jegyzetek, amelyek tartalma adott szöveggel kezdődik (endsWith is elérhető)."
+        },
+        "regex": {
+          "title": "Regex egyezés",
+          "description": "Tartalom egyeztetése reguláris kifejezéssel."
+        },
+        "all-tags-complete": {
+          "title": "Minden címke kész",
+          "description": "Minden címke -done végződésű (csak címkézett jegyzetek)."
+        },
+        "one-project-tag": {
+          "title": "Egy projektcímke",
+          "description": "Pontosan egy címke felel meg a feltételnek."
+        },
+        "any-tags": {
+          "title": "Bármelyik ezek közül",
+          "description": "A címkék metszik a megadott halmazt."
+        },
+        "exact-tags": {
+          "title": "Pontosan ezek a címkék",
+          "description": "Pontosan ezzel a halmazzal címkézve, semmi mással."
+        },
+        "year-2024": {
+          "title": "2024-es jegyzetek",
+          "description": "Szűrés naptári év szerint."
+        },
+        "weekend": {
+          "title": "Hétvégi jegyzetek",
+          "description": "Vasárnap vagy szombaton létrehozva (0 = vasárnap)."
+        },
+        "long": {
+          "title": "Hosszú jegyzetek",
+          "description": "280 karakternél hosszabb jegyzetek."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguráció",
+      "description": "Konfigurációs fájlok által beállított erőforrások. A módosításukhoz szerkessze a fájlt, és alkalmazza; a példány többi része itt továbbra is szerkeszthető.",
+      "managed-by": "Konfiguráció kezeli",
+      "managed-tooltip": "Beállítva itt: {{source}}. A módosításhoz szerkessze a fájlt, és alkalmazza.",
+      "resource": "Erőforrás",
+      "source": "Fájl",
+      "managed-fields": "Kezelt mezők",
+      "whole-resource": "Minden mező",
+      "ignored-fields": "Itt szerkeszthető",
+      "serial": "Sorszám",
+      "last-apply": "Utoljára alkalmazva",
+      "applied-by": "Alkalmazta",
+      "nothing-managed": "Nincs alkalmazott konfiguráció. Minden itt állítható be."
     },
     "sso": {
       "authorization-endpoint": "Hitelesítési végpont",
@@ -535,7 +809,9 @@
       "scopes-description": "A távirányítókat szóközökkel válassza el. A legtöbb szolgáltatónak csak egy kis készletre van szüksége, például profil- vagy e-mail hozzáférésre.",
       "template-description": "Kezdje a szolgáltató előre beállított értékével, majd állítsa be a bérlő hitelesítő adatait és végpontjait.",
       "unlink-success": "Leválasztva {{name}}.",
-      "update-sso-description": "Tekintse át a szolgáltató konfigurációját, majd mentse el a módosítani kívánt mezőket."
+      "update-sso-description": "Tekintse át a szolgáltató konfigurációját, majd mentse el a módosítani kívánt mezőket.",
+      "invalid-config": "Az identitásszolgáltató konfigurációja érvénytelen.",
+      "provider-id-placeholder": "pl. github, okta-corp"
     },
     "storage": {
       "accesskey": "Hozzáférési kulcs",
@@ -583,9 +859,9 @@
       "customize-server": {
         "description": "Leírás",
         "icon-url": "Ikon URL",
-        "title": "Szerver személyre szabása"
+        "title": "Szerver személyre szabása",
+        "dialog-description": "Szabd testre a példány megjelenését és beállításait."
       },
-      "enable-double-click-to-edit": "Dupla kattintásos szerkesztés engedélyezése",
       "label": "Rendszer",
       "server-name": "Szerver neve",
       "additional-script-description": "Szúrja be az JavaScript-et minden weboldalba. Csak megbízható kódot használjon.",
@@ -595,38 +871,47 @@
       "custom-code-title": "Egyedi kód"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1092,9 @@
       "review-existing": "Már a fiókodban van",
       "review-exported": "Exportálta:",
       "review-memos": "Jegyzetek a fájlban",
-      "review-new": "Létrehozva lesz"
+      "review-new": "Létrehozva lesz",
+      "export-admin-only": "Csak az adminisztrátorok exportálhatnak jegyzeteket. Kérd az exportfájlodat egy adminisztrátortól.",
+      "export-busy": "Egy másik exportálás folyamatban van. Próbáld újra egy pillanat múlva."
     },
     "spaces": {
       "general": "Általános",
@@ -893,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "Jegyzet hivatkozása",
-    "select-location": "Helyszín"
+    "select-location": "Helyszín",
+    "link-memo-description": "Keress és válassz ki egy jegyzetet a hivatkozáshoz"
   },
   "demo": {
     "banner-description": "A változtatások ideiglenesek, és visszaállíthatók.",
@@ -996,7 +1284,12 @@
     "loading": "Feljegyzések betöltése…",
     "new-here": "Írjon ide",
     "saved-outside-filter": "Mentve. Ez a feljegyzés kívül esik a jelenlegi térképeredményeken.",
-    "open-memo": "Jegyzet megnyitása"
+    "open-memo": "Jegyzet megnyitása",
+    "open-in-google-maps": "Megnyitás a Google Maps-ben",
+    "location-description": "Válassz helyet a térképen, vagy add meg kézzel a koordinátákat",
+    "latitude": "Szélesség",
+    "longitude": "Hosszúság",
+    "place-placeholder": "Előbb válassz egy pontot."
   },
   "calendar": {
     "new-memo-on-day": "Új emlékeztető ezen a napon.",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "pl. Termék",
     "spaces": "Terek",
     "switch": "Tér váltása"
+  },
+  "welcome": {
+    "title": "Üdvözli a Memos",
+    "headline": "Egyszerű jegyzetelés a mindennapi gondolataihoz.",
+    "intro-write": "Egyetlen mondat is lehet egy egész jegyzet.",
+    "intro-keep": "Minden jegyzet annál a napnál marad, amelyiken írta.",
+    "intro-share": "Ön dönti el, mi marad privát.",
+    "write": "Írás",
+    "write-sub": "Egyetlen mondat is lehet egy egész jegyzet.",
+    "no-title": "Nincs cím",
+    "no-title-text": "A jegyzet magával a gondolattal kezdődik. Nincs kitöltendő cím.",
+    "markdown": "Markdown",
+    "markdown-text": "A Markdown szerkezetet ad a szavainak, amikor arra van szüksége.",
+    "attach": "Csatolás",
+    "attach-text": "Képek, fájlok, hang és hely a ＋ gombon keresztül kerülnek be.",
+    "keep": "Megőrzés",
+    "keep-sub": "Minden jegyzet annál a napnál marad, amelyiken írta.",
+    "calendar-text": "A naptár bármelyik naphoz visszavezet.",
+    "tags-text": "A # utáni szó címkévé válik, a címke pedig szűri az idővonalat.",
+    "views-text": "Az egyéni nézet egy szűrőt ment el.",
+    "map-text": "A hellyel ellátott jegyzetek a térképen jelennek meg.",
+    "share": "Megosztás",
+    "share-sub": "A jegyzetek privátként indulnak. Ön dönti el, mit oszt meg és mit tesz közzé.",
+    "visibility-text": "Minden jegyzetnek saját beállítása van. Az újak privátként indulnak, csak Önnek; a nyilvános jegyzethez olyan hivatkozás tartozik, amelyet bárki megnyithat.",
+    "spaces-text": "Egy térben a tagok Ön mellett írnak, és mindenki megtartja a saját jegyzeteit.",
+    "comments": "Hozzászólások",
+    "comments-text": "Aki látja a jegyzetet, válaszolhat alatta.",
+    "skip": "Kihagyás",
+    "next": "Tovább",
+    "done": "Kész",
+    "page-of": "{{current}}. oldal, összesen {{total}}",
+    "reopen": "Üdvözlő útmutató",
+    "reopen-note": "A négy képernyő, amelyet egy új fiók először lát.",
+    "sample": {
+      "today": "Ma, 10:42",
+      "today-early": "Ma, 9:18",
+      "yesterday": "Tegnap, 15:20",
+      "comment-age": "2 ó",
+      "memo-preview": "Egyszerűbb első képernyő. Egy beviteli mező, majd egy előnézet.",
+      "memo-release": "A következő kiadás előtt",
+      "task-sketch": "Az első képernyő felvázolása",
+      "task-polish": "Az előnézet csiszolása",
+      "write-lead": "Az első lépés maradjon kicsi.",
+      "write-strong": "A részletek akkor jöjjenek elő,",
+      "write-tail": "amikor szükség van rájuk.",
+      "write-task": "Rövid változásnapló írása",
+      "view": "Befejezetlen feladatok",
+      "space": "Termék",
+      "share-memo": "Érdemes előbb megmutatni az eredményt, mielőtt regisztrációt kérünk az emberektől.",
+      "comment": "Egyetértek. Az előnézet győzött meg.",
+      "tag-design": "dizájn",
+      "tag-project": "projekt",
+      "tag-reading": "olvasás",
+      "tag-ideas": "ötletek"
+    }
+  },
+  "error": {
+    "title": "Valami hiba történt",
+    "description": "Váratlan hiba történt. Ezt hálózati probléma vagy az alkalmazás hibája okozhatta.",
+    "description-update": "Váratlan hiba történt. Ezt hálózati probléma vagy az alkalmazás frissítése okozhatta. Az újratöltés általában megoldja.",
+    "details": "Hiba részletei",
+    "reload": "Alkalmazás újratöltése",
+    "not-found": "A keresett oldal nem található.",
+    "permission-denied": "Hozzáférés megtagadva",
+    "too-many-requests": "Túl sok kérés. Próbáld újra {{wait}} múlva.",
+    "wait-seconds": "{{count}} mp",
+    "wait-minutes": "{{count}} perc",
+    "wait-hours": "{{count}} óra",
+    "challenge-required": "Teljesítsd az ellenőrzést, majd próbáld újra.",
+    "quota-memo-count": "Elérted a(z) {{limit}} jegyzetes korlátot. Törölj jegyzeteket, hogy újakat hozhass létre.",
+    "quota-storage": "Ez a feltöltés túllépné a(z) {{limit}} tárhelykorlátodat. Jelenleg {{usage}} van használatban.",
+    "quota-upload": "Ez a fájl nagyobb a fájlonkénti {{limit}} korlátodnál.",
+    "quota-memo-content": "Ez a jegyzet nagyobb a jegyzetenkénti {{limit}} korlátodnál. Rövidítsd le a tartalmat a mentéshez.",
+    "quota-generic": "Elértél egy használati korlátot.",
+    "sign-in-failed": "A bejelentkezés sikertelen.",
+    "sign-up-failed": "A regisztráció sikertelen",
+    "authenticate-failed": "A hitelesítés sikertelen.",
+    "update-profile-failed": "Nem sikerült frissíteni a profilt",
+    "unlink-identity-failed": "Nem sikerült leválasztani az identitásszolgáltatót.",
+    "link-identity-failed": "Nem sikerült elindítani a fiók összekapcsolását. Próbáld újra."
+  },
+  "attachment-preview": {
+    "title": "Melléklet előnézete",
+    "description": "Melléklet-előnézeti párbeszédablak. A bezáráshoz nyomd meg az Escape billentyűt, az elemek között a bal és jobb nyíllal válthatsz, a képeket pedig a vezérlőkkel, egérgörgővel, dupla koppintással vagy csípő mozdulattal nagyíthatod.",
+    "close": "Előnézet bezárása",
+    "previous": "Előző elem",
+    "next": "Következő elem",
+    "reset-zoom": "Nagyítás visszaállítása",
+    "image-alt": "Előnézeti kép: {{index}} / {{count}}",
+    "live-photo-alt": "Élő fotó előnézete: {{index}} / {{count}}",
+    "play-live-photo": "Vidd fölé az egeret vagy nyomd meg az élő fotó lejátszásához"
+  },
+  "audio-player": {
+    "seek": "Tekerés: {{name}}",
+    "back": "{{seconds}} másodperc vissza",
+    "forward": "{{seconds}} másodperc előre",
+    "speed": "Lejátszási sebesség: {{rate}}x"
   }
 }

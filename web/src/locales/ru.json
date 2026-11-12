@@ -6,7 +6,6 @@
     "api-docs": "Документация API",
     "api-docs-note": "Справочник по REST и gRPC",
     "build": "Сборка",
-    "commit": "Коммит",
     "demo": "Демо",
     "description": "Пространство с открытым исходным кодом на вашем сервере для заметок, идей и повседневных мыслей.",
     "distribution": "Дистрибутив",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Не удалось завершить вход",
     "create-your-account": "Создание учетной записи",
+    "hide-password": "Скрыть пароль",
+    "incorrect-credentials": "Неверное имя пользователя или пароль.",
     "new-password": "Новый пароль",
     "repeat-new-password": "Повторить новый пароль",
+    "show-password": "Показать пароль",
     "sign-in-tip": "У вас уже есть учетная запись?",
     "sign-up-tip": "У вас еще нет учетной записи?",
     "admin-sign-in": "Вход для администратора",
-    "admin-sign-in-tip": "Вход по паролю остаётся доступным для администраторов.",
     "back-to-sign-in": "Назад ко входу",
     "continue-with": "Продолжить через {{provider}}",
     "create-admin-account": "Создать учётную запись администратора",
-    "explore-public-memos": "Просмотреть публичные заметки на этом сервере",
-    "first-run": "Первый запуск",
     "setup-description": "Создайте учётную запись администратора этого сервера.",
-    "setup-note": "Эта учётная запись управляет настройками сервера, участниками и поставщиками удостоверений.",
     "setup-title": "Настройка сервера",
     "signin-unavailable-description": "Вход по паролю отключён, а поставщики удостоверений не настроены. Попросите администратора включить способ входа.",
     "signin-unavailable-title": "Вход недоступен",
-    "signup-unavailable-description": "Учётные записи с паролем отключены, а поставщики удостоверений не настроены. Обратитесь к администратору для получения доступа.",
-    "signup-unavailable-title": "Регистрация недоступна",
-    "signups-closed-description": "Создание новых учётных записей на этом сервере отключено. Если вам нужен доступ, обратитесь к администратору.",
-    "signups-closed-title": "Регистрация закрыта",
-    "sso-signup-tip": "Войдите через одного из указанных ниже поставщиков, чтобы создать учётную запись.",
-    "welcome-back": "С возвращением."
+    "signups-closed-description": "Создание новых учётных записей на этом сервере отключено. Если вам нужен доступ, обратитесь к администратору."
   },
   "common": {
     "about": "О Memos",
@@ -103,7 +97,6 @@
     "profile": "Профиль",
     "referenced-by": "Упоминания",
     "referencing": "Связи",
-    "relations": "Карта связей",
     "resources": "Ресурсы",
     "restore": "Восстановить",
     "role": "Роль",
@@ -139,7 +132,24 @@
     "collapse-panel": "Свернуть панель",
     "expand-panel": "Развернуть панель",
     "resize-panel": "Изменить размер панели",
-    "view-all": "Просмотреть все"
+    "open-navigation": "Открыть навигацию",
+    "navigation": "Навигация",
+    "primary-navigation": "Основная",
+    "download": "Скачать",
+    "download-name": "Скачать {{name}}",
+    "open-name": "Открыть {{name}}",
+    "preview-name": "Просмотр {{name}}",
+    "no-content": "Нет содержимого",
+    "previous": "Назад",
+    "next": "Далее",
+    "retry": "Повторить",
+    "docs": "Документация",
+    "calendar-for-month": "Календарь: {{month}}",
+    "date-at-time": "{{date}} в {{time}}",
+    "selected-location": "Выбранное местоположение",
+    "choose-location": "Выберите местоположение",
+    "unknown-error": "Неизвестная ошибка",
+    "error-occurred": "Произошла ошибка"
   },
   "locale-picker": {
     "no-language-feedback": "Язык не найден? Отправить отзыв"
@@ -150,6 +160,7 @@
     "any-thoughts": "Напишите что-нибудь...",
     "exit-focus-mode": "Выйти из режима фокуса",
     "focus-mode": "Режим фокуса",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Добавить местоположение",
       "link-memo": "Ссылка на заметку",
@@ -157,10 +168,51 @@
       "image-upload-failed": "Не удалось загрузить некоторые изображения. Повторите попытку или сохраните загруженные файлы как вложения.",
       "image-upload-stopped": "Загрузка изображений остановлена: {{completed}}/{{total}}",
       "insert-image": "Вставить изображение",
+      "drawing": "Рисунок",
       "keep-as-attachments": "Сохранить как вложения",
       "retry-image-upload": "Повторить",
       "uploading-inline-image": "Загрузка в содержимое",
       "uploading-images": "Загрузка изображений: {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Новый рисунок",
+      "edit": "Изменить рисунок",
+      "tools": "Инструменты",
+      "tool-select": "Выделение",
+      "tool-pen": "Перо",
+      "tool-eraser": "Ластик",
+      "tool-rectangle": "Прямоугольник",
+      "tool-ellipse": "Эллипс",
+      "tool-arrow": "Стрелка",
+      "tool-text": "Текст",
+      "style": "Цвет и толщина",
+      "color": "Цвет",
+      "width": "Толщина",
+      "width-thin": "Тонкая",
+      "width-medium": "Средняя",
+      "width-thick": "Толстая",
+      "color-ink": "Чернила",
+      "color-gray": "Серый",
+      "color-red": "Красный",
+      "color-orange": "Оранжевый",
+      "color-green": "Зелёный",
+      "color-teal": "Бирюзовый",
+      "color-blue": "Синий",
+      "color-violet": "Фиолетовый",
+      "undo": "Отменить",
+      "redo": "Повторить",
+      "zoom-to-fit": "Вписать в окно",
+      "done": "Готово",
+      "discard-title": "Удалить этот рисунок?",
+      "discard-description": "Он ещё не добавлен в заметку.",
+      "discard-edit-title": "Отменить изменения?",
+      "discard-edit-description": "Рисунок останется таким, каким был до открытия.",
+      "keep-drawing": "Продолжить рисовать",
+      "discard": "Удалить",
+      "open-failed": "Не удалось открыть рисунок. Повторите попытку.",
+      "export-failed": "Не удалось сохранить рисунок. Повторите попытку.",
+      "image-failed": "Не удалось добавить изображение в рисунок.",
+      "saved-without-drawing": "Заметка сохранена, а рисунок — нет. Сохраните ещё раз, чтобы повторить попытку."
     },
     "no-changes-detected": "Изменений не обнаружено",
     "save": "Сохранить",
@@ -180,13 +232,12 @@
       "transcribe-success": "Транскрипция добавлена",
       "transcribing": "Расшифровка..."
     },
-    "formatting-toolbar": "Панель форматирования",
     "format": {
-      "heading": "Заголовок",
       "paragraph": "Абзац",
       "heading-1": "Заголовок 1",
       "heading-2": "Заголовок 2",
       "heading-3": "Заголовок 3",
+      "heading-4": "Заголовок 4",
       "bold": "Полужирный",
       "italic": "Курсив",
       "strikethrough": "Зачёркнутый",
@@ -194,8 +245,7 @@
       "bullet-list": "Маркированный список",
       "ordered-list": "Нумерованный список",
       "task-list": "Список задач",
-      "link": "Ссылка",
-      "more": "Другие параметры форматирования"
+      "link": "Ссылка"
     },
     "validation": {
       "cannot-save": "Невозможно сохранить",
@@ -208,8 +258,69 @@
       "wait-for-upload": "Дождитесь завершения загрузки"
     },
     "comment": "Комментарий",
+    "footnotes": "Примечания",
+    "back-to-reference": "Назад к ссылке",
     "new-memo": "Новая заметка",
-    "saved": "Сохранено"
+    "saved": "Сохранено",
+    "blocks": {
+      "task": "Задача",
+      "quote": "Цитата",
+      "callout": "Выноска",
+      "callout-note": "Примечание",
+      "callout-tip": "Совет",
+      "callout-important": "Важно",
+      "callout-warning": "Предупреждение",
+      "callout-caution": "Осторожно",
+      "collapsible-section": "Сворачиваемый раздел",
+      "table": "Таблица",
+      "divider": "Разделитель",
+      "no-results": "Ничего не найдено",
+      "commands": "Команды",
+      "loading": "Загрузка…",
+      "duplicate": "Дублировать",
+      "inline-code": "Код",
+      "link-placeholder": "Вставьте или введите ссылку…",
+      "remove-link": "Удалить ссылку",
+      "open-link": "Открыть ссылку",
+      "copy-link": "Копировать ссылку",
+      "edit-link": "Изменить ссылку",
+      "emoji": "Эмодзи",
+      "block-menu": "Открыть меню блока",
+      "list-hint": "Список",
+      "plain-text": "текст",
+      "add-row-above": "Добавить строку выше",
+      "add-row-below": "Добавить строку ниже",
+      "add-column-left": "Добавить столбец слева",
+      "add-column-right": "Добавить столбец справа",
+      "delete-row": "Удалить строку",
+      "delete-column": "Удалить столбец",
+      "align": "Выравнивание",
+      "align-left": "По левому краю",
+      "align-center": "По центру",
+      "align-right": "По правому краю",
+      "image-align-left": "Выровнять по левому краю",
+      "image-align-center": "Выровнять по центру",
+      "image-align-right": "Выровнять по правому краю",
+      "text-style": "Стиль текста",
+      "image": "Изображение",
+      "reset-image-size": "Сбросить размер",
+      "alt-text": "Альтернативный текст",
+      "alt-text-placeholder": "Опишите изображение…",
+      "image-unavailable": "Изображение недоступно",
+      "resize-image": "Изменить размер изображения"
+    },
+    "attachments": {
+      "edited": "Изменено",
+      "new": "Новое",
+      "remove": "Удалить вложение",
+      "reorder": "Переместить {{name}}",
+      "reorder-hint": "Перетащите или используйте клавиши со стрелками"
+    },
+    "remove-relation": "Удалить связь",
+    "remove-location": "Удалить местоположение",
+    "recording-unsupported": "Этот браузер не поддерживает запись звука.",
+    "microphone-denied": "Доступ к микрофону запрещён.",
+    "recording-failed": "Не удалось начать запись звука."
   },
   "inbox": {
     "failed-to-load": "Не удалось загрузить элемент уведомления",
@@ -218,7 +329,16 @@
     "unread": "Непрочитанные",
     "space-invitation": "пригласил вас присоединиться к пространству",
     "space-invitation-accepted": "Вы присоединились к этому пространству.",
-    "space-invitation-open": "Открыть пространство"
+    "space-invitation-open": "Открыть пространство",
+    "commented-on-memo": "прокомментировал(а) вашу заметку",
+    "mentioned-in-comment": "упомянул(а) вас в комментарии",
+    "mentioned-in-memo": "упомянул(а) вас в заметке",
+    "original": "Оригинал:",
+    "memo-label": "Заметка:",
+    "comment-heading": "Комментарий",
+    "memo-heading": "Заметка",
+    "empty-memo": "Пустая заметка",
+    "empty-comment": "Пустой комментарий"
   },
   "live-update": {
     "connected": "Живые обновления активны",
@@ -226,11 +346,18 @@
     "disconnected": "Оперативные обновления недоступны."
   },
   "memo": {
+    "no-memos-yet": "Заметок пока нет",
+    "no-matching-memos": "Нет подходящих заметок",
+    "clear-filters": "Очистить фильтры",
     "pinned": "Закреплено",
     "click-to-show-sensitive-content": "Нажмите, чтобы посмотреть",
     "comment": {
       "self": "Комментарии",
-      "write-a-comment": "Добавить комментарий"
+      "write-a-comment": "Добавить комментарий",
+      "view-all-count_one": "Просмотреть {{count}} комментарий",
+      "view-all-count_few": "Просмотреть все {{count}} комментария",
+      "view-all-count_many": "Просмотреть все {{count}} комментариев",
+      "view-all-count_other": "Просмотреть все {{count}} комментария"
     },
     "copy-content": "Копировать контент",
     "copy-link": "Скопировать ссылку",
@@ -239,10 +366,13 @@
     "delete-confirm-description": "Это действие нельзя отменить. Вложения, ссылки и упоминания также будут удалены.",
     "direction": "Сортировка",
     "filters": {
+      "has-attachments": "есть вложения",
       "has-code": "hasCode",
+      "has-image": "есть изображение",
       "has-link": "hasLink",
       "has-location": "есть местоположение",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Удалить фильтр"
     },
     "compact-mode": "Компактный режим",
     "link-preview": "Предпросмотр ссылок",
@@ -328,7 +458,9 @@
     "restored-successfully": "Успешно восстановлено.",
     "succeed-copy-content": "Контент успешно скопирован.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
-    "update-succeed": "Успешно обновлено"
+    "update-succeed": "Успешно обновлено",
+    "not-signed-in": "Вы не вошли в систему.",
+    "invalid-datetime": "Недопустимые дата и время. Используйте формат 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Ничего не найдено",
@@ -398,7 +530,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Ваше хранилище вложений недоступно.",
-      "email-in-use": "Этот адрес электронной почты уже используется другой учетной записью."
+      "email-in-use": "Этот адрес электронной почты уже используется другой учетной записью.",
+      "avatar-too-large": "Выберите изображение размером не более 2 МБ.",
+      "avatar-unreadable": "Не удаётся прочитать это изображение. Попробуйте другой файл."
     },
     "instance": {
       "disallow-change-nickname": "Запретить смену псевдонима",
@@ -437,7 +571,11 @@
       "active": "Активный",
       "archived": "В архиве",
       "member-column": "Член",
-      "summary-column": "Краткое содержание"
+      "summary-column": "Краткое содержание",
+      "export-memos": "Экспортировать заметки",
+      "username-password-required": "Имя пользователя и пароль не могут быть пустыми",
+      "create-success": "Пользователь создан",
+      "update-success": "Пользователь обновлён"
     },
     "memo": {
       "label": "Заметки",
@@ -445,8 +583,6 @@
       "reactions-required": "Список реакций не должен быть пустым.",
       "add-reaction": "Добавить реакцию",
       "configured-reactions": "Настроенные реакции",
-      "double-click-edit-description": "Разрешить пользователям открывать редактирование заметки, дважды щелкнув заметку.",
-      "editing-title": "Редактирование",
       "reaction-placeholder": "например 👍",
       "reactions-description": "Определите параметры реакции, которые пользователи могут применять к заметкам.",
       "remove-reaction": "Удалить реакцию"
@@ -455,26 +591,166 @@
       "label": "Мой аккаунт"
     },
     "preference": {
-      "default-memo-visibility": "Видимость записей по умолчанию",
-      "label": "Настройки",
-      "theme": "Тема",
       "appearance-description": "Выберите, как выглядит приложение и какой язык оно использует для вашей учетной записи.",
       "appearance-title": "Появление",
+      "default-memo-visibility": "Видимость записей по умолчанию",
       "default-memo-visibility-description": "Видимость применяется ко вновь созданным заметкам, если она не изменена в редакторе.",
+      "device-description": "Настройки чтения и редактирования, хранящиеся только в этом браузере. В вашей учётной записи они не сохраняются.",
+      "device-title": "Это устройство",
+      "double-click-edit": "Редактировать двойным щелчком",
+      "double-click-edit-description": "Открывайте свои заметки в редакторе двойным щелчком.",
+      "label": "Настройки",
       "language-description": "Немедленно обновляет язык интерфейса и сохраняет его в вашей учетной записи.",
+      "link-preview-description": "Показывать карточку предпросмотра под голыми ссылками везде, где отображаются заметки.",
       "memo-defaults-description": "Установите настройки по умолчанию, используемые при создании новых заметок.",
       "memo-defaults-title": "Памятка по умолчанию",
-      "theme-description": "Немедленно применяет выбранную тему на этом устройстве.",
       "save-media-metadata": "Сохранять метаданные медиафайлов",
       "save-media-metadata-description": "Для будущих загрузок сохранять доступные сведения о камере, времени и месте съёмки, размерах изображения и основные сведения о видео. Эти метаданные доступны всем, кто может просматривать вложение. Существующие вложения не изменяются.",
+      "theme-description": "Немедленно применяет выбранную тему на этом устройстве.",
+      "theme": "Тема",
       "uploads-privacy-description": "Управляйте конфиденциальными сведениями, отправляемыми вместе с загружаемыми медиафайлами.",
-      "uploads-privacy-title": "Загрузки и конфиденциальность"
+      "uploads-privacy-title": "Загрузки и конфиденциальность",
+      "theme-system": "Как в системе",
+      "theme-system-short": "Системная",
+      "theme-light": "Светлая",
+      "theme-dark": "Тёмная",
+      "theme-paper": "Бумага"
+    },
+    "editor": {
+      "label": "Редактор",
+      "markdown-mode-description": "Создавайте и редактируйте заметки как текст Markdown вместо форматированного текста."
     },
     "memo-view": {
       "create": "Создать представление",
       "delete-confirm": "Вы уверены, что хотите удалить представление `{{title}}`?",
       "delete-success": "Представление `{{title}}` успешно удалено",
-      "change-icon": "Изменить значок представления"
+      "change-icon": "Изменить значок представления",
+      "page-description": "Создавайте многоразовые представления с полями, операторами, функциями времени и сопоставлением тегов. Начните с примеров и проверьте выражение перед сохранением.",
+      "edit": "Редактировать представление",
+      "form-description": "Назовите представление и задайте выражение фильтра заметок, которое оно будет применять.",
+      "title-placeholder": "Закреплённые, Недавние заметки, Работа",
+      "filter-help": "Объединяйте выражения с помощью {{and}}, {{or}} и {{not}}. Поля времени — это метки времени: используйте {{now}}, {{duration}}, {{timestamp}} и методы доступа, например {{year}}. Теги поддерживают {{sets}}, а {{size}} возвращает длину.",
+      "validate": "Проверить",
+      "all": "Все представления",
+      "loading": "Загрузка представлений…",
+      "load-failed": "Не удалось загрузить представления.",
+      "empty-title": "Представлений пока нет",
+      "empty-description": "Сохраните фильтр, чтобы быстро возвращаться к нужным заметкам.",
+      "examples-title": "Примеры выражений",
+      "fields-title": "Поддерживаемые поля",
+      "title-filter-required": "Название и фильтр не могут быть пустыми",
+      "filter-valid": "Выражение фильтра выглядит корректным",
+      "create-success": "Представление создано",
+      "update-success": "Представление обновлено",
+      "examples": {
+        "pinned": {
+          "title": "Закреплённые",
+          "description": "Только закреплённые заметки."
+        },
+        "recent": {
+          "title": "Недавние заметки",
+          "description": "Заметки, созданные за последний час."
+        },
+        "public": {
+          "title": "Публичные заметки",
+          "description": "Только публичные заметки."
+        },
+        "project-tags": {
+          "title": "Теги проекта",
+          "description": "Точное совпадение с одним или несколькими тегами."
+        },
+        "untagged": {
+          "title": "Без тегов",
+          "description": "Заметки без тегов."
+        },
+        "archive-tree": {
+          "title": "Дерево архива",
+          "description": "Совпадение иерархических тегов по префиксу."
+        },
+        "unassigned": {
+          "title": "Вне пространств",
+          "description": "Заметки, не размещённые ни в одном пространстве."
+        },
+        "one-space": {
+          "title": "В одном пространстве",
+          "description": "Заметки в пространстве. Используйте ID пространства из его URL или настроек."
+        },
+        "open-tasks": {
+          "title": "Открытые задачи",
+          "description": "Заметки с невыполненными задачами."
+        },
+        "links-or-code": {
+          "title": "Ссылки или код",
+          "description": "Заметки со ссылками или блоками кода."
+        },
+        "no-location": {
+          "title": "Без местоположения",
+          "description": "Заметки без прикреплённого местоположения."
+        },
+        "with-attachments": {
+          "title": "С вложениями",
+          "description": "Заметки хотя бы с одним прикреплённым файлом."
+        },
+        "photos": {
+          "title": "Фото",
+          "description": "Заметки с изображением в тексте или в виде прикреплённого файла."
+        },
+        "content-search": {
+          "title": "Поиск по содержимому",
+          "description": "Поиск текста в содержимом заметок."
+        },
+        "starts-with": {
+          "title": "Начинается с",
+          "description": "Заметки, текст которых начинается с заданной строки (также endsWith)."
+        },
+        "regex": {
+          "title": "Регулярное выражение",
+          "description": "Сопоставление содержимого с регулярным выражением."
+        },
+        "all-tags-complete": {
+          "title": "Все теги завершены",
+          "description": "Каждый тег оканчивается на -done (только заметки с тегами)."
+        },
+        "one-project-tag": {
+          "title": "Один тег проекта",
+          "description": "Ровно один тег удовлетворяет предикату."
+        },
+        "any-tags": {
+          "title": "Любой из этих тегов",
+          "description": "Теги пересекаются с заданным набором."
+        },
+        "exact-tags": {
+          "title": "Ровно эти теги",
+          "description": "Отмечены ровно этим набором тегов, без лишних."
+        },
+        "year-2024": {
+          "title": "Заметки за 2024",
+          "description": "Фильтр по календарному году."
+        },
+        "weekend": {
+          "title": "Заметки выходных",
+          "description": "Созданы в воскресенье или субботу (0 = воскресенье)."
+        },
+        "long": {
+          "title": "Длинные заметки",
+          "description": "Заметки длиннее 280 символов."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Конфигурация",
+      "description": "Ресурсы, заданные файлами конфигурации. Чтобы изменить их, отредактируйте файл и примените его; остальная часть экземпляра по-прежнему редактируется здесь.",
+      "managed-by": "Управляется конфигурацией",
+      "managed-tooltip": "Задано в {{source}}. Чтобы изменить это, отредактируйте файл и примените его.",
+      "resource": "Ресурс",
+      "source": "Файл",
+      "managed-fields": "Управляемые поля",
+      "whole-resource": "Все поля",
+      "ignored-fields": "Редактируется здесь",
+      "serial": "Серийный номер",
+      "last-apply": "Последнее применение",
+      "applied-by": "Применил",
+      "nothing-managed": "Конфигурация не применялась. Всё настраивается здесь."
     },
     "sso": {
       "authorization-endpoint": "Конечная точка авторизации",
@@ -535,7 +811,9 @@
       "scopes-description": "Разделяйте области пробелами. Большинству провайдеров нужен лишь небольшой набор, например доступ к профилю или электронной почте.",
       "template-description": "Начните с предустановки поставщика, затем настройте учетные данные и конечные точки для своего клиента.",
       "unlink-success": "Отключен {{name}}.",
-      "update-sso-description": "Просмотрите конфигурацию поставщика, затем сохраните поля, которые должны измениться."
+      "update-sso-description": "Просмотрите конфигурацию поставщика, затем сохраните поля, которые должны измениться.",
+      "invalid-config": "Недопустимая конфигурация поставщика удостоверений.",
+      "provider-id-placeholder": "напр. github, okta-corp"
     },
     "storage": {
       "accesskey": "Ключ доступа",
@@ -583,9 +861,9 @@
       "customize-server": {
         "description": "Описание",
         "icon-url": "URL иконки",
-        "title": "Настроить сервер"
+        "title": "Настроить сервер",
+        "dialog-description": "Настройте внешний вид и параметры вашего экземпляра."
       },
-      "enable-double-click-to-edit": "Редактировать двойным кликом",
       "label": "Система",
       "server-name": "Имя сервера",
       "additional-script-description": "Внедрите JavaScript на каждую веб-страницу. Используйте только проверенный код.",
@@ -595,38 +873,47 @@
       "custom-code-title": "Пользовательский код"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1094,9 @@
       "review-existing": "Уже в вашей учетной записи",
       "review-exported": "Экспортировано пользователем",
       "review-memos": "Заметки в файле",
-      "review-new": "Будет создано"
+      "review-new": "Будет создано",
+      "export-admin-only": "Экспортировать заметки могут только администраторы. Запросите файл экспорта у администратора.",
+      "export-busy": "Уже выполняется другой экспорт. Повторите попытку чуть позже."
     },
     "spaces": {
       "general": "Общие",
@@ -893,7 +1182,8 @@
   },
   "tooltip": {
     "link-memo": "Связать заметку",
-    "select-location": "Местоположение"
+    "select-location": "Местоположение",
+    "link-memo-description": "Найдите и выберите заметку для связи"
   },
   "demo": {
     "banner-description": "Изменения носят временный характер и могут быть сброшены.",
@@ -982,7 +1272,12 @@
     "loading": "Загрузка заметок…",
     "new-here": "Написать здесь",
     "saved-outside-filter": "Сохранено. Эта заметка находится за пределами текущих результатов карты.",
-    "open-memo": "Открыть заметку"
+    "open-memo": "Открыть заметку",
+    "open-in-google-maps": "Открыть в Google Maps",
+    "location-description": "Выберите место на карте или введите координаты вручную",
+    "latitude": "Широта",
+    "longitude": "Долгота",
+    "place-placeholder": "Сначала выберите точку."
   },
   "calendar": {
     "new-memo-on-day": "Новая заметка в этот день",
@@ -1040,5 +1335,102 @@
     "name-placeholder": "например, Продукт",
     "spaces": "Пространства",
     "switch": "Сменить пространство"
+  },
+  "welcome": {
+    "title": "Добро пожаловать в Memos",
+    "headline": "Простые заметки для повседневных мыслей.",
+    "intro-write": "Одно предложение может быть целой заметкой.",
+    "intro-keep": "Каждая заметка остаётся в том дне, когда вы её написали.",
+    "intro-share": "Вы решаете, что останется личным.",
+    "write": "Писать",
+    "write-sub": "Одно предложение может быть целой заметкой.",
+    "no-title": "Без заголовка",
+    "no-title-text": "Заметка начинается с самой мысли. Заголовок заполнять не нужно.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown придаёт словам структуру, когда она вам нужна.",
+    "attach": "Прикрепить",
+    "attach-text": "Изображения, файлы, аудио и место добавляются через ＋.",
+    "keep": "Хранить",
+    "keep-sub": "Каждая заметка остаётся в том дне, когда вы её написали.",
+    "calendar-text": "Календарь ведёт назад к любому дню.",
+    "tags-text": "Слово после # становится тегом, а тег фильтрует хронологию.",
+    "views-text": "Собственное представление сохраняет фильтр.",
+    "map-text": "Заметки с местом видны на карте.",
+    "share": "Делиться",
+    "share-sub": "Заметки создаются личными. Вы решаете, чем поделиться и что опубликовать.",
+    "visibility-text": "У каждой заметки своя настройка. Новые создаются личными, только для вас; у публичной есть ссылка, которую может открыть кто угодно.",
+    "spaces-text": "В пространстве участники пишут рядом с вами, и у каждого остаются свои заметки.",
+    "comments": "Комментарии",
+    "comments-text": "Любой, кто видит заметку, может ответить под ней.",
+    "skip": "Пропустить",
+    "next": "Далее",
+    "done": "Готово",
+    "page-of": "Страница {{current}} из {{total}}",
+    "reopen": "Вводное руководство",
+    "reopen-note": "Четыре экрана, которые новая учётная запись видит первыми.",
+    "sample": {
+      "today": "Сегодня, 10:42",
+      "today-early": "Сегодня, 9:18",
+      "yesterday": "Вчера, 15:20",
+      "comment-age": "2 ч",
+      "memo-preview": "Более простой первый экран. Одно поле, затем предпросмотр.",
+      "memo-release": "Перед следующим релизом",
+      "task-sketch": "Набросать первый экран",
+      "task-polish": "Доработать предпросмотр",
+      "write-lead": "Первый шаг пусть будет небольшим.",
+      "write-strong": "Подробности показываем",
+      "write-tail": "тогда, когда они нужны.",
+      "write-task": "Написать короткий список изменений",
+      "view": "Незавершённые задачи",
+      "space": "Продукт",
+      "share-memo": "Попробуем показать результат до того, как просить людей регистрироваться.",
+      "comment": "Поддерживаю. Убедил именно предпросмотр.",
+      "tag-design": "дизайн",
+      "tag-project": "проект",
+      "tag-reading": "чтение",
+      "tag-ideas": "идеи"
+    }
+  },
+  "error": {
+    "title": "Что-то пошло не так",
+    "description": "Произошла непредвиденная ошибка. Возможно, это связано с проблемой сети или ошибкой в приложении.",
+    "description-update": "Произошла непредвиденная ошибка. Возможно, это связано с проблемой сети или обновлением приложения. Обычно помогает перезагрузка.",
+    "details": "Подробности ошибки",
+    "reload": "Перезагрузить приложение",
+    "not-found": "Запрашиваемая страница не найдена.",
+    "permission-denied": "Доступ запрещён",
+    "too-many-requests": "Слишком много запросов. Повторите попытку через {{wait}}.",
+    "wait-seconds": "{{count}} с",
+    "wait-minutes": "{{count}} мин",
+    "wait-hours": "{{count}} ч",
+    "challenge-required": "Пройдите проверку и повторите попытку.",
+    "quota-memo-count": "Достигнут лимит в {{limit}} заметок. Удалите заметки, чтобы создать новые.",
+    "quota-storage": "Эта загрузка превысит лимит хранилища в {{limit}}. Сейчас используется {{usage}}.",
+    "quota-upload": "Этот файл превышает лимит в {{limit}} на файл.",
+    "quota-memo-content": "Эта заметка превышает лимит в {{limit}} на заметку. Сократите текст, чтобы сохранить её.",
+    "quota-generic": "Достигнут лимит использования.",
+    "sign-in-failed": "Не удалось войти.",
+    "sign-up-failed": "Не удалось зарегистрироваться",
+    "authenticate-failed": "Не удалось пройти аутентификацию.",
+    "update-profile-failed": "Не удалось обновить профиль",
+    "unlink-identity-failed": "Не удалось отвязать поставщика удостоверений.",
+    "link-identity-failed": "Не удалось начать привязку аккаунта. Попробуйте ещё раз."
+  },
+  "attachment-preview": {
+    "title": "Просмотр вложения",
+    "description": "Окно просмотра вложений. Нажмите Escape, чтобы закрыть, используйте стрелки влево и вправо для переключения элементов, а изображения масштабируйте кнопками, колесом мыши, двойным касанием или жестом сведения пальцев.",
+    "close": "Закрыть просмотр",
+    "previous": "Предыдущий элемент",
+    "next": "Следующий элемент",
+    "reset-zoom": "Сбросить масштаб",
+    "image-alt": "Просмотр изображения {{index}} из {{count}}",
+    "live-photo-alt": "Просмотр живого фото {{index}} из {{count}}",
+    "play-live-photo": "Наведите курсор или нажмите, чтобы воспроизвести живое фото"
+  },
+  "audio-player": {
+    "seek": "Перемотка {{name}}",
+    "back": "Назад на {{seconds}} секунд",
+    "forward": "Вперёд на {{seconds}} секунд",
+    "speed": "Скорость воспроизведения {{rate}}x"
   }
 }

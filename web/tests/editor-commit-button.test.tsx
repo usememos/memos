@@ -1,10 +1,10 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
+import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
 
-vi.mock("@/components/MemoEditor/Toolbar/InsertMenu", () => ({ default: () => null }));
-vi.mock("@/components/MemoEditor/Toolbar/AudienceMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/InsertMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/AudienceMenu", () => ({ default: () => null }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 let dispatchSaving: ((saving: boolean) => void) | undefined;
@@ -12,7 +12,14 @@ let dispatchSaving: ((saving: boolean) => void) | undefined;
 const Toolbar = () => {
   const { actions, dispatch } = useEditorContext();
   dispatchSaving = (saving) => dispatch(actions.setLoading("saving", saving));
-  return <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} onInsertImages={vi.fn()} />;
+  return (
+    <EditorToolbar
+      onSave={vi.fn()}
+      onAudioRecorderClick={vi.fn()}
+      sourceMode={{ isSourceMode: false, onToggle: vi.fn() }}
+      onInsertImages={vi.fn()}
+    />
+  );
 };
 
 const renderToolbar = (content: string) => {
@@ -37,14 +44,14 @@ describe("EditorToolbar commit button", () => {
     act(() => button.focus());
     const tooltip = await waitFor(
       () => {
-        const popup = document.querySelector('[data-slot="tooltip-content"]');
+        const popup = document.querySelector(".mu-tooltip-popup");
         expect(popup).not.toBeNull();
         return popup!;
       },
       { timeout: 2000 },
     );
     expect(tooltip).toHaveTextContent("editor.save");
-    expect(tooltip.querySelector("kbd")).not.toBeNull();
+    expect(tooltip.querySelector(".mu-tooltip-shortcut")).toHaveTextContent("Enter");
   });
 
   it("keeps the same button mounted while saving", () => {
@@ -54,6 +61,7 @@ describe("EditorToolbar commit button", () => {
     act(() => dispatchSaving?.(true));
 
     expect(screen.getByRole("button")).toBe(button);
-    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button).toHaveAttribute("aria-disabled", "true");
   });
 });

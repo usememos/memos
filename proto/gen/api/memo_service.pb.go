@@ -362,7 +362,10 @@ type ListMemosRequest struct {
 	//	  supports == and comparisons against null, e.g. space != null),
 	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
 	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
-	//	has_location (bool; true when the memo has a location attached).
+	//	has_location (bool; true when the memo has a location attached),
+	//	has_attachments (bool; true when a file is attached to the memo),
+	//	has_image (bool; true when the content contains a Markdown image or an
+	//	  image file is attached).
 	//
 	// Note: the time fields here are created_ts / updated_ts, which differ from
 	// the create_time / update_time names used by order_by.
@@ -2252,8 +2255,10 @@ type Memo_Property struct {
 	HasTaskList bool `protobuf:"varint,4,opt,name=has_task_list,json=hasTaskList,proto3" json:"has_task_list,omitempty"`
 	// Whether the content contains an unchecked task.
 	HasIncompleteTasks bool `protobuf:"varint,5,opt,name=has_incomplete_tasks,json=hasIncompleteTasks,proto3" json:"has_incomplete_tasks,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Whether the content contains a Markdown image.
+	HasInlineImage bool `protobuf:"varint,6,opt,name=has_inline_image,json=hasInlineImage,proto3" json:"has_inline_image,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Memo_Property) Reset() {
@@ -2321,6 +2326,13 @@ func (x *Memo_Property) GetHasIncompleteTasks() bool {
 	return false
 }
 
+func (x *Memo_Property) GetHasInlineImage() bool {
+	if x != nil {
+		return x.HasInlineImage
+	}
+	return false
+}
+
 // MemoRef identifies a memo in a relation.
 type MemoRelation_MemoRef struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2382,7 +2394,7 @@ var File_api_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\b\n" +
+	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\b\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
 	"\acreator\x18\x02 \x01(\tB\x16\xe0A\x03\xfaA\x10\n" +
@@ -2408,13 +2420,14 @@ const file_api_memo_service_proto_rawDesc = "" +
 	"\vcreate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"updateTime\x1a\xac\x01\n" +
+	"updateTime\x1a\xd6\x01\n" +
 	"\bProperty\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
 	"\bhas_link\x18\x02 \x01(\bR\ahasLink\x12\x19\n" +
 	"\bhas_code\x18\x03 \x01(\bR\ahasCode\x12\"\n" +
 	"\rhas_task_list\x18\x04 \x01(\bR\vhasTaskList\x120\n" +
-	"\x14has_incomplete_tasks\x18\x05 \x01(\bR\x12hasIncompleteTasks:.\xeaA+\n" +
+	"\x14has_incomplete_tasks\x18\x05 \x01(\bR\x12hasIncompleteTasks\x12(\n" +
+	"\x10has_inline_image\x18\x06 \x01(\bR\x0ehasInlineImage:.\xeaA+\n" +
 	"\x0ememos.api/Memo\x12\fmemos/{memo}*\x05memos2\x04memoB\b\n" +
 	"\x06_spaceB\v\n" +
 	"\t_locationB\t\n" +

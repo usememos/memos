@@ -4,8 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -87,8 +85,9 @@ func (d *DB) DeleteUserSettings(ctx context.Context, delete *store.DeleteUserSet
 }
 
 func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PATQueryResult, error) {
-	// Simplified query: fetch all PERSONAL_ACCESS_TOKENS rows and search in Go
-	// This matches SQLite/MySQL behavior and avoids PostgreSQL's strict JSONB errors
+	// Fetch every PERSONAL_ACCESS_TOKENS row and match in Go. Filtering with
+	// PostgreSQL's JSON operators raises errors on rows whose value is not the
+	// expected shape, which would block every user's token at once.
 	query := `
 		SELECT
 			user_id,
@@ -109,13 +108,20 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 		var tokensJSON string
 
 		if err := rows.Scan(&userID, &tokensJSON); err != nil {
-			continue // Skip malformed rows
+			return nil, err
 		}
 
-		// Try to unmarshal - skip if invalid JSON
+		// Only a row whose raw text carries the hash can match. Skipping the rest
+		// before decoding keeps one user's corrupt setting from blocking every
+		// other user's token, while a corrupt row that does carry the hash surfaces
+		// as an error instead of a miss.
+		if !strings.Contains(tokensJSON, tokenHash) {
+			continue
+		}
+
 		patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
-			continue // Skip invalid JSON
+			return nil, err
 		}
 
 		// Search for matching token hash
@@ -133,5 +139,5 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 		return nil, err
 	}
 
-	return nil, errors.New("PAT not found")
+	return nil, nil
 }

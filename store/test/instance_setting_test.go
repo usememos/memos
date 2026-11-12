@@ -174,7 +174,7 @@ func TestInstanceAccessSetting(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_ACCESS.String()})
+	stored, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_ACCESS.String()})
 	require.NoError(t, err)
 	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, stored.GetAccessSetting().AccessMode)
 
@@ -344,7 +344,7 @@ func TestDeleteInstanceStorageSettingInvalidatesCaches(t *testing.T) {
 	err = ts.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
 	require.NoError(t, err)
 
-	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+	stored, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
 	require.NoError(t, err)
 	require.Nil(t, stored)
 	defaultSetting, err := ts.GetInstanceStorageSetting(ctx)

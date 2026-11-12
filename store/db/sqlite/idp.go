@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -10,12 +11,21 @@ import (
 )
 
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
+	return createIdentityProvider(ctx, d.db, create)
+}
+
+// CreateIdentityProviderTx is CreateIdentityProvider within tx.
+func (*DB) CreateIdentityProviderTx(ctx context.Context, tx *sql.Tx, create *store.IdentityProvider) (*store.IdentityProvider, error) {
+	return createIdentityProvider(ctx, tx, create)
+}
+
+func createIdentityProvider(ctx context.Context, q dbExecutor, create *store.IdentityProvider) (*store.IdentityProvider, error) {
 	placeholders := []string{"?", "?", "?", "?", "?"}
 	fields := []string{"`uid`", "`name`", "`type`", "`identifier_filter`", "`config`"}
 	args := []any{create.UID, create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
 
 	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ") RETURNING `id`"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
+	if err := q.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
 		return nil, err
 	}
 
@@ -24,6 +34,15 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 }
 
 func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
+	return listIdentityProviders(ctx, d.db, find)
+}
+
+// ListIdentityProvidersTx is ListIdentityProviders within tx.
+func (*DB) ListIdentityProvidersTx(ctx context.Context, tx *sql.Tx, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
+	return listIdentityProviders(ctx, tx, find)
+}
+
+func listIdentityProviders(ctx context.Context, q dbExecutor, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := find.ID; v != nil {
 		where, args = append(where, fmt.Sprintf("id = $%d", len(args)+1)), append(args, *v)
@@ -32,7 +51,7 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 		where, args = append(where, fmt.Sprintf("uid = $%d", len(args)+1)), append(args, *v)
 	}
 
-	rows, err := d.db.QueryContext(ctx, `
+	rows, err := q.QueryContext(ctx, `
 		SELECT
 			id,
 			uid,
@@ -75,6 +94,15 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 }
 
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
+	return updateIdentityProvider(ctx, d.db, update)
+}
+
+// UpdateIdentityProviderTx is UpdateIdentityProvider within tx.
+func (*DB) UpdateIdentityProviderTx(ctx context.Context, tx *sql.Tx, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
+	return updateIdentityProvider(ctx, tx, update)
+}
+
+func updateIdentityProvider(ctx context.Context, q dbExecutor, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
 	set, args := []string{}, []any{}
 	if v := update.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, *v)
@@ -95,7 +123,7 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 	`
 	var identityProvider store.IdentityProvider
 	var typeString string
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+	if err := q.QueryRowContext(ctx, stmt, args...).Scan(
 		&identityProvider.ID,
 		&identityProvider.UID,
 		&identityProvider.Name,
@@ -110,9 +138,18 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 }
 
 func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {
+	return deleteIdentityProvider(ctx, d.db, delete)
+}
+
+// DeleteIdentityProviderTx is DeleteIdentityProvider within tx.
+func (*DB) DeleteIdentityProviderTx(ctx context.Context, tx *sql.Tx, delete *store.DeleteIdentityProvider) error {
+	return deleteIdentityProvider(ctx, tx, delete)
+}
+
+func deleteIdentityProvider(ctx context.Context, q dbExecutor, delete *store.DeleteIdentityProvider) error {
 	where, args := []string{"id = ?"}, []any{delete.ID}
 	stmt := `DELETE FROM idp WHERE ` + strings.Join(where, " AND ")
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	result, err := q.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}

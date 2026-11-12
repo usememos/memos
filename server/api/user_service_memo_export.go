@@ -33,8 +33,12 @@ type memoExportData struct {
 
 // WriteMemoExport writes a Memos export file holding every memo the user
 // created, including comments and archived memos, and the attachments linked
-// to them. Nothing another user created is included.
-func (s *APIService) WriteMemoExport(ctx context.Context, user *store.User, w io.Writer) error {
+// to them. Nothing another user created is included. exportTime is recorded
+// in the manifest; callers name the download after the same instant. Every
+// memo row the archive needs is loaded before the first byte is written, so a
+// failure loading them surfaces before the response is committed. Attachment
+// content is read while writing; a failure there truncates the archive.
+func (s *APIService) WriteMemoExport(ctx context.Context, user *store.User, w io.Writer, exportTime time.Time) error {
 	if user == nil {
 		return errors.New("user is required")
 	}
@@ -43,7 +47,7 @@ func (s *APIService) WriteMemoExport(ctx context.Context, user *store.User, w io
 		return err
 	}
 
-	exportTime := time.Now().UTC().Truncate(time.Second)
+	exportTime = exportTime.UTC().Truncate(time.Second)
 	writer := memoexport.NewWriter(w, exportTime)
 	if err := writer.WriteManifest(&memoexport.Manifest{
 		Generator:  memoexport.Generator{Name: "memos", Version: s.Profile.Version},

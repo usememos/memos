@@ -13,9 +13,9 @@ import (
 // TestUsageLimitRefusalOnBothTransports proves the quota refusal contract on
 // the wire: HTTP 429 with an ErrorInfo of reason QUOTA_EXCEEDED and a
 // QuotaFailure, and no Retry-After or RateLimit fields, because waiting does
-// not lift a usage limit. It also proves that the usageLimits and user usage
-// routes reach their handlers. Admins are limited like everyone else, so the
-// first user is enough.
+// not lift a usage limit. It also proves that the usage limits setting and
+// the user usage routes reach their handlers. Admins are limited like
+// everyone else, so the first user is enough.
 func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://127.0.0.1"})
@@ -38,30 +38,33 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		return resp
 	}
 
-	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-memos", token, map[string]any{
-		"metric": "MEMO_COUNT",
-		"value":  "1",
+	status, body := inst.do(t, http.MethodPatch, "/api/instance/settings/USAGE_LIMITS", token, map[string]any{
+		"usageLimitsSetting": map[string]any{
+			"limits": []map[string]any{{"allUsers": true, "memoCount": "1", "memoContentBytes": "8192", "uploadBytes": "33554432"}},
+		},
 	})
-	require.Equal(t, http.StatusOK, status, "creating a usage limit should succeed: %s", body)
+	require.Equal(t, http.StatusOK, status, "replacing the usage limits should succeed: %s", body)
 
-	status, body = inst.do(t, http.MethodGet, "/api/usageLimits", token, nil)
+	status, body = inst.do(t, http.MethodGet, "/api/instance/settings/USAGE_LIMITS", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
-	var listed struct {
-		UsageLimits []struct {
-			Name   string `json:"name"`
-			Metric string `json:"metric"`
-			Value  string `json:"value"`
-		} `json:"usageLimits"`
+	var setting struct {
+		Name               string `json:"name"`
+		UsageLimitsSetting struct {
+			Limits []struct {
+				AllUsers         bool   `json:"allUsers"`
+				MemoCount        string `json:"memoCount"`
+				MemoContentBytes string `json:"memoContentBytes"`
+				UploadBytes      string `json:"uploadBytes"`
+			} `json:"limits"`
+		} `json:"usageLimitsSetting"`
 	}
-	require.NoError(t, json.Unmarshal(body, &listed))
-	require.Len(t, listed.UsageLimits, 3)
-	require.Equal(t, "usageLimits/default-memos", listed.UsageLimits[0].Name)
-	require.Equal(t, "usageLimits/default-memo-content", listed.UsageLimits[1].Name)
-	require.Equal(t, "MEMO_CONTENT_BYTES", listed.UsageLimits[1].Metric)
-	require.Equal(t, "8192", listed.UsageLimits[1].Value)
-	require.Equal(t, "usageLimits/default-upload", listed.UsageLimits[2].Name)
-	require.Equal(t, "UPLOAD_BYTES", listed.UsageLimits[2].Metric)
-	require.Equal(t, "33554432", listed.UsageLimits[2].Value)
+	require.NoError(t, json.Unmarshal(body, &setting))
+	require.Equal(t, "instance/settings/USAGE_LIMITS", setting.Name)
+	require.Len(t, setting.UsageLimitsSetting.Limits, 1)
+	require.True(t, setting.UsageLimitsSetting.Limits[0].AllUsers)
+	require.Equal(t, "1", setting.UsageLimitsSetting.Limits[0].MemoCount)
+	require.Equal(t, "8192", setting.UsageLimitsSetting.Limits[0].MemoContentBytes)
+	require.Equal(t, "33554432", setting.UsageLimitsSetting.Limits[0].UploadBytes)
 
 	inst.createMemo(t, token, "first", "the only memo the limit allows")
 
@@ -69,18 +72,18 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	status, body = inst.do(t, http.MethodGet, "/api/"+userName+"/usage", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	var usage struct {
-		Name           string `json:"name"`
-		MemoCount      string `json:"memoCount"`
-		MemoCountLimit struct {
-			Value      string `json:"value"`
-			UsageLimit string `json:"usageLimit"`
-		} `json:"memoCountLimit"`
+		Name      string `json:"name"`
+		MemoCount string `json:"memoCount"`
+		Limits    struct {
+			MemoCount string `json:"memoCount"`
+		} `json:"limits"`
+		LimitIndex int `json:"limitIndex"`
 	}
 	require.NoError(t, json.Unmarshal(body, &usage))
 	require.Equal(t, userName+"/usage", usage.Name)
 	require.Equal(t, "1", usage.MemoCount)
-	require.Equal(t, "1", usage.MemoCountLimit.Value)
-	require.Equal(t, "usageLimits/default-memos", usage.MemoCountLimit.UsageLimit)
+	require.Equal(t, "1", usage.Limits.MemoCount)
+	require.Equal(t, 0, usage.LimitIndex)
 
 	requireNoWaitHeaders := func(resp *http.Response) {
 		t.Helper()
@@ -117,7 +120,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		case "type.googleapis.com/google.rpc.ErrorInfo":
 			require.Equal(t, "QUOTA_EXCEEDED", detail.Reason)
 			require.Equal(t, "memos.api", detail.Domain)
-			require.Equal(t, map[string]string{"metric": "MEMO_COUNT", "limit": "1", "usage": "1", "usage_limit": "usageLimits/default-memos"}, detail.Metadata)
+			require.Equal(t, map[string]string{"metric": "MEMO_COUNT", "limit": "1", "usage": "1"}, detail.Metadata)
 		case "type.googleapis.com/google.rpc.QuotaFailure":
 			require.Len(t, detail.Violations, 1)
 			require.Equal(t, userName, detail.Violations[0].Subject)
@@ -146,9 +149,4 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		connectTypes = append(connectTypes, detail.Type)
 	}
 	require.ElementsMatch(t, []string{"google.rpc.ErrorInfo", "google.rpc.QuotaFailure"}, connectTypes)
-
-	// Deleting the limit lifts the refusal at once: checks skip the cache.
-	status, body = inst.do(t, http.MethodDelete, "/api/usageLimits/default-memos", token, nil)
-	require.Equal(t, http.StatusOK, status, "%s", body)
-	inst.createMemo(t, token, "second", "allowed again")
 }

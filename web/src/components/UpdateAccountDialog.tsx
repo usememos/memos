@@ -1,19 +1,16 @@
 import { Code } from "@connectrpc/connect";
+import { Button, Dialog, Field, Input, Textarea, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useFieldErrors } from "@/hooks/useFieldErrors";
 import { useUpdateUser } from "@/hooks/useUserQueries";
 import { convertFileToBase64 } from "@/lib/browser";
 import { handleError, hasConnectCode } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -33,6 +30,7 @@ interface State {
 
 function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
+  const fieldErrors = useFieldErrors<"avatar" | "username">();
   const currentUser = useCurrentUser();
   const { setCurrentUser } = useAuth();
   const { generalSetting: instanceGeneralSetting } = useInstance();
@@ -64,17 +62,18 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     if (files && files.length > 0) {
       const image = files[0];
       if (image.size > 2 * 1024 * 1024) {
-        toast.error("Max file size is 2MB");
+        fieldErrors.set("avatar", t("setting.account.avatar-too-large"));
         return;
       }
       try {
         const base64 = await convertFileToBase64(image);
+        fieldErrors.clear("avatar");
         setPartialState({
           avatarUrl: base64,
         });
       } catch (error) {
         console.error(error);
-        toast.error(`Failed to convert image to base64`);
+        fieldErrors.set("avatar", t("setting.account.avatar-unreadable"));
       }
     }
   };
@@ -86,6 +85,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   };
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldErrors.clear("username");
     setPartialState({
       username: e.target.value as string,
     });
@@ -101,7 +101,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     });
   };
 
-  const handleDescriptionChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChanged = (e: { target: { value: string } }) => {
     setState((state) => {
       return {
         ...state,
@@ -112,7 +112,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
 
   const handleSaveBtnClick = async () => {
     if (state.username === "") {
-      toast.error(t("message.fill-all"));
+      fieldErrors.set("username", t("message.fill-all"));
       return;
     }
 
@@ -145,7 +145,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
         updateMask,
       });
       setCurrentUser(updatedUser);
-      toast.success(t("message.update-succeed"));
+      toast.add({ title: t("message.update-succeed"), type: "success" });
       onSuccess?.();
       onOpenChange(false);
     } catch (error: unknown) {
@@ -153,81 +153,91 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
         setEmailError(t("setting.account.email-in-use"));
         return;
       }
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Update account",
       });
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("setting.account.update-information")}</DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>{t("setting.account.update-information")}</Dialog.Title>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row items-center gap-2">
-            <Label>{t("common.avatar")}</Label>
-            <label className="relative cursor-pointer hover:opacity-80">
-              <UserAvatar className="w-10 h-10" avatarUrl={state.avatarUrl} name={state.displayName || currentUser?.username} />
-              <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
-            </label>
-            {state.avatarUrl && (
-              <XIcon
-                className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-80"
-                onClick={() =>
-                  setPartialState({
-                    avatarUrl: "",
-                  })
-                }
-              />
-            )}
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="username">
+          <Field.Root invalid={!!fieldErrors.errors.avatar}>
+            <div className="flex flex-row items-center gap-2">
+              <span className="mu-label">{t("common.avatar")}</span>
+              <label className="relative cursor-pointer hover:opacity-80">
+                <UserAvatar className="w-10 h-10" avatarUrl={state.avatarUrl} name={state.displayName || currentUser?.username} />
+                <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
+              </label>
+              {state.avatarUrl && (
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        aria-label={t("common.clear")}
+                        icon={<XIcon />}
+                        onClick={() => setPartialState({ avatarUrl: "" })}
+                      />
+                    }
+                  />
+                  <Tooltip.Popup>{t("common.clear")}</Tooltip.Popup>
+                </Tooltip.Root>
+              )}
+            </div>
+            {fieldErrors.errors.avatar && <Field.Error match>{fieldErrors.errors.avatar}</Field.Error>}
+          </Field.Root>
+          <Field.Root invalid={!!fieldErrors.errors.username}>
+            <Field.Label>
               {t("common.username")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.username-note")})</span>
-            </Label>
+              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.username-note")})</span>
+            </Field.Label>
             <Input
               id="username"
               value={state.username}
               onChange={handleUsernameChanged}
               disabled={instanceGeneralSetting.disallowChangeUsername}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="displayName">
+            {fieldErrors.errors.username && <Field.Error match>{fieldErrors.errors.username}</Field.Error>}
+          </Field.Root>
+          <Field.Root>
+            <Field.Label>
               {t("common.nickname")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.nickname-note")})</span>
-            </Label>
+              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.nickname-note")})</span>
+            </Field.Label>
             <Input
               id="displayName"
               value={state.displayName}
               onChange={handleDisplayNameChanged}
               disabled={instanceGeneralSetting.disallowChangeNickname}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">
+          </Field.Root>
+          <Field.Root invalid={!!emailError}>
+            <Field.Label>
               {t("common.email")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.email-note")})</span>
-            </Label>
-            <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} aria-invalid={emailError ? true : undefined} />
-            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">{t("common.description")}</Label>
+              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.email-note")})</span>
+            </Field.Label>
+            <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} />
+            {emailError && <Field.Error match>{emailError}</Field.Error>}
+          </Field.Root>
+          <Field.Root>
+            <Field.Label>{t("common.description")}</Field.Label>
             <Textarea id="description" rows={2} value={state.description} onChange={handleDescriptionChanged} />
-          </div>
+          </Field.Root>
         </div>
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSaveBtnClick}>{t("common.save")}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="primary" onClick={handleSaveBtnClick}>
+            {t("common.save")}
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

@@ -247,8 +247,8 @@ func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
 	setting := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
 	store.NormalizeInstanceStorageSetting(setting)
 
-	// The registry may be rebuilt without preserving IDs (deployment file,
-	// restored backup); a dangling reference must fall back to the namespace
+	// The registry may be rebuilt without preserving IDs (restored backup,
+	// rollback round-trip); a dangling reference must fall back to the namespace
 	// chain instead of permanently orphaning the attachment.
 	resolved, err := store.ResolveStorage(setting, "s3-dangling", nil)
 	require.NoError(t, err)

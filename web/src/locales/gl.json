@@ -6,7 +6,6 @@
     "api-docs": "API Documentos",
     "api-docs-note": "Referencia de REST e gRPC",
     "build": "Compilación",
-    "commit": "Commit",
     "demo": "Demostración",
     "description": "Un espazo de código aberto e autoaloxado para as túas notas, ideas e pensamentos cotiáns.",
     "distribution": "Distribución",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Non se puido completar o inicio de sesión",
     "create-your-account": "Crea a túa conta",
+    "hide-password": "Agochar o contrasinal",
+    "incorrect-credentials": "Nome de usuario ou contrasinal incorrectos.",
     "new-password": "Novo contrasinal",
     "repeat-new-password": "Repite o novo contrasinal",
+    "show-password": "Amosar o contrasinal",
     "sign-in-tip": "Xa tes unha conta?",
     "sign-up-tip": "Aínda non tes unha conta?",
     "admin-sign-in": "Inicio de sesión do administrador",
-    "admin-sign-in-tip": "O inicio de sesión con contrasinal permanece dispoñible para os administradores.",
     "back-to-sign-in": "Volver ao inicio de sesión",
     "continue-with": "Continuar con {{provider}}",
     "create-admin-account": "Crear conta de administrador",
-    "explore-public-memos": "Explorar as notas públicas nesta instancia",
-    "first-run": "Primeira execución",
     "setup-description": "Crear a conta de administrador para esta instancia.",
-    "setup-note": "Esta conta posúe a configuración da instancia, os membros e os provedores de identidade.",
     "setup-title": "Configurar a túa instancia",
     "signin-unavailable-description": "O inicio de sesión con contrasinal está desactivado e non hai ningún provedor de identidade configurado. Pídelle ao teu administrador que active un método de inicio de sesión.",
     "signin-unavailable-title": "O inicio de sesión non está dispoñible",
-    "signup-unavailable-description": "As contas con contrasinal están desactivadas e non hai ningún provedor de identidade configurado. Pídelle ao teu administrador que che dea acceso.",
-    "signup-unavailable-title": "O rexistro non está dispoñible",
-    "signups-closed-description": "As novas contas están desactivadas nesta instancia. Ponte en contacto co teu administrador se necesitas acceso.",
-    "signups-closed-title": "Os rexistros están pechados",
-    "sso-signup-tip": "Inicia sesión cun provedor a continuación para crear a túa conta.",
-    "welcome-back": "Benvido/a de novo."
+    "signups-closed-description": "As novas contas están desactivadas nesta instancia. Ponte en contacto co teu administrador se necesitas acceso."
   },
   "common": {
     "about": "Sobre",
@@ -103,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referida por",
     "referencing": "Referindo",
-    "relations": "Relacións",
     "resources": "Recursos",
     "restore": "Recuperar",
     "role": "Rol",
@@ -139,7 +132,24 @@
     "resize-panel": "Cambiar tamaño do panel",
     "resize-sidebar": "Cambiar tamaño da barra lateral",
     "sign-in-to-memos": "Iniciar sesión en Memos",
-    "view-all": "Ver todo"
+    "open-navigation": "Abrir a navegación",
+    "navigation": "Navegación",
+    "primary-navigation": "Principal",
+    "download": "Descargar",
+    "download-name": "Descargar {{name}}",
+    "open-name": "Abrir {{name}}",
+    "preview-name": "Vista previa de {{name}}",
+    "no-content": "Sen contido",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "retry": "Tentar de novo",
+    "docs": "Documentación",
+    "calendar-for-month": "Calendario de {{month}}",
+    "date-at-time": "{{date}} ás {{time}}",
+    "selected-location": "Localización seleccionada",
+    "choose-location": "Escolle unha localización",
+    "unknown-error": "Erro descoñecido",
+    "error-occurred": "Produciuse un erro"
   },
   "locale-picker": {
     "no-language-feedback": "Non se atopou o idioma? Enviar comentarios"
@@ -150,6 +160,7 @@
     "any-thoughts": "O que pensas...",
     "exit-focus-mode": "Saír do modo sen distraccións",
     "focus-mode": "Modo Sen distraccións",
+    "markdown-mode": "Modo Markdown",
     "insert-menu": {
       "add-location": "Engadir localización",
       "link-memo": "Nota de ligazón",
@@ -158,9 +169,50 @@
       "image-upload-failed": "Non se puideron cargar algunhas imaxes. Téntao de novo ou garda os ficheiros cargados como anexos.",
       "image-upload-stopped": "Detívose a subida de imaxes {{completed}}/{{total}}",
       "insert-image": "Inserir imaxe",
+      "drawing": "Debuxo",
       "keep-as-attachments": "Gardar como anexos",
       "uploading-inline-image": "Subindo ao contido",
       "uploading-images": "Subindo imaxes {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Novo debuxo",
+      "edit": "Editar debuxo",
+      "tools": "Ferramentas",
+      "tool-select": "Seleccionar",
+      "tool-pen": "Lapis",
+      "tool-eraser": "Goma",
+      "tool-rectangle": "Rectángulo",
+      "tool-ellipse": "Elipse",
+      "tool-arrow": "Frecha",
+      "tool-text": "Texto",
+      "style": "Cor e grosor",
+      "color": "Cor",
+      "width": "Grosor",
+      "width-thin": "Fino",
+      "width-medium": "Medio",
+      "width-thick": "Groso",
+      "color-ink": "Tinta",
+      "color-gray": "Gris",
+      "color-red": "Vermello",
+      "color-orange": "Laranxa",
+      "color-green": "Verde",
+      "color-teal": "Verde azulado",
+      "color-blue": "Azul",
+      "color-violet": "Violeta",
+      "undo": "Desfacer",
+      "redo": "Refacer",
+      "zoom-to-fit": "Axustar á pantalla",
+      "done": "Feito",
+      "discard-title": "Descartar este debuxo?",
+      "discard-description": "Aínda non se engadiu á nota.",
+      "discard-edit-title": "Descartar os cambios?",
+      "discard-edit-description": "O debuxo queda como estaba antes de abrilo.",
+      "keep-drawing": "Seguir debuxando",
+      "discard": "Descartar",
+      "open-failed": "Non se puido abrir o debuxo. Téntao de novo.",
+      "export-failed": "Non se puido gardar o debuxo. Téntao de novo.",
+      "image-failed": "Non se puido engadir a imaxe ao debuxo.",
+      "saved-without-drawing": "A nota gardouse, pero o debuxo non. Garda de novo para tentalo outra vez."
     },
     "no-changes-detected": "Non se detectaron cambios",
     "save": "Gardar",
@@ -182,22 +234,22 @@
     },
     "format": {
       "code-block": "Bloque de código",
-      "heading": "Título",
       "paragraph": "Parágrafo",
       "heading-1": "Título 1",
       "heading-2": "Título 2",
       "heading-3": "Título 3",
+      "heading-4": "Título 4",
       "bold": "Negriña",
       "italic": "Cursiva",
       "strikethrough": "Riscado",
       "bullet-list": "Viñeta lista",
       "ordered-list": "Lista numerada",
       "task-list": "Lista de tarefas pendentes",
-      "link": "Ligazón",
-      "more": "Máis formato"
+      "link": "Ligazón"
     },
     "comment": "Comentario",
-    "formatting-toolbar": "Barra de ferramentas de formato",
+    "footnotes": "Notas ao pé",
+    "back-to-reference": "Volver á referencia",
     "new-memo": "Nova nota",
     "saved": "Gardada",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "Gardar en curso",
       "unsupported-attachment-image-url": "URL da imaxe do anexo non compatible: {{url}}",
       "wait-for-upload": "Agardar a que se complete a subida"
-    }
+    },
+    "blocks": {
+      "task": "Tarefa",
+      "quote": "Cita",
+      "callout": "Destacado",
+      "callout-note": "Nota",
+      "callout-tip": "Consello",
+      "callout-important": "Importante",
+      "callout-warning": "Advertencia",
+      "callout-caution": "Precaución",
+      "collapsible-section": "Sección pregable",
+      "table": "Táboa",
+      "divider": "Separador",
+      "no-results": "Sen resultados",
+      "commands": "Comandos",
+      "loading": "Cargando…",
+      "duplicate": "Duplicar",
+      "inline-code": "Código",
+      "link-placeholder": "Pega ou escribe unha ligazón…",
+      "remove-link": "Quitar ligazón",
+      "open-link": "Abrir ligazón",
+      "copy-link": "Copiar ligazón",
+      "edit-link": "Editar ligazón",
+      "emoji": "Emoji",
+      "block-menu": "Abrir o menú do bloque",
+      "list-hint": "Lista",
+      "plain-text": "texto",
+      "add-row-above": "Engadir fila arriba",
+      "add-row-below": "Engadir fila abaixo",
+      "add-column-left": "Engadir columna á esquerda",
+      "add-column-right": "Engadir columna á dereita",
+      "delete-row": "Eliminar fila",
+      "delete-column": "Eliminar columna",
+      "align": "Aliñar",
+      "align-left": "Esquerda",
+      "align-center": "Centro",
+      "align-right": "Dereita",
+      "image-align-left": "Aliñar á esquerda",
+      "image-align-center": "Centrar",
+      "image-align-right": "Aliñar á dereita",
+      "text-style": "Estilo de texto",
+      "image": "Imaxe",
+      "reset-image-size": "Restablecer o tamaño",
+      "alt-text": "Texto alternativo",
+      "alt-text-placeholder": "Describe a imaxe…",
+      "image-unavailable": "Imaxe non dispoñible",
+      "resize-image": "Cambiar o tamaño da imaxe"
+    },
+    "attachments": {
+      "edited": "Editado",
+      "new": "Novo",
+      "remove": "Quitar o anexo",
+      "reorder": "Reordenar {{name}}",
+      "reorder-hint": "Arrastra ou usa as teclas de frecha"
+    },
+    "remove-relation": "Quitar a relación",
+    "remove-location": "Quitar a localización",
+    "recording-unsupported": "Este navegador non admite a gravación de audio.",
+    "microphone-denied": "Denegouse o permiso do micrófono.",
+    "recording-failed": "Non se puido iniciar a gravación de audio."
   },
   "inbox": {
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",
@@ -218,7 +329,16 @@
     "unread": "Sen ler",
     "space-invitation": "convidoute a unirte a un espazo",
     "space-invitation-accepted": "Unícheste a este espazo.",
-    "space-invitation-open": "Abrir espazo"
+    "space-invitation-open": "Abrir espazo",
+    "commented-on-memo": "comentou a túa nota",
+    "mentioned-in-comment": "mencionoute nun comentario",
+    "mentioned-in-memo": "mencionoute nunha nota",
+    "original": "Orixinal:",
+    "memo-label": "Nota:",
+    "comment-heading": "Comentario",
+    "memo-heading": "Nota",
+    "empty-memo": "Nota baleira",
+    "empty-comment": "Comentario baleiro"
   },
   "live-update": {
     "connected": "Actualizacións en directo activas",
@@ -226,11 +346,16 @@
     "disconnected": "As actualizacións en directo non están dispoñibles"
   },
   "memo": {
+    "no-memos-yet": "Aínda non hai notas",
+    "no-matching-memos": "Non hai notas coincidentes",
+    "clear-filters": "Borrar filtros",
     "pinned": "Fixado",
     "click-to-show-sensitive-content": "Preme para mostrar contido NSFW",
     "comment": {
       "self": "Comentarios",
-      "write-a-comment": "Escribe un comentario"
+      "write-a-comment": "Escribe un comentario",
+      "view-all-count_one": "Ver {{count}} comentario",
+      "view-all-count_other": "Ver os {{count}} comentarios"
     },
     "copy-content": "Copiar contido",
     "copy-link": "Copiar ligazón",
@@ -239,10 +364,13 @@
     "delete-confirm-description": "Esta acción non se pode desfacer. Vanse eliminar tamén as ligazóns e referencias.",
     "direction": "Dirección",
     "filters": {
+      "has-attachments": "ten anexos",
       "has-code": "hasCode",
+      "has-image": "ten imaxe",
       "has-link": "hasLink",
       "has-location": "ten localización",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Quitar o filtro"
     },
     "compact-mode": "Modo compacto",
     "link-preview": "Vista previa de ligazóns",
@@ -328,7 +456,9 @@
     "restored-successfully": "Recuperación correcta",
     "succeed-copy-content": "Contido copiado correctamente.",
     "succeed-copy-link": "Ligazón copiada correctamente.",
-    "update-succeed": "Fíxose a actualización"
+    "update-succeed": "Fíxose a actualización",
+    "not-signed-in": "Non iniciaches sesión.",
+    "invalid-datetime": "Data e hora non válidas. Usa o formato 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Non hai memos",
@@ -398,7 +528,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "O teu almacenamento de anexos non está dispoñible.",
-      "email-in-use": "Este correo electrónico xa o usa outra conta."
+      "email-in-use": "Este correo electrónico xa o usa outra conta.",
+      "avatar-too-large": "Escolle unha imaxe de 2 MB ou menos.",
+      "avatar-unreadable": "Non se pode ler esta imaxe. Proba con outro ficheiro."
     },
     "instance": {
       "disallow-change-nickname": "Non permitir cambiar o alcume",
@@ -437,7 +569,11 @@
       "active": "Activo",
       "archived": "Arquivado",
       "member-column": "Membro",
-      "summary-column": "Resumo"
+      "summary-column": "Resumo",
+      "export-memos": "Exportar notas",
+      "username-password-required": "O nome de usuario e o contrasinal non poden estar baleiros",
+      "create-success": "Usuario creado",
+      "update-success": "Usuario actualizado"
     },
     "memo": {
       "label": "Memo",
@@ -445,8 +581,6 @@
       "reactions-required": "A lista de reaccións non debe estar baleira",
       "add-reaction": "Engadir reacción",
       "configured-reactions": "Reaccións configuradas",
-      "double-click-edit-description": "Permite aos usuarios abrir a edición de notas facendo dobre clic nunha nota.",
-      "editing-title": "Edición",
       "reaction-placeholder": "p.ex. 👍",
       "reactions-description": "Define as opcións de reacción que os usuarios poden aplicar ás notas.",
       "remove-reaction": "Eliminar a reacción"
@@ -455,26 +589,166 @@
       "label": "A miña conta"
     },
     "preference": {
-      "default-memo-visibility": "Visibilidade por defecto",
-      "label": "Preferencias",
-      "theme": "Decorado",
       "appearance-description": "Escolle o aspecto da aplicación e o idioma que usa para a túa conta.",
       "appearance-title": "Aparición",
+      "default-memo-visibility": "Visibilidade por defecto",
       "default-memo-visibility-description": "A visibilidade aplícase ás notas recentemente creadas a non ser que se modifique no editor.",
+      "device-description": "Opcións de lectura e edición gardadas só neste navegador. Non se gardan na túa conta.",
+      "device-title": "Este dispositivo",
+      "double-click-edit": "Dobre clic para editar",
+      "double-click-edit-description": "Abre as túas propias notas no editor facendo dobre clic nelas.",
+      "label": "Preferencias",
       "language-description": "Actualiza o idioma da interface inmediatamente e gárdao na túa conta.",
+      "link-preview-description": "Mostrar unha tarxeta de vista previa baixo as ligazóns soltas onde queira que se mostren notas.",
       "memo-defaults-description": "Establece os valores predeterminados utilizados ao redactar novas notas.",
       "memo-defaults-title": "Valores predeterminados da nota",
-      "theme-description": "Aplica o tema seleccionado inmediatamente neste dispositivo.",
       "save-media-metadata": "Gardar metadatos multimedia",
       "save-media-metadata-description": "Para futuras cargas, garda a cámara dispoñible, a hora de captura, a localización, as dimensións da imaxe e os detalles básicos do vídeo. Calquera persoa que poida ver o anexo pode recibir estes metadatos. Os anexos existentes non cambian.",
+      "theme-description": "Aplica o tema seleccionado inmediatamente neste dispositivo.",
+      "theme": "Decorado",
       "uploads-privacy-description": "Controla a información confidencial sobre a privacidade enviada cos medios cargados.",
-      "uploads-privacy-title": "Cargas e privacidade"
+      "uploads-privacy-title": "Cargas e privacidade",
+      "theme-system": "Sincronizar co sistema",
+      "theme-system-short": "Sistema",
+      "theme-light": "Claro",
+      "theme-dark": "Escuro",
+      "theme-paper": "Papel"
+    },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Escribe e edita as notas como texto Markdown en lugar de texto con formato."
     },
     "memo-view": {
       "create": "Crear vista",
       "delete-confirm": "Tes certeza de querer eliminar a vista `{{title}}`?",
       "delete-success": "Eliminouse correctamente a vista `{{title}}`",
-      "change-icon": "Cambiar a icona da vista"
+      "change-icon": "Cambiar a icona da vista",
+      "page-description": "Crea vistas reutilizables con campos, operadores, funcións de tempo e coincidencia de etiquetas. Parte dos exemplos e valida antes de gardar.",
+      "edit": "Editar a vista",
+      "form-description": "Ponlle nome á vista e define a expresión de filtro de notas que debe aplicar.",
+      "title-placeholder": "Fixadas, Notas recentes, Traballo",
+      "filter-help": "Combina expresións con {{and}}, {{or}} e {{not}}. Os campos de tempo son marcas de tempo: usa {{now}}, {{duration}}, {{timestamp}} e accesores como {{year}}. As etiquetas admiten {{sets}} e {{size}} mide a lonxitude.",
+      "validate": "Validar",
+      "all": "Todas as vistas",
+      "loading": "Cargando vistas…",
+      "load-failed": "Non se puideron cargar as vistas.",
+      "empty-title": "Aínda non hai vistas",
+      "empty-description": "Garda un filtro para volver rapidamente ás notas que necesitas.",
+      "examples-title": "Exemplos de expresións",
+      "fields-title": "Campos admitidos",
+      "title-filter-required": "O título e o filtro non poden estar baleiros",
+      "filter-valid": "A expresión de filtro parece válida",
+      "create-success": "Vista creada",
+      "update-success": "Vista actualizada",
+      "examples": {
+        "pinned": {
+          "title": "Fixadas",
+          "description": "Só notas fixadas."
+        },
+        "recent": {
+          "title": "Notas recentes",
+          "description": "Notas creadas na última hora."
+        },
+        "public": {
+          "title": "Notas públicas",
+          "description": "Só notas públicas."
+        },
+        "project-tags": {
+          "title": "Etiquetas de proxecto",
+          "description": "Coincide cunha ou máis etiquetas exactas."
+        },
+        "untagged": {
+          "title": "Sen etiquetas",
+          "description": "Notas sen ningunha etiqueta."
+        },
+        "archive-tree": {
+          "title": "Árbore de arquivo",
+          "description": "Coincide con etiquetas xerárquicas por prefixo."
+        },
+        "unassigned": {
+          "title": "Sen asignar",
+          "description": "Notas que non están en ningún espazo."
+        },
+        "one-space": {
+          "title": "Nun espazo",
+          "description": "Notas situadas nun espazo. Usa o ID do espazo que aparece no seu URL ou na súa configuración."
+        },
+        "open-tasks": {
+          "title": "Tarefas pendentes",
+          "description": "Notas con tarefas sen rematar."
+        },
+        "links-or-code": {
+          "title": "Ligazóns ou código",
+          "description": "Notas que conteñen ligazóns ou bloques de código."
+        },
+        "no-location": {
+          "title": "Sen localización",
+          "description": "Notas sen unha localización anexa."
+        },
+        "with-attachments": {
+          "title": "Con anexos",
+          "description": "Notas con polo menos un ficheiro anexo."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Notas que mostran unha imaxe, no contido ou como ficheiro anexo."
+        },
+        "content-search": {
+          "title": "Busca no contido",
+          "description": "Busca texto dentro do contido das notas."
+        },
+        "starts-with": {
+          "title": "Comeza por",
+          "description": "Notas cuxo contido comeza cun texto (tamén endsWith)."
+        },
+        "regex": {
+          "title": "Coincidencia regex",
+          "description": "Compara o contido cunha expresión regular."
+        },
+        "all-tags-complete": {
+          "title": "Todas as etiquetas completadas",
+          "description": "Todas as etiquetas rematan en -done (só notas con etiquetas)."
+        },
+        "one-project-tag": {
+          "title": "Unha etiqueta de proxecto",
+          "description": "Exactamente unha etiqueta cumpre o predicado."
+        },
+        "any-tags": {
+          "title": "Calquera destas etiquetas",
+          "description": "As etiquetas teñen intersección co conxunto dado."
+        },
+        "exact-tags": {
+          "title": "Exactamente estas etiquetas",
+          "description": "Etiquetadas exactamente con este conxunto, nada máis."
+        },
+        "year-2024": {
+          "title": "Notas de 2024",
+          "description": "Filtra por ano natural."
+        },
+        "weekend": {
+          "title": "Notas da fin de semana",
+          "description": "Creadas en domingo ou sábado (0 = domingo)."
+        },
+        "long": {
+          "title": "Notas longas",
+          "description": "Notas de máis de 280 caracteres."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Configuración",
+      "description": "Recursos definidos por ficheiros de configuración. Edita un ficheiro e aplícao para cambialos; o resto da instancia segue sendo editable aquí.",
+      "managed-by": "Xestionado pola configuración",
+      "managed-tooltip": "Definido en {{source}}. Edita o ficheiro e aplícao para cambialo.",
+      "resource": "Recurso",
+      "source": "Ficheiro",
+      "managed-fields": "Campos xestionados",
+      "whole-resource": "Todos os campos",
+      "ignored-fields": "Editables aquí",
+      "serial": "Número de serie",
+      "last-apply": "Última aplicación",
+      "applied-by": "Aplicado por",
+      "nothing-managed": "Non se aplicou ningunha configuración. Todo se define aquí."
     },
     "sso": {
       "authorization-endpoint": "Punto de acceso para autorización",
@@ -535,7 +809,9 @@
       "scopes-description": "Separa os ámbitos con espazos. A maioría dos provedores só necesitan un pequeno conxunto como o acceso ao perfil ou ao correo electrónico.",
       "template-description": "Comeza a partir dunha configuración predeterminada do provedor e, a continuación, axusta as credenciais e os puntos finais do teu inquilino.",
       "unlink-success": "{{name}} desvinculado.",
-      "update-sso-description": "Revisa a configuración do provedor e, a continuación, garda os campos que deberían cambiar."
+      "update-sso-description": "Revisa a configuración do provedor e, a continuación, garda os campos que deberían cambiar.",
+      "invalid-config": "A configuración do provedor de identidade non é válida.",
+      "provider-id-placeholder": "p. ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Clave de acceso",
@@ -583,9 +859,9 @@
       "customize-server": {
         "description": "Descrición",
         "icon-url": "URL da icona",
-        "title": "Personalizar servidor"
+        "title": "Personalizar servidor",
+        "dialog-description": "Personaliza o aspecto e a configuración da túa instancia."
       },
-      "enable-double-click-to-edit": "Activar dobre pulsación para editar",
       "label": "Sistema",
       "server-name": "Nome do servidor",
       "additional-script-description": "Inxecta JavaScript en cada páxina web. Use só código de confianza.",
@@ -595,38 +871,47 @@
       "custom-code-title": "Código personalizado"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1092,9 @@
       "review-existing": "Xa na túa conta",
       "review-exported": "Exportado por",
       "review-memos": "Memos no ficheiro",
-      "review-new": "Crearase"
+      "review-new": "Crearase",
+      "export-admin-only": "Só os administradores poden exportar notas. Pídelle o teu ficheiro de exportación a un administrador.",
+      "export-busy": "Hai outra exportación en curso. Téntao de novo nun momento."
     },
     "spaces": {
       "general": "Xeral",
@@ -893,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "Ligazón á nota",
-    "select-location": "Localización"
+    "select-location": "Localización",
+    "link-memo-description": "Busca e selecciona unha nota para ligala"
   },
   "demo": {
     "banner-description": "Os cambios son temporais e pódense restablecer.",
@@ -996,7 +1284,12 @@
     "loading": "Cargando notas…",
     "new-here": "Escribir aquí",
     "saved-outside-filter": "Gardado. Esta nota está fóra dos resultados actuais do mapa.",
-    "open-memo": "Abrir nota"
+    "open-memo": "Abrir nota",
+    "open-in-google-maps": "Abrir en Google Maps",
+    "location-description": "Selecciona unha localización no mapa ou introduce as coordenadas manualmente",
+    "latitude": "Latitude",
+    "longitude": "Lonxitude",
+    "place-placeholder": "Primeiro escolle unha posición."
   },
   "calendar": {
     "new-memo-on-day": "Nova nota neste día",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "p. ex. Produto",
     "spaces": "Espazos",
     "switch": "Cambiar espazo"
+  },
+  "welcome": {
+    "title": "Dámosche a benvida a Memos",
+    "headline": "Notas sinxelas para os teus pensamentos de cada día.",
+    "intro-write": "Unha soa frase pode ser un memo enteiro.",
+    "intro-keep": "Cada memo queda co día en que o escribiches.",
+    "intro-share": "Ti escolles o que queda en privado.",
+    "write": "Escribir",
+    "write-sub": "Unha soa frase pode ser un memo enteiro.",
+    "no-title": "Sen título",
+    "no-title-text": "Un memo comeza polo propio pensamento. Non hai ningún título que encher.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown dálle estrutura ás túas palabras cando a queres.",
+    "attach": "Anexar",
+    "attach-text": "Imaxes, ficheiros, audio e un lugar entran por ＋.",
+    "keep": "Gardar",
+    "keep-sub": "Cada memo queda co día en que o escribiches.",
+    "calendar-text": "O calendario leva de volta a calquera día.",
+    "tags-text": "Unha palabra despois de # convértese en etiqueta, e unha etiqueta filtra a cronoloxía.",
+    "views-text": "Unha vista personalizada garda un filtro.",
+    "map-text": "Os memos cun lugar aparecen no mapa.",
+    "share": "Compartir",
+    "share-sub": "Os memos comezan en privado. Ti escolles o que compartir e o que publicar.",
+    "visibility-text": "Cada memo ten o seu propio axuste. Os novos comezan en privado, só para ti; un público ten unha ligazón que calquera pode abrir.",
+    "spaces-text": "Nun espazo, os membros escriben ao teu carón, e cada un conserva os seus propios memos.",
+    "comments": "Comentarios",
+    "comments-text": "Calquera que poida ver un memo pode responder debaixo.",
+    "skip": "Omitir",
+    "next": "Seguinte",
+    "done": "Feito",
+    "page-of": "Páxina {{current}} de {{total}}",
+    "reopen": "Guía de benvida",
+    "reopen-note": "As catro pantallas que unha conta nova ve primeiro.",
+    "sample": {
+      "today": "Hoxe, 10:42",
+      "today-early": "Hoxe, 9:18",
+      "yesterday": "Onte, 15:20",
+      "comment-age": "2 h",
+      "memo-preview": "Unha primeira pantalla máis sinxela. Unha entrada e despois unha vista previa.",
+      "memo-release": "Antes da próxima versión",
+      "task-sketch": "Bosquexar a primeira pantalla",
+      "task-polish": "Pulir a vista previa",
+      "write-lead": "Manter pequeno o primeiro paso.",
+      "write-strong": "Mostrar os detalles",
+      "write-tail": "cando fagan falta.",
+      "write-task": "Escribir un rexistro de cambios breve",
+      "view": "Tarefas pendentes",
+      "space": "Produto",
+      "share-memo": "Probar a mostrar o resultado antes de pedirlle á xente que se rexistre.",
+      "comment": "De acordo. A vista previa foi o que convenceu.",
+      "tag-design": "deseño",
+      "tag-project": "proxecto",
+      "tag-reading": "lectura",
+      "tag-ideas": "ideas"
+    }
+  },
+  "error": {
+    "title": "Algo saíu mal",
+    "description": "Produciuse un erro inesperado. Pode deberse a un problema de rede ou da aplicación.",
+    "description-update": "Produciuse un erro inesperado. Pode deberse a un problema de rede ou a unha actualización da aplicación. Recargar adoita solucionalo.",
+    "details": "Detalles do erro",
+    "reload": "Recargar a aplicación",
+    "not-found": "Non se atopa a páxina que buscas.",
+    "permission-denied": "Permiso denegado",
+    "too-many-requests": "Demasiadas solicitudes. Téntao de novo en {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Completa a verificación e téntao de novo.",
+    "quota-memo-count": "Alcanzaches o teu límite de {{limit}} notas. Elimina notas para crear outras novas.",
+    "quota-storage": "Esta subida superaría o teu límite de almacenamento de {{limit}}. Estás a usar {{usage}}.",
+    "quota-upload": "Este ficheiro supera o teu límite de {{limit}} por ficheiro.",
+    "quota-memo-content": "Esta nota supera o teu límite de {{limit}} por nota. Acurta o contido para gardala.",
+    "quota-generic": "Alcanzaches un límite de uso.",
+    "sign-in-failed": "Non se puido iniciar sesión.",
+    "sign-up-failed": "Non se puido completar o rexistro",
+    "authenticate-failed": "Non se puido autenticar.",
+    "update-profile-failed": "Non se puido actualizar o perfil",
+    "unlink-identity-failed": "Non se puido desvincular o provedor de identidade.",
+    "link-identity-failed": "Non se puido iniciar a vinculación da conta. Téntao de novo."
+  },
+  "attachment-preview": {
+    "title": "Vista previa do anexo",
+    "description": "Diálogo de vista previa de anexos. Preme Escape para pechar, usa as frechas esquerda e dereita para cambiar de elemento e amplía as imaxes cos controis, a roda do rato, un dobre toque ou o xesto de belisco.",
+    "close": "Pechar a vista previa",
+    "previous": "Elemento anterior",
+    "next": "Elemento seguinte",
+    "reset-zoom": "Restablecer o zoom",
+    "image-alt": "Vista previa da imaxe {{index}} de {{count}}",
+    "live-photo-alt": "Vista previa da foto en directo {{index}} de {{count}}",
+    "play-live-photo": "Pasa o cursor ou preme para reproducir a foto en directo"
+  },
+  "audio-player": {
+    "seek": "Desprazarse en {{name}}",
+    "back": "Retroceder {{seconds}} segundos",
+    "forward": "Avanzar {{seconds}} segundos",
+    "speed": "Velocidade de reprodución {{rate}}x"
   }
 }

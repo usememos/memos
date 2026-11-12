@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/state";
-import AudienceMenu from "@/components/MemoEditor/Toolbar/AudienceMenu";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
+import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/edit/state";
+import AudienceMenu from "@/components/MemoEditor/edit/Toolbar/AudienceMenu";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 const spacesQuery = vi.hoisted(() => ({
@@ -14,7 +14,7 @@ const spacesQuery = vi.hoisted(() => ({
   isError: false,
   refetch: vi.fn(),
 }));
-vi.mock("@/components/MemoEditor/Toolbar/InsertMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/InsertMenu", () => ({ default: () => null }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/test" }) }));
 vi.mock("@/hooks/useSpaceQueries", () => ({ useSpaces: () => spacesQuery }));
 
@@ -43,7 +43,7 @@ const openSpaces = async (name: string) => {
 
 const visibilityRows = () =>
   screen
-    .getAllByRole("menuitem")
+    .getAllByRole("menuitemradio")
     .map((item) => item.textContent)
     .filter((text) => text?.startsWith("memo.visibility."));
 
@@ -73,7 +73,9 @@ describe("AudienceMenu visibility", () => {
     render(<AudienceMenu value={Visibility.PRIVATE} space="spaces/work" onChange={vi.fn()} />);
     await openMenu();
 
-    expect(screen.getByRole("menuitem", { name: /memo\.visibility\.space/ })).toHaveTextContent("memo.visibility.space-description(Work)");
+    expect(screen.getByRole("menuitemradio", { name: /memo\.visibility\.space/ })).toHaveTextContent(
+      "memo.visibility.space-description(Work)",
+    );
   });
 
   it("keeps naming the current Members audience even when placement is unavailable", async () => {
@@ -81,7 +83,7 @@ describe("AudienceMenu visibility", () => {
 
     expect(screen.getByRole("button")).toHaveTextContent("memo.visibility.space");
     await openMenu();
-    expect(screen.getByRole("menuitem", { name: /memo\.visibility\.space/ })).toBeInTheDocument();
+    expect(screen.getByRole("menuitemradio", { name: /memo\.visibility\.space/ })).toBeInTheDocument();
   });
 
   it("reports the picked audience", async () => {
@@ -89,7 +91,7 @@ describe("AudienceMenu visibility", () => {
     render(<AudienceMenu value={Visibility.PRIVATE} onChange={onChange} />);
     await openMenu();
 
-    fireEvent.click(screen.getByRole("menuitem", { name: /memo\.visibility\.public/ }));
+    fireEvent.click(screen.getByRole("menuitemradio", { name: /memo\.visibility\.public/ }));
 
     expect(onChange).toHaveBeenCalledWith(Visibility.PUBLIC);
   });
@@ -198,7 +200,16 @@ it("removing a Members memo from its Space falls back to Private without discard
   function Toolbar() {
     getState = useEditorContext().getState;
     const space = useEditorSelector((state) => state.metadata.space);
-    return <EditorToolbar space={space} canChooseSpace onSave={vi.fn()} onAudioRecorderClick={vi.fn()} onInsertImages={vi.fn()} />;
+    return (
+      <EditorToolbar
+        space={space}
+        canChooseSpace
+        onSave={vi.fn()}
+        onAudioRecorderClick={vi.fn()}
+        sourceMode={{ isSourceMode: false, onToggle: vi.fn() }}
+        onInsertImages={vi.fn()}
+      />
+    );
   }
   const initial = createInitialState();
   initial.content = "Keep this draft";

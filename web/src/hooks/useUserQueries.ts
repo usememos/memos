@@ -12,6 +12,7 @@ import {
   UserNotification,
   UserNotification_Status,
   UserSetting,
+  UserSetting_EditorSetting,
   UserSetting_GeneralSetting,
   UserSetting_Key,
   UserSettingSchema,
@@ -305,6 +306,31 @@ export function useUpdateUserGeneralSetting(currentUserName?: string) {
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
       return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
+    },
+  });
+}
+
+// Hook to update the user's EDITOR setting
+export function useUpdateUserEditorSetting(currentUserName?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (editorSetting: UserSetting_EditorSetting) => {
+      if (!currentUserName) {
+        throw new Error("No current user");
+      }
+
+      const userSetting = create(UserSettingSchema, {
+        name: buildUserSettingName(currentUserName, UserSetting_Key.EDITOR),
+        value: { case: "editorSetting", value: editorSetting },
+      });
+      return await userServiceClient.updateUserSetting({
+        userSetting,
+        updateMask: create(FieldMaskSchema, { paths: ["source_mode"] }),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });

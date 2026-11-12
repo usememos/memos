@@ -12,7 +12,7 @@ const Placeholder = ({ scene, message, className }: PlaceholderProps) => (
     <div className="w-full max-w-80 shrink-0">
       <InkIllustration scene={scene} />
     </div>
-    <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+    <p className="mt-1 mu-body text-mu-ink-muted">{message}</p>
   </div>
 );
 

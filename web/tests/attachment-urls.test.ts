@@ -10,6 +10,24 @@ const baseAttachment = {
   type: "image/png",
 } as Attachment;
 
+describe("attachment filename URL paths", () => {
+  const builders = [
+    { name: "download", build: getAttachmentUrl, query: [] },
+    { name: "thumbnail", build: getAttachmentThumbnailUrl, query: [["thumbnail", "true"]] },
+    { name: "motion clip", build: getAttachmentMotionClipUrl, query: [["motion", "true"]] },
+  ];
+
+  for (const { name, build, query } of builders) {
+    it.each(["100% complete.txt", "ảnh#1?.png", "literal%20name.txt"])(`keeps %s as a filename in the ${name} URL`, (filename) => {
+      const url = new URL(build({ ...baseAttachment, filename } as Attachment));
+
+      expect(decodeURIComponent(url.pathname.split("/").at(-1)!)).toBe(filename);
+      expect(url.hash).toBe("");
+      expect([...url.searchParams.entries()]).toEqual(query);
+    });
+  }
+});
+
 // Regression tests for #6128: share-mode thumbnails/motion clips must keep the share token on externalLink.
 describe("attachment URL builders in share mode", () => {
   it("appends thumbnail=true to an externalLink that carries a share token", () => {

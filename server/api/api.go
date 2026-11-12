@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,11 +12,11 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/labstack/echo/v5"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/core/notification"
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/linkmeta"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/ratelimit"
@@ -91,6 +92,7 @@ type APIService struct {
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
+	attachmentReplaces  attachmentReplaceLocks
 	memoImports         memoImports
 }
 
@@ -134,8 +136,8 @@ func newGatewayMarshaler() *runtime.HTTPBodyMarshaler {
 	}
 }
 
-// RegisterGateway registers the gRPC-Gateway and Connect handlers with the given Echo instance.
-func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
+// NewHandler serves REST, Connect, and SSE with shared authentication policies.
+func (s *APIService) NewHandler(ctx context.Context) (http.Handler, error) {
 	// Shared authorizer: one source of truth for authentication and anonymous-access
 	// policy, used by both the gRPC-Gateway middleware and the Connect interceptor.
 	authorizer := NewAuthorizer(s.Store, s.Secret).WithRateLimiter(s.RateLimiter)
@@ -146,7 +148,7 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 	// instead so the policy check actually runs on this transport.
 	routeResolver, err := newGatewayRouteResolver()
 	if err != nil {
-		return errors.Wrap(err, "failed to build gateway route resolver")
+		return nil, errors.Wrap(err, "failed to build gateway route resolver")
 	}
 
 	gatewayAuthMiddleware := func(next runtime.HandlerFunc) runtime.HandlerFunc {
@@ -192,37 +194,29 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 		runtime.WithIncomingHeaderMatcher(gatewayIncomingHeaderMatcher),
 	)
 	if err := apipb.RegisterInstanceServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterAuthServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterUserServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterMemoServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterSpaceServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterAttachmentServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterAIServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
 	if err := apipb.RegisterIdentityProviderServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
+		return nil, err
 	}
-	gwGroup := echoServer.Group("")
-	// Register SSE endpoint with same CORS as rest of /api.
-	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
-	handler := echo.WrapHandler(gwMux)
-
-	gwGroup.Any("/api/*", handler)
-	gwGroup.Any("/file/*", handler)
-	gwGroup.Any("/api/v1/*", removedAPIVersionHandler(false))
 
 	// Connect handlers for browser clients (replaces grpc-web).
 	logStacktraces := s.Profile.Demo
@@ -240,14 +234,31 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 			return []connect.HandlerOption{connect.WithReadMaxBytes(int(requestBodyLimit(spec.Procedure)))}
 		}))
 
-	connectGroup := echoServer.Group("")
-	connectGroup.Any("/memos.api.*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(r.URL.Path))
-		connectMux.ServeHTTP(w, r)
-	})))
-	connectGroup.Any("/memos.api.v1.*", removedAPIVersionHandler(true))
-
-	return nil
+	// Prefixes within a path segment (memos.api.*) are dispatched explicitly;
+	// ServeMux wildcards match complete segments only.
+	sseMux := http.NewServeMux()
+	RegisterSSERoutes(sseMux, s.SSEHub, s.Store, s.Secret)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestPath := r.URL.Path
+		if r.URL.RawPath != "" {
+			requestPath = r.URL.RawPath
+		}
+		switch {
+		case requestPath == "/api/sse" && r.Method == http.MethodGet:
+			sseMux.ServeHTTP(w, r)
+		case strings.HasPrefix(requestPath, "/api/v1/"):
+			removedAPIVersionHandler(false).ServeHTTP(w, r)
+		case strings.HasPrefix(requestPath, "/memos.api.v1."):
+			removedAPIVersionHandler(true).ServeHTTP(w, r)
+		case strings.HasPrefix(requestPath, "/memos.api."):
+			r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(r.URL.Path))
+			connectMux.ServeHTTP(w, r)
+		case strings.HasPrefix(requestPath, "/api/") || strings.HasPrefix(requestPath, "/file/"):
+			gwMux.ServeHTTP(w, r)
+		default:
+			httphandler.NotFound(w, r)
+		}
+	}), nil
 }
 
 // removedAPIMessage tells clients of the removed v1 API where it went.
@@ -258,13 +269,13 @@ const removedAPIMessage = "API v1 has been removed. Use /api/... for REST and /m
 // memos.api.v1 routes with 410 Gone, in the error body shape each transport's
 // clients decode. It exists for one release so old clients fail with a
 // pointer to the migration; delete it in the release after.
-func removedAPIVersionHandler(connectProtocol bool) echo.HandlerFunc {
-	return func(c *echo.Context) error {
+func removedAPIVersionHandler(connectProtocol bool) http.Handler {
+	return httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
 		if connectProtocol {
-			return c.JSON(http.StatusGone, map[string]string{"code": connect.CodeUnimplemented.String(), "message": removedAPIMessage})
+			return httphandler.JSON(w, http.StatusGone, map[string]string{"code": connect.CodeUnimplemented.String(), "message": removedAPIMessage})
 		}
-		return c.JSON(http.StatusGone, map[string]any{"code": int(codes.Unimplemented), "message": removedAPIMessage})
-	}
+		return httphandler.JSON(w, http.StatusGone, map[string]any{"code": int(codes.Unimplemented), "message": removedAPIMessage})
+	})
 }
 
 func setAPIResponseNoStoreHeaders(header http.Header) {
@@ -313,7 +324,7 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 			w.Header().Add(key, value)
 		}
 	}
-	body, marshalErr := protojson.Marshal(st.Proto())
+	body, marshalErr := (protojson.MarshalOptions{EmitDefaultValues: true}).Marshal(st.Proto())
 	if marshalErr != nil {
 		http.Error(w, `{"code": 13, "message": "failed to encode error"}`, http.StatusInternalServerError)
 		return
@@ -325,9 +336,9 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 
 func writeGatewayAuthorizationError(w http.ResponseWriter, err error) {
 	if errors.Is(err, ErrUnauthenticated) {
-		http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+		writeGatewayStatusError(w, status.Error(codes.Unauthenticated, "authentication required"))
 		return
 	}
 	slog.Error("failed to resolve API access policy", "error", err)
-	http.Error(w, `{"code": 13, "message": "failed to resolve API access policy"}`, http.StatusInternalServerError)
+	writeGatewayStatusError(w, status.Error(codes.Internal, "failed to resolve API access policy"))
 }

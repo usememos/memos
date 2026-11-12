@@ -1,17 +1,13 @@
 import { Code, ConnectError } from "@connectrpc/connect";
+import { Button, Dialog, Field, Input, Textarea } from "@usememos/ui";
 import { ChevronDownIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import SpaceIconPicker from "@/components/SpaceIconPicker";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCreateSpace } from "@/hooks/useSpaceQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import type { Space, Space_Icon } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -70,11 +66,11 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
         setSpaceUidConflict(true);
         setShowCustomId(true);
       }
-      handleError(error, toast.error, { context: "Create space" });
+      handleError(error, showErrorToast, { context: "Create space" });
       return;
     }
 
-    toast.success(t("space.create-success"));
+    toast.add({ title: t("space.create-success"), type: "success" });
     onOpenChange(false);
     onCreated?.(space);
   };
@@ -87,15 +83,15 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent size="sm">
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>{t("space.create")}</DialogTitle>
-            <DialogDescription>{t("space.create-description")}</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-2">
-            <Label htmlFor="space-title">{t("common.name")}</Label>
+          <Dialog.Title>{t("space.create")}</Dialog.Title>
+          <Dialog.Description>{t("space.create-description")}</Dialog.Description>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="space-title" className="mu-label">
+              {t("common.name")}
+            </label>
             <div className="flex items-center gap-2">
               <SpaceIconPicker value={icon} onChange={setIcon} disabled={createSpace.isPending} />
               <Input
@@ -108,8 +104,8 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
               />
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="space-description">{t("common.description")}</Label>
+          <Field.Root>
+            <Field.Label>{t("common.description")}</Field.Label>
             <Textarea
               id="space-description"
               value={description}
@@ -117,23 +113,23 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
               placeholder={t("space.description-placeholder")}
               className="min-h-20 resize-none"
             />
-          </div>
+          </Field.Root>
           <div>
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="-mx-2 px-2 text-muted-foreground"
+              className="-mx-2"
               aria-expanded={showCustomId}
               aria-controls="space-custom-uid"
               onClick={() => setShowCustomId((visible) => (hasSpaceUidError ? true : !visible))}
+              icon={<ChevronDownIcon className={cn("transition-transform", showCustomId && "rotate-180")} />}
             >
-              <ChevronDownIcon className={cn("transition-transform", showCustomId && "rotate-180")} />
               {t("space.custom-id-toggle")}
             </Button>
             {showCustomId && (
-              <div id="space-custom-uid" className="mt-2 grid gap-2 rounded-md border bg-muted/30 p-3">
-                <Label htmlFor="space-uid">{t("space.custom-id-label")}</Label>
+              <Field.Root id="space-custom-uid" className="mt-2" invalid={hasSpaceUidError}>
+                <Field.Label>{t("space.custom-id-label")}</Field.Label>
                 <Input
                   id="space-uid"
                   value={spaceUid}
@@ -144,32 +140,29 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
                   maxLength={36}
                   autoComplete="off"
                   spellCheck={false}
-                  aria-invalid={hasSpaceUidError}
-                  aria-describedby="space-uid-help"
-                  className="font-mono text-xs aria-invalid:border-destructive"
+                  className="font-mono"
                 />
-                <p
-                  id="space-uid-help"
-                  role={hasSpaceUidError ? "alert" : undefined}
-                  className={cn("text-xs leading-5", hasSpaceUidError ? "text-destructive" : "text-muted-foreground")}
-                >
-                  {t(!isSpaceUidValid ? "space.custom-id-invalid" : spaceUidConflict ? "space.custom-id-conflict" : "space.custom-id-help")}
-                </p>
-              </div>
+                <Field.Description>{t("space.custom-id-help")}</Field.Description>
+                {hasSpaceUidError && (
+                  <Field.Error match role="alert">
+                    {t(!isSpaceUidValid ? "space.custom-id-invalid" : "space.custom-id-conflict")}
+                  </Field.Error>
+                )}
+              </Field.Root>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{note ?? t("space.creator-admin-note")}</p>
-          <DialogFooter>
+          <p className="mu-caption text-mu-ink-muted">{note ?? t("space.creator-admin-note")}</p>
+          <Dialog.Footer>
             <Button type="button" variant="ghost" disabled={createSpace.isPending} onClick={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>
-            <Button type="submit" disabled={!title.trim() || hasSpaceUidError || createSpace.isPending}>
+            <Button variant="primary" type="submit" disabled={!title.trim() || hasSpaceUidError || createSpace.isPending}>
               {t("common.create")}
             </Button>
-          </DialogFooter>
+          </Dialog.Footer>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

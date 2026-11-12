@@ -1,9 +1,8 @@
-import { LoaderCircleIcon, MessageCircleIcon } from "lucide-react";
-import { type ComponentType, forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react";
-import { loadMemoEditor } from "@/components/MemoEditor/loader";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
+import { Button } from "@usememos/ui";
+import { MessageCircleIcon } from "lucide-react";
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react";
+import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
-import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { extractMemoIdFromName } from "@/lib/resource-names";
@@ -31,8 +30,6 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
     const t = useTranslate();
     const currentUser = useCurrentUser();
     const [showEditor, setShowEditor] = useState(false);
-    const [isEditorLoading, setIsEditorLoading] = useState(false);
-    const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
     const sectionRef = useRef<HTMLDivElement>(null);
 
     const canCreateComment = !!currentUser && memo.state === State.NORMAL;
@@ -42,36 +39,25 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
       setShowEditor(false);
     };
 
-    const preloadEditor = useCallback(() => {
-      void loadMemoEditor().catch(() => undefined);
-    }, []);
+    // The editing session's code loads while the pointer is still on the button.
+    const preloadEditor = useCallback(() => preloadMemoEditing(), []);
 
     const focusMountedEditor = useCallback(() => {
-      const codeMirrorContent = sectionRef.current?.querySelector<HTMLElement>('.cm-content[contenteditable="true"]');
+      const editorRoot = sectionRef.current?.querySelector<HTMLElement>('.memo-editor-root[contenteditable="true"]');
       const fallbackInput = sectionRef.current?.querySelector<HTMLElement>("textarea, input");
-      (codeMirrorContent ?? fallbackInput)?.focus();
+      (editorRoot ?? fallbackInput)?.focus();
     }, []);
 
     const openEditor = useCallback(async () => {
-      if (!canCreateComment || isEditorLoading) {
+      if (!canCreateComment) {
         return;
       }
-      if (showEditor && EditorComponent) {
+      if (showEditor) {
         focusMountedEditor();
         return;
       }
-
-      setIsEditorLoading(true);
-      try {
-        const { default: MemoEditor } = await loadMemoEditor();
-        setEditorComponent(() => MemoEditor);
-        setShowEditor(true);
-      } catch {
-        // Chunk failures are handled by loadWithReload; keep the current UI mounted.
-      } finally {
-        setIsEditorLoading(false);
-      }
-    }, [EditorComponent, canCreateComment, focusMountedEditor, isEditorLoading, showEditor]);
+      setShowEditor(true);
+    }, [canCreateComment, focusMountedEditor, showEditor]);
 
     const scrollIntoView = useCallback(() => {
       sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -81,7 +67,7 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
 
     return (
       <div ref={sectionRef} className="pt-8 pb-16 w-full" data-memo-comments-section>
-        <h2 id={MEMO_COMMENTS_ANCHOR_ID} className="sr-only">
+        <h2 id={MEMO_COMMENTS_ANCHOR_ID} className="mu-visually-hidden">
           {t("memo.comment.self")}
         </h2>
         <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
@@ -90,48 +76,35 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
               <div className="w-full flex flex-row justify-center items-center py-6">
                 <Button
                   variant="ghost"
+                  iconEnd={<MessageCircleIcon />}
                   onPointerEnter={preloadEditor}
                   onFocus={preloadEditor}
                   onClick={openEditor}
-                  disabled={isEditorLoading}
                 >
-                  <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
-                  {isEditorLoading ? (
-                    <LoaderCircleIcon className="ml-2 h-5 w-5 animate-spin text-muted-foreground" />
-                  ) : (
-                    <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
-                  )}
+                  {t("memo.comment.write-a-comment")}
                 </Button>
               </div>
             )
           ) : (
             <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
               <div className="flex flex-row justify-start items-center">
-                <MessageCircleIcon className="w-5 h-auto text-muted-foreground mr-1" />
-                <span className="text-muted-foreground text-sm">{t("memo.comment.self")}</span>
-                <span className="text-muted-foreground text-sm ml-1">({commentCount})</span>
+                <MessageCircleIcon className="mu-icon w-5 h-auto text-mu-ink-muted mr-1" />
+                <span className="text-mu-ink-muted mu-body">{t("memo.comment.self")}</span>
+                {/* The count sits beside the label as a plain number, as it does on a card's comment strip and in the sidebar. */}
+                <span className="text-mu-ink-muted mu-caption tabular-nums ml-1.5">{commentCount}</span>
               </div>
               {showCreateButton && (
-                <Button
-                  variant="ghost"
-                  className="text-muted-foreground"
-                  onPointerEnter={preloadEditor}
-                  onFocus={preloadEditor}
-                  onClick={openEditor}
-                  disabled={isEditorLoading}
-                >
-                  {isEditorLoading && <LoaderCircleIcon className="h-4 w-4 animate-spin" />}
+                <Button variant="ghost" onPointerEnter={preloadEditor} onFocus={preloadEditor} onClick={openEditor}>
                   {t("memo.comment.write-a-comment")}
                 </Button>
               )}
             </div>
           )}
-          {showEditor && EditorComponent && (
+          {showEditor && (
             <div className="w-full mb-2">
-              <EditorComponent
-                cacheKey={`${memo.name}-comment`}
+              <MemoEditor
+                draft={{ parent: memo.name }}
                 placeholder={t("editor.add-your-comment-here")}
-                parentMemoName={memo.name}
                 autoFocus
                 onConfirm={handleCommentCreated}
                 onCancel={() => setShowEditor(false)}
@@ -145,8 +118,12 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
           ))}
           {hasMoreComments && (
             <div className="w-full mt-4 flex justify-center">
-              <Button variant="outline" className="rounded-full px-4" onClick={onLoadMoreComments} disabled={isFetchingMoreComments}>
-                {isFetchingMoreComments && <LoaderCircleIcon className="h-4 w-4 animate-spin" />}
+              <Button
+                variant="neutral"
+                onClick={onLoadMoreComments}
+                loading={isFetchingMoreComments}
+                loadingLabel={t("resource.fetching-data")}
+              >
                 {t(isFetchingMoreComments ? "resource.fetching-data" : "memo.load-more")}
               </Button>
             </div>

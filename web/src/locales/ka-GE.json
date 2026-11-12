@@ -6,7 +6,6 @@
     "api-docs": "API დოკუმენტები",
     "api-docs-note": "REST და gRPC მითითება",
     "build": "აწყობა",
-    "commit": "Commit",
     "demo": "დემო ვერსია",
     "description": "ღია კოდის მქონე, საკუთარ სერვერზე განთავსებული სივრცე თქვენი ჩანაწერების, იდეებისა და ყოველდღიური ფიქრებისთვის.",
     "distribution": "დისტრიბუცია",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "შესვლის დასრულება ვერ მოხერხდა",
     "create-your-account": "შექმენით თქვენი ანგარიში",
+    "hide-password": "პაროლის დამალვა",
+    "incorrect-credentials": "მომხმარებლის სახელი ან პაროლი არასწორია.",
     "new-password": "ახალი პაროლი",
     "repeat-new-password": "გაიმეორეთ ახალი პაროლი",
+    "show-password": "პაროლის ჩვენება",
     "sign-in-tip": "დაქვემდებარებული გაქვთ ანგარიში?",
     "sign-up-tip": "ჯერ არ გაქვთ ანგარიში?",
     "admin-sign-in": "ადმინისტრატორის შესვლა",
-    "admin-sign-in-tip": "პაროლით შესვლა ადმინისტრატორებისთვის ხელმისაწვდომი რჩება.",
     "back-to-sign-in": "დაბრუნება შესვლაზე",
     "continue-with": "გაგრძელება {{provider}}-ით",
     "create-admin-account": "ადმინისტრატორის ანგარიშის შექმნა",
-    "explore-public-memos": "ამ ინსტანციის საჯარო შეტყობინებების დათვალიერება",
-    "first-run": "პირველი გაშვება",
     "setup-description": "ამ ინსტანციისთვის ადმინისტრატორის ანგარიშის შექმნა.",
-    "setup-note": "ამ ანგარიშს აქვს ინსტანციის პარამეტრები, წევრები და იდენტიფიკაციის პროვაიდერები.",
     "setup-title": "თქვენი ინსტანციის დაყენება",
     "signin-unavailable-description": "პაროლით შესვლა გამორთულია და იდენტიფიკაციის პროვაიდერები არ არის კონფიგურირებული. სთხოვეთ თქვენს ადმინისტრატორს ჩართოს შესვლის მეთოდი.",
     "signin-unavailable-title": "შესვლა მიუწვდომელია",
-    "signup-unavailable-description": "პაროლით ანგარიშები გამორთულია და იდენტიფიკაციის პროვაიდერები არ არის კონფიგურირებული. სთხოვეთ თქვენს ადმინისტრატორს წვდომა.",
-    "signup-unavailable-title": "რეგისტრაცია მიუწვდომელია",
-    "signups-closed-description": "ამ ინსტანციაში ახალი ანგარიშები გამორთულია. თუ წვდომა გჭირდებათ, დაუკავშირდით თქვენს ადმინისტრატორს.",
-    "signups-closed-title": "რეგისტრაცია დასრულებულია",
-    "sso-signup-tip": "ანგარიშის შესაქმნელად შედით ქვემოთ მოცემული პროვაიდერის მეშვეობით.",
-    "welcome-back": "კეთილი იყოს თქვენი დაბრუნება."
+    "signups-closed-description": "ამ ინსტანციაში ახალი ანგარიშები გამორთულია. თუ წვდომა გჭირდებათ, დაუკავშირდით თქვენს ადმინისტრატორს."
   },
   "common": {
     "about": "შესახებ",
@@ -103,7 +97,6 @@
     "profile": "პროფილი",
     "referenced-by": "მიუთითებს",
     "referencing": "მითითება",
-    "relations": "კავშირები",
     "resources": "რესურსები",
     "restore": "აღდგენა",
     "role": "როლი",
@@ -139,7 +132,24 @@
     "resize-panel": "პანელის ზომის შეცვლა",
     "resize-sidebar": "გვერდითი ზოლის ზომის შეცვლა",
     "sign-in-to-memos": "შესვლა Memos-ში",
-    "view-all": "ყველას ნახვა"
+    "open-navigation": "ნავიგაციის გახსნა",
+    "navigation": "ნავიგაცია",
+    "primary-navigation": "მთავარი",
+    "download": "ჩამოტვირთვა",
+    "download-name": "{{name}}-ის ჩამოტვირთვა",
+    "open-name": "{{name}}-ის გახსნა",
+    "preview-name": "{{name}}-ის გადახედვა",
+    "no-content": "შიგთავსი არ არის",
+    "previous": "წინა",
+    "next": "შემდეგი",
+    "retry": "ხელახლა ცდა",
+    "docs": "დოკუმენტაცია",
+    "calendar-for-month": "კალენდარი: {{month}}",
+    "date-at-time": "{{date}}, {{time}}",
+    "selected-location": "არჩეული მდებარეობა",
+    "choose-location": "აირჩიეთ მდებარეობა",
+    "unknown-error": "უცნობი შეცდომა",
+    "error-occurred": "მოხდა შეცდომა"
   },
   "locale-picker": {
     "no-language-feedback": "ენა ვერ მოიძებნა? გამოხმაურება"
@@ -150,6 +160,7 @@
     "any-thoughts": "რამე იდეები...",
     "exit-focus-mode": "ფოკუსის რეჟიმიდან გასვლა",
     "focus-mode": "ფოკუსის რეჟიმი",
+    "markdown-mode": "Markdown რეჟიმი",
     "insert-menu": {
       "add-location": "მდებარეობის დამატება",
       "link-memo": "ლინკ შენიშვნა",
@@ -158,9 +169,50 @@
       "image-upload-failed": "ზოგიერთი სურათის ატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა ან შეინახეთ ატვირთული ფაილები დანართებად.",
       "image-upload-stopped": "სურათის ატვირთვა შეჩერდა {{completed}}/{{total}}",
       "insert-image": "სურათის ჩასმა",
+      "drawing": "ნახატი",
       "keep-as-attachments": "დანართებად შენახვა",
       "uploading-inline-image": "კონტენტში ატვირთვა",
       "uploading-images": "სურათების ატვირთვა {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "ახალი ნახატი",
+      "edit": "ნახატის რედაქტირება",
+      "tools": "ხელსაწყოები",
+      "tool-select": "მონიშვნა",
+      "tool-pen": "კალამი",
+      "tool-eraser": "საშლელი",
+      "tool-rectangle": "მართკუთხედი",
+      "tool-ellipse": "ელიფსი",
+      "tool-arrow": "ისარი",
+      "tool-text": "ტექსტი",
+      "style": "ფერი და სისქე",
+      "color": "ფერი",
+      "width": "სისქე",
+      "width-thin": "თხელი",
+      "width-medium": "საშუალო",
+      "width-thick": "სქელი",
+      "color-ink": "მელანი",
+      "color-gray": "ნაცრისფერი",
+      "color-red": "წითელი",
+      "color-orange": "ნარინჯისფერი",
+      "color-green": "მწვანე",
+      "color-teal": "ზღვისფერი",
+      "color-blue": "ლურჯი",
+      "color-violet": "იისფერი",
+      "undo": "გაუქმება",
+      "redo": "გამეორება",
+      "zoom-to-fit": "ფანჯარაში მორგება",
+      "done": "მზადაა",
+      "discard-title": "გსურთ ამ ნახატის უარყოფა?",
+      "discard-description": "ის ჯერ არ დამატებულა მემოში.",
+      "discard-edit-title": "გსურთ ცვლილებების უარყოფა?",
+      "discard-edit-description": "ნახატი დარჩება ისეთი, როგორიც გახსნამდე იყო.",
+      "keep-drawing": "ხატვის გაგრძელება",
+      "discard": "უარყოფა",
+      "open-failed": "ნახატის გახსნა ვერ მოხერხდა. სცადეთ ხელახლა.",
+      "export-failed": "ნახატის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.",
+      "image-failed": "სურათის ნახატში დამატება ვერ მოხერხდა.",
+      "saved-without-drawing": "მემო შენახულია, ნახატი კი — არა. ხელახლა საცდელად ისევ შეინახეთ."
     },
     "no-changes-detected": "ცვლილებები არ აღმოჩენილა",
     "save": "შენახვა",
@@ -183,21 +235,21 @@
     "format": {
       "code-block": "კოდის ბლოკი",
       "link": "ლინკი",
-      "heading": "სათაური",
       "paragraph": "აბზაცი",
       "heading-1": "სათაური 1",
       "heading-2": "სათაური 2",
       "heading-3": "სათაური 3",
+      "heading-4": "სათაური 4",
       "bold": "მუქი შრიფტი",
       "italic": "დახრილი შრიფტი",
       "strikethrough": "გადახაზვა",
       "bullet-list": "პუნქტების სია",
       "ordered-list": "დანომრილი სია",
-      "task-list": "დავალებების სია",
-      "more": "დამატებითი ფორმატირება"
+      "task-list": "დავალებების სია"
     },
     "comment": "კომენტარი",
-    "formatting-toolbar": "ფორმატირების ხელსაწყოთა პანელი",
+    "footnotes": "სქოლიოები",
+    "back-to-reference": "მითითებაზე დაბრუნება",
     "new-memo": "ახალი მემო",
     "saved": "შენახულია",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "შენახვა მიმდინარეობს",
       "unsupported-attachment-image-url": "დანართის სურათის URL, რომელიც არ არის მხარდაჭერილი: {{url}}",
       "wait-for-upload": "დაელოდეთ ატვირთვის დასრულებას"
-    }
+    },
+    "blocks": {
+      "task": "დავალება",
+      "quote": "ციტატა",
+      "callout": "გამოყოფილი ბლოკი",
+      "callout-note": "შენიშვნა",
+      "callout-tip": "რჩევა",
+      "callout-important": "მნიშვნელოვანი",
+      "callout-warning": "გაფრთხილება",
+      "callout-caution": "სიფრთხილე",
+      "collapsible-section": "ჩაკეცვადი სექცია",
+      "table": "ცხრილი",
+      "divider": "გამყოფი",
+      "no-results": "შედეგები არ არის",
+      "commands": "ბრძანებები",
+      "loading": "იტვირთება…",
+      "duplicate": "დუბლირება",
+      "inline-code": "კოდი",
+      "link-placeholder": "ჩასვით ან აკრიფეთ ლინკი…",
+      "remove-link": "ლინკის წაშლა",
+      "open-link": "ლინკის გახსნა",
+      "copy-link": "ლინკის კოპირება",
+      "edit-link": "ლინკის რედაქტირება",
+      "emoji": "ემოჯი",
+      "block-menu": "ბლოკის მენიუს გახსნა",
+      "list-hint": "სია",
+      "plain-text": "ტექსტი",
+      "add-row-above": "მწკრივის დამატება ზემოთ",
+      "add-row-below": "მწკრივის დამატება ქვემოთ",
+      "add-column-left": "სვეტის დამატება მარცხნივ",
+      "add-column-right": "სვეტის დამატება მარჯვნივ",
+      "delete-row": "მწკრივის წაშლა",
+      "delete-column": "სვეტის წაშლა",
+      "align": "სწორება",
+      "align-left": "მარცხნივ",
+      "align-center": "ცენტრში",
+      "align-right": "მარჯვნივ",
+      "image-align-left": "მარცხნივ სწორება",
+      "image-align-center": "ცენტრში სწორება",
+      "image-align-right": "მარჯვნივ სწორება",
+      "text-style": "ტექსტის სტილი",
+      "image": "სურათი",
+      "reset-image-size": "ზომის აღდგენა",
+      "alt-text": "ალტერნატიული ტექსტი",
+      "alt-text-placeholder": "აღწერეთ სურათი…",
+      "image-unavailable": "სურათი მიუწვდომელია",
+      "resize-image": "სურათის ზომის შეცვლა"
+    },
+    "attachments": {
+      "edited": "შესწორებული",
+      "new": "ახალი",
+      "remove": "დანართის წაშლა",
+      "reorder": "{{name}}-ის გადაადგილება",
+      "reorder-hint": "გადაათრიეთ ან გამოიყენეთ ისრიანი ღილაკები"
+    },
+    "remove-relation": "კავშირის წაშლა",
+    "remove-location": "მდებარეობის წაშლა",
+    "recording-unsupported": "ეს ბრაუზერი აუდიოს ჩაწერას არ უჭერს მხარს.",
+    "microphone-denied": "მიკროფონზე წვდომა უარყოფილია.",
+    "recording-failed": "აუდიოს ჩაწერის დაწყება ვერ მოხერხდა."
   },
   "inbox": {
     "failed-to-load": "ინბოქსის ელემენტის ჩატვირთვა ვერ მოხერხდა",
@@ -218,7 +329,16 @@
     "unread": "წაუკითხავი",
     "space-invitation": "-მა მოგიწვიათ სივრცეში გასაწევრიანებლად",
     "space-invitation-accepted": "თქვენ შეუერთდით ამ სივრცეს.",
-    "space-invitation-open": "ღია სივრცე"
+    "space-invitation-open": "ღია სივრცე",
+    "commented-on-memo": "-მა დაწერა კომენტარი თქვენს მემოზე",
+    "mentioned-in-comment": "-მა მოგიხსენიათ კომენტარში",
+    "mentioned-in-memo": "-მა მოგიხსენიათ მემოში",
+    "original": "ორიგინალი:",
+    "memo-label": "მემო:",
+    "comment-heading": "კომენტარი",
+    "memo-heading": "მემო",
+    "empty-memo": "ცარიელი მემო",
+    "empty-comment": "ცარიელი კომენტარი"
   },
   "live-update": {
     "connected": "ცოცხალი განახლებები აქტიურია",
@@ -226,11 +346,16 @@
     "disconnected": "პირდაპირი განახლებები მიუწვდომელია"
   },
   "memo": {
+    "no-memos-yet": "მემოები ჯერ არ არის",
+    "no-matching-memos": "შესაბამისი მემოები არ არის",
+    "clear-filters": "ფილტრების გასუფთავება",
     "pinned": "მიმაგრებულია",
     "click-to-show-sensitive-content": "დააწკაპუნეთ NSFW კონტენტის საჩვენებლად",
     "comment": {
       "self": "კომენტარები",
-      "write-a-comment": "კომენტარის დაწერა"
+      "write-a-comment": "კომენტარის დაწერა",
+      "view-all-count_one": "ყველა {{count}} კომენტარის ნახვა",
+      "view-all-count_other": "ყველა {{count}} კომენტარის ნახვა"
     },
     "copy-content": "კონტენტის კოპირება",
     "copy-link": "ლინკის კოპირება",
@@ -239,10 +364,13 @@
     "delete-confirm-description": "ეს ქმედება შეუქცევადია. დანართები, ლინკები და რეფერენციებიც წაიშლება.",
     "direction": "მიმართულება",
     "filters": {
+      "has-attachments": "აქვს დანართები",
       "has-code": "კოდიარის",
+      "has-image": "აქვს სურათი",
       "has-link": "ლინკიარის",
       "has-location": "აქვს მდებარეობა",
-      "has-task-list": "სიისამოცანებია"
+      "has-task-list": "სიისამოცანებია",
+      "remove": "ფილტრის მოხსნა"
     },
     "compact-mode": "კომპაქტური რეჟიმი",
     "link-preview": "ბმულის გადახედვა",
@@ -328,7 +456,9 @@
     "restored-successfully": "წარმატებით აღდგა",
     "succeed-copy-content": "კონტენტი წარმატებით კოპირდა.",
     "succeed-copy-link": "ლინკი წარმატებით კოპირდა.",
-    "update-succeed": "განახლება წარმატებით დასრულდა"
+    "update-succeed": "განახლება წარმატებით დასრულდა",
+    "not-signed-in": "სისტემაში არ ხართ შესული.",
+    "invalid-datetime": "თარიღი და დრო არასწორია. გამოიყენეთ ფორმატი 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "მემოები ვერ მოიძებნა",
@@ -398,7 +528,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "თქვენი დანართის საცავი მიუწვდომელია.",
-      "email-in-use": "ეს ელ. ფოსტა უკვე გამოიყენება სხვა ანგარიშის მიერ."
+      "email-in-use": "ეს ელ. ფოსტა უკვე გამოიყენება სხვა ანგარიშის მიერ.",
+      "avatar-too-large": "აირჩიეთ არაუმეტეს 2 MB ზომის სურათი.",
+      "avatar-unreadable": "ამ სურათის წაკითხვა ვერ ხერხდება. სცადეთ სხვა ფაილი."
     },
     "instance": {
       "disallow-change-nickname": "მეტსახელის შეცვლის აკრძალვა",
@@ -437,7 +569,11 @@
       "active": "აქტიური",
       "archived": "დაარქივებულია",
       "member-column": "წევრი",
-      "summary-column": "რეზიუმე"
+      "summary-column": "რეზიუმე",
+      "export-memos": "ჩანაწერების ექსპორტი",
+      "username-password-required": "მომხმარებლის სახელი და პაროლი არ შეიძლება იყოს ცარიელი",
+      "create-success": "მომხმარებელი შეიქმნა",
+      "update-success": "მომხმარებელი განახლდა"
     },
     "memo": {
       "label": "მემო",
@@ -445,8 +581,6 @@
       "reactions-required": "რეაქციების სია არ უნდა იყოს ცარიელი",
       "add-reaction": "დაამატეთ რეაქცია",
       "configured-reactions": "კონფიგურირებული რეაქციები",
-      "double-click-edit-description": "მიეცით საშუალება მომხმარებლებს გახსნან შენიშვნების რედაქტირება შენიშვნაზე ორჯერ დაწკაპუნებით.",
-      "editing-title": "რედაქტირება",
       "reaction-placeholder": "მაგ. 👍",
       "reactions-description": "განსაზღვრეთ რეაქციის ვარიანტები, რომლებიც მომხმარებლებს შეუძლიათ მიმართონ შენიშვნებზე.",
       "remove-reaction": "რეაქციის ამოღება"
@@ -455,26 +589,166 @@
       "label": "ჩემი ანგარიში"
     },
     "preference": {
-      "default-memo-visibility": "მემოს ნაგულისხმევი ხილვადობა",
-      "label": "პარამეტრები",
-      "theme": "თემა",
       "appearance-description": "აირჩიეთ, როგორ გამოიყურება აპი და რომელ ენას იყენებს თქვენი ანგარიშისთვის.",
       "appearance-title": "გარეგნობა",
+      "default-memo-visibility": "მემოს ნაგულისხმევი ხილვადობა",
       "default-memo-visibility-description": "ხილვადობა გამოყენებულია ახლად შექმნილ შენიშვნებზე, თუ არ შეიცვალა რედაქტორში.",
+      "device-description": "კითხვისა და რედაქტირების არჩევანი, რომელიც მხოლოდ ამ ბრაუზერში ინახება. თქვენს ანგარიშში არ ინახება.",
+      "device-title": "ეს მოწყობილობა",
+      "double-click-edit": "ორმაგი დაწკაპუნება რედაქტირებისთვის",
+      "double-click-edit-description": "გახსენით საკუთარი ჩანაწერები რედაქტორში ორმაგი დაწკაპუნებით.",
+      "label": "პარამეტრები",
       "language-description": "დაუყოვნებლივ განაახლებს ინტერფეისის ენას და ინახავს თქვენს ანგარიშში.",
+      "link-preview-description": "აჩვენეთ გადახედვის ბარათი შიშველი ბმულების ქვეშ ყველგან, სადაც ჩანაწერები ჩანს.",
       "memo-defaults-description": "დააყენეთ ნაგულისხმევი მნიშვნელობები, რომლებიც გამოიყენება ახალი შენიშვნების შედგენისას.",
       "memo-defaults-title": "Memo ნაგულისხმევი",
-      "theme-description": "არჩეულ თემას დაუყოვნებლივ იყენებს ამ მოწყობილობაზე.",
       "save-media-metadata": "შეინახეთ მედია მეტამონაცემები",
       "save-media-metadata-description": "მომავალი ატვირთვებისთვის შეინახეთ ხელმისაწვდომი კამერა, გადაღების დრო, ადგილმდებარეობა, სურათის ზომები და ვიდეოს ძირითადი დეტალები. ყველას, ვისაც შეუძლია დანართის ნახვა, შეუძლია მიიღოს ეს მეტამონაცემები. არსებული დანართები უცვლელია.",
+      "theme-description": "არჩეულ თემას დაუყოვნებლივ იყენებს ამ მოწყობილობაზე.",
+      "theme": "თემა",
       "uploads-privacy-description": "ატვირთულ მედიასთან ერთად წარდგენილი კონფიდენციალურობისადმი მგრძნობიარე ინფორმაციის კონტროლი.",
-      "uploads-privacy-title": "ატვირთვები და კონფიდენციალურობა"
+      "uploads-privacy-title": "ატვირთვები და კონფიდენციალურობა",
+      "theme-system": "სისტემასთან სინქრონიზაცია",
+      "theme-system-short": "სისტემა",
+      "theme-light": "ღია",
+      "theme-dark": "მუქი",
+      "theme-paper": "ქაღალდი"
+    },
+    "editor": {
+      "label": "რედაქტორი",
+      "markdown-mode-description": "დაწერეთ და დაარედაქტირეთ შენიშვნები Markdown ტექსტად ფორმატირებული ტექსტის ნაცვლად."
     },
     "memo-view": {
       "create": "ხედის შექმნა",
       "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ ხედის `{{title}}` წაშლა?",
       "delete-success": "ხედი `{{title}}` წარმატებით წაიშალა",
-      "change-icon": "ხედის ხატულის შეცვლა"
+      "change-icon": "ხედის ხატულის შეცვლა",
+      "page-description": "შექმენით მრავალჯერადი ხედები ველებით, ოპერატორებით, დროის დამხმარე ფუნქციებით და თეგების დამთხვევით. დაიწყეთ მაგალითებიდან და შენახვამდე შეამოწმეთ.",
+      "edit": "ხედის რედაქტირება",
+      "form-description": "დაარქვით ხედს სახელი და განსაზღვრეთ მემოების ფილტრის გამოსახულება, რომელიც უნდა გამოიყენოს.",
+      "title-placeholder": "მიმაგრებული, ბოლო ჩანაწერები, სამსახური",
+      "filter-help": "გამოსახულებები გააერთიანეთ {{and}}, {{or}} და {{not}} ოპერატორებით. დროის ველები დროის ნიშნულებია — გამოიყენეთ {{now}}, {{duration}}, {{timestamp}} და ისეთი აქსესორები, როგორიცაა {{year}}. თეგები მხარს უჭერს {{sets}}-ს, ხოლო {{size}} სიგრძეს ზომავს.",
+      "validate": "შემოწმება",
+      "all": "ყველა ხედი",
+      "loading": "ხედები იტვირთება…",
+      "load-failed": "ხედების ჩატვირთვა ვერ მოხერხდა.",
+      "empty-title": "ხედები ჯერ არ არის",
+      "empty-description": "შეინახეთ ფილტრი, რომ სწრაფად დაუბრუნდეთ საჭირო მემოებს.",
+      "examples-title": "გამოსახულებების მაგალითები",
+      "fields-title": "მხარდაჭერილი ველები",
+      "title-filter-required": "სათაური და ფილტრი არ შეიძლება იყოს ცარიელი",
+      "filter-valid": "ფილტრის გამოსახულება სწორად გამოიყურება",
+      "create-success": "ხედი შეიქმნა",
+      "update-success": "ხედი განახლდა",
+      "examples": {
+        "pinned": {
+          "title": "მიმაგრებული",
+          "description": "მხოლოდ მიმაგრებული მემოები."
+        },
+        "recent": {
+          "title": "ბოლო ჩანაწერები",
+          "description": "ბოლო ერთ საათში შექმნილი მემოები."
+        },
+        "public": {
+          "title": "საჯარო მემოები",
+          "description": "მხოლოდ საჯარო მემოები."
+        },
+        "project-tags": {
+          "title": "პროექტის თეგები",
+          "description": "ერთი ან რამდენიმე ზუსტი თეგის დამთხვევა."
+        },
+        "untagged": {
+          "title": "თეგის გარეშე",
+          "description": "მემოები ყოველგვარი თეგის გარეშე."
+        },
+        "archive-tree": {
+          "title": "არქივის ხე",
+          "description": "იერარქიული თეგების დამთხვევა პრეფიქსით."
+        },
+        "unassigned": {
+          "title": "მიუკუთვნებელი",
+          "description": "მემოები, რომლებიც არცერთ სივრცეში არ არის."
+        },
+        "one-space": {
+          "title": "ერთ სივრცეში",
+          "description": "სივრცეში განთავსებული მემოები. გამოიყენეთ სივრცის ID მისი URL-იდან ან პარამეტრებიდან."
+        },
+        "open-tasks": {
+          "title": "ღია დავალებები",
+          "description": "მემოები დაუსრულებელი დავალებებით."
+        },
+        "links-or-code": {
+          "title": "ბმულები ან კოდი",
+          "description": "მემოები, რომლებიც შეიცავს ბმულებს ან კოდის ბლოკებს."
+        },
+        "no-location": {
+          "title": "მდებარეობის გარეშე",
+          "description": "მემოები მიმაგრებული მდებარეობის გარეშე."
+        },
+        "with-attachments": {
+          "title": "დანართებით",
+          "description": "მემოები სულ მცირე ერთი მიმაგრებული ფაილით."
+        },
+        "photos": {
+          "title": "ფოტოები",
+          "description": "მემოები, რომლებიც აჩვენებს სურათს შიგთავსში ან მიმაგრებული ფაილის სახით."
+        },
+        "content-search": {
+          "title": "შიგთავსში ძიება",
+          "description": "ტექსტის ძიება მემოს შიგთავსში."
+        },
+        "starts-with": {
+          "title": "იწყება",
+          "description": "მემოები, რომელთა შიგთავსი მოცემული ტექსტით იწყება (არსებობს endsWith-იც)."
+        },
+        "regex": {
+          "title": "Regex დამთხვევა",
+          "description": "შიგთავსის დამთხვევა რეგულარულ გამოსახულებასთან."
+        },
+        "all-tags-complete": {
+          "title": "ყველა თეგი დასრულებულია",
+          "description": "ყველა თეგი მთავრდება -done-ით (მხოლოდ თეგიანი მემოები)."
+        },
+        "one-project-tag": {
+          "title": "ერთი პროექტის თეგი",
+          "description": "პირობას ზუსტად ერთი თეგი აკმაყოფილებს."
+        },
+        "any-tags": {
+          "title": "რომელიმე ამ თეგიდან",
+          "description": "თეგები კვეთს მოცემულ სიმრავლეს."
+        },
+        "exact-tags": {
+          "title": "ზუსტად ეს თეგები",
+          "description": "თეგები ზუსტად ამ სიმრავლიდან, მეტი არაფერი."
+        },
+        "year-2024": {
+          "title": "2024 წლის მემოები",
+          "description": "ფილტრაცია კალენდარული წლის მიხედვით."
+        },
+        "weekend": {
+          "title": "შაბათ-კვირის ჩანაწერები",
+          "description": "შექმნილია კვირას ან შაბათს (0 = კვირა)."
+        },
+        "long": {
+          "title": "გრძელი ჩანაწერები",
+          "description": "280 სიმბოლოზე გრძელი მემოები."
+        }
+      }
+    },
+    "configuration": {
+      "label": "კონფიგურაცია",
+      "description": "რესურსები, რომლებიც კონფიგურაციის ფაილებით არის დაყენებული. მათ შესაცვლელად შეცვალეთ ფაილი და გამოიყენეთ; ინსტანციის დანარჩენი ნაწილი აქ რჩება რედაქტირებადი.",
+      "managed-by": "იმართება კონფიგურაციით",
+      "managed-tooltip": "დაყენებულია {{source}}-ში. ამის შესაცვლელად შეცვალეთ ფაილი და გამოიყენეთ.",
+      "resource": "რესურსი",
+      "source": "ფაილი",
+      "managed-fields": "მართული ველები",
+      "whole-resource": "ყველა ველი",
+      "ignored-fields": "რედაქტირებადია აქ",
+      "serial": "სერიული ნომერი",
+      "last-apply": "ბოლოს გამოყენებული",
+      "applied-by": "გამოიყენა",
+      "nothing-managed": "კონფიგურაცია ჯერ არ გამოყენებულა. ყველაფერი აქ დგინდება."
     },
     "sso": {
       "authorization-endpoint": "ავტორიზაციის წერტილი",
@@ -535,7 +809,9 @@
       "scopes-description": "გამოყავით ფართები სივრცეებით. პროვაიდერების უმეტესობას მხოლოდ მცირე ნაკრები სჭირდება, როგორიცაა პროფილი ან ელ.ფოსტის წვდომა.",
       "template-description": "დაიწყეთ პროვაიდერის წინასწარ დაყენებიდან, შემდეგ შეცვალეთ რწმუნებათა სიგელები და საბოლოო წერტილები თქვენი მოიჯარისთვის.",
       "unlink-success": "გაუქმებულია {{name}}.",
-      "update-sso-description": "გადახედეთ პროვაიდერის კონფიგურაციას, შემდეგ შეინახეთ ველები, რომლებიც უნდა შეიცვალოს."
+      "update-sso-description": "გადახედეთ პროვაიდერის კონფიგურაციას, შემდეგ შეინახეთ ველები, რომლებიც უნდა შეიცვალოს.",
+      "invalid-config": "იდენტობის პროვაიდერის კონფიგურაცია არასწორია.",
+      "provider-id-placeholder": "მაგ. github, okta-corp"
     },
     "storage": {
       "accesskey": "წვდომის გასაღები",
@@ -583,9 +859,9 @@
       "customize-server": {
         "description": "აღწერა",
         "icon-url": "ხატულას URL",
-        "title": "სერვერის მორგება"
+        "title": "სერვერის მორგება",
+        "dialog-description": "მოარგეთ თქვენი ინსტანციის იერსახე და პარამეტრები."
       },
-      "enable-double-click-to-edit": "ორმაგი დაწკაპუნებით რედაქტირების ჩართვა",
       "label": "სისტემა",
       "server-name": "სერვერის სახელი",
       "additional-script-description": "შეიტანეთ JavaScript ყველა ვებ გვერდზე. გამოიყენეთ მხოლოდ სანდო კოდი.",
@@ -595,38 +871,47 @@
       "custom-code-title": "მორგებული კოდი"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1092,9 @@
       "review-existing": "უკვე თქვენს ანგარიშშია",
       "review-exported": "ექსპორტირებულია",
       "review-memos": "მემოები ფაილშია",
-      "review-new": "შეიქმნება"
+      "review-new": "შეიქმნება",
+      "export-admin-only": "ჩანაწერების ექსპორტი მხოლოდ ადმინისტრატორებს შეუძლიათ. ექსპორტის ფაილი ადმინისტრატორს სთხოვეთ.",
+      "export-busy": "სხვა ექსპორტი მიმდინარეობს. სცადეთ ხელახლა ცოტა ხანში."
     },
     "spaces": {
       "general": "ზოგადი",
@@ -893,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "მემოს დაკავშირება",
-    "select-location": "მდებარეობა"
+    "select-location": "მდებარეობა",
+    "link-memo-description": "მოძებნეთ და აირჩიეთ მემო დასაკავშირებლად"
   },
   "demo": {
     "banner-description": "ცვლილებები დროებითია და შეიძლება გადაყენდეს.",
@@ -996,7 +1284,12 @@
     "loading": "მემოების ჩატვირთვა…",
     "new-here": "აქ დაწერეთ",
     "saved-outside-filter": "შენახულია. ეს მემო მიმდინარე რუკის შედეგების მიღმაა.",
-    "open-memo": "გახსნის შეტყობინებას"
+    "open-memo": "გახსნის შეტყობინებას",
+    "open-in-google-maps": "გახსნა Google Maps-ში",
+    "location-description": "აირჩიეთ მდებარეობა რუკაზე ან ხელით შეიყვანეთ კოორდინატები",
+    "latitude": "განედი",
+    "longitude": "გრძედი",
+    "place-placeholder": "ჯერ აირჩიეთ წერტილი."
   },
   "calendar": {
     "new-memo-on-day": "ახალი შენიშვნა ამ დღეს",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "მაგ. პროდუქტი",
     "spaces": "სივრცეები",
     "switch": "სივრცის შეცვლა"
+  },
+  "welcome": {
+    "title": "კეთილი იყოს თქვენი მობრძანება Memos-ში",
+    "headline": "მარტივი ჩანაწერები თქვენი ყოველდღიური ფიქრებისთვის.",
+    "intro-write": "ერთი წინადადებაც შეიძლება მთელი მემო იყოს.",
+    "intro-keep": "თითოეული მემო იმ დღესთან რჩება, როდესაც დაწერეთ.",
+    "intro-share": "თქვენ ირჩევთ, რა დარჩეს პირადი.",
+    "write": "წერა",
+    "write-sub": "ერთი წინადადებაც შეიძლება მთელი მემო იყოს.",
+    "no-title": "სათაურის გარეშე",
+    "no-title-text": "მემო თავად ფიქრით იწყება. შესავსები სათაური არ არის.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown თქვენს სიტყვებს სტრუქტურას აძლევს, როდესაც ეს გსურთ.",
+    "attach": "დართვა",
+    "attach-text": "სურათები, ფაილები, აუდიო და ადგილი ＋-ით ემატება.",
+    "keep": "შენახვა",
+    "keep-sub": "თითოეული მემო იმ დღესთან რჩება, როდესაც დაწერეთ.",
+    "calendar-text": "კალენდარი ნებისმიერ დღეს გიბრუნებთ.",
+    "tags-text": "#-ის შემდეგ დაწერილი სიტყვა თეგი ხდება, თეგი კი დროის ხაზს ფილტრავს.",
+    "views-text": "მორგებული ხედი ფილტრს ინახავს.",
+    "map-text": "ადგილის მქონე მემოები რუკაზე ჩანს.",
+    "share": "გაზიარება",
+    "share-sub": "მემოები პირადად იწყება. თქვენ ირჩევთ, რა გააზიაროთ და რა გამოაქვეყნოთ.",
+    "visibility-text": "თითოეულ მემოს საკუთარი პარამეტრი აქვს. ახლები პირადად იწყება, მხოლოდ თქვენთვის; საჯარო მემოს აქვს ბმული, რომლის გახსნაც ყველას შეუძლია.",
+    "spaces-text": "სივრცეში წევრები თქვენს გვერდით წერენ და თითოეული საკუთარ მემოებს ინარჩუნებს.",
+    "comments": "კომენტარები",
+    "comments-text": "ვისაც მემოს ნახვა შეუძლია, მის ქვეშ პასუხის დაწერაც შეუძლია.",
+    "skip": "გამოტოვება",
+    "next": "შემდეგი",
+    "done": "დასრულება",
+    "page-of": "გვერდი {{current}} / {{total}}",
+    "reopen": "მისალმების გზამკვლევი",
+    "reopen-note": "ოთხი ეკრანი, რომელსაც ახალი ანგარიში პირველად ხედავს.",
+    "sample": {
+      "today": "დღეს, 10:42",
+      "today-early": "დღეს, 9:18",
+      "yesterday": "გუშინ, 15:20",
+      "comment-age": "2 სთ",
+      "memo-preview": "უფრო მარტივი პირველი ეკრანი. ერთი ველი, შემდეგ კი გადახედვა.",
+      "memo-release": "შემდეგ გამოშვებამდე",
+      "task-sketch": "პირველი ეკრანის ესკიზი",
+      "task-polish": "გადახედვის დახვეწა",
+      "write-lead": "პირველი ნაბიჯი პატარა რჩება.",
+      "write-strong": "დეტალები მაშინ ჩანს,",
+      "write-tail": "როდესაც საჭიროა.",
+      "write-task": "მოკლე ცვლილებების სიის დაწერა",
+      "view": "დაუსრულებელი დავალებები",
+      "space": "პროდუქტი",
+      "share-memo": "ჯერ შედეგის ჩვენება და მერე რეგისტრაციის თხოვნა.",
+      "comment": "ვეთანხმები. გადახედვამ დაარწმუნა.",
+      "tag-design": "დიზაინი",
+      "tag-project": "პროექტი",
+      "tag-reading": "კითხვა",
+      "tag-ideas": "იდეები"
+    }
+  },
+  "error": {
+    "title": "რაღაც შეცდომა მოხდა",
+    "description": "მოხდა მოულოდნელი შეცდომა. მიზეზი შეიძლება იყოს ქსელის ან აპლიკაციის პრობლემა.",
+    "description-update": "მოხდა მოულოდნელი შეცდომა. მიზეზი შეიძლება იყოს ქსელის პრობლემა ან აპლიკაციის განახლება. გვერდის გადატვირთვა ჩვეულებრივ ასწორებს ამას.",
+    "details": "შეცდომის დეტალები",
+    "reload": "აპლიკაციის გადატვირთვა",
+    "not-found": "გვერდი, რომელსაც ეძებთ, ვერ მოიძებნა.",
+    "permission-denied": "წვდომა აკრძალულია",
+    "too-many-requests": "მეტისმეტად ბევრი მოთხოვნა. სცადეთ ხელახლა {{wait}}-ში.",
+    "wait-seconds": "{{count}} წმ",
+    "wait-minutes": "{{count}} წთ",
+    "wait-hours": "{{count}} სთ",
+    "challenge-required": "გაიარეთ ვერიფიკაცია და სცადეთ ხელახლა.",
+    "quota-memo-count": "მიაღწიეთ {{limit}} მემოს ლიმიტს. ახლის შესაქმნელად წაშალეთ რამდენიმე მემო.",
+    "quota-storage": "ეს ატვირთვა გადააჭარბებს თქვენი საცავის ლიმიტს ({{limit}}). ამჟამად იყენებთ {{usage}}-ს.",
+    "quota-upload": "ეს ფაილი აღემატება თქვენს ლიმიტს — {{limit}} ერთ ფაილზე.",
+    "quota-memo-content": "ეს მემო აღემატება თქვენს ლიმიტს — {{limit}} ერთ მემოზე. შესანახად შეამოკლეთ შიგთავსი.",
+    "quota-generic": "მიაღწიეთ გამოყენების ლიმიტს.",
+    "sign-in-failed": "შესვლა ვერ მოხერხდა.",
+    "sign-up-failed": "რეგისტრაცია ვერ მოხერხდა",
+    "authenticate-failed": "ავთენტიფიკაცია ვერ მოხერხდა.",
+    "update-profile-failed": "პროფილის განახლება ვერ მოხერხდა",
+    "unlink-identity-failed": "იდენტობის პროვაიდერის მოხსნა ვერ მოხერხდა.",
+    "link-identity-failed": "ანგარიშის დაკავშირების დაწყება ვერ მოხერხდა. სცადეთ ხელახლა."
+  },
+  "attachment-preview": {
+    "title": "დანართის გადახედვა",
+    "description": "დანართის გადახედვის ფანჯარა. დასახურად დააჭირეთ Escape-ს, ელემენტებს შორის გადასართავად გამოიყენეთ მარცხენა და მარჯვენა ისრები, ხოლო სურათები გაადიდეთ მართვის ღილაკებით, მაუსის ბორბლით, ორმაგი შეხებით ან თითების გაშლით.",
+    "close": "გადახედვის დახურვა",
+    "previous": "წინა ელემენტი",
+    "next": "შემდეგი ელემენტი",
+    "reset-zoom": "მასშტაბის განულება",
+    "image-alt": "სურათის გადახედვა {{index}} / {{count}}",
+    "live-photo-alt": "ცოცხალი ფოტოს გადახედვა {{index}} / {{count}}",
+    "play-live-photo": "ცოცხალი ფოტოს დასაკრავად მიიტანეთ კურსორი ან დააჭირეთ"
+  },
+  "audio-player": {
+    "seek": "{{name}}-ის გადახვევა",
+    "back": "{{seconds}} წამით უკან",
+    "forward": "{{seconds}} წამით წინ",
+    "speed": "დაკვრის სიჩქარე {{rate}}x"
   }
 }

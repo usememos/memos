@@ -28,6 +28,7 @@ on:
       - "scripts/release_smoke_test.sh"
       - "scripts/release_version*"
       - "scripts/install*"
+      - ".github/actions/**"
       - ".github/workflows/release.yml"
       - ".github/workflows/upgrade-smoke.yml"
 
@@ -37,11 +38,6 @@ concurrency:
   # cancel the parent release workflow.
   group: ${{ github.workflow }}-upgrade-smoke-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  GO_VERSION: "1.27.2"
-  NODE_VERSION: "24"
-  PNPM_VERSION: "11.0.1"
 
 jobs:
   migration-upgrade:
@@ -56,11 +52,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
+        uses: ./.github/actions/setup-go
 
       - name: Test release versioning and installer
         run: go test -v ./scripts/...
@@ -84,21 +76,8 @@ jobs:
           # tags, so it needs full history and tags.
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.2.0
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: web/pnpm-lock.yaml
-
-      - name: Install frontend dependencies
-        working-directory: web
-        run: pnpm install --frozen-lockfile
+      - name: Setup web
+        uses: ./.github/actions/setup-web
 
       - name: Run release smoke test
         run: ./scripts/release_smoke_test.sh

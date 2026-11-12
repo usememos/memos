@@ -1,6 +1,6 @@
+import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import InfoChip from "@/components/Settings/InfoChip";
 import {
@@ -9,16 +9,16 @@ import {
   getSSOProviderUid,
   type SummaryItem,
 } from "@/components/Settings/sso-display";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
+import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
@@ -33,6 +33,7 @@ interface IdentityProviderRow extends Record<string, unknown> {
 
 const SSOSection = () => {
   const t = useTranslate();
+  const configurationStatus = useConfigurationStatus();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const [editingIdentityProvider, setEditingIdentityProvider] = useState<IdentityProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<IdentityProvider | undefined>(undefined);
@@ -43,7 +44,7 @@ const SSOSection = () => {
       const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
       setIdentityProviderList(identityProviders);
     } catch (error: unknown) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Load identity providers",
       });
     }
@@ -75,7 +76,7 @@ const SSOSection = () => {
     try {
       await identityProviderServiceClient.deleteIdentityProvider({ name: deleteTarget.name });
     } catch (error: unknown) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Delete identity provider",
       });
     }
@@ -115,8 +116,7 @@ const SSOSection = () => {
         </div>
       }
       actions={
-        <Button onClick={handleCreateIdentityProvider}>
-          <PlusIcon className="w-4 h-4 mr-2" />
+        <Button variant="primary" onClick={handleCreateIdentityProvider} icon={<PlusIcon />}>
           {t("common.create")}
         </Button>
       }
@@ -130,13 +130,12 @@ const SSOSection = () => {
             render: (_, row: IdentityProviderRow) => (
               <div className="flex min-w-[16rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">{row.title}</span>
-                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
-                    {row.typeLabel}
-                  </Badge>
+                  <span className="mu-label text-mu-ink">{row.title}</span>
+                  <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
+                  <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.name)} />
                 </div>
               </div>
             ),
@@ -146,7 +145,7 @@ const SSOSection = () => {
             header: t("setting.sso.configuration"),
             render: (_, row: IdentityProviderRow) => (
               <div className="flex min-w-[24rem] flex-col gap-2">
-                <p className="text-xs text-muted-foreground">{t("setting.sso.configuration-summary-description")}</p>
+                <p className="mu-caption text-mu-ink-muted">{t("setting.sso.configuration-summary-description")}</p>
                 <div className="flex flex-wrap gap-2">
                   {row.summaryItems.map((item) => (
                     <InfoChip key={item.key} label={item.label} value={item.value} tooltip={item.tooltip} />
@@ -158,22 +157,34 @@ const SSOSection = () => {
           {
             key: "actions",
             header: "",
-            className: "w-px text-right",
+            className: "w-px",
+            alignEnd: true,
             render: (_, row: IdentityProviderRow) => (
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
-                  <MoreVerticalIcon className="w-4 h-auto" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={2}>
-                  <DropdownMenuItem onClick={() => handleEditIdentityProvider(row.provider)}>{t("common.edit")}</DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleDeleteIdentityProvider(row.provider)}
-                    className="text-destructive focus:text-destructive"
+              <Menu.Root modal={false}>
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={
+                      <Menu.Trigger
+                        render={<Button variant="ghost" aria-label={`${t("common.more")}: ${row.title}`} icon={<MoreVerticalIcon />} />}
+                      />
+                    }
+                  />
+                  <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                </Tooltip.Root>
+                <Menu.Popup align="end">
+                  <Menu.Item
+                    disabled={!!findManagedResource(configurationStatus, row.name)}
+                    onClick={() => handleEditIdentityProvider(row.provider)}
                   >
-                    {t("common.delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {t("common.edit")}
+                  </Menu.Item>
+                  {findManagedResource(configurationStatus, row.name) ? null : (
+                    <Menu.Item onClick={() => handleDeleteIdentityProvider(row.provider)} danger>
+                      {t("common.delete")}
+                    </Menu.Item>
+                  )}
+                </Menu.Popup>
+              </Menu.Root>
             ),
           },
         ]}
@@ -196,7 +207,7 @@ const SSOSection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteIdentityProvider}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

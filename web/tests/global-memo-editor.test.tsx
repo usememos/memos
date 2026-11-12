@@ -1,7 +1,7 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
+import type { MemoEditorDraftProps } from "@/components/MemoEditor";
 import { GlobalMemoEditorProvider, useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 
 const DIALOG = { name: "editor.new-memo" };
@@ -13,8 +13,9 @@ vi.mock("@/hooks/useMemoSuggestions", () => ({
 const mocks = vi.hoisted(() => ({
   currentUser: { name: "users/test" } as { name: string } | undefined,
   isUserSettingsInitialized: true,
-  editorProps: undefined as MemoEditorProps | undefined,
-  loadMemoEditor: vi.fn(),
+  editorProps: undefined as MemoEditorDraftProps | undefined,
+  preload: vi.fn(),
+  renderEditor: ((_props: MemoEditorDraftProps) => null) as (props: MemoEditorDraftProps) => React.ReactNode,
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
   selectedSpaceName: undefined as string | undefined,
@@ -28,8 +29,10 @@ vi.mock("react-router-dom", async (importOriginal) => ({
   useLocation: () => ({ pathname: mocks.pathname }),
 }));
 
-vi.mock("@/components/MemoEditor/loader", () => ({
-  loadMemoEditor: mocks.loadMemoEditor,
+vi.mock("@/components/MemoEditor", () => ({
+  preloadMemoEditing: mocks.preload,
+  // Looked up at render time, after the mock component below exists.
+  MemoEditor: (props: MemoEditorDraftProps) => mocks.renderEditor(props),
 }));
 
 vi.mock("@/contexts/AppSidebarContext", () => ({
@@ -56,7 +59,7 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
-const MockMemoEditor = (props: MemoEditorProps) => {
+const MockMemoEditor = (props: MemoEditorDraftProps) => {
   mocks.editorProps = props;
   return (
     <div data-testid="global-editor">
@@ -122,6 +125,8 @@ const openViaTrigger = async () => {
   return trigger;
 };
 
+mocks.renderEditor = (props) => <MockMemoEditor {...props} />;
+
 const expectClosed = () => waitFor(() => expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument());
 
 describe("GlobalMemoEditorProvider", () => {
@@ -129,7 +134,6 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.currentUser = { name: "users/test" };
     mocks.isUserSettingsInitialized = true;
     mocks.editorProps = undefined;
-    mocks.loadMemoEditor.mockResolvedValue({ default: MockMemoEditor });
     mocks.setMobileOpen.mockClear();
     mocks.setQuickFindOpen.mockClear();
     mocks.selectedSpaceName = undefined;
@@ -200,7 +204,7 @@ describe("GlobalMemoEditorProvider", () => {
     // exits by dismissing this dialog rather than collapsing inline.
     expect(mocks.editorProps).toMatchObject({
       autoFocus: true,
-      cacheKey: "global-memo-editor",
+      draft: { scope: "global", space: undefined },
       suggestions: [{ id: "tag:work" }],
       onFocusModeExit: expect.any(Function),
     });
@@ -265,40 +269,8 @@ describe("GlobalMemoEditorProvider", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
 
-    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+    expect(mocks.preload).not.toHaveBeenCalled();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
-  it("invalidates a pending open request across sign-out and same-user sign-in", async () => {
-    let resolveEditorLoad!: (module: { default: typeof MockMemoEditor }) => void;
-    mocks.loadMemoEditor.mockReturnValue(
-      new Promise((resolve) => {
-        resolveEditorLoad = resolve;
-      }),
-    );
-    const view = renderProvider();
-
-    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
-    expect(mocks.loadMemoEditor).toHaveBeenCalledOnce();
-
-    mocks.currentUser = undefined;
-    view.rerender(
-      <GlobalMemoEditorProvider>
-        <Trigger />
-      </GlobalMemoEditorProvider>,
-    );
-    mocks.currentUser = { name: "users/test" };
-    view.rerender(
-      <GlobalMemoEditorProvider>
-        <Trigger />
-      </GlobalMemoEditorProvider>,
-    );
-
-    await act(async () => {
-      resolveEditorLoad({ default: MockMemoEditor });
-    });
-
-    expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument();
   });
 
   it("does not resurrect an open composer after the same user signs out and back in", async () => {
@@ -329,7 +301,7 @@ describe("GlobalMemoEditorProvider", () => {
 
     fireEvent.keyDown(window, { key: "m", shiftKey: true, metaKey: true });
 
-    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+    expect(mocks.preload).not.toHaveBeenCalled();
   });
 
   it("disables new memo while the route Space is unresolved or inaccessible", () => {
@@ -338,7 +310,7 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.isSpaceReady = false;
     renderProvider(<Trigger />);
     fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
-    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+    expect(mocks.preload).not.toHaveBeenCalled();
   });
 
   it("snapshots the selected Space when opening the composer", async () => {
@@ -346,14 +318,12 @@ describe("GlobalMemoEditorProvider", () => {
     await openViaTrigger();
 
     expect(mocks.editorProps).toMatchObject({
-      cacheKey: "global-memo-editor:spaces/product",
-      defaultSpace: "spaces/product",
+      draft: { scope: "global", space: "spaces/product" },
     });
 
     mocks.selectedSpaceName = "spaces/other";
     expect(mocks.editorProps).toMatchObject({
-      cacheKey: "global-memo-editor:spaces/product",
-      defaultSpace: "spaces/product",
+      draft: { scope: "global", space: "spaces/product" },
     });
   });
 
@@ -367,8 +337,7 @@ describe("GlobalMemoEditorProvider", () => {
     await openViaTrigger();
 
     expect(mocks.editorProps).toMatchObject({
-      cacheKey: "global-memo-editor:spaces/product",
-      defaultSpace: "spaces/product",
+      draft: { scope: "global", space: "spaces/product" },
     });
   });
 
@@ -390,8 +359,7 @@ describe("GlobalMemoEditorProvider", () => {
     await openViaTrigger();
 
     expect(mocks.editorProps).toMatchObject({
-      cacheKey: "global-memo-editor",
-      defaultSpace: undefined,
+      draft: { scope: "global", space: undefined },
     });
   });
 });

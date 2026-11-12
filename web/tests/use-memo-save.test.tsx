@@ -2,23 +2,29 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useMemoSave } from "@/components/MemoEditor/hooks/useMemoSave";
+import { useMemoSave } from "@/components/MemoEditor/edit/hooks/useMemoSave";
 
 const mocks = vi.hoisted(() => ({
   dispatch: vi.fn(),
   markNewMemo: vi.fn(),
   memoSave: vi.fn(),
+  createMemo: vi.fn(),
+  createMemoComment: vi.fn(),
   newMemoName: null as string | null,
   timestamps: {} as { createTime?: Date; updateTime?: Date },
 }));
 
-vi.mock("@/components/MemoEditor/services", () => ({
+vi.mock("@/connect", () => ({
+  memoServiceClient: { createMemo: mocks.createMemo, createMemoComment: mocks.createMemoComment },
+}));
+
+vi.mock("@/components/MemoEditor/edit/services", () => ({
   errorService: { getErrorMessage: () => "save failed" },
   memoService: { save: mocks.memoSave },
   validationService: { canSave: () => ({ valid: true }) },
 }));
 
-vi.mock("@/components/MemoEditor/state", () => ({
+vi.mock("@/components/MemoEditor/edit/state", () => ({
   useEditorContext: () => ({
     actions: {
       reset: () => ({ type: "reset" }),
@@ -53,7 +59,12 @@ describe("useMemoSave", () => {
   });
 
   it("invalidates scoped attachment libraries after a memo save", async () => {
-    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+    // The service hands the create to the memo mutation, whose hook refreshes the caches.
+    mocks.createMemo.mockResolvedValue({ name: "memos/new" });
+    mocks.memoSave.mockImplementation(async (_state, _options, operations) => {
+      const memo = await operations.createMemo({ name: "" });
+      return { hasChanges: true, memoName: memo.name };
+    });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
@@ -68,7 +79,11 @@ describe("useMemoSave", () => {
   });
 
   it("refreshes the parent memo total after creating a comment", async () => {
-    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/comment" });
+    mocks.createMemoComment.mockResolvedValue({ name: "memos/comment", parent: "memos/parent" });
+    mocks.memoSave.mockImplementation(async (_state, options, operations) => {
+      const memo = await operations.createMemo({ name: "" }, options.parentMemoName);
+      return { hasChanges: true, memoName: memo.name };
+    });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

@@ -6,7 +6,6 @@
     "api-docs": "API اسناد",
     "api-docs-note": "مرجع REST و gRPC",
     "build": "ساخت",
-    "commit": "کامیت",
     "demo": "نسخه آزمایشی",
     "description": "فضایی متن‌باز و خودمیزبان برای یادداشت‌ها، ایده‌ها و افکار روزمرهٔ شما.",
     "distribution": "توزیع",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "کروم + فایرفاکس"
   },
   "auth": {
+    "callback-failed-title": "ورود کامل نشد",
     "create-your-account": "حساب کاربری خود را ایجاد کنید.",
+    "hide-password": "پنهان کردن گذرواژه",
+    "incorrect-credentials": "نام کاربری یا گذرواژه نادرست است.",
     "new-password": "گذرواژه جدید",
     "repeat-new-password": "گذرواژه جدید را تکرار کنید",
+    "show-password": "نمایش گذرواژه",
     "sign-in-tip": "آیا حساب کاربری تعریف شده دارید؟",
     "sign-up-tip": "آیا حساب کاربری تعریف شده ندارید؟",
     "admin-sign-in": "ورود مدیر",
-    "admin-sign-in-tip": "ورود با رمز عبور برای مدیران در دسترس است.",
     "back-to-sign-in": "بازگشت به ورود",
     "continue-with": "ادامه با {{provider}}",
     "create-admin-account": "ایجاد حساب کاربری ادمین",
-    "explore-public-memos": "کاوش یادداشت‌های عمومی در این نمونه",
-    "first-run": "اولین اجرا",
     "setup-description": "ایجاد حساب کاربری ادمین برای این نمونه.",
-    "setup-note": "این حساب کاربری دارای تنظیمات نمونه، اعضا و ارائه‌دهندگان هویت است.",
     "setup-title": "راه‌اندازی نمونه شما",
     "signin-unavailable-description": "ورود با رمز عبور غیرفعال است و هیچ ارائه‌دهنده هویتی پیکربندی نشده است. از مدیر خود بخواهید که یک روش ورود به سیستم را فعال کند.",
     "signin-unavailable-title": "ورود به سیستم در دسترس نیست",
-    "signup-unavailable-description": "حساب‌های کاربری رمز عبور غیرفعال هستند و هیچ ارائه‌دهنده هویتی پیکربندی نشده است. از مدیر خود برای دسترسی درخواست کنید.",
-    "signup-unavailable-title": "ثبت نام در دسترس نیست",
-    "signups-closed-description": "حساب‌های کاربری جدید در این نمونه غیرفعال هستند. در صورت نیاز به دسترسی با مدیر خود تماس بگیرید.",
-    "signups-closed-title": "ثبت نام بسته شد",
-    "sso-signup-tip": "برای ایجاد حساب کاربری خود، با یکی از ارائه دهندگان زیر وارد شوید.",
-    "welcome-back": "خوش آمدید."
+    "signups-closed-description": "حساب‌های کاربری جدید در این نمونه غیرفعال هستند. در صورت نیاز به دسترسی با مدیر خود تماس بگیرید."
   },
   "common": {
     "about": "درباره",
@@ -103,7 +97,6 @@
     "profile": "مشخصات",
     "referenced-by": "ارجاع داده شده توسط",
     "referencing": "ارجاع دادن",
-    "relations": "روابط",
     "resources": "منابع",
     "restore": "بازیابی",
     "role": "نقش",
@@ -139,7 +132,24 @@
     "resize-sidebar": "تغییر اندازه نوار کناری",
     "sign-in-to-memos": "ورود به Memos",
     "unlink": "لغو پیوند",
-    "view-all": "مشاهده همه"
+    "open-navigation": "باز کردن ناوبری",
+    "navigation": "ناوبری",
+    "primary-navigation": "اصلی",
+    "download": "دانلود",
+    "download-name": "دانلود {{name}}",
+    "open-name": "باز کردن {{name}}",
+    "preview-name": "پیش‌نمایش {{name}}",
+    "no-content": "بدون محتوا",
+    "previous": "قبلی",
+    "next": "بعدی",
+    "retry": "تلاش دوباره",
+    "docs": "مستندات",
+    "calendar-for-month": "تقویم {{month}}",
+    "date-at-time": "{{date}} ساعت {{time}}",
+    "selected-location": "مکان انتخاب‌شده",
+    "choose-location": "یک مکان انتخاب کنید",
+    "unknown-error": "خطای ناشناخته",
+    "error-occurred": "خطایی رخ داد"
   },
   "locale-picker": {
     "no-language-feedback": "زبان پیدا نشد؟ ارسال بازخورد"
@@ -150,6 +160,7 @@
     "any-thoughts": "فکر شما...",
     "exit-focus-mode": "خروج از حالت تمرکز",
     "focus-mode": "حالت تمرکز",
+    "markdown-mode": "حالت Markdown",
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
     "insert-menu": {
@@ -157,12 +168,53 @@
       "link-memo": "پیوند یادداشت",
       "image-upload-stopped": "آپلود تصویر متوقف شد {{completed}}/{{total}}",
       "insert-image": "درج تصویر",
+      "drawing": "نقاشی",
       "keep-as-attachments": "به عنوان پیوست نگه دارید",
       "retry-image-upload": "دوباره امتحان کنید",
       "uploading-inline-image": "در حال آپلود به محتوا",
       "uploading-images": "در حال آپلود تصاویر {{completed}}/{{total}}",
       "add-attachment": "افزودن پیوست",
       "image-upload-failed": "برخی تصاویر بارگذاری نشدند. دوباره تلاش کنید یا فایل‌های بارگذاری‌شده را به‌عنوان پیوست نگه دارید."
+    },
+    "drawing": {
+      "new-title": "نقاشی جدید",
+      "edit": "ویرایش نقاشی",
+      "tools": "ابزارها",
+      "tool-select": "انتخاب",
+      "tool-pen": "قلم",
+      "tool-eraser": "پاک‌کن",
+      "tool-rectangle": "مستطیل",
+      "tool-ellipse": "بیضی",
+      "tool-arrow": "پیکان",
+      "tool-text": "متن",
+      "style": "رنگ و ضخامت",
+      "color": "رنگ",
+      "width": "ضخامت",
+      "width-thin": "نازک",
+      "width-medium": "متوسط",
+      "width-thick": "ضخیم",
+      "color-ink": "جوهر",
+      "color-gray": "خاکستری",
+      "color-red": "قرمز",
+      "color-orange": "نارنجی",
+      "color-green": "سبز",
+      "color-teal": "سبزآبی",
+      "color-blue": "آبی",
+      "color-violet": "بنفش",
+      "undo": "واگرد",
+      "redo": "ازنو",
+      "zoom-to-fit": "متناسب با پنجره",
+      "done": "انجام شد",
+      "discard-title": "این نقاشی دور ریخته شود؟",
+      "discard-description": "هنوز به یادداشت افزوده نشده است.",
+      "discard-edit-title": "تغییرات دور ریخته شود؟",
+      "discard-edit-description": "نقاشی همان‌طور که پیش از باز کردن بود باقی می‌ماند.",
+      "keep-drawing": "ادامهٔ نقاشی",
+      "discard": "دور ریختن",
+      "open-failed": "باز کردن نقاشی ممکن نشد. دوباره تلاش کنید.",
+      "export-failed": "ذخیرهٔ نقاشی ممکن نشد. دوباره تلاش کنید.",
+      "image-failed": "افزودن تصویر به نقاشی ممکن نشد.",
+      "saved-without-drawing": "یادداشت ذخیره شد، اما نقاشی ذخیره نشد. برای تلاش مجدد، دوباره ذخیره کنید."
     },
     "audio-recorder": {
       "attachment-label": "ضبط صدا",
@@ -182,22 +234,22 @@
     },
     "format": {
       "code-block": "بلوک کد",
-      "link": "پیوست",
-      "heading": "عنوان",
+      "link": "پیوند",
       "paragraph": "پاراگراف",
       "heading-1": "عنوان 1",
       "heading-2": "عنوان 2",
-      "heading-3": "عنوان ۳ [۱۰۱۱۹] پررنگ [۱۰۱۲۰] کج [۱۰۱۲۱] خط خورده [۱۰۱۲۲] کد درون‌خطی [۱۰۱۲۳] فهرست گلوله‌ای [۱۰۱۲۴] فهرست شماره‌گذاری شده [۱۰۱۲۵] فهرست کارها [۱۰۱۲۶] وارد کردن آدرس اینترنتی [۱۰۱۲۷] قالب‌بندی بیشتر [۱۰۱۲۸] افزودن پیوست [۱۰۱۲۹] برخی از تصاویر قابل آپلود نیستند. فایل‌های آپلود شده را دوباره امتحان کنید یا به عنوان پیوست نگه دارید.",
+      "heading-3": "عنوان 3",
+      "heading-4": "عنوان 4",
       "bold": "پررنگ",
       "italic": "مورب",
       "strikethrough": "خط‌خورده",
       "bullet-list": "فهرست نشانه‌دار",
       "ordered-list": "فهرست شماره‌دار",
-      "task-list": "فهرست کارها",
-      "more": "قالب‌بندی بیشتر"
+      "task-list": "فهرست کارها"
     },
     "comment": "نظر",
-    "formatting-toolbar": "نوار ابزار قالب‌بندی",
+    "footnotes": "پانویس‌ها",
+    "back-to-reference": "بازگشت به مرجع",
     "new-memo": "یادداشت جدید",
     "saved": "ذخیره شد",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "در حال ذخیره در حال انجام است",
       "unsupported-attachment-image-url": "آدرس تصویر پیوست پشتیبانی نشده: {{url}}",
       "wait-for-upload": "منتظر بمانید تا آپلود کامل شود"
-    }
+    },
+    "blocks": {
+      "task": "کار",
+      "quote": "نقل‌قول",
+      "callout": "کادر برجسته",
+      "callout-note": "یادداشت",
+      "callout-tip": "نکته",
+      "callout-important": "مهم",
+      "callout-warning": "هشدار",
+      "callout-caution": "احتیاط",
+      "collapsible-section": "بخش جمع‌شونده",
+      "table": "جدول",
+      "divider": "جداکننده",
+      "no-results": "نتیجه‌ای یافت نشد",
+      "commands": "فرمان‌ها",
+      "loading": "در حال بارگذاری…",
+      "duplicate": "تکثیر",
+      "inline-code": "کد",
+      "link-placeholder": "پیوندی را بچسبانید یا تایپ کنید…",
+      "remove-link": "حذف پیوند",
+      "open-link": "باز کردن پیوند",
+      "copy-link": "کپی پیوند",
+      "edit-link": "ویرایش پیوند",
+      "emoji": "ایموجی",
+      "block-menu": "باز کردن منوی بلوک",
+      "list-hint": "فهرست",
+      "plain-text": "متن",
+      "add-row-above": "افزودن ردیف در بالا",
+      "add-row-below": "افزودن ردیف در پایین",
+      "add-column-left": "افزودن ستون در چپ",
+      "add-column-right": "افزودن ستون در راست",
+      "delete-row": "حذف ردیف",
+      "delete-column": "حذف ستون",
+      "align": "تراز",
+      "align-left": "چپ",
+      "align-center": "وسط",
+      "align-right": "راست",
+      "image-align-left": "تراز چپ",
+      "image-align-center": "تراز وسط",
+      "image-align-right": "تراز راست",
+      "text-style": "سبک متن",
+      "image": "تصویر",
+      "reset-image-size": "بازنشانی اندازه",
+      "alt-text": "متن جایگزین",
+      "alt-text-placeholder": "تصویر را توصیف کنید…",
+      "image-unavailable": "تصویر در دسترس نیست",
+      "resize-image": "تغییر اندازه تصویر"
+    },
+    "attachments": {
+      "edited": "ویرایش‌شده",
+      "new": "جدید",
+      "remove": "حذف پیوست",
+      "reorder": "جابه‌جایی {{name}}",
+      "reorder-hint": "بکشید یا از کلیدهای جهت‌نما استفاده کنید"
+    },
+    "remove-relation": "حذف ارتباط",
+    "remove-location": "حذف مکان",
+    "recording-unsupported": "ضبط صدا در این مرورگر پشتیبانی نمی‌شود.",
+    "microphone-denied": "اجازه دسترسی به میکروفون رد شد.",
+    "recording-failed": "شروع ضبط صدا ناموفق بود."
   },
   "inbox": {
     "failed-to-load": "بارگذاری آیتم صندوق ورودی ناموفق بود",
@@ -218,14 +329,28 @@
     "unread": "خوانده نشده",
     "space-invitation": "شما را به پیوستن به یک فضا دعوت کرد",
     "space-invitation-accepted": "شما به این فضا پیوستید.",
-    "space-invitation-open": "فضای باز"
+    "space-invitation-open": "فضای باز",
+    "commented-on-memo": "روی یادداشت شما نظر داد",
+    "mentioned-in-comment": "در یک نظر از شما نام برد",
+    "mentioned-in-memo": "در یک یادداشت از شما نام برد",
+    "original": "اصلی:",
+    "memo-label": "یادداشت:",
+    "comment-heading": "نظر",
+    "memo-heading": "یادداشت",
+    "empty-memo": "یادداشت خالی",
+    "empty-comment": "نظر خالی"
   },
   "memo": {
+    "no-memos-yet": "هنوز یادداشتی وجود ندارد",
+    "no-matching-memos": "یادداشت منطبقی وجود ندارد",
+    "clear-filters": "فیلترها را پاک کنید",
     "pinned": "سنجاق‌شده",
     "click-to-show-sensitive-content": "برای نمایش محتوای حساس کلیک کنید",
     "comment": {
       "self": "نظرات",
-      "write-a-comment": "یک نظر بنویسید"
+      "write-a-comment": "یک نظر بنویسید",
+      "view-all-count_one": "مشاهده همه {{count}} نظر",
+      "view-all-count_other": "مشاهده همه {{count}} نظر"
     },
     "copy-content": "کپی محتوا",
     "copy-link": "کپی پیوند",
@@ -234,10 +359,13 @@
     "delete-confirm-description": "این عمل غیرقابل بازگشت است. پیوست‌ها، پیوندها و ارجاعات نیز حذف خواهند شد.",
     "direction": "جهت",
     "filters": {
+      "has-attachments": "دارای پیوست",
       "has-code": "دارای کد",
+      "has-image": "دارای تصویر",
       "has-link": "دارای پیوند",
       "has-location": "دارای موقعیت",
-      "has-task-list": "دارای لیست کارها"
+      "has-task-list": "دارای لیست کارها",
+      "remove": "حذف فیلتر"
     },
     "compact-mode": "حالت فشرده",
     "link-preview": "پیش‌نمایش پیوند",
@@ -323,7 +451,9 @@
     "restored-successfully": "با موفقیت بازیابی شد",
     "succeed-copy-content": "محتوا با موفقیت کپی شد.",
     "succeed-copy-link": "پیوند با موفقیت کپی شد.",
-    "update-succeed": "بروزرسانی موفق بود"
+    "update-succeed": "بروزرسانی موفق بود",
+    "not-signed-in": "وارد حساب نشده‌اید.",
+    "invalid-datetime": "تاریخ و زمان نامعتبر است. از قالب 2023-12-31 23:59:59 استفاده کنید."
   },
   "reference": {
     "no-memos-found": "یادداشتی یافت نشد",
@@ -358,32 +488,176 @@
       "archived": "آرشیو شده",
       "member-column": "عضو",
       "active": "فعال",
-      "summary-column": "خلاصه"
+      "summary-column": "خلاصه",
+      "export-memos": "خروجی گرفتن از یادداشت‌ها",
+      "username-password-required": "نام کاربری و رمز عبور نمی‌توانند خالی باشند",
+      "create-success": "کاربر ایجاد شد",
+      "update-success": "کاربر به‌روزرسانی شد"
     },
     "my-account": {
       "label": "حساب من"
     },
     "preference": {
-      "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
-      "theme": "پوسته",
-      "label": "ترجیحات",
       "appearance-description": "نحوه نمایش برنامه و زبانی که برای حساب شما استفاده می‌کند را انتخاب کنید.",
       "appearance-title": "ظاهر",
+      "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
       "default-memo-visibility-description": "قابلیت مشاهده برای یادداشت‌های تازه ایجاد شده اعمال می‌شود، مگر اینکه در ویرایشگر تغییر کند.",
+      "device-description": "گزینه‌های خواندن و ویرایش که فقط در این مرورگر نگه داشته می‌شوند. در حساب شما ذخیره نمی‌شوند.",
+      "device-title": "این دستگاه",
+      "double-click-edit": "دوبار کلیک برای ویرایش",
+      "double-click-edit-description": "یادداشت‌های خود را با دوبار کلیک در ویرایشگر باز کنید.",
+      "label": "ترجیحات",
       "language-description": "زبان رابط را فوراً به‌روزرسانی می‌کند و آن را در حساب شما ذخیره می‌کند.",
+      "link-preview-description": "نمایش کارت پیش‌نمایش زیر پیوندهای خام در هر جایی که یادداشت‌ها نمایش داده می‌شوند.",
       "memo-defaults-description": "پیش‌فرض‌های مورد استفاده هنگام نوشتن یادداشت‌های جدید را تنظیم می‌کند.",
       "memo-defaults-title": "پیش‌فرض‌های یادداشت",
       "save-media-metadata": "ذخیره فراداده رسانه",
       "save-media-metadata-description": "برای آپلودهای بعدی، دوربین موجود، زمان ضبط، مکان، ابعاد تصویر و جزئیات اولیه ویدیو را ذخیره می‌کند. هر کسی که بتواند پیوست را مشاهده کند، می‌تواند این فراداده را دریافت کند. پیوست‌های موجود بدون تغییر هستند.",
       "theme-description": "تم انتخاب شده را فوراً در این دستگاه اعمال می‌کند.",
+      "theme": "پوسته",
       "uploads-privacy-description": "اطلاعات حساس به حریم خصوصی ارسال شده با رسانه آپلود شده را کنترل می‌کند.",
-      "uploads-privacy-title": "آپلودها و حریم خصوصی"
+      "uploads-privacy-title": "آپلودها و حریم خصوصی",
+      "theme-system": "همگام با سیستم",
+      "theme-system-short": "سیستم",
+      "theme-light": "روشن",
+      "theme-dark": "تیره",
+      "theme-paper": "کاغذی"
+    },
+    "editor": {
+      "label": "ویرایشگر",
+      "markdown-mode-description": "یادداشت‌ها را به‌جای متن قالب‌بندی‌شده، به‌صورت متن Markdown بنویسید و ویرایش کنید."
     },
     "memo-view": {
       "create": "ایجاد نما",
       "delete-confirm": "آیا مطمئن هستید که می‌خواهید نمای «{{title}}» را حذف کنید؟",
       "delete-success": "نمای «{{title}}» با موفقیت حذف شد",
-      "change-icon": "تغییر نماد نمایش"
+      "change-icon": "تغییر نماد نمایش",
+      "page-description": "نماهای قابل استفاده مجدد با فیلدها، عملگرها، توابع زمانی و تطبیق برچسب بسازید. از نمونه‌ها شروع کنید و پیش از ذخیره، اعتبارسنجی کنید.",
+      "edit": "ویرایش نما",
+      "form-description": "برای نما نامی بگذارید و عبارت فیلتر یادداشتی را که باید اعمال کند تعریف کنید.",
+      "title-placeholder": "سنجاق‌شده، یادداشت‌های اخیر، کار",
+      "filter-help": "عبارت‌ها را با {{and}}، {{or}} و {{not}} ترکیب کنید. فیلدهای زمانی مُهر زمانی هستند — از {{now}}، {{duration}}، {{timestamp}} و توابع دسترسی مانند {{year}} استفاده کنید. برچسب‌ها از {{sets}} پشتیبانی می‌کنند و {{size}} طول را اندازه می‌گیرد.",
+      "validate": "اعتبارسنجی",
+      "all": "همه نماها",
+      "loading": "در حال بارگذاری نماها…",
+      "load-failed": "بارگذاری نماها ممکن نشد.",
+      "empty-title": "هنوز نمایی وجود ندارد",
+      "empty-description": "یک فیلتر ذخیره کنید تا سریع به یادداشت‌هایی که نیاز دارید برگردید.",
+      "examples-title": "نمونه‌های عبارت",
+      "fields-title": "فیلدهای پشتیبانی‌شده",
+      "title-filter-required": "عنوان و فیلتر نمی‌توانند خالی باشند",
+      "filter-valid": "عبارت فیلتر معتبر به نظر می‌رسد",
+      "create-success": "نما ایجاد شد",
+      "update-success": "نما به‌روزرسانی شد",
+      "examples": {
+        "pinned": {
+          "title": "سنجاق‌شده",
+          "description": "فقط یادداشت‌های سنجاق‌شده."
+        },
+        "recent": {
+          "title": "یادداشت‌های اخیر",
+          "description": "یادداشت‌هایی که در یک ساعت گذشته ایجاد شده‌اند."
+        },
+        "public": {
+          "title": "یادداشت‌های عمومی",
+          "description": "فقط یادداشت‌های عمومی."
+        },
+        "project-tags": {
+          "title": "برچسب‌های پروژه",
+          "description": "تطبیق دقیق با یک یا چند برچسب."
+        },
+        "untagged": {
+          "title": "بدون برچسب",
+          "description": "یادداشت‌هایی که هیچ برچسبی ندارند."
+        },
+        "archive-tree": {
+          "title": "درخت آرشیو",
+          "description": "تطبیق برچسب‌های سلسله‌مراتبی بر اساس پیشوند."
+        },
+        "unassigned": {
+          "title": "تخصیص‌نیافته",
+          "description": "یادداشت‌هایی که در هیچ فضایی قرار ندارند."
+        },
+        "one-space": {
+          "title": "در یک فضا",
+          "description": "یادداشت‌های قرارگرفته در یک فضا. شناسه فضا را از نشانی URL یا تنظیمات آن بردارید."
+        },
+        "open-tasks": {
+          "title": "کارهای باز",
+          "description": "یادداشت‌هایی با کارهای ناتمام."
+        },
+        "links-or-code": {
+          "title": "پیوند یا کد",
+          "description": "یادداشت‌هایی که پیوند یا بلوک کد دارند."
+        },
+        "no-location": {
+          "title": "بدون مکان",
+          "description": "یادداشت‌هایی که مکانی به آن‌ها پیوست نشده است."
+        },
+        "with-attachments": {
+          "title": "دارای پیوست",
+          "description": "یادداشت‌هایی با دست‌کم یک فایل پیوست."
+        },
+        "photos": {
+          "title": "عکس‌ها",
+          "description": "یادداشت‌هایی که تصویری را نشان می‌دهند، در محتوا یا به‌صورت فایل پیوست."
+        },
+        "content-search": {
+          "title": "جستجوی محتوا",
+          "description": "جستجوی متن در محتوای یادداشت."
+        },
+        "starts-with": {
+          "title": "شروع با",
+          "description": "یادداشت‌هایی که محتوایشان با متنی شروع می‌شود (همچنین endsWith)."
+        },
+        "regex": {
+          "title": "تطبیق Regex",
+          "description": "تطبیق محتوا با یک عبارت باقاعده."
+        },
+        "all-tags-complete": {
+          "title": "همه برچسب‌ها انجام‌شده",
+          "description": "هر برچسب به -done ختم می‌شود (فقط یادداشت‌های دارای برچسب)."
+        },
+        "one-project-tag": {
+          "title": "یک برچسب پروژه",
+          "description": "دقیقاً یک برچسب با شرط مطابقت دارد."
+        },
+        "any-tags": {
+          "title": "هر یک از این برچسب‌ها",
+          "description": "برچسب‌ها با مجموعه داده‌شده اشتراک دارند."
+        },
+        "exact-tags": {
+          "title": "دقیقاً این برچسب‌ها",
+          "description": "دقیقاً با همین مجموعه برچسب، نه بیشتر."
+        },
+        "year-2024": {
+          "title": "یادداشت‌های ۲۰۲۴",
+          "description": "فیلتر بر اساس سال میلادی."
+        },
+        "weekend": {
+          "title": "یادداشت‌های آخر هفته",
+          "description": "ایجادشده در روز یکشنبه یا شنبه (0 = یکشنبه)."
+        },
+        "long": {
+          "title": "یادداشت‌های بلند",
+          "description": "یادداشت‌های بلندتر از ۲۸۰ نویسه."
+        }
+      }
+    },
+    "configuration": {
+      "label": "پیکربندی",
+      "description": "منابعی که با فایل‌های پیکربندی تعیین می‌شوند. برای تغییر آن‌ها فایل را ویرایش و اعمال کنید؛ بقیهٔ نمونه همچنان اینجا قابل ویرایش است.",
+      "managed-by": "مدیریت‌شده با پیکربندی",
+      "managed-tooltip": "در {{source}} تعیین شده است. برای تغییر آن، فایل را ویرایش و اعمال کنید.",
+      "resource": "منبع",
+      "source": "فایل",
+      "managed-fields": "فیلدهای مدیریت‌شده",
+      "whole-resource": "همهٔ فیلدها",
+      "ignored-fields": "قابل ویرایش در اینجا",
+      "serial": "شمارهٔ سریال",
+      "last-apply": "آخرین اعمال",
+      "applied-by": "اعمال‌شده توسط",
+      "nothing-managed": "هیچ پیکربندی‌ای اعمال نشده است. همه‌چیز اینجا تنظیم می‌شود."
     },
     "sso": {
       "authorization-endpoint": "آدرس نقطه مجوز",
@@ -444,7 +718,9 @@
       "scopes-description": "محدوده‌ها را با فاصله از هم جدا کنید. اکثر ارائه‌دهندگان فقط به یک مجموعه کوچک مانند دسترسی به پروفایل یا ایمیل نیاز دارند.",
       "template-description": "از یک پیش‌تنظیم ارائه‌دهنده شروع کنید، سپس اطلاعات احراز هویت و نقاط پایانی را برای مستأجر خود تنظیم کنید.",
       "unlink-success": "بدون پیوند {{name}}.",
-      "update-sso-description": "پیکربندی ارائه دهنده را بررسی کنید، سپس فیلدهایی را که باید تغییر کنند ذخیره کنید."
+      "update-sso-description": "پیکربندی ارائه دهنده را بررسی کنید، سپس فیلدهایی را که باید تغییر کنند ذخیره کنید.",
+      "invalid-config": "پیکربندی ارائه‌دهنده هویت نامعتبر است.",
+      "provider-id-placeholder": "مثلاً github, okta-corp"
     },
     "storage": {
       "accesskey": "کلید دسترسی",
@@ -492,9 +768,9 @@
       "customize-server": {
         "description": "توضیحات",
         "icon-url": "آدرس آیکون",
-        "title": "سفارشی‌سازی سرور"
+        "title": "سفارشی‌سازی سرور",
+        "dialog-description": "ظاهر و تنظیمات نمونه خود را سفارشی کنید."
       },
-      "enable-double-click-to-edit": "فعال‌سازی دوبار کلیک برای ویرایش",
       "server-name": "نام سرور",
       "label": "سیستم",
       "additional-script-description": "جاوا اسکریپت را به هر صفحه وب تزریق کنید. فقط از کد قابل اعتماد استفاده کنید.",
@@ -502,6 +778,49 @@
       "basic-description": "پیش‌فرض‌های هویت عمومی و تقویم را برای این نمونه پیکربندی کنید.",
       "custom-code-description": "CSS و جاوا اسکریپت اختیاری در سطح نمونه که در ظاهر اعمال می‌شوند.",
       "custom-code-title": "کد سفارشی"
+    },
+    "usage-limits": {
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
+      "all-users": "All users",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
+      "file-size": "Largest file (MiB)",
+      "file-size-column": "Largest file",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
+      "label": "Usage limits",
+      "memos": "Memos",
+      "memos-description": "Includes comments and archived memos.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
+      "remove": "Remove",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
+      "saved": "Usage limits saved",
+      "select-user": "Add a user",
+      "storage": "Storage (MiB)",
+      "storage-column": "Storage",
+      "storage-description": "The total size of uploads. External links do not count.",
+      "title": "Usage limits",
+      "unlimited": "Unlimited",
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "access-token": {
       "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
@@ -556,7 +875,9 @@
       "danger-area-description": "اقدامات برگشت‌ناپذیر حساب کاربری در اینجا قرار دارند. قبل از ادامه، آنها را با دقت بررسی کنید.",
       "delete-account": "حذف حساب کاربری",
       "delete-account-description": "حذف دائمی این حساب کاربری و تمام دسترسی‌های مرتبط از این نمونه. این اقدام قابل لغو نیست.",
-      "email-in-use": "این ایمیل قبلاً توسط حساب کاربری دیگری استفاده شده است."
+      "email-in-use": "این ایمیل قبلاً توسط حساب کاربری دیگری استفاده شده است.",
+      "avatar-too-large": "تصویری با حجم ۲ مگابایت یا کمتر انتخاب کنید.",
+      "avatar-unreadable": "این تصویر خوانده نمی‌شود. فایل دیگری را امتحان کنید."
     },
     "instance": {
       "disallow-change-nickname": "غیرفعال‌سازی تغییر نام مستعار",
@@ -583,45 +904,9 @@
       "reactions-required": "لیست واکنش ها نباید خالی باشد",
       "add-reaction": "افزودن واکنش",
       "configured-reactions": "واکنش‌های پیکربندی شده",
-      "double-click-edit-description": "به کاربران اجازه دهید با دوبار کلیک کردن روی یک یادداشت، ویرایش یادداشت را باز کنند.",
-      "editing-title": "ویرایش",
       "reaction-placeholder": "مثلاً 👍",
       "reactions-description": "گزینه‌های واکنشی را که کاربران می‌توانند برای یادداشت‌ها اعمال کنند، تعریف کنید.",
       "remove-reaction": "حذف واکنش"
-    },
-    "usage-limits": {
-      "add-user": "Add user limit",
-      "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
-      "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
-      "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Select a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
     },
     "webhook": {
       "create-dialog": {
@@ -749,7 +1034,9 @@
       "review-existing": "قبلاً در حساب شما",
       "review-exported": "صادر شده توسط",
       "review-memos": "یادداشت‌ها در فایل",
-      "review-new": "ایجاد خواهد شد"
+      "review-new": "ایجاد خواهد شد",
+      "export-admin-only": "فقط مدیران می‌توانند یادداشت‌ها را خروجی بگیرند. فایل خروجی خود را از یک مدیر بخواهید.",
+      "export-busy": "یک خروجی دیگر در حال انجام است. لحظه‌ای دیگر دوباره تلاش کنید."
     },
     "spaces": {
       "general": "عمومی",
@@ -888,7 +1175,8 @@
   },
   "tooltip": {
     "link-memo": "پیوند یادداشت",
-    "select-location": "موقعیت"
+    "select-location": "موقعیت",
+    "link-memo-description": "یادداشتی را برای پیوند دادن جستجو و انتخاب کنید"
   },
   "live-update": {
     "connected": "به روز رسانی زنده فعال است",
@@ -977,7 +1265,12 @@
     "loading": "در حال بارگذاری یادداشت‌ها…",
     "new-here": "اینجا بنویسید",
     "saved-outside-filter": "ذخیره شد. این یادداشت خارج از نتایج نقشه فعلی است.",
-    "open-memo": "یادداشت باز"
+    "open-memo": "یادداشت باز",
+    "open-in-google-maps": "باز کردن در Google Maps",
+    "location-description": "مکانی را روی نقشه انتخاب کنید یا مختصات را دستی وارد کنید",
+    "latitude": "عرض جغرافیایی",
+    "longitude": "طول جغرافیایی",
+    "place-placeholder": "ابتدا یک موقعیت انتخاب کنید."
   },
   "calendar": {
     "new-memo-on-day": "یادداشت جدید در این روز",
@@ -1040,5 +1333,102 @@
     "name-placeholder": "مثال محصول",
     "spaces": "فضاها",
     "switch": "تغییر فضا"
+  },
+  "welcome": {
+    "title": "به Memos خوش آمدید",
+    "headline": "یادداشت‌برداری ساده برای افکار روزمره‌تان.",
+    "intro-write": "یک جمله می‌تواند یک یادداشت کامل باشد.",
+    "intro-keep": "هر یادداشت کنار روزی می‌ماند که آن را نوشته‌اید.",
+    "intro-share": "شما انتخاب می‌کنید چه چیزی خصوصی بماند.",
+    "write": "نوشتن",
+    "write-sub": "یک جمله می‌تواند یک یادداشت کامل باشد.",
+    "no-title": "بدون عنوان",
+    "no-title-text": "یادداشت با خودِ فکر آغاز می‌شود. عنوانی برای پر کردن وجود ندارد.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown هر وقت بخواهید به کلماتتان ساختار می‌دهد.",
+    "attach": "پیوست",
+    "attach-text": "تصاویر، فایل‌ها، صدا و مکان از طریق ＋ اضافه می‌شوند.",
+    "keep": "نگه‌داری",
+    "keep-sub": "هر یادداشت کنار روزی می‌ماند که آن را نوشته‌اید.",
+    "calendar-text": "تقویم به هر روزی برمی‌گرداند.",
+    "tags-text": "واژهٔ پس از # برچسب می‌شود و برچسب خط زمانی را فیلتر می‌کند.",
+    "views-text": "یک نمای سفارشی یک فیلتر را ذخیره می‌کند.",
+    "map-text": "یادداشت‌های دارای مکان روی نقشه قرار می‌گیرند.",
+    "share": "اشتراک‌گذاری",
+    "share-sub": "یادداشت‌ها خصوصی آغاز می‌شوند. شما انتخاب می‌کنید چه چیزی را به اشتراک بگذارید و چه چیزی را منتشر کنید.",
+    "visibility-text": "هر یادداشت تنظیم خودش را دارد. یادداشت‌های تازه خصوصی آغاز می‌شوند، فقط برای شما؛ یادداشت عمومی پیوندی دارد که هر کسی می‌تواند بازش کند.",
+    "spaces-text": "در یک فضا، اعضا در کنار شما می‌نویسند و هر کس یادداشت‌های خودش را نگه می‌دارد.",
+    "comments": "نظرها",
+    "comments-text": "هر کسی که بتواند یادداشتی را ببیند می‌تواند زیر آن پاسخ دهد.",
+    "skip": "رد شدن",
+    "next": "بعدی",
+    "done": "انجام شد",
+    "page-of": "صفحهٔ {{current}} از {{total}}",
+    "reopen": "راهنمای خوش‌آمدگویی",
+    "reopen-note": "چهار صفحه‌ای که یک حساب تازه نخست می‌بیند.",
+    "sample": {
+      "today": "امروز، 10:42",
+      "today-early": "امروز، 9:18",
+      "yesterday": "دیروز، 15:20",
+      "comment-age": "2 س",
+      "memo-preview": "یک صفحهٔ نخست ساده‌تر. یک ورودی، سپس یک پیش‌نمایش.",
+      "memo-release": "پیش از انتشار بعدی",
+      "task-sketch": "طراحی اولیهٔ صفحهٔ نخست",
+      "task-polish": "صیقل دادن پیش‌نمایش",
+      "write-lead": "گام نخست را کوچک نگه داشتن.",
+      "write-strong": "نشان دادن جزئیات",
+      "write-tail": "وقتی لازم باشند.",
+      "write-task": "نوشتن یک تغییرنامهٔ کوتاه",
+      "view": "کارهای ناتمام",
+      "space": "محصول",
+      "share-memo": "پیش از آنکه از مردم بخواهیم ثبت‌نام کنند، نتیجه را نشان دهیم.",
+      "comment": "موافقم. پیش‌نمایش بود که قانع کرد.",
+      "tag-design": "طراحی",
+      "tag-project": "پروژه",
+      "tag-reading": "خواندن",
+      "tag-ideas": "ایده‌ها"
+    }
+  },
+  "error": {
+    "title": "مشکلی پیش آمد",
+    "description": "خطای غیرمنتظره‌ای رخ داد. ممکن است به دلیل مشکل شبکه یا مشکلی در برنامه باشد.",
+    "description-update": "خطای غیرمنتظره‌ای رخ داد. ممکن است به دلیل مشکل شبکه یا به‌روزرسانی برنامه باشد. معمولاً بارگذاری دوباره مشکل را حل می‌کند.",
+    "details": "جزئیات خطا",
+    "reload": "بارگذاری دوباره برنامه",
+    "not-found": "صفحه‌ای که به دنبال آن هستید یافت نشد.",
+    "permission-denied": "دسترسی رد شد",
+    "too-many-requests": "درخواست‌ها بیش از حد است. {{wait}} دیگر دوباره تلاش کنید.",
+    "wait-seconds": "{{count}} ثانیه",
+    "wait-minutes": "{{count}} دقیقه",
+    "wait-hours": "{{count}} ساعت",
+    "challenge-required": "بررسی تأیید را کامل کنید و دوباره تلاش کنید.",
+    "quota-memo-count": "به سقف {{limit}} یادداشت خود رسیده‌اید. برای ایجاد یادداشت جدید، چند یادداشت را حذف کنید.",
+    "quota-storage": "این بارگذاری از سقف فضای ذخیره‌سازی شما ({{limit}}) فراتر می‌رود. در حال حاضر {{usage}} استفاده کرده‌اید.",
+    "quota-upload": "این فایل از سقف {{limit}} برای هر فایل بزرگ‌تر است.",
+    "quota-memo-content": "این یادداشت از سقف {{limit}} برای هر یادداشت بزرگ‌تر است. برای ذخیره، محتوا را کوتاه کنید.",
+    "quota-generic": "به یکی از محدودیت‌های استفاده رسیده‌اید.",
+    "sign-in-failed": "ورود ناموفق بود.",
+    "sign-up-failed": "ثبت‌نام ناموفق بود",
+    "authenticate-failed": "احراز هویت ناموفق بود.",
+    "update-profile-failed": "به‌روزرسانی نمایه ناموفق بود",
+    "unlink-identity-failed": "قطع اتصال ارائه‌دهنده هویت ناموفق بود.",
+    "link-identity-failed": "شروع اتصال حساب ناموفق بود. دوباره تلاش کنید."
+  },
+  "attachment-preview": {
+    "title": "پیش‌نمایش پیوست",
+    "description": "پنجره پیش‌نمایش پیوست. برای بستن Escape را فشار دهید، برای جابه‌جایی بین موارد از کلیدهای جهت‌نمای چپ و راست استفاده کنید، و تصاویر را با دکمه‌ها، چرخ ماوس، دو بار ضربه زدن یا حرکت دو انگشتی بزرگ‌نمایی کنید.",
+    "close": "بستن پیش‌نمایش",
+    "previous": "مورد قبلی",
+    "next": "مورد بعدی",
+    "reset-zoom": "بازنشانی بزرگ‌نمایی",
+    "image-alt": "پیش‌نمایش تصویر {{index}} از {{count}}",
+    "live-photo-alt": "پیش‌نمایش عکس زنده {{index}} از {{count}}",
+    "play-live-photo": "برای پخش عکس زنده، نشانگر را روی آن ببرید یا فشار دهید"
+  },
+  "audio-player": {
+    "seek": "جابه‌جایی در {{name}}",
+    "back": "{{seconds}} ثانیه عقب",
+    "forward": "{{seconds}} ثانیه جلو",
+    "speed": "سرعت پخش {{rate}}x"
   }
 }

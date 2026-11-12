@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { validationService } from "@/components/MemoEditor/services/validationService";
-import { createInitialState } from "@/components/MemoEditor/state";
+import { validationService } from "@/components/MemoEditor/edit/services/validationService";
+import { createInitialState } from "@/components/MemoEditor/edit/state";
 
 describe("inline image editor validation", () => {
   test("blocks saving while an inline image insertion is unresolved", () => {

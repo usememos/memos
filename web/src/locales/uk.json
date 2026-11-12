@@ -6,7 +6,6 @@
     "api-docs": "API Документація",
     "api-docs-note": "Довідка з REST та gRPC",
     "build": "Збірка",
-    "commit": "Commit",
     "demo": "Демо",
     "description": "Простір із відкритим кодом на вашому сервері для нотаток, ідей і повсякденних думок.",
     "distribution": "Розповсюдження",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Не вдалося завершити вхід",
     "create-your-account": "Створіть обліковий запис",
+    "hide-password": "Сховати пароль",
+    "incorrect-credentials": "Неправильне ім'я користувача або пароль.",
     "new-password": "Новий пароль",
     "repeat-new-password": "Повторіть новий пароль",
+    "show-password": "Показати пароль",
     "sign-in-tip": "Вже маєте обліковий запис?",
     "sign-up-tip": "Ще не маєте облікового запису?",
     "admin-sign-in": "Вхід адміністратора",
-    "admin-sign-in-tip": "Вхід за паролем залишається доступним для адміністраторів.",
     "back-to-sign-in": "Повернутися до входу",
     "continue-with": "Продовжити з {{provider}}",
     "create-admin-account": "Створити обліковий запис адміністратора",
-    "explore-public-memos": "Переглянути публічні нотатки про цей екземпляр",
-    "first-run": "Перший запуск",
     "setup-description": "Створити обліковий запис адміністратора для цього екземпляра.",
-    "setup-note": "Цей обліковий запис володіє налаштуваннями екземпляра, учасниками та постачальниками ідентифікаційних даних.",
     "setup-title": "Налаштувати екземпляр",
     "signin-unavailable-description": "Вхід за допомогою пароля вимкнено, і постачальники ідентифікаційних даних не налаштовано. Зверніться до адміністратора, щоб увімкнути метод входу.",
     "signin-unavailable-title": "Вхід недоступний",
-    "signup-unavailable-description": "Облікові записи з паролями вимкнено, і постачальники ідентифікаційних даних не налаштовано. Зверніться до адміністратора, щоб надати доступ.",
-    "signup-unavailable-title": "Реєстрація недоступна",
-    "signups-closed-description": "Нові облікові записи вимкнено в цьому екземплярі. Зверніться до адміністратора, якщо вам потрібен доступ.",
-    "signups-closed-title": "Реєстрацію закрито",
-    "sso-signup-tip": "Увійдіть за допомогою постачальника нижче, щоб створити свій обліковий запис.",
-    "welcome-back": "Ласкаво просимо назад."
+    "signups-closed-description": "Нові облікові записи вимкнено в цьому екземплярі. Зверніться до адміністратора, якщо вам потрібен доступ."
   },
   "common": {
     "about": "Про Memos",
@@ -103,7 +97,6 @@
     "profile": "Профіль",
     "referenced-by": "Згадується в",
     "referencing": "Згадує",
-    "relations": "Зв'язки",
     "resources": "Ресурси",
     "restore": "Відновити",
     "role": "Роль",
@@ -139,7 +132,24 @@
     "resize-panel": "Змінити розмір панелі",
     "resize-sidebar": "Змінити розмір бічної панелі",
     "sign-in-to-memos": "Увійти до Memos",
-    "view-all": "Переглянути всі"
+    "open-navigation": "Відкрити навігацію",
+    "navigation": "Навігація",
+    "primary-navigation": "Основна",
+    "download": "Завантажити",
+    "download-name": "Завантажити {{name}}",
+    "open-name": "Відкрити {{name}}",
+    "preview-name": "Переглянути {{name}}",
+    "no-content": "Немає вмісту",
+    "previous": "Назад",
+    "next": "Далі",
+    "retry": "Повторити",
+    "docs": "Документація",
+    "calendar-for-month": "Календар: {{month}}",
+    "date-at-time": "{{date}} о {{time}}",
+    "selected-location": "Вибране місцезнаходження",
+    "choose-location": "Виберіть місцезнаходження",
+    "unknown-error": "Невідома помилка",
+    "error-occurred": "Сталася помилка"
   },
   "locale-picker": {
     "no-language-feedback": "Мова не знайдена? Надіслати відгук"
@@ -150,6 +160,7 @@
     "any-thoughts": "Якісь думки...",
     "exit-focus-mode": "Вийти з режиму фокусування",
     "focus-mode": "Режим фокусування",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Додайте місцезнаходження",
       "link-memo": "Пам'ятка про посилання",
@@ -158,9 +169,50 @@
       "image-upload-failed": "Не вдалося завантажити деякі зображення. Повторіть спробу або збережіть завантажені файли як вкладення.",
       "image-upload-stopped": "Завантаження зображення зупинено {{completed}}/{{total}}",
       "insert-image": "Вставити зображення",
+      "drawing": "Малюнок",
       "keep-as-attachments": "Зберегти як вкладення",
       "uploading-inline-image": "Завантаження до контенту",
       "uploading-images": "Завантаження зображень {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Новий малюнок",
+      "edit": "Редагувати малюнок",
+      "tools": "Інструменти",
+      "tool-select": "Виділення",
+      "tool-pen": "Перо",
+      "tool-eraser": "Гумка",
+      "tool-rectangle": "Прямокутник",
+      "tool-ellipse": "Еліпс",
+      "tool-arrow": "Стрілка",
+      "tool-text": "Текст",
+      "style": "Колір і товщина",
+      "color": "Колір",
+      "width": "Товщина",
+      "width-thin": "Тонка",
+      "width-medium": "Середня",
+      "width-thick": "Товста",
+      "color-ink": "Чорнило",
+      "color-gray": "Сірий",
+      "color-red": "Червоний",
+      "color-orange": "Помаранчевий",
+      "color-green": "Зелений",
+      "color-teal": "Бірюзовий",
+      "color-blue": "Синій",
+      "color-violet": "Фіолетовий",
+      "undo": "Скасувати",
+      "redo": "Повторити",
+      "zoom-to-fit": "Вмістити у вікно",
+      "done": "Готово",
+      "discard-title": "Відкинути цей малюнок?",
+      "discard-description": "Його ще не додано до нотатки.",
+      "discard-edit-title": "Відкинути зміни?",
+      "discard-edit-description": "Малюнок залишиться таким, яким був до відкриття.",
+      "keep-drawing": "Продовжити малювати",
+      "discard": "Відкинути",
+      "open-failed": "Не вдалося відкрити малюнок. Повторіть спробу.",
+      "export-failed": "Не вдалося зберегти малюнок. Повторіть спробу.",
+      "image-failed": "Не вдалося додати зображення до малюнка.",
+      "saved-without-drawing": "Нотатку збережено, а малюнок — ні. Збережіть ще раз, щоб повторити спробу."
     },
     "no-changes-detected": "Змін не виявлено",
     "save": "Зберегти",
@@ -183,21 +235,21 @@
     "format": {
       "code-block": "Блок коду",
       "link": "Посилання",
-      "heading": "Заголовок",
       "paragraph": "Абзац",
       "heading-1": "Заголовок 1",
       "heading-2": "Заголовок 2",
       "heading-3": "Заголовок 3",
+      "heading-4": "Заголовок 4",
       "bold": "Жирний шрифт",
       "italic": "Курсив",
       "strikethrough": "Закреслений текст",
       "bullet-list": "Маркований список список",
       "ordered-list": "Нумерований список",
-      "task-list": "Список справ",
-      "more": "Додаткове форматування"
+      "task-list": "Список справ"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Панель інструментів форматування",
+    "footnotes": "Примітки",
+    "back-to-reference": "Назад до посилання",
     "new-memo": "Нова нотатка",
     "saved": "Збережено",
     "validation": {
@@ -209,7 +261,66 @@
       "save-in-progress": "Виконується збереження",
       "unsupported-attachment-image-url": "Непідтримувана URL-адреса вкладеного зображення: {{url}}",
       "wait-for-upload": "Зачекайте завершення завантаження"
-    }
+    },
+    "blocks": {
+      "task": "Завдання",
+      "quote": "Цитата",
+      "callout": "Виноска",
+      "callout-note": "Примітка",
+      "callout-tip": "Порада",
+      "callout-important": "Важливо",
+      "callout-warning": "Попередження",
+      "callout-caution": "Обережно",
+      "collapsible-section": "Згортуваний розділ",
+      "table": "Таблиця",
+      "divider": "Роздільник",
+      "no-results": "Нічого не знайдено",
+      "commands": "Команди",
+      "loading": "Завантаження…",
+      "duplicate": "Дублювати",
+      "inline-code": "Код",
+      "link-placeholder": "Вставте або введіть посилання…",
+      "remove-link": "Видалити посилання",
+      "open-link": "Відкрити посилання",
+      "copy-link": "Копіювати посилання",
+      "edit-link": "Редагувати посилання",
+      "emoji": "Емодзі",
+      "block-menu": "Відкрити меню блоку",
+      "list-hint": "Список",
+      "plain-text": "текст",
+      "add-row-above": "Додати рядок вище",
+      "add-row-below": "Додати рядок нижче",
+      "add-column-left": "Додати стовпець ліворуч",
+      "add-column-right": "Додати стовпець праворуч",
+      "delete-row": "Видалити рядок",
+      "delete-column": "Видалити стовпець",
+      "align": "Вирівнювання",
+      "align-left": "Ліворуч",
+      "align-center": "По центру",
+      "align-right": "Праворуч",
+      "image-align-left": "Вирівняти ліворуч",
+      "image-align-center": "Вирівняти по центру",
+      "image-align-right": "Вирівняти праворуч",
+      "text-style": "Стиль тексту",
+      "image": "Зображення",
+      "reset-image-size": "Скинути розмір",
+      "alt-text": "Альтернативний текст",
+      "alt-text-placeholder": "Опишіть зображення…",
+      "image-unavailable": "Зображення недоступне",
+      "resize-image": "Змінити розмір зображення"
+    },
+    "attachments": {
+      "edited": "Змінено",
+      "new": "Нове",
+      "remove": "Вилучити вкладення",
+      "reorder": "Перемістити {{name}}",
+      "reorder-hint": "Перетягніть або скористайтеся клавішами зі стрілками"
+    },
+    "remove-relation": "Вилучити зв’язок",
+    "remove-location": "Вилучити місцезнаходження",
+    "recording-unsupported": "Цей браузер не підтримує запис звуку.",
+    "microphone-denied": "Доступ до мікрофона заборонено.",
+    "recording-failed": "Не вдалося почати запис звуку."
   },
   "inbox": {
     "failed-to-load": "Не вдалося завантажити елемент вхідних",
@@ -218,7 +329,16 @@
     "unread": "Непрочитані",
     "space-invitation": "запросив вас приєднатися до простору",
     "space-invitation-accepted": "Ви приєдналися до цього простору.",
-    "space-invitation-open": "Відкрити простір"
+    "space-invitation-open": "Відкрити простір",
+    "commented-on-memo": "прокоментував(-ла) вашу нотатку",
+    "mentioned-in-comment": "згадав(-ла) вас у коментарі",
+    "mentioned-in-memo": "згадав(-ла) вас у нотатці",
+    "original": "Оригінал:",
+    "memo-label": "Нотатка:",
+    "comment-heading": "Коментар",
+    "memo-heading": "Нотатка",
+    "empty-memo": "Порожня нотатка",
+    "empty-comment": "Порожній коментар"
   },
   "live-update": {
     "connected": "Оновлення в реальному часі активні",
@@ -226,11 +346,18 @@
     "disconnected": "Оновлення в реальному часі недоступні"
   },
   "memo": {
+    "no-memos-yet": "Поки немає нотаток",
+    "no-matching-memos": "Немає відповідних нотаток",
+    "clear-filters": "Очистити фільтри",
     "pinned": "Закріплено",
     "click-to-show-sensitive-content": "Натисніть, щоб показати NSFW-контент",
     "comment": {
       "self": "Коментарі",
-      "write-a-comment": "Напишіть коментар"
+      "write-a-comment": "Напишіть коментар",
+      "view-all-count_one": "Переглянути {{count}} коментар",
+      "view-all-count_few": "Переглянути всі {{count}} коментарі",
+      "view-all-count_many": "Переглянути всі {{count}} коментарів",
+      "view-all-count_other": "Переглянути всі {{count}} коментаря"
     },
     "copy-content": "Копіювати вміст",
     "copy-link": "Скопіювати посилання",
@@ -239,10 +366,13 @@
     "delete-confirm-description": "Ця дія є незворотною. Вкладення, посилання та посилання також буде видалено.",
     "direction": "Напрямок",
     "filters": {
+      "has-attachments": "є вкладення",
       "has-code": "єКод",
+      "has-image": "є зображення",
       "has-link": "єПосилання",
       "has-location": "є розташування",
-      "has-task-list": "єСписокЗавдань"
+      "has-task-list": "єСписокЗавдань",
+      "remove": "Вилучити фільтр"
     },
     "compact-mode": "Компактний режим",
     "link-preview": "Попередній перегляд посилань",
@@ -328,7 +458,9 @@
     "restored-successfully": "Успішно відновлено",
     "succeed-copy-content": "Вміст успішно скопійовано.",
     "succeed-copy-link": "Посилання успішно скопійовано.",
-    "update-succeed": "Оновлення успішне"
+    "update-succeed": "Оновлення успішне",
+    "not-signed-in": "Ви не ввійшли в систему.",
+    "invalid-datetime": "Недійсні дата й час. Використовуйте формат 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Немає знайдених нотаток",
@@ -398,7 +530,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Ваше сховище вкладень недоступне.",
-      "email-in-use": "Ця електронна адреса вже використовується іншим обліковим записом."
+      "email-in-use": "Ця електронна адреса вже використовується іншим обліковим записом.",
+      "avatar-too-large": "Виберіть зображення розміром до 2 МБ.",
+      "avatar-unreadable": "Не вдається прочитати це зображення. Спробуйте інший файл."
     },
     "instance": {
       "disallow-change-nickname": "Заборонити зміну нікнейму",
@@ -437,7 +571,11 @@
       "active": "Активний",
       "archived": "Архівовано",
       "member-column": "Член",
-      "summary-column": "Резюме"
+      "summary-column": "Резюме",
+      "export-memos": "Експортувати нотатки",
+      "username-password-required": "Ім’я користувача та пароль не можуть бути порожніми",
+      "create-success": "Користувача створено",
+      "update-success": "Користувача оновлено"
     },
     "memo": {
       "label": "Нотатка",
@@ -445,8 +583,6 @@
       "reactions-required": "Список реакцій не повинен бути порожнім",
       "add-reaction": "Додайте реакцію",
       "configured-reactions": "Налаштовані реакції",
-      "double-click-edit-description": "Дозволити користувачам відкривати редагування нагадування, двічі клацнувши нагадування.",
-      "editing-title": "Редагування",
       "reaction-placeholder": "напр. 👍",
       "reactions-description": "Визначте варіанти реакції, які користувачі можуть застосувати до нагадувань.",
       "remove-reaction": "Видалити реакцію"
@@ -455,26 +591,166 @@
       "label": "Мій обліковий запис"
     },
     "preference": {
-      "default-memo-visibility": "Типова видимість нотаток",
-      "label": "Налаштування",
-      "theme": "Тема",
       "appearance-description": "Виберіть, як програма виглядає та яку мову вона використовує для вашого облікового запису.",
       "appearance-title": "Зовнішній вигляд",
+      "default-memo-visibility": "Типова видимість нотаток",
       "default-memo-visibility-description": "Видимість застосовується до новостворених нотаток, якщо не змінено в редакторі.",
+      "device-description": "Налаштування читання та редагування, що зберігаються лише в цьому браузері. У вашому обліковому записі вони не зберігаються.",
+      "device-title": "Цей пристрій",
+      "double-click-edit": "Редагувати подвійним клацанням",
+      "double-click-edit-description": "Відкривайте власні нотатки в редакторі подвійним клацанням.",
+      "label": "Налаштування",
       "language-description": "Негайно оновлює мову інтерфейсу та зберігає його у вашому обліковому записі.",
+      "link-preview-description": "Показувати картку попереднього перегляду під голими посиланнями скрізь, де відображаються нотатки.",
       "memo-defaults-description": "Встановіть стандартні параметри, які використовуються під час створення нових нагадувань.",
       "memo-defaults-title": "Пам'ятки за замовчуванням",
-      "theme-description": "Вибрану тему негайно застосовує на цьому пристрої.",
       "save-media-metadata": "Зберегти метадані медіа",
       "save-media-metadata-description": "Для майбутніх завантажень зберігати доступну камеру, час зйомки, місцезнаходження, розміри зображення та основні відомості про відео. Будь-хто, хто може переглядати вкладення, може отримати ці метадані. Існуючі вкладення залишаються незмінними.",
+      "theme-description": "Вибрану тему негайно застосовує на цьому пристрої.",
+      "theme": "Тема",
       "uploads-privacy-description": "Контролювати конфіденційну інформацію, що надсилається разом із завантаженими медіафайлами.",
-      "uploads-privacy-title": "Завантаження та конфіденційність"
+      "uploads-privacy-title": "Завантаження та конфіденційність",
+      "theme-system": "Як у системі",
+      "theme-system-short": "Системна",
+      "theme-light": "Світла",
+      "theme-dark": "Темна",
+      "theme-paper": "Папір"
+    },
+    "editor": {
+      "label": "Редактор",
+      "markdown-mode-description": "Пишіть і редагуйте нотатки як текст Markdown замість форматованого тексту."
     },
     "memo-view": {
       "create": "Створити подання",
       "delete-confirm": "Ви впевнені, що хочете видалити подання `{{title}}`?",
       "delete-success": "Подання `{{title}}` успішно видалено",
-      "change-icon": "Змінити піктограму подання"
+      "change-icon": "Змінити піктограму подання",
+      "page-description": "Створюйте подання для повторного використання з полями, операторами, функціями часу та зіставленням тегів. Почніть із прикладів і перевірте вираз перед збереженням.",
+      "edit": "Редагувати подання",
+      "form-description": "Назвіть подання та задайте вираз фільтра нотаток, який воно застосовуватиме.",
+      "title-placeholder": "Закріплені, Нещодавні нотатки, Робота",
+      "filter-help": "Поєднуйте вирази за допомогою {{and}}, {{or}} і {{not}}. Поля часу є мітками часу — використовуйте {{now}}, {{duration}}, {{timestamp}} і методи доступу, як-от {{year}}. Теги підтримують {{sets}}, а {{size}} повертає довжину.",
+      "validate": "Перевірити",
+      "all": "Усі подання",
+      "loading": "Завантаження подань…",
+      "load-failed": "Не вдалося завантажити подання.",
+      "empty-title": "Подань ще немає",
+      "empty-description": "Збережіть фільтр, щоб швидко повертатися до потрібних нотаток.",
+      "examples-title": "Приклади виразів",
+      "fields-title": "Підтримувані поля",
+      "title-filter-required": "Назва і фільтр не можуть бути порожніми",
+      "filter-valid": "Вираз фільтра виглядає коректним",
+      "create-success": "Подання створено",
+      "update-success": "Подання оновлено",
+      "examples": {
+        "pinned": {
+          "title": "Закріплені",
+          "description": "Лише закріплені нотатки."
+        },
+        "recent": {
+          "title": "Нещодавні нотатки",
+          "description": "Нотатки, створені за останню годину."
+        },
+        "public": {
+          "title": "Публічні нотатки",
+          "description": "Лише публічні нотатки."
+        },
+        "project-tags": {
+          "title": "Теги проєкту",
+          "description": "Точний збіг з одним або кількома тегами."
+        },
+        "untagged": {
+          "title": "Без тегів",
+          "description": "Нотатки без жодних тегів."
+        },
+        "archive-tree": {
+          "title": "Дерево архіву",
+          "description": "Збіг ієрархічних тегів за префіксом."
+        },
+        "unassigned": {
+          "title": "Поза просторами",
+          "description": "Нотатки, які не розміщено в жодному просторі."
+        },
+        "one-space": {
+          "title": "В одному просторі",
+          "description": "Нотатки в просторі. Використовуйте ID простору з його URL-адреси або налаштувань."
+        },
+        "open-tasks": {
+          "title": "Відкриті завдання",
+          "description": "Нотатки з невиконаними завданнями."
+        },
+        "links-or-code": {
+          "title": "Посилання або код",
+          "description": "Нотатки з посиланнями або блоками коду."
+        },
+        "no-location": {
+          "title": "Без місцезнаходження",
+          "description": "Нотатки без доданого місцезнаходження."
+        },
+        "with-attachments": {
+          "title": "З вкладеннями",
+          "description": "Нотатки щонайменше з одним вкладеним файлом."
+        },
+        "photos": {
+          "title": "Фото",
+          "description": "Нотатки із зображенням у вмісті або у вигляді вкладеного файлу."
+        },
+        "content-search": {
+          "title": "Пошук у вмісті",
+          "description": "Пошук тексту у вмісті нотаток."
+        },
+        "starts-with": {
+          "title": "Починається з",
+          "description": "Нотатки, вміст яких починається з тексту (також endsWith)."
+        },
+        "regex": {
+          "title": "Збіг регулярного виразу",
+          "description": "Зіставлення вмісту з регулярним виразом."
+        },
+        "all-tags-complete": {
+          "title": "Усі теги завершені",
+          "description": "Кожен тег закінчується на -done (лише нотатки з тегами)."
+        },
+        "one-project-tag": {
+          "title": "Один тег проєкту",
+          "description": "Рівно один тег задовольняє предикат."
+        },
+        "any-tags": {
+          "title": "Будь-який із цих тегів",
+          "description": "Теги перетинаються із заданим набором."
+        },
+        "exact-tags": {
+          "title": "Саме ці теги",
+          "description": "Позначено саме цим набором тегів, без зайвих."
+        },
+        "year-2024": {
+          "title": "Нотатки за 2024",
+          "description": "Фільтр за календарним роком."
+        },
+        "weekend": {
+          "title": "Нотатки вихідних",
+          "description": "Створені в неділю або суботу (0 = неділя)."
+        },
+        "long": {
+          "title": "Довгі нотатки",
+          "description": "Нотатки, довші за 280 символів."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Конфігурація",
+      "description": "Ресурси, задані файлами конфігурації. Щоб змінити їх, відредагуйте файл і застосуйте його; решта екземпляра й далі редагується тут.",
+      "managed-by": "Керується конфігурацією",
+      "managed-tooltip": "Задано в {{source}}. Щоб змінити це, відредагуйте файл і застосуйте його.",
+      "resource": "Ресурс",
+      "source": "Файл",
+      "managed-fields": "Керовані поля",
+      "whole-resource": "Усі поля",
+      "ignored-fields": "Редагується тут",
+      "serial": "Серійний номер",
+      "last-apply": "Останнє застосування",
+      "applied-by": "Застосував",
+      "nothing-managed": "Конфігурацію не застосовано. Усе налаштовується тут."
     },
     "sso": {
       "authorization-endpoint": "Точка авторизації",
@@ -535,7 +811,9 @@
       "scopes-description": "Розділіть області пробілами. Більшості постачальників потрібен лише невеликий набір, наприклад доступ до профілю або електронної пошти.",
       "template-description": "Почніть із попереднього налаштування постачальника, а потім налаштуйте облікові дані та кінцеві точки для свого клієнта.",
       "unlink-success": "Від’єднано {{name}}.",
-      "update-sso-description": "Перегляньте конфігурацію постачальника, а потім збережіть поля, які слід змінити."
+      "update-sso-description": "Перегляньте конфігурацію постачальника, а потім збережіть поля, які слід змінити.",
+      "invalid-config": "Недійсна конфігурація постачальника ідентифікації.",
+      "provider-id-placeholder": "напр. github, okta-corp"
     },
     "storage": {
       "accesskey": "Ключ доступу",
@@ -583,9 +861,9 @@
       "customize-server": {
         "description": "Опис",
         "icon-url": "URL значка",
-        "title": "Налаштування сервера"
+        "title": "Налаштування сервера",
+        "dialog-description": "Налаштуйте вигляд і параметри вашого екземпляра."
       },
-      "enable-double-click-to-edit": "Увімкнути двократне натискання для редагування",
       "label": "Система",
       "server-name": "Назва сервера",
       "additional-script-description": "Вставте JavaScript на кожну веб-сторінку. Використовуйте лише надійний код.",
@@ -595,38 +873,47 @@
       "custom-code-title": "Спеціальний код"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -807,7 +1094,9 @@
       "review-existing": "Вже у вашому обліковому записі",
       "review-exported": "Експортовано користувачем",
       "review-memos": "Нотатки в файлі",
-      "review-new": "Буде створено"
+      "review-new": "Буде створено",
+      "export-admin-only": "Експортувати нотатки можуть лише адміністратори. Запитайте файл експорту в адміністратора.",
+      "export-busy": "Уже виконується інший експорт. Спробуйте ще раз за мить."
     },
     "spaces": {
       "general": "Загальні",
@@ -893,7 +1182,8 @@
   },
   "tooltip": {
     "link-memo": "Посилання на нотатку",
-    "select-location": "Місцезнаходження"
+    "select-location": "Місцезнаходження",
+    "link-memo-description": "Знайдіть і виберіть нотатку для зв’язку"
   },
   "demo": {
     "banner-description": "Зміни є тимчасовими та можуть бути скинуті.",
@@ -996,7 +1286,12 @@
     "loading": "Завантаження нотаток…",
     "new-here": "Пишіть тут",
     "saved-outside-filter": "Збережено. Ця нотатка знаходиться поза межами поточних результатів на карті.",
-    "open-memo": "Відкрити мемо"
+    "open-memo": "Відкрити мемо",
+    "open-in-google-maps": "Відкрити в Google Maps",
+    "location-description": "Виберіть місце на карті або введіть координати вручну",
+    "latitude": "Широта",
+    "longitude": "Довгота",
+    "place-placeholder": "Спочатку виберіть точку."
   },
   "calendar": {
     "new-memo-on-day": "Нова нотатка цього дня",
@@ -1040,5 +1335,102 @@
     "name-placeholder": "наприклад, Продукт",
     "spaces": "Простори",
     "switch": "Змінити простір"
+  },
+  "welcome": {
+    "title": "Ласкаво просимо до Memos",
+    "headline": "Прості нотатки для щоденних думок.",
+    "intro-write": "Одне речення може бути цілою нотаткою.",
+    "intro-keep": "Кожна нотатка залишається в тому дні, коли ви її написали.",
+    "intro-share": "Ви вирішуєте, що залишиться приватним.",
+    "write": "Писати",
+    "write-sub": "Одне речення може бути цілою нотаткою.",
+    "no-title": "Без заголовка",
+    "no-title-text": "Нотатка починається з самої думки. Заголовок заповнювати не потрібно.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown надає словам структуру, коли вона вам потрібна.",
+    "attach": "Прикріпити",
+    "attach-text": "Зображення, файли, аудіо та місце додаються через ＋.",
+    "keep": "Зберігати",
+    "keep-sub": "Кожна нотатка залишається в тому дні, коли ви її написали.",
+    "calendar-text": "Календар веде назад до будь-якого дня.",
+    "tags-text": "Слово після # стає тегом, а тег фільтрує хронологію.",
+    "views-text": "Власне подання зберігає фільтр.",
+    "map-text": "Нотатки з місцем видно на мапі.",
+    "share": "Ділитися",
+    "share-sub": "Нотатки створюються приватними. Ви вирішуєте, чим поділитися і що опублікувати.",
+    "visibility-text": "Кожна нотатка має власне налаштування. Нові створюються приватними, лише для вас; публічна має посилання, яке може відкрити будь-хто.",
+    "spaces-text": "У просторі учасники пишуть поруч із вами, і в кожного залишаються власні нотатки.",
+    "comments": "Коментарі",
+    "comments-text": "Будь-хто, хто бачить нотатку, може відповісти під нею.",
+    "skip": "Пропустити",
+    "next": "Далі",
+    "done": "Готово",
+    "page-of": "Сторінка {{current}} з {{total}}",
+    "reopen": "Вступний посібник",
+    "reopen-note": "Чотири екрани, які новий обліковий запис бачить першими.",
+    "sample": {
+      "today": "Сьогодні, 10:42",
+      "today-early": "Сьогодні, 9:18",
+      "yesterday": "Вчора, 15:20",
+      "comment-age": "2 год",
+      "memo-preview": "Простіший перший екран. Одне поле, потім попередній перегляд.",
+      "memo-release": "Перед наступним випуском",
+      "task-sketch": "Накидати перший екран",
+      "task-polish": "Доопрацювати попередній перегляд",
+      "write-lead": "Нехай перший крок буде невеликим.",
+      "write-strong": "Подробиці показуємо",
+      "write-tail": "тоді, коли вони потрібні.",
+      "write-task": "Написати короткий список змін",
+      "view": "Незавершені завдання",
+      "space": "Продукт",
+      "share-memo": "Спробуймо показати результат, перш ніж просити людей реєструватися.",
+      "comment": "Підтримую. Переконав саме попередній перегляд.",
+      "tag-design": "дизайн",
+      "tag-project": "проєкт",
+      "tag-reading": "читання",
+      "tag-ideas": "ідеї"
+    }
+  },
+  "error": {
+    "title": "Щось пішло не так",
+    "description": "Сталася неочікувана помилка. Можливо, це через проблему з мережею або збій у застосунку.",
+    "description-update": "Сталася неочікувана помилка. Можливо, це через проблему з мережею або оновлення застосунку. Зазвичай допомагає перезавантаження.",
+    "details": "Деталі помилки",
+    "reload": "Перезавантажити застосунок",
+    "not-found": "Сторінку, яку ви шукаєте, не знайдено.",
+    "permission-denied": "Доступ заборонено",
+    "too-many-requests": "Забагато запитів. Спробуйте ще раз через {{wait}}.",
+    "wait-seconds": "{{count}} с",
+    "wait-minutes": "{{count}} хв",
+    "wait-hours": "{{count}} год",
+    "challenge-required": "Пройдіть перевірку та спробуйте ще раз.",
+    "quota-memo-count": "Ви досягли ліміту в {{limit}} нотаток. Видаліть нотатки, щоб створити нові.",
+    "quota-storage": "Це завантаження перевищить ваш ліміт сховища в {{limit}}. Зараз використано {{usage}}.",
+    "quota-upload": "Цей файл перевищує ваш ліміт у {{limit}} на файл.",
+    "quota-memo-content": "Ця нотатка перевищує ваш ліміт у {{limit}} на нотатку. Скоротіть вміст, щоб зберегти її.",
+    "quota-generic": "Ви досягли ліміту використання.",
+    "sign-in-failed": "Не вдалося увійти.",
+    "sign-up-failed": "Не вдалося зареєструватися",
+    "authenticate-failed": "Не вдалося пройти автентифікацію.",
+    "update-profile-failed": "Не вдалося оновити профіль",
+    "unlink-identity-failed": "Не вдалося від’єднати постачальника ідентифікації.",
+    "link-identity-failed": "Не вдалося почати прив’язування облікового запису. Спробуйте ще раз."
+  },
+  "attachment-preview": {
+    "title": "Перегляд вкладення",
+    "description": "Вікно перегляду вкладень. Натисніть Escape, щоб закрити, використовуйте стрілки ліворуч і праворуч для перемикання елементів, а зображення масштабуйте кнопками, коліщатком миші, подвійним дотиком або жестом зведення пальців.",
+    "close": "Закрити перегляд",
+    "previous": "Попередній елемент",
+    "next": "Наступний елемент",
+    "reset-zoom": "Скинути масштаб",
+    "image-alt": "Перегляд зображення {{index}} з {{count}}",
+    "live-photo-alt": "Перегляд живого фото {{index}} з {{count}}",
+    "play-live-photo": "Наведіть курсор або натисніть, щоб відтворити живе фото"
+  },
+  "audio-player": {
+    "seek": "Перемотування {{name}}",
+    "back": "Назад на {{seconds}} секунд",
+    "forward": "Вперед на {{seconds}} секунд",
+    "speed": "Швидкість відтворення {{rate}}x"
   }
 }

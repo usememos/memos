@@ -8,20 +8,18 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/configuration"
+	"github.com/usememos/memos/core/instancesetting"
 	"github.com/usememos/memos/core/notification"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-const (
-	maxTranscriptionConfigModelLength    = 256
-	maxTranscriptionConfigLanguageLength = 32
-	maxTranscriptionConfigPromptLength   = 4096
-	maxBatchGetInstanceSettings          = 100
-)
+const maxBatchGetInstanceSettings = 100
 
 type instanceSettingCaller struct {
 	user   *store.User
@@ -43,7 +41,11 @@ func (c *instanceSettingCaller) currentUser(ctx context.Context, service *APISer
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanceProfileRequest) (*apipb.InstanceProfile, error) {
-	admin, err := s.GetInstanceAdmin(ctx)
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	admin, err := s.getInstanceAdmin(ctx, currentUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
 	}
@@ -66,10 +68,10 @@ func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanc
 		Version:     s.Profile.Version,
 		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-		Admin:       admin, // for display only; may be nil even on a populated instance
+		Admin:       admin, // signed-in callers only; may be nil even on a populated instance
 		Commit:      s.Profile.Commit,
 		NeedsSetup:  len(users) == 0,
-		AccessMode:  convertInstanceAccessModeFromStore(accessSetting.AccessMode),
+		AccessMode:  instancesetting.AccessModeFromStore(accessSetting.AccessMode),
 		Challenge:   s.challengeProfile(),
 	}
 	return instanceProfile, nil
@@ -140,6 +142,10 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		var setting *storepb.InstanceAccessSetting
 		setting, err = s.Store.GetInstanceAccessSetting(ctx)
 		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: setting}}
+	case storepb.InstanceSettingKey_USAGE_LIMITS:
+		var setting *storepb.InstanceUsageLimitsSetting
+		setting, err = s.Store.GetInstanceUsageLimitsSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: setting}}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -147,9 +153,11 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		return nil, status.Errorf(codes.Internal, "failed to get instance setting: %v", err)
 	}
 
-	// Storage and notification settings contain credentials; restrict to admins only.
+	// Storage and notification settings contain credentials, and usage limits
+	// name users; restrict them to admins.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
-		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
+		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION ||
+		instanceSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
 		user, err := caller.currentUser(ctx, s)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -173,7 +181,10 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		isAdminCaller = user.Role == store.RoleAdmin
 	}
 
-	result := convertInstanceSettingFromStore(instanceSetting)
+	result, err := s.convertInstanceSettingResponse(ctx, instanceSetting)
+	if err != nil {
+		return nil, err
+	}
 	if instanceSetting.Key == storepb.InstanceSettingKey_AI && !isAdminCaller {
 		// Non-admin callers only need transcription.provider_id to gate the
 		// editor's Transcribe button. Model / language / prompt are
@@ -202,35 +213,30 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	if request.InstanceSetting == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "instance setting is required")
 	}
-	settingKeyString, err := ExtractInstanceSettingKeyFromName(request.InstanceSetting.Name)
-	if err != nil {
+	if _, err := ExtractInstanceSettingKeyFromName(request.InstanceSetting.Name); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting name: %v", err)
 	}
-	settingKey := storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[settingKeyString])
-	if settingKey == storepb.InstanceSettingKey_USAGE_LIMITS {
-		// Usage limits are store only; the usageLimits RPCs are their only API.
-		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", settingKey)
-	}
-	if s.Store.IsInstanceSettingDeploymentConfigured(settingKey) {
-		return nil, status.Errorf(codes.FailedPrecondition, "instance setting %q is configured by the deployment", settingKeyString)
-	}
-
 	// TODO: Apply update_mask if specified
 	_ = request.UpdateMask
 
-	if err := validateInstanceSetting(request.InstanceSetting); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
+	updateSetting := instancesetting.ToStore(request.InstanceSetting)
+	if updateSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		usageLimits, err := s.convertUsageLimitsSettingToStore(ctx, request.InstanceSetting.GetUsageLimitsSetting())
+		if err != nil {
+			return nil, err
+		}
+		updateSetting.Value = &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: usageLimits}
 	}
-
-	updateSetting := convertInstanceSettingToStore(request.InstanceSetting)
 
 	// Preserve write-only credential fields when the caller sends an empty value.
 	// An empty string means "no change", not "clear the credential".
+	var existingSetting *storepb.InstanceSetting
 	switch updateSetting.Key {
-	case storepb.InstanceSettingKey_NOTIFICATION:
-		if err := store.ValidateInstanceNotificationSetting(updateSetting.GetNotificationSetting()); err != nil {
+	case storepb.InstanceSettingKey_TAGS:
+		if err := validateInstanceTagsSetting(request.InstanceSetting.GetTagsSetting()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
 		}
+	case storepb.InstanceSettingKey_NOTIFICATION:
 		if notif := updateSetting.GetNotificationSetting(); notif != nil && notif.Email != nil && notif.Email.SmtpPassword == "" {
 			existing, err := s.Store.GetInstanceNotificationSetting(ctx)
 			if err == nil && existing != nil && existing.Email != nil {
@@ -251,12 +257,22 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		if err := store.PrepareInstanceStorageSettingUpdate(updateSetting.GetStorageSetting(), existing); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid storage setting: %v", err)
 		}
+		existingSetting = &storepb.InstanceSetting{
+			Key:   storepb.InstanceSettingKey_STORAGE,
+			Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: existing},
+		}
 	case storepb.InstanceSettingKey_AI:
 		if err := s.prepareInstanceAISettingForUpdate(ctx, updateSetting.GetAiSetting()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid AI setting: %v", err)
 		}
 	default:
 		// No credential preservation needed for other setting types.
+	}
+	if err := instancesetting.ValidateUpdate(updateSetting, existingSetting); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
+	}
+	if err := s.checkManagedSettingChange(ctx, updateSetting); err != nil {
+		return nil, err
 	}
 
 	var instanceSetting *storepb.InstanceSetting
@@ -269,10 +285,46 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		if errors.Is(err, store.ErrUnsafeAuthenticationConfiguration) {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}
+		if errors.Is(err, store.ErrInvalidUsageLimits) {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
 	}
 
-	return convertInstanceSettingFromStore(instanceSetting), nil
+	return s.convertInstanceSettingResponse(ctx, instanceSetting)
+}
+
+// checkManagedSettingChange refuses an update that changes managed fields of
+// a setting the configuration manages. It compares the stored value with the
+// prepared update, so resending managed values unchanged passes.
+func (s *APIService) checkManagedSettingChange(ctx context.Context, update *storepb.InstanceSetting) error {
+	name := instancesetting.NamePrefix + update.Key.String()
+	// Most settings are not managed; skip reading and diffing the stored value for those.
+	state, err := s.Store.GetConfigurationState(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to read the configuration state: %v", err)
+	}
+	if !configuration.Manages(state, name) {
+		return nil
+	}
+	stored, err := s.Store.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: update.Key.String()})
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to read instance setting: %v", err)
+	}
+	var changed []string
+	if update.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		// Usage limits name users only in the API form, so compare stored values.
+		if !proto.Equal(stored.GetUsageLimitsSetting(), update.GetUsageLimitsSetting()) {
+			changed = []string{"usageLimitsSetting"}
+		}
+	} else {
+		var before proto.Message
+		if stored != nil {
+			before = instancesetting.FromStore(stored)
+		}
+		changed = configuration.ChangedPaths(before, instancesetting.FromStore(update))
+	}
+	return managedStatus(configuration.CheckChange(state, name, changed))
 }
 
 // challengeProfile describes the configured challenge so the web app can
@@ -332,7 +384,7 @@ func (s *APIService) resolveTestEmailSetting(ctx context.Context, requestEmail *
 		return existing.GetEmail(), nil
 	}
 
-	emailSetting := convertInstanceNotificationSettingToStore(&apipb.InstanceSetting_NotificationSetting{Email: requestEmail}).GetEmail()
+	emailSetting := instancesetting.NotificationSettingToStore(&apipb.InstanceSetting_NotificationSetting{Email: requestEmail}).GetEmail()
 	if emailSetting.SmtpPassword != "" {
 		return emailSetting, nil
 	}
@@ -363,7 +415,17 @@ func sameSMTPConnectionIdentity(setting, existing *storepb.InstanceNotificationS
 		setting.UseSsl == existing.UseSsl
 }
 
-func (s *APIService) GetInstanceAdmin(ctx context.Context) (*apipb.User, error) {
+// getInstanceAdmin returns the first admin of the instance as seen by viewer,
+// or nil when the instance has no admin.
+//
+// A nil viewer is an anonymous caller and always gets nil: the profile endpoint
+// is reachable without authentication so the sign-in page can render, and an
+// anonymous visitor must not learn the login identifier of the most privileged
+// account, especially on a private instance.
+func (s *APIService) getInstanceAdmin(ctx context.Context, viewer *store.User) (*apipb.User, error) {
+	if viewer == nil {
+		return nil, nil
+	}
 	adminUserType := store.RoleAdmin
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		Role: &adminUserType,
@@ -374,7 +436,5 @@ func (s *APIService) GetInstanceAdmin(ctx context.Context) (*apipb.User, error) 
 	if user == nil {
 		return nil, nil
 	}
-
-	currentUser, _ := s.fetchCurrentUser(ctx)
-	return convertUserFromStore(user, currentUser), nil
+	return convertUserFromStore(user, viewer), nil
 }

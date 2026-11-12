@@ -1,16 +1,16 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { Button, Collapsible, List, Tooltip } from "@usememos/ui";
 import copy from "copy-to-clipboard";
-import { ChevronRightIcon, CopyIcon, ExternalLinkIcon, KeyRoundIcon, PlusIcon, ScissorsIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, ExternalLinkIcon, KeyRoundIcon, PlusIcon, ScissorsIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RelativeTime from "@/components/RelativeTime";
-import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { WEB_CLIPPER_URL } from "@/lib/constants";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
@@ -24,17 +24,28 @@ const ApiUsageExample = () => {
 
   const handleCopy = () => {
     copy(example);
-    toast.success(t("message.copied"));
+    toast.add({ title: t("message.copied"), type: "success" });
   };
 
   return (
-    <div className="relative w-full min-w-0 rounded-lg border border-border/60 bg-muted/30">
-      <pre className="overflow-x-auto p-3 pe-12 font-mono text-xs leading-5 text-foreground/85">
+    <div className="relative w-full min-w-0 rounded-mu-lg border border-mu-line/60 bg-mu-well/30">
+      <pre className="overflow-x-auto p-3 pe-12 font-mono mu-caption text-mu-ink/85">
         <code>{example}</code>
       </pre>
-      <Button variant="ghost" size="icon" className="absolute top-1.5 end-1.5" aria-label={t("common.copy")} onClick={handleCopy}>
-        <CopyIcon className="w-3.5 h-auto" />
-      </Button>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              variant="ghost"
+              className="absolute top-1.5 end-1.5"
+              aria-label={t("common.copy")}
+              onClick={handleCopy}
+              icon={<CopyIcon />}
+            />
+          }
+        />
+        <Tooltip.Popup>{t("common.copy")}</Tooltip.Popup>
+      </Tooltip.Root>
     </div>
   );
 };
@@ -52,7 +63,7 @@ const StatusDot = ({ status }: { status: TokenStatus }) => (
   <span
     aria-hidden="true"
     className={`size-1.5 shrink-0 rounded-full ${
-      status === "active" ? "bg-success" : status === "expiring" ? "bg-warning" : "bg-muted-foreground/40"
+      status === "active" ? "bg-mu-success" : status === "expiring" ? "bg-mu-warning" : "bg-mu-ink-muted/40"
     }`}
   />
 );
@@ -68,47 +79,38 @@ const listAccessTokens = async (parent: string) => {
 
 const HowToUseDisclosure = () => {
   const t = useTranslate();
-  const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-lg border border-border/60">
-      <button
-        type="button"
-        className="flex w-full items-center gap-1.5 px-3 py-2.5 text-[13px] font-medium text-muted-foreground hover:text-foreground"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <ChevronRightIcon className={`size-3.5 transition-transform ${open ? "rotate-90" : "rtl:rotate-180"}`} />
-        {t("setting.access-token.how-to-use")}
-      </button>
-      {open && (
-        <div className="grid gap-4 border-t border-border/60 p-4 lg:grid-cols-2">
+    <Collapsible.Root size="sm">
+      <Collapsible.Trigger>{t("setting.access-token.how-to-use")}</Collapsible.Trigger>
+      <Collapsible.Panel>
+        <div className="grid gap-4 pt-2 lg:grid-cols-2">
           <div className="flex min-w-0 flex-col gap-2.5">
-            <p className="text-xs leading-5 text-muted-foreground">{t("setting.access-token.about-description")}</p>
+            <p className="mu-caption text-mu-ink-muted">{t("setting.access-token.about-description")}</p>
             <ApiUsageExample />
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
               <a
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+                className="inline-flex items-center gap-1 mu-caption text-mu-ink-muted underline-offset-4 hover:text-mu-accent hover:underline"
                 href="https://usememos.com/docs/security/access-tokens"
                 target="_blank"
                 rel="noreferrer"
               >
                 {t("common.learn-more")}
-                <ExternalLinkIcon className="size-3" />
+                <ExternalLinkIcon className="mu-icon-xs" />
               </a>
               <a
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+                className="inline-flex items-center gap-1 mu-caption text-mu-ink-muted underline-offset-4 hover:text-mu-accent hover:underline"
                 href={WEB_CLIPPER_URL}
                 target="_blank"
                 rel="noreferrer"
               >
-                <ScissorsIcon className="size-3" />
+                <ScissorsIcon className="mu-icon-xs" />
                 {t("setting.access-token.web-clipper-title")}
-                <ExternalLinkIcon className="size-3" />
+                <ExternalLinkIcon className="mu-icon-xs" />
               </a>
             </div>
           </div>
-          <ul className="m-0 flex list-none flex-col gap-1.5 p-0 text-xs leading-5 text-muted-foreground">
+          <ul className="m-0 flex list-none flex-col gap-1.5 p-0 mu-caption text-mu-ink-muted">
             {[
               t("setting.access-token.guideline-shown-once"),
               t("setting.access-token.guideline-one-per-app"),
@@ -116,41 +118,40 @@ const HowToUseDisclosure = () => {
               t("setting.access-token.guideline-review"),
             ].map((guideline) => (
               <li key={guideline} className="flex gap-2">
-                <span className="mt-[7px] size-1 shrink-0 rounded-full bg-muted-foreground/40" />
+                <span className="mt-[7px] size-1 shrink-0 rounded-full bg-mu-ink-muted/40" />
                 {guideline}
               </li>
             ))}
           </ul>
         </div>
-      )}
-    </div>
+      </Collapsible.Panel>
+    </Collapsible.Root>
   );
 };
 
 const EmptyState = ({ onCreate }: { onCreate: () => void }) => {
   const t = useTranslate();
   return (
-    <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center">
-      <span className="mx-auto flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        <KeyRoundIcon className="size-4" />
+    <div className="rounded-mu-lg border border-dashed border-mu-line px-6 py-10 text-center">
+      <span className="mx-auto flex size-10 items-center justify-center rounded-mu-lg bg-mu-primary/10 text-mu-primary">
+        <KeyRoundIcon className="mu-icon" />
       </span>
-      <h4 className="mt-3 text-sm font-medium text-foreground">{t("setting.access-token.empty-title")}</h4>
-      <p className="mx-auto mt-1 max-w-sm text-[13px] leading-5 text-muted-foreground">{t("setting.access-token.empty-description")}</p>
+      <h4 className="mt-3 mu-label text-mu-ink">{t("setting.access-token.empty-title")}</h4>
+      <p className="mx-auto mt-1 max-w-sm mu-caption text-mu-ink-muted">{t("setting.access-token.empty-description")}</p>
       <div className="mx-auto mt-4 max-w-md text-left">
         <ApiUsageExample />
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-        <Button size="sm" onClick={onCreate}>
-          <PlusIcon className="w-4 h-4 mr-1.5" />
+        <Button variant="neutral" onClick={onCreate} icon={<PlusIcon />}>
           {t("setting.access-token.create-first")}
         </Button>
         <a
-          className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-1.5 mu-caption text-mu-ink-muted hover:text-mu-ink"
           href={WEB_CLIPPER_URL}
           target="_blank"
           rel="noreferrer"
         >
-          <ScissorsIcon className="size-3.5" />
+          <ScissorsIcon className="mu-icon-sm" />
           {t("setting.access-token.web-clipper-title")}
         </a>
       </div>
@@ -165,11 +166,11 @@ const TokenRow = ({ token, onDelete }: { token: PersonalAccessToken; onDelete: (
   const status = getTokenStatus(lastUsedAt, expiresAt);
 
   return (
-    <li className="group flex items-center gap-3 px-4 py-3">
+    <List.Item className="group flex items-center gap-3">
       <StatusDot status={status} />
       <div className="min-w-0 flex-1">
-        <div className="text-[13px] font-medium text-foreground">{token.description}</div>
-        <div className="mt-0.5 text-xs text-muted-foreground">
+        <div className="mu-label-sm text-mu-ink">{token.description}</div>
+        <div className="mt-0.5 mu-caption text-mu-ink-muted">
           {lastUsedAt ? (
             <>
               {t("setting.access-token.last-used")} <RelativeTime date={lastUsedAt} />
@@ -179,7 +180,7 @@ const TokenRow = ({ token, onDelete }: { token: PersonalAccessToken; onDelete: (
           )}
           {" · "}
           {expiresAt ? (
-            <span className={status === "expiring" ? "text-warning" : ""}>
+            <span className={status === "expiring" ? "text-mu-warning" : ""}>
               {t("setting.access-token.expires")} <RelativeTime date={expiresAt} />
             </span>
           ) : (
@@ -187,16 +188,21 @@ const TokenRow = ({ token, onDelete }: { token: PersonalAccessToken; onDelete: (
           )}
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t("common.delete")}
-        className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
-        onClick={() => onDelete(token)}
-      >
-        <Trash2Icon className="w-3.5 h-auto" />
-      </Button>
-    </li>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              variant="ghost"
+              aria-label={t("common.delete")}
+              className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+              onClick={() => onDelete(token)}
+              icon={<Trash2Icon />}
+            />
+          }
+        />
+        <Tooltip.Popup>{t("common.delete")}</Tooltip.Popup>
+      </Tooltip.Root>
+    </List.Item>
   );
 };
 
@@ -218,7 +224,7 @@ const AccessTokenSection = () => {
       })
       .catch((error: unknown) => {
         if (!canceled) {
-          handleError(error, toast.error, { context: "List access tokens" });
+          handleError(error, showErrorToast, { context: "List access tokens" });
         }
       });
     return () => {
@@ -232,13 +238,14 @@ const AccessTokenSection = () => {
     // Copy the token to clipboard - this is the only time it will be shown
     if (response.token) {
       copy(response.token);
-      toast.success(t("setting.access-token.access-token-copied-to-clipboard"));
+      toast.add({ title: t("setting.access-token.access-token-copied-to-clipboard"), type: "success" });
     }
-    toast.success(
-      t("setting.access-token.create-dialog.access-token-created", {
+    toast.add({
+      title: t("setting.access-token.create-dialog.access-token-created", {
         description: response.personalAccessToken?.description ?? "",
       }),
-    );
+      type: "success",
+    });
   };
 
   const confirmDeleteAccessToken = async () => {
@@ -247,7 +254,7 @@ const AccessTokenSection = () => {
     await userServiceClient.deletePersonalAccessToken({ name: tokenName });
     setPersonalAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
     setDeleteTarget(undefined);
-    toast.success(t("setting.access-token.access-token-deleted", { description }));
+    toast.add({ title: t("setting.access-token.access-token-deleted", { description }), type: "success" });
   };
 
   return (
@@ -255,8 +262,7 @@ const AccessTokenSection = () => {
       title={t("setting.access-token.title")}
       description={t("setting.access-token.description")}
       actions={
-        <Button onClick={createTokenDialog.open} size="sm">
-          <PlusIcon className="w-4 h-4 mr-1.5" />
+        <Button variant="primary" onClick={createTokenDialog.open} icon={<PlusIcon />}>
           {t("common.create")}
         </Button>
       }
@@ -266,11 +272,11 @@ const AccessTokenSection = () => {
       ) : (
         <>
           <HowToUseDisclosure />
-          <ul className="m-0 flex list-none flex-col divide-y divide-border/60 rounded-xl border border-border/60 p-0">
+          <List.Root aria-label={t("setting.access-token.title")}>
             {personalAccessTokens.map((token) => (
               <TokenRow key={token.name} token={token} onDelete={setDeleteTarget} />
             ))}
-          </ul>
+          </List.Root>
         </>
       )}
 
@@ -288,7 +294,7 @@ const AccessTokenSection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteAccessToken}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

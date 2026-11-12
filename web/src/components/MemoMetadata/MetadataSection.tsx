@@ -1,7 +1,7 @@
+import { Button, Tooltip } from "@usememos/ui";
 import { type LucideIcon, XIcon } from "lucide-react";
 import type { PropsWithChildren, ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
+import { SIDEBAR_LEADING_SLOT_CLASSES } from "@/components/AppSidebar/sidebar-layout";
 import { cn } from "@/lib/utils";
 
 /**
@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
  * sit on a card rather than the sidebar surface.
  */
 export const METADATA_ROW_BOX_CLASSES =
-  "group/row relative flex h-7 w-full min-w-0 items-center gap-1 rounded-md px-2 text-start text-ui text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+  "group/row relative flex h-7 w-full min-w-0 items-center gap-1 rounded-mu-md px-2 text-start mu-caption text-mu-ink-muted transition-colors hover:bg-mu-hover hover:text-mu-ink";
 /** A row that is itself the control: the box, the focus outline, and the quiet "on" fill while pressed or holding a popup open. */
 export const METADATA_ROW_CLASSES = cn(
   METADATA_ROW_BOX_CLASSES,
-  "aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
+  "aria-pressed:bg-mu-hover aria-pressed:text-mu-ink data-popup-open:bg-mu-hover data-popup-open:text-mu-ink",
+  "mu-focus",
 );
 /**
  * The compact row: 24px instead of 28px, for a list that previews rather than edits (the
@@ -24,12 +24,19 @@ export const METADATA_ROW_CLASSES = cn(
  */
 export const METADATA_COMPACT_ROW_CLASSES = cn(METADATA_ROW_CLASSES, "h-6");
 /** The focusable body of a split row; its gap must equal the box's `gap-1`. */
-export const METADATA_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-center gap-1 text-start ${FOCUS_VISIBLE_OUTLINE_CLASSES}`;
-export const METADATA_ROW_SLOT_CLASSES = "flex size-5 shrink-0 items-center justify-center";
-export const METADATA_ROW_ICON_CLASSES = "me-auto size-4 shrink-0 opacity-75";
-/** The row's text column: foreground ink, truncating. */
-export const METADATA_ROW_TEXT_CLASSES = "min-w-0 flex-1 truncate text-foreground";
-export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 text-2xs tabular-nums text-muted-foreground/60";
+export const METADATA_ROW_LABEL_CLASSES = "flex h-full min-w-0 flex-1 items-center gap-1 text-start mu-focus";
+/** The same 20px leading column the sidebar's rows reserve, so glyphs share one rail across both. */
+export const METADATA_ROW_SLOT_CLASSES = SIDEBAR_LEADING_SLOT_CLASSES;
+export const METADATA_ROW_ICON_CLASSES = "mu-icon-sm me-auto shrink-0";
+/**
+ * The row's text column, truncating. It inherits the row's muted ink: a reference, a place or a
+ * comment describes the memo, so it reads a step below the memo's own words and darkens with the
+ * row on hover.
+ */
+export const METADATA_ROW_TEXT_CLASSES = "min-w-0 flex-1 truncate";
+/** An attachment is content, not a description, so its row text keeps the memo's ink. */
+export const METADATA_ROW_CONTENT_TEXT_CLASSES = cn(METADATA_ROW_TEXT_CLASSES, "text-mu-ink");
+export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 mu-caption tabular-nums text-mu-ink-muted";
 /**
  * A slot that is itself a control (play, disclosure): the same box and glyph as any other
  * slot, so it reads like its siblings at rest. The glyph darkens under the pointer and
@@ -37,8 +44,8 @@ export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 text-2xs tabular-nums text-
  */
 export const METADATA_ROW_SLOT_BUTTON_CLASSES = cn(
   METADATA_ROW_SLOT_CLASSES,
-  "relative cursor-pointer rounded transition-colors hover:text-foreground hover:[&>svg]:opacity-100 aria-pressed:text-primary aria-pressed:[&>svg]:opacity-100 after:absolute after:-inset-0.5 after:content-['']",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
+  "relative cursor-pointer rounded transition-colors hover:text-mu-ink aria-pressed:text-mu-primary after:absolute after:-inset-0.5 after:content-['']",
+  "mu-focus",
 );
 
 /*
@@ -58,7 +65,7 @@ export const METADATA_ROW_CONTROLS_CLASSES = cn(
 );
 /** A glyph hinting at what engaging the row does (download, open), overlaid where the detail rail was. */
 export const METADATA_ROW_HINT_CLASSES = cn(
-  "absolute end-2 size-4 opacity-0 transition-opacity",
+  "mu-icon-sm absolute end-2 opacity-0 transition-opacity",
   "md:group-hover/row:opacity-75 md:group-focus-within/row:opacity-75",
 );
 /** The detail rail gives way to whatever overlays it. */
@@ -76,7 +83,7 @@ export const METADATA_ROW_LIST_CLASSES = "-mx-2 flex w-[calc(100%+1rem)] flex-co
 /** The standard glyph-in-slot pairing, so every row draws its glyph identically. */
 export const MetadataRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
   <span className={METADATA_ROW_SLOT_CLASSES} aria-hidden="true">
-    <Icon className={METADATA_ROW_ICON_CLASSES} strokeWidth={1.8} />
+    <Icon className={METADATA_ROW_ICON_CLASSES} />
   </span>
 );
 
@@ -90,7 +97,7 @@ export const MetadataRowDetail = ({ parts }: { parts: Array<string | undefined> 
     <span className={DETAIL_RAIL_CLASSES}>
       {shown.map((part, index) => (
         <span key={part} className="flex items-center gap-1">
-          {index > 0 && <span className="text-muted-foreground/40">·</span>}
+          {index > 0 && <span className="text-mu-ink-muted/40">·</span>}
           <span>{part}</span>
         </span>
       ))}
@@ -101,9 +108,10 @@ export const MetadataRowDetail = ({ parts }: { parts: Array<string | undefined> 
 /** An editable row's remove control, in the trailing overlay. */
 export const MetadataRowRemoveControl = ({ label, onClick }: { label: string; onClick: () => void }) => (
   <div className={METADATA_ROW_CONTROLS_CLASSES}>
-    <Button variant="quiet" size="icon-sm" onClick={onClick} title="Remove" aria-label={label}>
-      <XIcon className="size-3.5" strokeWidth={1.8} />
-    </Button>
+    <Tooltip.Root>
+      <Tooltip.Trigger render={<Button variant="ghost" size="xs" onClick={onClick} aria-label={label} icon={<XIcon />} />} />
+      <Tooltip.Popup>{label}</Tooltip.Popup>
+    </Tooltip.Root>
   </div>
 );
 
@@ -117,16 +125,16 @@ interface MetadataSectionProps extends PropsWithChildren {
 }
 
 /**
- * A quiet titled list: a 24px header (20px when compact) with an uppercase title on the text edge, then
- * rows whose leading glyph lands on that same edge. No box or band, so the list recedes
- * behind the memo's own content.
+ * A quiet titled list: a 24px header (20px when compact) with a sentence-case title on the text
+ * edge in the sidebar's section-header style, its count beside it, then rows whose leading glyph
+ * lands on that same edge. No box or band, so the list recedes behind the memo's own content.
  */
 const MetadataSection = ({ title, count, action, density = "default", children }: MetadataSectionProps) => (
   <section className="w-full" aria-label={title}>
     <div className={cn("flex min-w-0 items-center justify-between gap-2", density === "compact" ? "h-5" : "mb-0.5 h-6")}>
-      <h3 className="flex min-w-0 items-center gap-1.5 text-2xs font-normal uppercase tracking-wide text-muted-foreground/55 select-none">
+      <h3 className="flex min-w-0 items-center gap-1.5 mu-label-sm text-mu-ink-muted select-none">
         <span className="truncate">{title}</span>
-        {count != null && <span className="tabular-nums text-muted-foreground/60">{count}</span>}
+        {count != null && <span className="mu-caption tabular-nums">{count}</span>}
       </h3>
       {action && <div className="-me-2 shrink-0">{action}</div>}
     </div>

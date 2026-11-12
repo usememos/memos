@@ -1,13 +1,11 @@
 package api
 
 import (
-	"bytes"
 	"context"
 	"log/slog"
 	"os"
 	"time"
 
-	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -45,23 +43,6 @@ func (s *APIService) resolveMemoTransferOwner(ctx context.Context, name string) 
 		return nil, err
 	}
 	return user, nil
-}
-
-// ExportMemos writes the caller's Memos export file into the response body.
-func (s *APIService) ExportMemos(ctx context.Context, request *apipb.ExportMemosRequest) (*httpbody.HttpBody, error) {
-	user, err := s.resolveMemoTransferOwner(ctx, request.Name)
-	if err != nil {
-		return nil, err
-	}
-	if err := s.throttleAndCharge(ratelimit.ScopeArchiveUser, userKey(user.ID), 1); err != nil {
-		return nil, err
-	}
-	var archive bytes.Buffer
-	if err := s.WriteMemoExport(ctx, user, &archive); err != nil {
-		slog.Error("memo export failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
-		return nil, status.Error(codes.Internal, "failed to export memos")
-	}
-	return &httpbody.HttpBody{ContentType: memoexport.MediaType, Data: archive.Bytes()}, nil
 }
 
 // ImportMemos stages an archive in chunks and, on the finishing call, plans

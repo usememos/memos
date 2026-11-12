@@ -15,13 +15,17 @@
     "loading": "Qeydlər yüklənir…",
     "new-here": "Burada qeyd yaz",
     "saved-outside-filter": "Saxlanıldı. Bu qeyd cari xəritə nəticələrinə daxil deyil.",
-    "open-memo": "Qeydi aç"
+    "open-memo": "Qeydi aç",
+    "open-in-google-maps": "Google Maps-də aç",
+    "location-description": "Xəritədə məkan seçin və ya koordinatları əl ilə daxil edin",
+    "latitude": "En dairəsi",
+    "longitude": "Uzunluq dairəsi",
+    "place-placeholder": "Əvvəlcə mövqe seçin."
   },
   "about": {
     "api-docs": "API sənədləri",
     "api-docs-note": "REST və gRPC arayışı",
     "build": "Build",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Qeydləriniz, ideyalarınız və gündəlik düşüncələriniz üçün açıq mənbəli, öz serverinizdə yerləşdirilən məkan.",
     "distribution": "Paylanma",
@@ -41,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "Administrator girişi",
-    "admin-sign-in-tip": "Parolla giriş administratorlar üçün açıq qalır.",
     "back-to-sign-in": "Girişə qayıt",
+    "callback-failed-title": "Giriş tamamlana bilmədi",
     "continue-with": "{{provider}} ilə davam et",
     "create-admin-account": "Admin hesabı yarat",
     "create-your-account": "Hesabınızı yaradın",
-    "explore-public-memos": "Bu instansdakı ictimai qeydləri kəşf edin",
-    "first-run": "İlk işə salma",
+    "hide-password": "Şifrəni gizlət",
+    "incorrect-credentials": "İstifadəçi adı və ya şifrə yanlışdır.",
     "new-password": "Yeni parol",
     "repeat-new-password": "Yeni parolu təkrarlayın",
     "setup-description": "Bu instans üçün administrator hesabı yaradın.",
-    "setup-note": "Bu hesab instans parametrlərinə, üzvlərə və kimlik provayderlərinə sahib olur.",
     "setup-title": "İnstansınızı qurun",
+    "show-password": "Şifrəni göstər",
     "sign-in-tip": "Artıq hesabınız var?",
     "sign-up-tip": "Hələ hesabınız yoxdur?",
     "signin-unavailable-description": "Parolla giriş deaktiv edilib və heç bir kimlik provayderi tənzimlənməyib. Giriş üsulunu aktivləşdirmək üçün administratorunuza müraciət edin.",
     "signin-unavailable-title": "Giriş əlçatan deyil",
-    "signup-unavailable-description": "Parollu hesablar deaktiv edilib və heç bir kimlik provayderi tənzimlənməyib. Giriş üçün administratorunuza müraciət edin.",
-    "signup-unavailable-title": "Qeydiyyat əlçatan deyil",
-    "signups-closed-description": "Bu instansda yeni hesablar deaktiv edilib. Giriş lazımdırsa, administratorunuzla əlaqə saxlayın.",
-    "signups-closed-title": "Qeydiyyat bağlıdır",
-    "sso-signup-tip": "Hesabınızı yaratmaq üçün aşağıdakı provayderlərdən biri ilə daxil olun.",
-    "welcome-back": "Yenidən xoş gəlmisiniz."
+    "signups-closed-description": "Bu instansda yeni hesablar deaktiv edilib. Giriş lazımdırsa, administratorunuzla əlaqə saxlayın."
   },
   "calendar": {
     "new-memo-on-day": "Bu gün üçün yeni qeyd",
@@ -207,7 +206,6 @@
     "profile": "Profil",
     "referenced-by": "İstinad edənlər",
     "referencing": "İstinad edir",
-    "relations": "Əlaqələr",
     "resize-panel": "Panelin ölçüsünü dəyiş",
     "resize-sidebar": "Yan panelin ölçüsünü dəyiş",
     "resources": "Resurslar",
@@ -234,9 +232,26 @@
     "username": "İstifadəçi adı",
     "version": "Versiya",
     "visibility": "Görünürlük",
-    "view-all": "Hamısına bax",
     "views": "Görünüşlər",
-    "yourself": "Özünüz"
+    "yourself": "Özünüz",
+    "open-navigation": "Naviqasiyanı aç",
+    "navigation": "Naviqasiya",
+    "primary-navigation": "Əsas",
+    "download": "Endir",
+    "download-name": "{{name}} faylını endir",
+    "open-name": "{{name}} faylını aç",
+    "preview-name": "{{name}} önizləməsi",
+    "no-content": "Məzmun yoxdur",
+    "previous": "Əvvəlki",
+    "next": "Növbəti",
+    "retry": "Yenidən cəhd et",
+    "docs": "Sənədlər",
+    "calendar-for-month": "{{month}} təqvimi",
+    "date-at-time": "{{date}}, {{time}}",
+    "selected-location": "Seçilmiş məkan",
+    "choose-location": "Məkan seçin",
+    "unknown-error": "Naməlum xəta",
+    "error-occurred": "Xəta baş verdi"
   },
   "locale-picker": {
     "no-language-feedback": "Dil tapılmadı? Rəy göndərin"
@@ -247,14 +262,16 @@
     "any-thoughts": "Ağlınıza nə gəlir...",
     "exit-focus-mode": "Fokus rejimindən çıx",
     "focus-mode": "Fokus rejimi",
+    "markdown-mode": "Markdown rejimi",
     "comment": "Şərh",
-    "formatting-toolbar": "Formatlama paneli",
+    "footnotes": "Qeydlər",
+    "back-to-reference": "İstinada qayıt",
     "format": {
-      "heading": "Başlıq",
       "paragraph": "Abzas",
       "heading-1": "Başlıq 1",
       "heading-2": "Başlıq 2",
       "heading-3": "Başlıq 3",
+      "heading-4": "Başlıq 4",
       "bold": "Qalın",
       "italic": "Kursiv",
       "strikethrough": "Üstüxətli",
@@ -262,8 +279,7 @@
       "bullet-list": "Nişanlı siyahı",
       "ordered-list": "Nömrəli siyahı",
       "task-list": "Tapşırıq siyahısı",
-      "link": "Keçid",
-      "more": "Digər formatlama"
+      "link": "Keçid"
     },
     "insert-menu": {
       "add-attachment": "Qoşma əlavə et",
@@ -271,11 +287,52 @@
       "image-upload-failed": "Bəzi şəkillər yüklənə bilmədi. Yenidən cəhd edin və ya yüklənmiş faylları qoşma kimi saxlayın.",
       "image-upload-stopped": "Şəkil yükləməsi dayandırıldı {{completed}}/{{total}}",
       "insert-image": "Şəkil daxil et",
+      "drawing": "Rəsm",
       "keep-as-attachments": "Qoşma kimi saxla",
       "link-memo": "Qeydə keçid əlavə et",
       "retry-image-upload": "Yenidən cəhd et",
       "uploading-inline-image": "Məzmuna yüklənir",
       "uploading-images": "Şəkillər yüklənir {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Yeni rəsm",
+      "edit": "Rəsmi redaktə et",
+      "tools": "Alətlər",
+      "tool-select": "Seç",
+      "tool-pen": "Qələm",
+      "tool-eraser": "Pozan",
+      "tool-rectangle": "Düzbucaqlı",
+      "tool-ellipse": "Ellips",
+      "tool-arrow": "Ox",
+      "tool-text": "Mətn",
+      "style": "Rəng və qalınlıq",
+      "color": "Rəng",
+      "width": "Qalınlıq",
+      "width-thin": "Nazik",
+      "width-medium": "Orta",
+      "width-thick": "Qalın",
+      "color-ink": "Mürəkkəb",
+      "color-gray": "Boz",
+      "color-red": "Qırmızı",
+      "color-orange": "Narıncı",
+      "color-green": "Yaşıl",
+      "color-teal": "Firuzəyi",
+      "color-blue": "Mavi",
+      "color-violet": "Bənövşəyi",
+      "undo": "Geri al",
+      "redo": "Təkrarla",
+      "zoom-to-fit": "Pəncərəyə sığdır",
+      "done": "Hazır",
+      "discard-title": "Bu rəsm silinsin?",
+      "discard-description": "Hələ qeydə əlavə edilməyib.",
+      "discard-edit-title": "Dəyişikliklər silinsin?",
+      "discard-edit-description": "Rəsm açılmazdan əvvəlki kimi qalacaq.",
+      "keep-drawing": "Çəkməyə davam et",
+      "discard": "Sil",
+      "open-failed": "Rəsmi açmaq mümkün olmadı. Yenidən cəhd edin.",
+      "export-failed": "Rəsmi saxlamaq mümkün olmadı. Yenidən cəhd edin.",
+      "image-failed": "Şəkli rəsmə əlavə etmək mümkün olmadı.",
+      "saved-without-drawing": "Qeyd yadda saxlanıldı, amma rəsm saxlanılmadı. Yenidən cəhd etmək üçün təkrar yadda saxlayın."
     },
     "new-memo": "Yeni qeyd",
     "no-changes-detected": "Dəyişiklik aşkarlanmadı",
@@ -306,7 +363,66 @@
       "transcribe-success": "Transkripsiya əlavə edildi",
       "transcribing": "Mətnə çevrilir...",
       "trigger": "Audio yaz"
-    }
+    },
+    "blocks": {
+      "task": "Tapşırıq",
+      "quote": "Sitat",
+      "callout": "Diqqət bloku",
+      "callout-note": "Qeyd",
+      "callout-tip": "Məsləhət",
+      "callout-important": "Vacib",
+      "callout-warning": "Xəbərdarlıq",
+      "callout-caution": "Ehtiyat",
+      "collapsible-section": "Yığılan bölmə",
+      "table": "Cədvəl",
+      "divider": "Ayırıcı",
+      "no-results": "Nəticə yoxdur",
+      "commands": "Əmrlər",
+      "loading": "Yüklənir…",
+      "duplicate": "Dublikat et",
+      "inline-code": "Kod",
+      "link-placeholder": "Keçidi yapışdırın və ya yazın…",
+      "remove-link": "Keçidi sil",
+      "open-link": "Keçidi aç",
+      "copy-link": "Keçidi kopyala",
+      "edit-link": "Keçidi redaktə et",
+      "emoji": "Emoji",
+      "block-menu": "Blok menyusunu aç",
+      "list-hint": "Siyahı",
+      "plain-text": "mətn",
+      "add-row-above": "Yuxarıya sətir əlavə et",
+      "add-row-below": "Aşağıya sətir əlavə et",
+      "add-column-left": "Sola sütun əlavə et",
+      "add-column-right": "Sağa sütun əlavə et",
+      "delete-row": "Sətri sil",
+      "delete-column": "Sütunu sil",
+      "align": "Düzləndirmə",
+      "align-left": "Sol",
+      "align-center": "Mərkəz",
+      "align-right": "Sağ",
+      "image-align-left": "Sola düzləndir",
+      "image-align-center": "Mərkəzə düzləndir",
+      "image-align-right": "Sağa düzləndir",
+      "text-style": "Mətn üslubu",
+      "image": "Şəkil",
+      "reset-image-size": "Ölçünü sıfırla",
+      "alt-text": "Alternativ mətn",
+      "alt-text-placeholder": "Şəkli təsvir edin…",
+      "image-unavailable": "Şəkil əlçatan deyil",
+      "resize-image": "Şəklin ölçüsünü dəyiş"
+    },
+    "attachments": {
+      "edited": "Düzəldilib",
+      "new": "Yeni",
+      "remove": "Qoşmanı çıxar",
+      "reorder": "{{name}} sırasını dəyiş",
+      "reorder-hint": "Sürüşdürün və ya ox düymələrindən istifadə edin"
+    },
+    "remove-relation": "Əlaqəni çıxar",
+    "remove-location": "Məkanı çıxar",
+    "recording-unsupported": "Bu brauzer audio yazmağı dəstəkləmir.",
+    "microphone-denied": "Mikrofon icazəsi rədd edildi.",
+    "recording-failed": "Audio yazmağa başlamaq alınmadı."
   },
   "inbox": {
     "failed-to-load": "Gələnlər elementi yüklənmədi",
@@ -315,7 +431,16 @@
     "space-invitation": "sizi sahəyə qoşulmağa dəvət etdi",
     "space-invitation-accepted": "Bu sahəyə qoşuldunuz.",
     "space-invitation-open": "Sahəni aç",
-    "unread": "Oxunmamış"
+    "unread": "Oxunmamış",
+    "commented-on-memo": "qeydinizə şərh yazdı",
+    "mentioned-in-comment": "şərhdə sizi qeyd etdi",
+    "mentioned-in-memo": "qeyddə sizi qeyd etdi",
+    "original": "Orijinal:",
+    "memo-label": "Qeyd:",
+    "comment-heading": "Şərh",
+    "memo-heading": "Qeyd",
+    "empty-memo": "Boş qeyd",
+    "empty-comment": "Boş şərh"
   },
   "live-update": {
     "connected": "Canlı yeniləmələr aktivdir",
@@ -323,6 +448,9 @@
     "disconnected": "Canlı yeniləmələr əlçatan deyil"
   },
   "memo": {
+    "no-memos-yet": "Hələ qeyd yoxdur",
+    "no-matching-memos": "Uyğun qeyd yoxdur",
+    "clear-filters": "Filtrləri təmizlə",
     "pinned": "Sabitlənib",
     "parent-loading": "İlkin memo yüklənir…",
     "parent-load-error": "İlkin memonu yükləmək mümkün olmadı.",
@@ -333,7 +461,9 @@
     "click-to-show-sensitive-content": "Həssas məzmunu göstərmək üçün klikləyin",
     "comment": {
       "self": "Şərhlər",
-      "write-a-comment": "Şərh yazın"
+      "write-a-comment": "Şərh yazın",
+      "view-all-count_one": "Bütün {{count}} şərhə bax",
+      "view-all-count_other": "Bütün {{count}} şərhə bax"
     },
     "copy-content": "Məzmunu kopyala",
     "copy-link": "Keçidi kopyala",
@@ -343,10 +473,13 @@
     "delete-confirm-description": "Bu əməliyyat geri qaytarıla bilməz. Qoşmalar, keçidlər və istinadlar da çıxarılacaq.",
     "direction": "İstiqamət",
     "filters": {
+      "has-attachments": "Qoşma var",
       "has-code": "Kod var",
+      "has-image": "Şəkil var",
       "has-link": "Keçid var",
       "has-location": "Məkan var",
-      "has-task-list": "Tapşırıq siyahısı var"
+      "has-task-list": "Tapşırıq siyahısı var",
+      "remove": "Filtri çıxar"
     },
     "compact-mode": "Yığcam rejim",
     "connections": "Bağlantılar",
@@ -425,7 +558,9 @@
     "restored-successfully": "Uğurla bərpa edildi",
     "succeed-copy-content": "Məzmun uğurla kopyalandı.",
     "succeed-copy-link": "Keçid uğurla kopyalandı.",
-    "update-succeed": "Yeniləmə uğurlu oldu"
+    "update-succeed": "Yeniləmə uğurlu oldu",
+    "not-signed-in": "Daxil olmamısınız.",
+    "invalid-datetime": "Tarix və vaxt etibarsızdır. 2023-12-31 23:59:59 formatından istifadə edin."
   },
   "reference": {
     "no-memos-found": "Qeyd tapılmadı",
@@ -509,7 +644,9 @@
       "nickname-note": "Bannerdə göstərilir",
       "title": "Hesab məlumatları",
       "update-information": "Məlumatları yenilə",
-      "username-note": "Daxil olmaq üçün istifadə olunur"
+      "username-note": "Daxil olmaq üçün istifadə olunur",
+      "avatar-too-large": "Ölçüsü 2 MB və ya daha az olan şəkil seçin.",
+      "avatar-unreadable": "Bu şəkil oxunmadı. Başqa fayl sınayın."
     },
     "ai": {
       "add-provider": "Provayder əlavə et",
@@ -591,13 +728,15 @@
       "restore-success": "{{username}} uğurla bərpa edildi",
       "summary-column": "Xülasə",
       "user": "İstifadəçi",
-      "no-members-found": "Üzv tapılmadı"
+      "no-members-found": "Üzv tapılmadı",
+      "export-memos": "Qeydləri ixrac et",
+      "username-password-required": "İstifadəçi adı və parol boş ola bilməz",
+      "create-success": "İstifadəçi yaradıldı",
+      "update-success": "İstifadəçi yeniləndi"
     },
     "memo": {
       "add-reaction": "Reaksiya əlavə et",
       "configured-reactions": "Təyin edilmiş reaksiyalar",
-      "double-click-edit-description": "İstifadəçilərə qeydə iki dəfə klikləməklə redaktəni açmağa icazə verin.",
-      "editing-title": "Redaktə",
       "label": "Qeyd",
       "reaction-placeholder": "məs. 👍",
       "reactions-description": "İstifadəçilərin qeydlərə tətbiq edə biləcəyi reaksiya variantlarını təyin edin.",
@@ -643,7 +782,9 @@
       "review-exported": "İxrac edən",
       "review-file": "Fayl",
       "review-memos": "Fayldakı qeydlər",
-      "review-new": "Yaradılacaq"
+      "review-new": "Yaradılacaq",
+      "export-admin-only": "Qeydləri yalnız administratorlar ixrac edə bilər. İxrac faylınız üçün administratora müraciət edin.",
+      "export-busy": "Başqa bir ixrac davam edir. Bir az sonra yenidən cəhd edin."
     },
     "my-account": {
       "label": "Hesabım"
@@ -769,8 +910,13 @@
       "appearance-title": "Görünüş",
       "default-memo-visibility": "Defolt qeyd görünürlüyü",
       "default-memo-visibility-description": "Redaktorda dəyişdirilmədikcə yeni yaradılan qeydlərə tətbiq edilən görünürlük.",
+      "device-description": "Yalnız bu brauzerdə saxlanılan oxuma və redaktə seçimləri. Hesabınıza yadda saxlanılmır.",
+      "device-title": "Bu cihaz",
+      "double-click-edit": "Redaktə üçün iki dəfə klikləyin",
+      "double-click-edit-description": "Öz memolarınızı iki dəfə klikləyərək redaktorda açın.",
       "label": "Tərcihlər",
       "language-description": "İnterfeys dilini dərhal yeniləyir və hesabınızda yadda saxlayır.",
+      "link-preview-description": "Memolar harada göstərilirsə, çılpaq keçidlərin altında önizləmə kartı göstər.",
       "memo-defaults-description": "Yeni qeyd yazarkən istifadə olunan defolt dəyərləri təyin edin.",
       "memo-defaults-title": "Qeyd üçün defoltlar",
       "save-media-metadata": "Media metaməlumatını yadda saxla",
@@ -778,13 +924,148 @@
       "theme-description": "Seçilmiş mövzunu bu cihazda dərhal tətbiq edir.",
       "theme": "Mövzu",
       "uploads-privacy-description": "Yüklənən media ilə birlikdə göndərilən, məxfiliyə həssas məlumatları idarə edin.",
-      "uploads-privacy-title": "Yükləmələr və məxfilik"
+      "uploads-privacy-title": "Yükləmələr və məxfilik",
+      "theme-system": "Sistemlə sinxronlaşdır",
+      "theme-system-short": "Sistem",
+      "theme-light": "Açıq",
+      "theme-dark": "Tünd",
+      "theme-paper": "Kağız"
+    },
+    "editor": {
+      "label": "Redaktor",
+      "markdown-mode-description": "Qeydləri formatlanmış mətn əvəzinə Markdown mətni kimi yazın və redaktə edin."
     },
     "memo-view": {
       "create": "Görünüş yarat",
       "change-icon": "Görünüş ikonunu dəyiş",
       "delete-confirm": "`{{title}}` görünüşünü silmək istədiyinizə əminsiniz?",
-      "delete-success": "`{{title}}` görünüşü silindi"
+      "delete-success": "`{{title}}` görünüşü silindi",
+      "page-description": "Sahələr, operatorlar, vaxt köməkçiləri və etiket uyğunlaşdırması ilə təkrar istifadə edilə bilən görünüşlər yaradın. Nümunələrdən başlanğıc kimi istifadə edin, sonra yadda saxlamazdan əvvəl yoxlayın.",
+      "edit": "Görünüşü redaktə et",
+      "form-description": "Görünüşə ad verin və onun tətbiq edəcəyi qeyd filtri ifadəsini təyin edin.",
+      "title-placeholder": "Bərkidilmiş, Son qeydlər, İş",
+      "filter-help": "İfadələri {{and}}, {{or}} və {{not}} ilə birləşdirin. Vaxt sahələri zaman damğalarıdır — {{now}}, {{duration}}, {{timestamp}} və {{year}} kimi əlçatanlıq funksiyalarından istifadə edin. Etiketlər {{sets}} dəstəkləyir, {{size}} isə uzunluğu ölçür.",
+      "validate": "Yoxla",
+      "all": "Bütün görünüşlər",
+      "loading": "Görünüşlər yüklənir…",
+      "load-failed": "Görünüşləri yükləmək alınmadı.",
+      "empty-title": "Hələ görünüş yoxdur",
+      "empty-description": "Lazım olan qeydlərə tez qayıtmaq üçün filtri yadda saxlayın.",
+      "examples-title": "İfadə nümunələri",
+      "fields-title": "Dəstəklənən sahələr",
+      "title-filter-required": "Başlıq və filtr boş ola bilməz",
+      "filter-valid": "Filtr ifadəsi düzgün görünür",
+      "create-success": "Görünüş yaradıldı",
+      "update-success": "Görünüş yeniləndi",
+      "examples": {
+        "pinned": {
+          "title": "Bərkidilmiş",
+          "description": "Yalnız bərkidilmiş qeydlər."
+        },
+        "recent": {
+          "title": "Son qeydlər",
+          "description": "Son bir saatda yaradılmış qeydlər."
+        },
+        "public": {
+          "title": "İctimai qeydlər",
+          "description": "Yalnız ictimai qeydlər."
+        },
+        "project-tags": {
+          "title": "Layihə etiketləri",
+          "description": "Bir və ya bir neçə dəqiq etiketə uyğunluq."
+        },
+        "untagged": {
+          "title": "Etiketsiz",
+          "description": "Heç bir etiketi olmayan qeydlər."
+        },
+        "archive-tree": {
+          "title": "Arxiv ağacı",
+          "description": "İyerarxik etiketləri prefiksə görə uyğunlaşdırın."
+        },
+        "unassigned": {
+          "title": "Təyin edilməmiş",
+          "description": "Heç bir sahəyə yerləşdirilməmiş qeydlər."
+        },
+        "one-space": {
+          "title": "Bir sahədə",
+          "description": "Sahəyə yerləşdirilmiş qeydlər. Sahənin URL-indən və ya parametrlərindən ID-sini götürün."
+        },
+        "open-tasks": {
+          "title": "Açıq tapşırıqlar",
+          "description": "Bitməmiş tapşırıqları olan qeydlər."
+        },
+        "links-or-code": {
+          "title": "Keçidlər və ya kod",
+          "description": "Keçid və ya kod blokları olan qeydlər."
+        },
+        "no-location": {
+          "title": "Məkansız",
+          "description": "Əlavə edilmiş məkanı olmayan qeydlər."
+        },
+        "with-attachments": {
+          "title": "Qoşmalı",
+          "description": "Ən azı bir qoşulmuş faylı olan qeydlər."
+        },
+        "photos": {
+          "title": "Fotolar",
+          "description": "Məzmunda və ya qoşulmuş fayl kimi şəkil göstərən qeydlər."
+        },
+        "content-search": {
+          "title": "Məzmunda axtarış",
+          "description": "Qeyd məzmununda mətn axtarın."
+        },
+        "starts-with": {
+          "title": "İlə başlayır",
+          "description": "Məzmunu müəyyən mətnlə başlayan qeydlər (endsWith də var)."
+        },
+        "regex": {
+          "title": "Regex uyğunluğu",
+          "description": "Məzmunu requlyar ifadə ilə uyğunlaşdırın."
+        },
+        "all-tags-complete": {
+          "title": "Bütün etiketlər tamamlanıb",
+          "description": "Hər etiket -done ilə bitir (yalnız etiketli qeydlər)."
+        },
+        "one-project-tag": {
+          "title": "Bir layihə etiketi",
+          "description": "Şərtə dəqiq bir etiket uyğun gəlir."
+        },
+        "any-tags": {
+          "title": "Bu etiketlərdən hər hansı",
+          "description": "Etiketlər verilmiş dəstlə kəsişir."
+        },
+        "exact-tags": {
+          "title": "Dəqiq bu etiketlər",
+          "description": "Dəqiq bu etiket dəsti, artıq heç nə."
+        },
+        "year-2024": {
+          "title": "2024-cü ilin qeydləri",
+          "description": "Təqvim ilinə görə filtrləyin."
+        },
+        "weekend": {
+          "title": "Həftəsonu qeydləri",
+          "description": "Bazar və ya şənbə günü yaradılıb (0 = bazar)."
+        },
+        "long": {
+          "title": "Uzun qeydlər",
+          "description": "280 simvoldan uzun qeydlər."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiqurasiya",
+      "description": "Konfiqurasiya faylları ilə təyin olunan resurslar. Onları dəyişmək üçün faylı redaktə edib tətbiq edin; nümunənin qalan hissəsi burada redaktə oluna bilər.",
+      "managed-by": "Konfiqurasiya ilə idarə olunur",
+      "managed-tooltip": "{{source}} faylında təyin olunub. Bunu dəyişmək üçün faylı redaktə edib tətbiq edin.",
+      "resource": "Resurs",
+      "source": "Fayl",
+      "managed-fields": "İdarə olunan sahələr",
+      "whole-resource": "Bütün sahələr",
+      "ignored-fields": "Burada redaktə oluna bilər",
+      "serial": "Seriya nömrəsi",
+      "last-apply": "Son tətbiq",
+      "applied-by": "Tətbiq edən",
+      "nothing-managed": "Heç bir konfiqurasiya tətbiq olunmayıb. Hər şey burada təyin olunur."
     },
     "sso": {
       "account": "Hesab",
@@ -845,7 +1126,9 @@
       "token-endpoint": "Token endpoint-i",
       "update-sso": "SSO-nu yenilə",
       "update-sso-description": "Provayder konfiqurasiyasını nəzərdən keçirin, sonra dəyişməli olan sahələri yadda saxlayın.",
-      "user-endpoint": "İstifadəçi endpoint-i"
+      "user-endpoint": "İstifadəçi endpoint-i",
+      "invalid-config": "Kimlik provayderinin konfiqurasiyası etibarsızdır.",
+      "provider-id-placeholder": "məs. github, okta-corp"
     },
     "storage": {
       "accesskey": "Access key",
@@ -896,47 +1179,56 @@
       "customize-server": {
         "description": "Təsvir",
         "icon-url": "İkon URL-i",
-        "title": "Serveri fərdiləşdir"
+        "title": "Serveri fərdiləşdir",
+        "dialog-description": "İnstansınızın görünüşünü və parametrlərini fərdiləşdirin."
       },
       "custom-code-description": "Frontend-ə tətbiq olunan, istəyə bağlı instans üzrə CSS və JavaScript.",
       "custom-code-title": "Xüsusi kod",
-      "enable-double-click-to-edit": "Redaktə üçün ikiqat kliki aktivləşdir",
       "label": "Sistem",
       "server-name": "Server adı"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -1039,6 +1331,104 @@
   },
   "tooltip": {
     "link-memo": "Qeydə keçid əlavə et",
-    "select-location": "Məkan"
+    "select-location": "Məkan",
+    "link-memo-description": "Əlaqələndirmək üçün qeyd axtarın və seçin"
+  },
+  "welcome": {
+    "title": "Memos-a xoş gəlmisiniz",
+    "headline": "Gündəlik düşüncələriniz üçün sadə qeydlər.",
+    "intro-write": "Tək bir cümlə bütöv bir qeyd ola bilər.",
+    "intro-keep": "Hər qeyd yazıldığı günlə birlikdə qalır.",
+    "intro-share": "Nəyin gizli qalacağını siz seçirsiniz.",
+    "write": "Yazın",
+    "write-sub": "Tək bir cümlə bütöv bir qeyd ola bilər.",
+    "no-title": "Başlıq yoxdur",
+    "no-title-text": "Qeyd düşüncənin özü ilə başlayır. Doldurulacaq başlıq yoxdur.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown istədiyiniz zaman sözlərinizə struktur verir.",
+    "attach": "Əlavə edin",
+    "attach-text": "Şəkillər, fayllar, səs və yer ＋ vasitəsilə əlavə olunur.",
+    "keep": "Saxlayın",
+    "keep-sub": "Hər qeyd yazıldığı günlə birlikdə qalır.",
+    "calendar-text": "Təqvim istənilən günə geri aparır.",
+    "tags-text": "# işarəsindən sonrakı söz etiketə çevrilir, etiket isə zaman xəttini süzür.",
+    "views-text": "Fərdi görünüş filtri yadda saxlayır.",
+    "map-text": "Yeri olan qeydlər xəritədə yerləşir.",
+    "share": "Paylaşın",
+    "share-sub": "Qeydlər gizli başlayır. Nəyi paylaşacağınızı və nəyi dərc edəcəyinizi siz seçirsiniz.",
+    "visibility-text": "Hər qeydin öz ayarı var. Yeniləri gizli başlayır, yalnız sizin üçün; açıq qeydin isə hər kəsin aça biləcəyi keçidi var.",
+    "spaces-text": "Məkanda üzvlər sizinlə yanaşı yazır və hər kəs öz qeydlərini saxlayır.",
+    "comments": "Şərhlər",
+    "comments-text": "Qeydi görə bilən hər kəs onun altında cavab yaza bilər.",
+    "skip": "Keçin",
+    "next": "Növbəti",
+    "done": "Hazırdır",
+    "page-of": "Səhifə {{current}} / {{total}}",
+    "reopen": "Xoş gəldin bələdçisi",
+    "reopen-note": "Yeni hesabın ilk gördüyü dörd ekran.",
+    "sample": {
+      "today": "Bu gün, 10:42",
+      "today-early": "Bu gün, 9:18",
+      "yesterday": "Dünən, 15:20",
+      "comment-age": "2 s",
+      "memo-preview": "Daha sadə ilk ekran. Bir giriş sahəsi, sonra önizləmə.",
+      "memo-release": "Növbəti buraxılışdan əvvəl",
+      "task-sketch": "İlk ekranın eskizini çəkmək",
+      "task-polish": "Önizləməni cilalamaq",
+      "write-lead": "İlk addımı kiçik saxlamaq.",
+      "write-strong": "Təfərrüatları",
+      "write-tail": "lazım olanda göstərmək.",
+      "write-task": "Qısa dəyişiklik siyahısı yazmaq",
+      "view": "Tamamlanmamış tapşırıqlar",
+      "space": "Məhsul",
+      "share-memo": "İnsanlardan qeydiyyat istəməzdən əvvəl nəticəni göstərməyə çalışmaq.",
+      "comment": "Razıyam. Önizləmə inandırdı.",
+      "tag-design": "dizayn",
+      "tag-project": "layihə",
+      "tag-reading": "oxu",
+      "tag-ideas": "ideyalar"
+    }
+  },
+  "error": {
+    "title": "Nəsə səhv getdi",
+    "description": "Gözlənilməz xəta baş verdi. Buna şəbəkə problemi və ya tətbiqdəki nasazlıq səbəb ola bilər.",
+    "description-update": "Gözlənilməz xəta baş verdi. Buna şəbəkə problemi və ya tətbiq yeniləməsi səbəb ola bilər. Səhifəni yenidən yükləmək adətən problemi həll edir.",
+    "details": "Xəta təfərrüatları",
+    "reload": "Tətbiqi yenidən yüklə",
+    "not-found": "Axtardığınız səhifə tapılmadı.",
+    "permission-denied": "İcazə verilmədi",
+    "too-many-requests": "Həddən artıq sorğu. {{wait}} sonra yenidən cəhd edin.",
+    "wait-seconds": "{{count}} san",
+    "wait-minutes": "{{count}} dəq",
+    "wait-hours": "{{count}} saat",
+    "challenge-required": "Doğrulama yoxlamasını tamamlayın və yenidən cəhd edin.",
+    "quota-memo-count": "{{limit}} qeyd limitinizə çatmısınız. Yeni qeydlər yaratmaq üçün bəzi qeydləri silin.",
+    "quota-storage": "Bu yükləmə {{limit}} yaddaş limitinizi aşacaq. Siz {{usage}} istifadə edirsiniz.",
+    "quota-upload": "Bu fayl hər fayl üçün {{limit}} limitinizdən böyükdür.",
+    "quota-memo-content": "Bu qeyd hər qeyd üçün {{limit}} limitinizdən böyükdür. Yadda saxlamaq üçün məzmunu qısaldın.",
+    "quota-generic": "İstifadə limitinə çatmısınız.",
+    "sign-in-failed": "Daxil olmaq alınmadı.",
+    "sign-up-failed": "Qeydiyyat alınmadı",
+    "authenticate-failed": "Autentifikasiya alınmadı.",
+    "update-profile-failed": "Profili yeniləmək alınmadı",
+    "unlink-identity-failed": "Kimlik provayderinin əlaqəsini kəsmək alınmadı.",
+    "link-identity-failed": "Hesabın əlaqələndirilməsinə başlamaq alınmadı. Yenidən cəhd edin."
+  },
+  "attachment-preview": {
+    "title": "Qoşma önizləməsi",
+    "description": "Qoşma önizləmə pəncərəsi. Bağlamaq üçün Escape düyməsini basın, elementlər arasında keçmək üçün sol və ya sağ ox düymələrindən istifadə edin, şəkilləri idarəetmə düymələri, siçan təkəri, iki dəfə toxunma və ya iki barmaqla sıxma jesti ilə böyüdün.",
+    "close": "Önizləməni bağla",
+    "previous": "Əvvəlki element",
+    "next": "Növbəti element",
+    "reset-zoom": "Miqyası sıfırla",
+    "image-alt": "Önizləmə şəkli {{index}}/{{count}}",
+    "live-photo-alt": "Live Photo önizləməsi {{index}}/{{count}}",
+    "play-live-photo": "Live Photo-nu oynatmaq üçün üzərinə gəlin və ya basın"
+  },
+  "audio-player": {
+    "seek": "{{name}} faylında keçid",
+    "back": "{{seconds}} saniyə geri",
+    "forward": "{{seconds}} saniyə irəli",
+    "speed": "Oynatma sürəti {{rate}}x"
   }
 }

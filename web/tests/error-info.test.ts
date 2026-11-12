@@ -1,6 +1,7 @@
 import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import i18n from "@/i18n";
 import { ERROR_REASON_RATE_LIMITED, getErrorInfo, getErrorMessage, getRetryAfterSeconds, hasErrorReason } from "@/lib/error";
 
 function encodeErrorInfo(reason: string, domain: string, metadata: Record<string, string>): Uint8Array {
@@ -31,6 +32,9 @@ function rateLimitError(retryAfterSeconds: string): ConnectError {
   );
   return error;
 }
+
+// The messages come from the English catalog, which loads on demand.
+beforeAll(() => i18n.changeLanguage("en"));
 
 describe("ErrorInfo decoding", () => {
   it("reads reason, domain and metadata from the detail", () => {

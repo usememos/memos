@@ -139,7 +139,7 @@ func exportArchive(t *testing.T, ts *TestService, user *store.User) *memoexport.
 func exportArchiveBytes(t *testing.T, ts *TestService, user *store.User) []byte {
 	t.Helper()
 	var buffer bytes.Buffer
-	require.NoError(t, ts.Service.WriteMemoExport(context.Background(), user, &buffer))
+	require.NoError(t, ts.Service.WriteMemoExport(context.Background(), user, &buffer, time.Now()))
 	return buffer.Bytes()
 }
 
@@ -412,27 +412,6 @@ func userName(user *store.User) string {
 	return api.BuildUserName(user.Username)
 }
 
-func TestExportMemos(t *testing.T) {
-	ts := NewTestService(t)
-	defer ts.Cleanup()
-	fixture := buildArchiveFixture(t, ts, "owner")
-	ctx := context.Background()
-
-	body, err := ts.Service.ExportMemos(fixture.userCtx, &apipb.ExportMemosRequest{Name: userName(fixture.user)})
-	require.NoError(t, err)
-	require.Equal(t, "application/vnd.usememos.export+zip", body.ContentType)
-	exported := readArchive(t, body.Data)
-	require.Equal(t, "memos-export", exported.Manifest.Format)
-	require.Len(t, exported.Memos, 5)
-
-	other, err := ts.CreateRegularUser(ctx, "other")
-	require.NoError(t, err)
-	_, err = ts.Service.ExportMemos(ts.CreateUserContext(ctx, other.ID), &apipb.ExportMemosRequest{Name: userName(fixture.user)})
-	require.Equal(t, codes.PermissionDenied, status.Code(err))
-	_, err = ts.Service.ExportMemos(ctx, &apipb.ExportMemosRequest{Name: userName(fixture.user)})
-	require.Equal(t, codes.Unauthenticated, status.Code(err))
-}
-
 func TestImportMemosExportFormats(t *testing.T) {
 	for _, filename := range []string{"golden.zip", "legacy.zip"} {
 		t.Run(filename, func(t *testing.T) {
@@ -611,8 +590,7 @@ func TestImportMemosFailureKeepsPreexistingAttachment(t *testing.T) {
 	defer ts.Cleanup()
 	t.Cleanup(ts.Service.CloseUploads)
 	ctx := context.Background()
-	_, err := ts.Store.UpdateUsageLimit(ctx, "default-upload", 1<<20)
-	require.NoError(t, err)
+	setDefaultUploadLimit(ctx, t, ts.Store, 1<<20)
 	user, err := ts.CreateRegularUser(ctx, "keeper")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)

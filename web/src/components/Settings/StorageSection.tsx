@@ -1,16 +1,11 @@
 import { create } from "@bufbuild/protobuf";
+import { Badge, Button, Checkbox, Field, Fieldset, Input, Radio, RadioGroup } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { CloudIcon, DatabaseIcon, FolderIcon, LucideIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { useInstance } from "@/contexts/InstanceContext";
-import { cn } from "@/lib/utils";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import {
   InstanceSetting_Key,
   InstanceSetting_Storage,
@@ -24,8 +19,8 @@ import {
   InstanceSettingSchema,
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
-import { SettingPanel } from "./SettingList";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
@@ -151,6 +146,10 @@ const canonicalizeStorageSetting = (
 
 const StorageSection = () => {
   const t = useTranslate();
+  const managed = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.STORAGE));
+  // The registry, its default, and the S3 fields are edited together, so they lock together.
+  const registryLocked = isFieldManaged(managed, "storageSetting.storages") || isFieldManaged(managed, "storageSetting.defaultStorageId");
+  const templateLocked = isFieldManaged(managed, "storageSetting.filepathTemplate");
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { storageSetting: originalSetting } = useInstance();
   const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(originalSetting);
@@ -268,77 +267,67 @@ const StorageSection = () => {
 
   return (
     <SettingSection title={t("setting.storage.label")}>
-      <SettingGroup title={t("setting.storage.current-storage")} description={t("setting.storage.current-storage-description")}>
-        <RadioGroup
-          value={String(selectedStorageType)}
-          onValueChange={(value) => {
-            handleStorageTypeChanged(Number(value) as InstanceSetting_StorageType);
-          }}
-          className="overflow-hidden rounded-lg border border-border bg-background divide-y divide-border gap-0"
-        >
-          {storageTypeOptions.map((option) => {
-            const Icon = option.icon;
-            const selected = selectedStorageType === option.storageType;
-            return (
-              <div
-                key={option.id}
-                className={cn(
-                  "relative flex border-border bg-background px-3 py-3 transition-colors first:rounded-t-lg last:rounded-b-lg",
-                  selected ? "bg-muted/50" : "hover:bg-muted/30",
-                )}
-              >
-                {selected && <div className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" aria-hidden />}
-                <div className="flex w-full items-start gap-3">
-                  <RadioGroupItem value={String(option.storageType)} id={option.id} className="mt-0.5" />
-                  <Label
-                    htmlFor={option.id}
-                    className="grid min-w-0 flex-1 cursor-pointer gap-2 sm:grid-cols-[minmax(12rem,16rem)_1fr] sm:gap-5"
-                  >
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <Icon className={cn("size-4 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
-                        <span className="truncate text-sm font-medium text-foreground">{t(option.titleKey)}</span>
-                      </div>
-                      {option.badges && (
-                        <div className="flex flex-wrap gap-1.5 pl-6">
-                          {option.badges.map((badge) => (
-                            <Badge
-                              key={badge}
-                              variant="outline"
-                              className={cn(
-                                "rounded-md px-1.5 py-0 text-[10px] font-normal",
-                                badge === "setting.storage.badge-recommended" && "border-primary/30 bg-primary/10 text-primary",
-                              )}
-                            >
-                              {t(badge)}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-xs font-normal leading-5 text-muted-foreground">{t(option.descriptionKey)}</p>
-                  </Label>
-                </div>
-              </div>
-            );
-          })}
-        </RadioGroup>
+      <SettingGroup
+        title={t("setting.storage.current-storage")}
+        description={t("setting.storage.current-storage-description")}
+        actions={registryLocked || templateLocked ? <ManagedByConfigurationChip resource={managed} /> : undefined}
+      >
+        <Field.Root disabled={registryLocked}>
+          <Fieldset.Root
+            render={
+              <RadioGroup
+                value={String(selectedStorageType)}
+                onValueChange={(value) => handleStorageTypeChanged(Number(value) as InstanceSetting_StorageType)}
+              />
+            }
+          >
+            <Fieldset.Legend className="mu-visually-hidden">{t("setting.storage.current-storage")}</Fieldset.Legend>
+            {storageTypeOptions.map((option) => {
+              const Icon = option.icon;
+              return (
+                <Field.Item key={option.id}>
+                  <Field.Label className="items-start">
+                    <Radio value={String(option.storageType)} className="mt-0.5" />
+                    <span className="grid min-w-0 flex-1 gap-1 sm:grid-cols-[minmax(12rem,16rem)_1fr] sm:gap-5">
+                      <span className="flex min-w-0 flex-col gap-1">
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Icon className="mu-icon shrink-0 text-mu-ink-muted" />
+                          <span className="truncate text-mu-ink">{t(option.titleKey)}</span>
+                        </span>
+                        {option.badges && (
+                          <span className="flex flex-wrap gap-1.5 ps-6">
+                            {option.badges.map((badge) => (
+                              <Badge key={badge} tone={badge === "setting.storage.badge-recommended" ? "neutral" : "outline"}>
+                                {t(badge)}
+                              </Badge>
+                            ))}
+                          </span>
+                        )}
+                      </span>
+                      <span className="mu-caption text-mu-ink-muted">{t(option.descriptionKey)}</span>
+                    </span>
+                  </Field.Label>
+                </Field.Item>
+              );
+            })}
+          </Fieldset.Root>
+        </Field.Root>
 
-        <SettingPanel className="rounded-md bg-muted/20 px-3 py-2.5">
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <SelectedStorageIcon className="size-3.5" />
+        <div>
+          <div className="mb-2 flex items-center gap-2 mu-label-sm text-mu-ink-muted">
+            <SelectedStorageIcon className="mu-icon-sm" />
             <span>{t("setting.storage.current-storage")}</span>
-            <span className="text-foreground">{t(selectedStorageOption.titleKey)}</span>
+            <span className="text-mu-ink">{t(selectedStorageOption.titleKey)}</span>
           </div>
-          <ul className="flex flex-col gap-1.5 text-xs leading-5 text-muted-foreground">
+          <ul className="flex flex-col gap-1.5 mu-caption text-mu-ink-muted">
             {selectedStorageOption.noteKeys.map((note) => (
               <li key={note} className="flex gap-2">
-                <span className="mt-2 size-1 rounded-full bg-muted-foreground/60" aria-hidden />
+                <span className="mt-2 size-1 rounded-full bg-mu-ink-muted/60" aria-hidden />
                 <span>{t(note)}</span>
               </li>
             ))}
           </ul>
-        </SettingPanel>
+        </div>
 
         {selectedStorageType !== InstanceSetting_StorageType.DATABASE && (
           <SettingRow
@@ -349,6 +338,7 @@ const StorageSection = () => {
             <Input
               className="w-full max-w-lg font-mono"
               value={instanceStorageSetting.filepathTemplate}
+              disabled={templateLocked}
               placeholder={DEFAULT_FILEPATH_TEMPLATE}
               onChange={handleFilepathTemplateChanged}
             />
@@ -366,6 +356,7 @@ const StorageSection = () => {
             <Input
               className="w-64"
               value={selectedS3Config?.accessKeyId ?? ""}
+              disabled={registryLocked}
               onChange={(e) => handleS3FieldChange("accessKeyId", e.target.value)}
             />
           </SettingRow>
@@ -380,6 +371,7 @@ const StorageSection = () => {
               className="w-64"
               type="password"
               value={selectedS3Config?.accessKeySecret ?? ""}
+              disabled={registryLocked}
               onChange={(e) => handleS3FieldChange("accessKeySecret", e.target.value)}
             />
           </SettingRow>
@@ -388,6 +380,7 @@ const StorageSection = () => {
             <Input
               className="w-64"
               value={selectedS3Config?.endpoint ?? ""}
+              disabled={registryLocked}
               onChange={(e) => handleS3FieldChange("endpoint", e.target.value)}
             />
           </SettingRow>
@@ -396,6 +389,7 @@ const StorageSection = () => {
             <Input
               className="w-64"
               value={selectedS3Config?.region ?? ""}
+              disabled={registryLocked}
               onChange={(e) => handleS3FieldChange("region", e.target.value)}
             />
           </SettingRow>
@@ -404,13 +398,15 @@ const StorageSection = () => {
             <Input
               className="w-64"
               value={selectedS3Config?.bucket ?? ""}
+              disabled={registryLocked}
               onChange={(e) => handleS3FieldChange("bucket", e.target.value)}
             />
           </SettingRow>
 
           <SettingRow label={t("setting.storage.use-path-style")} description={t("setting.storage.use-path-style-description")}>
-            <Switch
+            <Checkbox
               checked={selectedS3Config?.usePathStyle ?? false}
+              disabled={registryLocked}
               onCheckedChange={(checked) => handleS3FieldChange("usePathStyle", checked)}
             />
           </SettingRow>
@@ -419,8 +415,9 @@ const StorageSection = () => {
             label={t("setting.storage.insecure-skip-tls-verify")}
             description={t("setting.storage.insecure-skip-tls-verify-description")}
           >
-            <Switch
+            <Checkbox
               checked={selectedS3Config?.insecureSkipTlsVerify ?? false}
+              disabled={registryLocked}
               onCheckedChange={(checked) => handleS3FieldChange("insecureSkipTlsVerify", checked)}
             />
           </SettingRow>
@@ -428,7 +425,11 @@ const StorageSection = () => {
       )}
 
       <div className="w-full flex justify-end">
-        <Button disabled={!allowSaveStorageSetting} onClick={saveInstanceStorageSetting}>
+        <Button
+          variant="primary"
+          disabled={(registryLocked && templateLocked) || !allowSaveStorageSetting}
+          onClick={saveInstanceStorageSetting}
+        >
           {t("common.save")}
         </Button>
       </div>

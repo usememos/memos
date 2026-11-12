@@ -10,6 +10,7 @@ GET /file/attachments/:uid[/:filename]   # attachment binary
     ?motion=true                         # embedded motion-photo video clip
     ?share_token={uid}                   # access via a memo share link
 GET /file/users/:identifier/avatar       # user avatar (by username)
+GET /file/users/:identifier/export       # Memos export file of that user (administrators only; HEAD = preflight)
 ```
 
 ## Authentication
@@ -27,6 +28,11 @@ Attachment access follows memo visibility, evaluated by `core/access.CheckMemoRe
 - Unlinked attachment (no memo): creator or admin only
 
 Avatars are public on instances that allow anonymous access; private instances require authentication.
+
+The export route requires an instance administrator and may name any user. It streams the ZIP as `core/memoexport`
+writes it, admits one export at a time (a second request gets `429`), and charges the caller's `archive_user` budget.
+`HEAD` runs the same checks and answers with the headers alone. The archive itself is assembled by `server/api`, which
+the server injects as `MemoExporter`; without it the route answers `404`.
 
 ## Serving behavior
 

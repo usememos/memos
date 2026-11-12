@@ -1,93 +1,61 @@
-import { ArrowRightIcon, CompassIcon } from "lucide-react";
+import { Skeleton } from "@usememos/ui";
+import { ArrowLeftIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useInstance } from "@/contexts/InstanceContext";
+import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
-import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import AuthFooter from "./AuthFooter";
+import MemosLogo from "./MemosLogo";
 
 interface Props {
-  chip?: React.ReactNode;
-  title: string;
-  subtitle?: string;
-  // Hide the explore band on pages that shouldn't offer an exit (e.g. first-run setup).
-  hideExplore?: boolean;
+  title?: string;
+  description?: string;
   children: React.ReactNode;
 }
 
-export const AuthChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-accent/50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-    {children}
-  </span>
-);
-
-// Centered icon + title + description block for states where a form cannot be shown.
-export const AuthEmptyState = ({
-  icon,
-  title,
-  description,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  children?: React.ReactNode;
-}) => (
-  <div className="flex flex-col items-center py-2 text-center">
-    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-muted-foreground">{icon}</div>
-    <p className="text-sm font-medium text-foreground">{title}</p>
-    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-    {children}
-  </div>
-);
-
-// "Already have an account? Sign in" style prompt for hopping between auth pages.
+// "Don't have an account yet? Sign up" style prompt for hopping between auth pages.
 export const AuthLinkPrompt = ({ prompt, to, label }: { prompt: string; to: string; label: string }) => (
-  <p className="mt-5 text-center text-sm text-muted-foreground">
+  <p className="mt-5 text-center mu-caption text-mu-ink-muted">
     {prompt}{" "}
-    <Link to={to} className="text-primary hover:underline" viewTransition>
+    <Link to={to} className="text-mu-accent hover:underline" viewTransition>
       {label}
     </Link>
   </p>
 );
 
-export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse rounded-md bg-muted/60" aria-hidden="true" />;
-
-const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
+// The way back from a page reached off the sign-in path, such as administrator sign-in or a failed SSO return.
+export const AuthBackLink = ({ to = ROUTES.AUTH }: { to?: string }) => {
   const t = useTranslate();
-  const { generalSetting, profile } = useInstance();
-  const showExplore = profile.accessMode === InstanceAccessMode.PUBLIC && !hideExplore;
-
   return (
-    <div className="min-h-svh w-full flex flex-col items-center px-4 py-4 sm:py-8">
-      <div className="w-full grow flex flex-col justify-center items-center">
-        <div className="w-90 max-w-full rounded-xl border border-border bg-card p-7 shadow-sm">
-          <div className="mb-6 flex items-center gap-2">
-            <img className="h-6 w-auto rounded-full" src={generalSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-            <span className="text-sm font-semibold text-foreground">{generalSetting.customProfile?.title || "Memos"}</span>
-          </div>
-          {chip && <div className="mb-2">{chip}</div>}
-          <h1 className="text-lg font-semibold tracking-tight text-foreground">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
-          <div className="mt-6 w-full">{children}</div>
-          {showExplore && (
-            <div className="-mx-7 -mb-7 mt-6 rounded-b-xl border-t border-border bg-background/60">
-              <Link
-                to={ROUTES.EXPLORE}
-                className="group flex items-center justify-center gap-2 px-7 py-3 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-                viewTransition
-              >
-                <CompassIcon className="h-3.5 w-3.5" />
-                {t("auth.explore-public-memos")}
-                <ArrowRightIcon className="-ms-1 h-3.5 w-3.5 opacity-0 transition-all group-hover:ms-0 group-hover:opacity-100 rtl:rotate-180" />
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-      <AuthFooter />
-    </div>
+    <p className="mt-5 text-center mu-caption">
+      <Link to={to} className="inline-flex items-center gap-1 text-mu-accent hover:underline" viewTransition>
+        <ArrowLeftIcon className="mu-icon-sm rtl:rotate-180" />
+        {t("auth.back-to-sign-in")}
+      </Link>
+    </p>
   );
 };
+
+export const AuthOptionsLoading = () => <Skeleton height={32} />;
+
+/**
+ * Every auth page: the instance's identity, the task's heading, the task, and a footer row with the
+ * visitor's language and theme. A card on wider screens; on a phone the frame drops and the footer
+ * sits at the bottom of the screen.
+ */
+const AuthPageLayout = ({ title, description, children }: Props) => (
+  <div className="flex min-h-svh w-full flex-col sm:items-center sm:justify-center sm:p-8">
+    <main className="flex w-full flex-1 flex-col sm:w-90 sm:flex-none sm:rounded-mu-xl sm:border sm:border-mu-line sm:bg-mu-surface">
+      <div className="flex flex-1 flex-col justify-center px-5 py-12 sm:px-7 sm:pt-8 sm:pb-7">
+        <MemosLogo size="lg" className="mb-8" />
+        {title && <h1 className="mu-heading text-mu-ink">{title}</h1>}
+        {description && <p className="mt-1 mu-body text-mu-ink-muted">{description}</p>}
+        <div className={cn("w-full", title && "mt-6")}>{children}</div>
+      </div>
+      {/* Same side padding as the content above, so the footer's controls share its edges. */}
+      <AuthFooter className="border-t border-mu-line px-5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-b-mu-xl sm:bg-mu-canvas/60 sm:px-7 sm:pb-2" />
+    </main>
+  </div>
+);
 
 export default AuthPageLayout;

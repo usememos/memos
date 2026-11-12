@@ -19,6 +19,8 @@ message MemoPayload {
     bool has_incomplete_tasks = 4;
     // The title extracted from the first H1 heading, if present.
     string title = 5;
+    // Whether the content contains a Markdown image.
+    bool has_inline_image = 6;
   }
 
   message Location {

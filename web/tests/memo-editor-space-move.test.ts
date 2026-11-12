@@ -1,8 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { memoService } from "@/components/MemoEditor/services/memoService";
-import { createInitialState, type EditorState } from "@/components/MemoEditor/state";
+import { memoService } from "@/components/MemoEditor/edit/services/memoService";
+import { createInitialState, type EditorState } from "@/components/MemoEditor/edit/state";
 import { type Memo, MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
+import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
 const clients = vi.hoisted(() => ({
   getMemo: vi.fn(),
@@ -42,7 +43,7 @@ describe("editing a memo's Space", () => {
     const memo = stored({ space: "spaces/work", visibility: Visibility.SPACE });
     clients.getMemo.mockResolvedValue(memo);
 
-    const result = await memoService.save(editedFrom(memo, { space: "spaces/reading" }), { memoName: memo.name });
+    const result = await memoService.save(editedFrom(memo, { space: "spaces/reading" }), { memoName: memo.name }, ops);
 
     expect(new Set(savedMask())).toEqual(new Set(["space", "visibility"]));
     expect(savedMemo().space).toBe("spaces/reading");
@@ -54,7 +55,7 @@ describe("editing a memo's Space", () => {
     const memo = stored({ space: "spaces/work" });
     clients.getMemo.mockResolvedValue(memo);
 
-    await memoService.save(editedFrom(memo, { space: undefined }), { memoName: memo.name });
+    await memoService.save(editedFrom(memo, { space: undefined }), { memoName: memo.name }, ops);
 
     expect(savedMask()).toContain("space");
     expect(savedMemo().space).toBe("");
@@ -64,7 +65,7 @@ describe("editing a memo's Space", () => {
     const memo = stored({ space: "spaces/work" });
     clients.getMemo.mockResolvedValue(memo);
 
-    const result = await memoService.save({ ...editedFrom(memo, {}), content: "Edited" }, { memoName: memo.name });
+    const result = await memoService.save({ ...editedFrom(memo, {}), content: "Edited" }, { memoName: memo.name }, ops);
 
     expect(savedMask()).not.toContain("space");
     expect(result.moved).toBe(false);

@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -104,6 +105,9 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 
 	err := d.db.QueryRowContext(ctx, query, tokenHash).Scan(&userID, &tokensJSON)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -121,5 +125,5 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 		}
 	}
 
-	return nil, errors.New("PAT not found")
+	return nil, nil
 }

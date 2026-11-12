@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsRetryableAuthenticationMutationError(t *testing.T) {
+func TestIsRetryableTransactionError(t *testing.T) {
 	db := &DB{}
-	require.True(t, db.IsRetryableAuthenticationMutationError(errors.Wrap(&mysqldriver.MySQLError{Number: 1213}, "commit failed")))
-	require.True(t, db.IsRetryableAuthenticationMutationError(&mysqldriver.MySQLError{Number: 1205}))
-	require.False(t, db.IsRetryableAuthenticationMutationError(&mysqldriver.MySQLError{Number: 1062}))
+	require.True(t, db.IsRetryableTransactionError(errors.Wrap(&mysqldriver.MySQLError{Number: 1213}, "commit failed")))
+	require.True(t, db.IsRetryableTransactionError(&mysqldriver.MySQLError{Number: 1205}))
+	require.False(t, db.IsRetryableTransactionError(&mysqldriver.MySQLError{Number: 1062}))
 }

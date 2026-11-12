@@ -6,7 +6,6 @@
     "api-docs": "API Documentație",
     "api-docs-note": "Referință REST și gRPC",
     "build": "Compilare",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Un spațiu cu sursă deschisă, găzduit pe propriul server, pentru notițe, idei și gânduri de zi cu zi.",
     "distribution": "Distribuție",
@@ -22,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Autentificarea nu a putut fi finalizată",
     "create-your-account": "Creați-vă contul",
+    "hide-password": "Ascunde parola",
+    "incorrect-credentials": "Nume de utilizator sau parolă incorectă.",
     "new-password": "Parolă Nouă",
     "repeat-new-password": "Repetați noua parolă",
+    "show-password": "Afișează parola",
     "sign-in-tip": "Aveți deja un cont?",
     "sign-up-tip": "Nu aveți încă un cont?",
     "admin-sign-in": "Conectare administrator",
-    "admin-sign-in-tip": "Conectarea cu parolă rămâne disponibilă pentru administratori.",
     "back-to-sign-in": "Înapoi la conectare",
     "continue-with": "Continuați cu {{provider}}",
     "create-admin-account": "Creați cont de administrator",
-    "explore-public-memos": "Explorați notițele publice pe această instanță",
-    "first-run": "Prima rulare",
     "setup-description": "Creați contul de administrator pentru această instanță.",
-    "setup-note": "Acest cont deține setările instanței, membrii și furnizorii de identitate.",
     "setup-title": "Configurați instanța",
     "signin-unavailable-description": "Conectarea prin parolă este dezactivată și nu sunt configurați furnizori de identitate. Solicitați administratorului să activeze o metodă de conectare.",
     "signin-unavailable-title": "Conectarea nu este disponibilă",
-    "signup-unavailable-description": "Conturile cu parolă sunt dezactivate și nu sunt configurați furnizori de identitate. Solicitați administratorului acces.",
-    "signup-unavailable-title": "Înregistrarea nu este disponibilă",
-    "signups-closed-description": "Conturile noi sunt dezactivate pe această instanță. Contactați administratorul dacă aveți nevoie de acces.",
-    "signups-closed-title": "Înscrierile sunt închise",
-    "sso-signup-tip": "Conectați-vă cu un furnizor de mai jos pentru a vă crea contul.",
-    "welcome-back": "Bine ați revenit."
+    "signups-closed-description": "Conturile noi sunt dezactivate pe această instanță. Contactați administratorul dacă aveți nevoie de acces."
   },
   "demo": {
     "banner-description": "Modificările sunt temporare și pot fi resetate.",
@@ -142,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Referit de",
     "referencing": "Referire",
-    "relations": "Relaţii",
     "resources": "Resurse",
     "restore": "Restabili",
     "role": "Rol",
@@ -177,7 +170,24 @@
     "resize-panel": "Redimensionați panoul",
     "resize-sidebar": "Redimensionați bara laterală",
     "sign-in-to-memos": "Conectați-vă la Memos",
-    "view-all": "Vizualizați tot"
+    "open-navigation": "Deschideți navigarea",
+    "navigation": "Navigare",
+    "primary-navigation": "Principală",
+    "download": "Descărcați",
+    "download-name": "Descărcați {{name}}",
+    "open-name": "Deschideți {{name}}",
+    "preview-name": "Previzualizați {{name}}",
+    "no-content": "Fără conținut",
+    "previous": "Anterior",
+    "next": "Următor",
+    "retry": "Reîncercați",
+    "docs": "Documentație",
+    "calendar-for-month": "Calendar pentru {{month}}",
+    "date-at-time": "{{date}} la {{time}}",
+    "selected-location": "Locație selectată",
+    "choose-location": "Alegeți o locație",
+    "unknown-error": "Eroare necunoscută",
+    "error-occurred": "A apărut o eroare"
   },
   "locale-picker": {
     "no-language-feedback": "Limba nu a fost găsită? Trimiteți feedback"
@@ -188,6 +198,7 @@
     "any-thoughts": "Orice gânduri...",
     "exit-focus-mode": "Ieșiți din modul de focalizare",
     "focus-mode": "Modul de focalizare",
+    "markdown-mode": "Modul Markdown",
     "insert-menu": {
       "add-location": "Adăugați locația",
       "link-memo": "Notă de legături",
@@ -196,9 +207,50 @@
       "image-upload-failed": "Unele imagini nu au putut fi încărcate. Încercați din nou sau păstrați fișierele încărcate ca atașamente.",
       "image-upload-stopped": "Încărcarea imaginii a fost oprită {{completed}}/{{total}}",
       "insert-image": "Inserare imagine",
+      "drawing": "Desen",
       "keep-as-attachments": "Păstrare ca atașamente",
       "uploading-inline-image": "Se încarcă în conținut",
       "uploading-images": "Se încarcă imagini {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Desen nou",
+      "edit": "Editați desenul",
+      "tools": "Instrumente",
+      "tool-select": "Selectare",
+      "tool-pen": "Stilou",
+      "tool-eraser": "Radieră",
+      "tool-rectangle": "Dreptunghi",
+      "tool-ellipse": "Elipsă",
+      "tool-arrow": "Săgeată",
+      "tool-text": "Text",
+      "style": "Culoare și grosime",
+      "color": "Culoare",
+      "width": "Grosime",
+      "width-thin": "Subțire",
+      "width-medium": "Medie",
+      "width-thick": "Groasă",
+      "color-ink": "Cerneală",
+      "color-gray": "Gri",
+      "color-red": "Roșu",
+      "color-orange": "Portocaliu",
+      "color-green": "Verde",
+      "color-teal": "Turcoaz",
+      "color-blue": "Albastru",
+      "color-violet": "Violet",
+      "undo": "Anulare",
+      "redo": "Refacere",
+      "zoom-to-fit": "Încadrare în fereastră",
+      "done": "Gata",
+      "discard-title": "Renunțați la acest desen?",
+      "discard-description": "Nu a fost încă adăugat la notă.",
+      "discard-edit-title": "Renunțați la modificări?",
+      "discard-edit-description": "Desenul rămâne așa cum era înainte să îl deschideți.",
+      "keep-drawing": "Continuați să desenați",
+      "discard": "Renunțați",
+      "open-failed": "Desenul nu a putut fi deschis. Încercați din nou.",
+      "export-failed": "Desenul nu a putut fi salvat. Încercați din nou.",
+      "image-failed": "Imaginea nu a putut fi adăugată la desen.",
+      "saved-without-drawing": "Nota a fost salvată, dar desenul nu. Salvați din nou pentru a reîncerca."
     },
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",
@@ -221,21 +273,21 @@
     "format": {
       "code-block": "Bloc de cod",
       "link": "Legătură",
-      "heading": "Titlu",
       "paragraph": "Paragraf",
       "heading-1": "Titlu 1",
       "heading-2": "Titlu 2",
       "heading-3": "Titlu 3",
+      "heading-4": "Titlu 4",
       "bold": "Aldin",
       "italic": "Cursiv",
       "strikethrough": "Tăiat cu o linie",
       "bullet-list": "Marcator listă",
       "ordered-list": "Listă numerotată",
-      "task-list": "Listă de activități",
-      "more": "Mai multe formatări"
+      "task-list": "Listă de activități"
     },
     "comment": "Comentariu",
-    "formatting-toolbar": "Bara de instrumente de formatare",
+    "footnotes": "Note de subsol",
+    "back-to-reference": "Înapoi la referință",
     "new-memo": "Memo nou",
     "saved": "Salvat",
     "validation": {
@@ -247,7 +299,66 @@
       "save-in-progress": "Salvare în curs",
       "unsupported-attachment-image-url": "Adresa URL a imaginii atașate neacceptată: {{url}}",
       "wait-for-upload": "Așteptați finalizarea încărcării"
-    }
+    },
+    "blocks": {
+      "task": "Sarcină",
+      "quote": "Citat",
+      "callout": "Casetă evidențiată",
+      "callout-note": "Notă",
+      "callout-tip": "Sfat",
+      "callout-important": "Important",
+      "callout-warning": "Avertisment",
+      "callout-caution": "Atenție",
+      "collapsible-section": "Secțiune pliabilă",
+      "table": "Tabel",
+      "divider": "Separator",
+      "no-results": "Niciun rezultat",
+      "commands": "Comenzi",
+      "loading": "Se încarcă…",
+      "duplicate": "Duplică",
+      "inline-code": "Cod",
+      "link-placeholder": "Lipește sau tastează un link…",
+      "remove-link": "Elimină linkul",
+      "open-link": "Deschide linkul",
+      "copy-link": "Copiază linkul",
+      "edit-link": "Editează linkul",
+      "emoji": "Emoji",
+      "block-menu": "Deschide meniul blocului",
+      "list-hint": "Listă",
+      "plain-text": "text",
+      "add-row-above": "Adaugă rând deasupra",
+      "add-row-below": "Adaugă rând dedesubt",
+      "add-column-left": "Adaugă coloană la stânga",
+      "add-column-right": "Adaugă coloană la dreapta",
+      "delete-row": "Șterge rândul",
+      "delete-column": "Șterge coloana",
+      "align": "Aliniere",
+      "align-left": "Stânga",
+      "align-center": "Centru",
+      "align-right": "Dreapta",
+      "image-align-left": "Aliniere la stânga",
+      "image-align-center": "Aliniere la centru",
+      "image-align-right": "Aliniere la dreapta",
+      "text-style": "Stil text",
+      "image": "Imagine",
+      "reset-image-size": "Resetează dimensiunea",
+      "alt-text": "Text alternativ",
+      "alt-text-placeholder": "Descrie imaginea…",
+      "image-unavailable": "Imagine indisponibilă",
+      "resize-image": "Redimensionează imaginea"
+    },
+    "attachments": {
+      "edited": "Editat",
+      "new": "Nou",
+      "remove": "Eliminați atașamentul",
+      "reorder": "Reordonează {{name}}",
+      "reorder-hint": "Trage sau folosește tastele săgeți"
+    },
+    "remove-relation": "Eliminați legătura",
+    "remove-location": "Eliminați locația",
+    "recording-unsupported": "Înregistrarea audio nu este acceptată în acest browser.",
+    "microphone-denied": "Permisiunea pentru microfon a fost refuzată.",
+    "recording-failed": "Pornirea înregistrării audio a eșuat."
   },
   "inbox": {
     "failed-to-load": "Nu s-a încărcat elementul din căsuța de e-mail",
@@ -256,7 +367,16 @@
     "unread": "Necitit",
     "space-invitation": "te-a invitat să te alături unui spațiu",
     "space-invitation-accepted": "Te-ai alăturat acestui spațiu.",
-    "space-invitation-open": "Spațiu deschis"
+    "space-invitation-open": "Spațiu deschis",
+    "commented-on-memo": "a comentat la nota dvs.",
+    "mentioned-in-comment": "v-a menționat într-un comentariu",
+    "mentioned-in-memo": "v-a menționat într-o notă",
+    "original": "Original:",
+    "memo-label": "Notă:",
+    "comment-heading": "Comentariu",
+    "memo-heading": "Notă",
+    "empty-memo": "Notă goală",
+    "empty-comment": "Comentariu gol"
   },
   "live-update": {
     "connected": "Actualizări live active",
@@ -264,11 +384,17 @@
     "disconnected": "Actualizări live indisponibile"
   },
   "memo": {
+    "no-memos-yet": "Niciun memo încă",
+    "no-matching-memos": "Nu există memo-uri potrivite",
+    "clear-filters": "Ștergeți filtrele",
     "pinned": "Fixat",
     "click-to-show-sensitive-content": "Faceți clic pentru a afișa conținut sensibil",
     "comment": {
       "self": "Comentarii",
-      "write-a-comment": "Scrie un comentariu"
+      "write-a-comment": "Scrie un comentariu",
+      "view-all-count_one": "Vizualizați {{count}} comentariu",
+      "view-all-count_few": "Vizualizați toate cele {{count}} comentarii",
+      "view-all-count_other": "Vizualizați toate cele {{count}} de comentarii"
     },
     "copy-content": "Copiați conținut",
     "copy-link": "Copiați linkul",
@@ -278,10 +404,13 @@
     "delete-confirm-description": "Această acțiune este ireversibilă. Atașamentele, linkurile și referințele vor fi, de asemenea, eliminate.",
     "direction": "Direcţie",
     "filters": {
+      "has-attachments": "are atașamente",
       "has-code": "areCode",
+      "has-image": "are imagine",
       "has-link": "areLink",
       "has-location": "are locație",
-      "has-task-list": "areTaskList"
+      "has-task-list": "areTaskList",
+      "remove": "Eliminați filtrul"
     },
     "compact-mode": "Mod compact",
     "link-preview": "Previzualizare link",
@@ -366,7 +495,9 @@
     "restored-successfully": "Restaurat cu succes",
     "succeed-copy-content": "Conținutul a fost copiat cu succes.",
     "succeed-copy-link": "Linkul a fost copiat cu succes.",
-    "update-succeed": "Actualizarea a reușit"
+    "update-succeed": "Actualizarea a reușit",
+    "not-signed-in": "Nu sunteți conectat.",
+    "invalid-datetime": "Dată și oră nevalide. Folosiți formatul 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Nu au fost găsite note",
@@ -436,7 +567,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Spațiul de stocare pentru atașamente nu este disponibil.",
-      "email-in-use": "Această adresă de e-mail este deja utilizată de un alt cont."
+      "email-in-use": "Această adresă de e-mail este deja utilizată de un alt cont.",
+      "avatar-too-large": "Alege o imagine de cel mult 2 MB.",
+      "avatar-unreadable": "Această imagine nu poate fi citită. Încearcă alt fișier."
     },
     "ai": {
       "add-provider": "Adăugați furnizorul",
@@ -518,13 +651,15 @@
       "restore-success": "{{username}} a fost restaurat cu succes",
       "summary-column": "Rezumat",
       "user": "Utilizator",
-      "no-members-found": "Nu s-au găsit membri"
+      "no-members-found": "Nu s-au găsit membri",
+      "export-memos": "Exportă notițele",
+      "username-password-required": "Numele de utilizator și parola nu pot fi goale",
+      "create-success": "Utilizator creat",
+      "update-success": "Utilizator actualizat"
     },
     "memo": {
       "add-reaction": "Adăugați reacția",
       "configured-reactions": "Reacții configurate",
-      "double-click-edit-description": "Permiteți utilizatorilor să deschidă editarea notificărilor făcând dublu clic pe o notă.",
-      "editing-title": "Editare",
       "label": "Notă",
       "reaction-placeholder": "de ex. 👍",
       "reactions-description": "Definiți opțiunile de reacție pe care utilizatorii le pot aplica la memorii.",
@@ -575,22 +710,162 @@
       "appearance-title": "Aspect",
       "default-memo-visibility": "Vizibilitatea implicită a notei",
       "default-memo-visibility-description": "Vizibilitatea aplicată notificărilor nou create, dacă nu este schimbată în editor.",
+      "device-description": "Opțiuni de citire și editare păstrate doar în acest browser. Nu sunt salvate în contul tău.",
+      "device-title": "Acest dispozitiv",
+      "double-click-edit": "Dublu clic pentru editare",
+      "double-click-edit-description": "Deschide propriile memo-uri în editor printr-un dublu clic.",
       "label": "Preferințe",
       "language-description": "Actualizează imediat limba interfeței și o salvează în contul tău.",
+      "link-preview-description": "Afișează un card de previzualizare sub linkurile simple oriunde sunt afișate memo-uri.",
       "memo-defaults-description": "Setați setările implicite folosite la compunerea noilor note.",
       "memo-defaults-title": "Memo implicite",
-      "theme-description": "Aplică tema selectată imediat pe acest dispozitiv.",
-      "theme": "Temă",
       "save-media-metadata": "Salvați metadatele media",
       "save-media-metadata-description": "Pentru încărcările viitoare, salvați camera disponibilă, ora capturii, locația, dimensiunile imaginii și detaliile de bază ale videoclipului. Oricine poate vizualiza atașamentul poate primi aceste metadate. Atașamentele existente rămân neschimbate.",
+      "theme-description": "Aplică tema selectată imediat pe acest dispozitiv.",
+      "theme": "Temă",
       "uploads-privacy-description": "Controlați informațiile sensibile la confidențialitate trimise odată cu media încărcată.",
-      "uploads-privacy-title": "Încărcări și confidențialitate"
+      "uploads-privacy-title": "Încărcări și confidențialitate",
+      "theme-system": "Sincronizare cu sistemul",
+      "theme-system-short": "Sistem",
+      "theme-light": "Luminos",
+      "theme-dark": "Întunecat",
+      "theme-paper": "Hârtie"
+    },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Scrieți și editați notițele ca text Markdown în loc de text formatat."
     },
     "memo-view": {
       "create": "Creează o vizualizare",
       "delete-confirm": "Sigur doriți să ștergeți vizualizarea `{{title}}`?",
       "delete-success": "Vizualizarea `{{title}}` a fost ștearsă cu succes",
-      "change-icon": "Schimbă pictograma vizualizării"
+      "change-icon": "Schimbă pictograma vizualizării",
+      "page-description": "Creați vizualizări reutilizabile cu câmpuri, operatori, funcții de timp și potrivire de etichete. Porniți de la exemple, apoi validați înainte de a salva.",
+      "edit": "Editați vizualizarea",
+      "form-description": "Denumiți vizualizarea și definiți expresia de filtrare a notelor pe care trebuie să o aplice.",
+      "title-placeholder": "Fixate, Note recente, Serviciu",
+      "filter-help": "Combinați expresii cu {{and}}, {{or}} și {{not}}. Câmpurile de timp sunt marcaje temporale — folosiți {{now}}, {{duration}}, {{timestamp}} și accesori precum {{year}}. Etichetele acceptă {{sets}}, iar {{size}} măsoară lungimea.",
+      "validate": "Validați",
+      "all": "Toate vizualizările",
+      "loading": "Se încarcă vizualizările…",
+      "load-failed": "Vizualizările nu au putut fi încărcate.",
+      "empty-title": "Nicio vizualizare încă",
+      "empty-description": "Salvați un filtru pentru a reveni rapid la notele de care aveți nevoie.",
+      "examples-title": "Exemple de expresii",
+      "fields-title": "Câmpuri acceptate",
+      "title-filter-required": "Titlul și filtrul nu pot fi goale",
+      "filter-valid": "Expresia de filtrare pare validă",
+      "create-success": "Vizualizare creată",
+      "update-success": "Vizualizare actualizată",
+      "examples": {
+        "pinned": {
+          "title": "Fixate",
+          "description": "Doar notele fixate."
+        },
+        "recent": {
+          "title": "Note recente",
+          "description": "Note create în ultima oră."
+        },
+        "public": {
+          "title": "Note publice",
+          "description": "Doar notele publice."
+        },
+        "project-tags": {
+          "title": "Etichete de proiect",
+          "description": "Potrivire cu una sau mai multe etichete exacte."
+        },
+        "untagged": {
+          "title": "Fără etichete",
+          "description": "Note fără nicio etichetă."
+        },
+        "archive-tree": {
+          "title": "Arbore de arhivă",
+          "description": "Potrivire a etichetelor ierarhice după prefix."
+        },
+        "unassigned": {
+          "title": "Neatribuite",
+          "description": "Note care nu sunt plasate în niciun spațiu."
+        },
+        "one-space": {
+          "title": "Într-un spațiu",
+          "description": "Note plasate într-un spațiu. Folosiți ID-ul spațiului din URL-ul sau setările acestuia."
+        },
+        "open-tasks": {
+          "title": "Sarcini deschise",
+          "description": "Note cu sarcini nefinalizate."
+        },
+        "links-or-code": {
+          "title": "Linkuri sau cod",
+          "description": "Note care conțin linkuri sau blocuri de cod."
+        },
+        "no-location": {
+          "title": "Fără locație",
+          "description": "Note fără locație atașată."
+        },
+        "with-attachments": {
+          "title": "Cu atașamente",
+          "description": "Note cu cel puțin un fișier atașat."
+        },
+        "photos": {
+          "title": "Fotografii",
+          "description": "Note care afișează o imagine, în conținut sau ca fișier atașat."
+        },
+        "content-search": {
+          "title": "Căutare în conținut",
+          "description": "Căutare de text în conținutul notelor."
+        },
+        "starts-with": {
+          "title": "Începe cu",
+          "description": "Note al căror conținut începe cu un text (și endsWith)."
+        },
+        "regex": {
+          "title": "Potrivire regex",
+          "description": "Potrivirea conținutului cu o expresie regulată."
+        },
+        "all-tags-complete": {
+          "title": "Toate etichetele finalizate",
+          "description": "Fiecare etichetă se termină în -done (doar note cu etichete)."
+        },
+        "one-project-tag": {
+          "title": "O singură etichetă de proiect",
+          "description": "Exact o etichetă îndeplinește predicatul."
+        },
+        "any-tags": {
+          "title": "Oricare dintre aceste etichete",
+          "description": "Etichetele se intersectează cu setul dat."
+        },
+        "exact-tags": {
+          "title": "Exact aceste etichete",
+          "description": "Etichetate exact cu acest set, nimic în plus."
+        },
+        "year-2024": {
+          "title": "Note din 2024",
+          "description": "Filtrare după anul calendaristic."
+        },
+        "weekend": {
+          "title": "Note de weekend",
+          "description": "Create duminica sau sâmbăta (0 = duminică)."
+        },
+        "long": {
+          "title": "Note lungi",
+          "description": "Note mai lungi de 280 de caractere."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Configurație",
+      "description": "Resurse setate prin fișiere de configurație. Editați un fișier și aplicați-l pentru a le modifica; restul instanței rămâne editabil aici.",
+      "managed-by": "Gestionat prin configurație",
+      "managed-tooltip": "Setat în {{source}}. Editați fișierul și aplicați-l pentru a modifica acest lucru.",
+      "resource": "Resursă",
+      "source": "Fișier",
+      "managed-fields": "Câmpuri gestionate",
+      "whole-resource": "Toate câmpurile",
+      "ignored-fields": "Editabile aici",
+      "serial": "Număr de serie",
+      "last-apply": "Ultima aplicare",
+      "applied-by": "Aplicat de",
+      "nothing-managed": "Nu a fost aplicată nicio configurație. Totul se setează aici."
     },
     "sso": {
       "account": "Cont",
@@ -651,7 +926,9 @@
       "token-endpoint": "Punct final de simbol",
       "update-sso": "Actualizați SSO",
       "update-sso-description": "Examinați configurația furnizorului, apoi salvați câmpurile care ar trebui să se modifice.",
-      "user-endpoint": "Punct final utilizator"
+      "user-endpoint": "Punct final utilizator",
+      "invalid-config": "Configurația furnizorului de identitate nu este validă.",
+      "provider-id-placeholder": "de ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Cheie de acces",
@@ -702,47 +979,56 @@
       "customize-server": {
         "description": "Descriere",
         "icon-url": "Pictograma URL",
-        "title": "Personalizați serverul"
+        "title": "Personalizați serverul",
+        "dialog-description": "Personalizați aspectul și setările instanței."
       },
       "custom-code-description": "Opțional, CSS și JavaScript la nivelul întregii instanțe aplicate frontend-ului.",
       "custom-code-title": "Cod personalizat",
-      "enable-double-click-to-edit": "Activați dublu clic pentru a edita",
       "label": "Sistem",
       "server-name": "Nume server"
     },
     "usage-limits": {
-      "add-user": "Add user limit",
+      "add-entry": "Add entry",
+      "add-title": "Add entry",
       "all-users": "All users",
-      "all-users-description": "Everyone, admins included",
-      "all-users-hint": "Leave a field empty for no limit.",
-      "all-users-placeholder": "All users: {{value}}",
-      "all-users-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "all-users-description": "Everyone not named above. This is the default.",
+      "applies-to": "Applies to",
       "content-size": "Memo content (KiB)",
       "content-size-column": "Memo content",
       "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
+      "default-hint": "Leave a field empty for no limit.",
+      "default-title": "Limits for all users",
+      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
+      "edit-title": "Edit entry",
+      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
       "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "no-candidates": "Every user already has their own limits.",
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "never-applies": "Never applies",
+      "never-applies-description": "Every user named here is caught by an earlier entry.",
+      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "position": "#",
       "remove": "Remove",
-      "remove-description": "The All users limits will apply to this user again.",
-      "remove-title": "Remove the limits for {{username}}?",
-      "removed": "Limits removed",
-      "row-actions": "Actions for {{name}}",
+      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
+      "remove-title": "Remove this entry?",
+      "remove-user": "Remove {{name}}",
+      "removed": "Entry removed",
+      "row-actions": "Actions for entry {{name}}",
       "saved": "Usage limits saved",
-      "select-user": "Select a user",
+      "select-user": "Add a user",
       "storage": "Storage (MiB)",
       "storage-column": "Storage",
       "storage-description": "The total size of uploads. External links do not count.",
       "title": "Usage limits",
       "unlimited": "Unlimited",
-      "user": "User",
-      "user-hint": "Leave a field empty to use the All users limit. Enter 0 for no limit.",
-      "user-title": "Limits for {{user}}"
+      "users": "Users",
+      "users-description": "The entry applies to each of these users.",
+      "users-required": "Name at least one user."
     },
     "webhook": {
       "create-dialog": {
@@ -845,7 +1131,9 @@
       "review-existing": "Deja în contul dvs.",
       "review-exported": "Exportat de",
       "review-memos": "Memos în fișier",
-      "review-new": "Va fi creat"
+      "review-new": "Va fi creat",
+      "export-admin-only": "Doar administratorii pot exporta notițe. Cere-i unui administrator fișierul tău de export.",
+      "export-busy": "Un alt export este în curs. Încearcă din nou peste câteva momente."
     },
     "spaces": {
       "general": "General",
@@ -931,7 +1219,8 @@
   },
   "tooltip": {
     "link-memo": "Link Memo",
-    "select-location": "Locaţie"
+    "select-location": "Locaţie",
+    "link-memo-description": "Căutați și selectați o notă de legat"
   },
   "attachment-details": {
     "fields": {
@@ -996,7 +1285,12 @@
     "loading": "Se încarcă memo-urile…",
     "new-here": "Scrieți aici",
     "saved-outside-filter": "Salvat. Acest memo se află în afara rezultatelor actuale ale hărții.",
-    "open-memo": "Deschide memo"
+    "open-memo": "Deschide memo",
+    "open-in-google-maps": "Deschideți în Google Maps",
+    "location-description": "Selectați o locație pe hartă sau introduceți manual coordonatele",
+    "latitude": "Latitudine",
+    "longitude": "Longitudine",
+    "place-placeholder": "Alegeți mai întâi o poziție."
   },
   "calendar": {
     "new-memo-on-day": "Memo nou în această zi",
@@ -1040,5 +1334,102 @@
     "name-placeholder": "de ex. Produs",
     "spaces": "Spații",
     "switch": "Schimbă spațiul"
+  },
+  "welcome": {
+    "title": "Bine ai venit în Memos",
+    "headline": "Notițe simple pentru gândurile de zi cu zi.",
+    "intro-write": "O singură propoziție poate fi o notă întreagă.",
+    "intro-keep": "Fiecare notă rămâne la ziua în care ai scris-o.",
+    "intro-share": "Tu alegi ce rămâne privat.",
+    "write": "Scriere",
+    "write-sub": "O singură propoziție poate fi o notă întreagă.",
+    "no-title": "Fără titlu",
+    "no-title-text": "O notă începe cu gândul în sine. Nu există un titlu de completat.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown dă structură cuvintelor tale atunci când vrei.",
+    "attach": "Atașare",
+    "attach-text": "Imaginile, fișierele, audio și un loc intră prin ＋.",
+    "keep": "Păstrare",
+    "keep-sub": "Fiecare notă rămâne la ziua în care ai scris-o.",
+    "calendar-text": "Calendarul duce înapoi la orice zi.",
+    "tags-text": "Un cuvânt după # devine etichetă, iar o etichetă filtrează cronologia.",
+    "views-text": "O vizualizare personalizată salvează un filtru.",
+    "map-text": "Notele cu un loc apar pe hartă.",
+    "share": "Partajare",
+    "share-sub": "Notele încep private. Tu alegi ce partajezi și ce publici.",
+    "visibility-text": "Fiecare notă are propria setare. Cele noi încep private, doar pentru tine; una publică are un link pe care îl poate deschide oricine.",
+    "spaces-text": "Într-un spațiu, membrii scriu alături de tine, fiecare păstrându-și propriile note.",
+    "comments": "Comentarii",
+    "comments-text": "Oricine poate vedea o notă poate răspunde sub ea.",
+    "skip": "Omite",
+    "next": "Următorul",
+    "done": "Gata",
+    "page-of": "Pagina {{current}} din {{total}}",
+    "reopen": "Ghid de bun venit",
+    "reopen-note": "Cele patru ecrane pe care un cont nou le vede mai întâi.",
+    "sample": {
+      "today": "Azi, 10:42",
+      "today-early": "Azi, 9:18",
+      "yesterday": "Ieri, 15:20",
+      "comment-age": "2 h",
+      "memo-preview": "Un prim ecran mai simplu. Un câmp, apoi o previzualizare.",
+      "memo-release": "Înainte de următoarea lansare",
+      "task-sketch": "Schițează primul ecran",
+      "task-polish": "Finisează previzualizarea",
+      "write-lead": "Primul pas să rămână mic.",
+      "write-strong": "Detaliile apar",
+      "write-tail": "atunci când sunt necesare.",
+      "write-task": "Scrie un changelog scurt",
+      "view": "Sarcini neterminate",
+      "space": "Produs",
+      "share-memo": "Să încercăm să arătăm rezultatul înainte de a cere oamenilor să se înregistreze.",
+      "comment": "De acord. Previzualizarea a convins.",
+      "tag-design": "design",
+      "tag-project": "proiect",
+      "tag-reading": "lectură",
+      "tag-ideas": "idei"
+    }
+  },
+  "error": {
+    "title": "Ceva nu a funcționat",
+    "description": "A apărut o eroare neașteptată. Cauza poate fi o problemă de rețea sau o problemă a aplicației.",
+    "description-update": "A apărut o eroare neașteptată. Cauza poate fi o problemă de rețea sau o actualizare a aplicației. De obicei, reîncărcarea rezolvă problema.",
+    "details": "Detaliile erorii",
+    "reload": "Reîncărcați aplicația",
+    "not-found": "Pagina pe care o căutați nu a fost găsită.",
+    "permission-denied": "Permisiune refuzată",
+    "too-many-requests": "Prea multe solicitări. Încercați din nou peste {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Finalizați verificarea și încercați din nou.",
+    "quota-memo-count": "Ați atins limita de {{limit}} note. Ștergeți note pentru a crea altele noi.",
+    "quota-storage": "Această încărcare ar depăși limita de stocare de {{limit}}. Folosiți {{usage}}.",
+    "quota-upload": "Acest fișier depășește limita de {{limit}} per fișier.",
+    "quota-memo-content": "Această notă depășește limita de {{limit}} per notă. Scurtați conținutul pentru a o salva.",
+    "quota-generic": "Ați atins o limită de utilizare.",
+    "sign-in-failed": "Conectarea a eșuat.",
+    "sign-up-failed": "Înregistrarea a eșuat",
+    "authenticate-failed": "Autentificarea a eșuat.",
+    "update-profile-failed": "Actualizarea profilului a eșuat",
+    "unlink-identity-failed": "Deconectarea furnizorului de identitate a eșuat.",
+    "link-identity-failed": "Nu s-a putut începe conectarea contului. Încearcă din nou."
+  },
+  "attachment-preview": {
+    "title": "Previzualizare atașament",
+    "description": "Fereastră de previzualizare a atașamentelor. Apăsați Escape pentru a închide, folosiți săgețile stânga sau dreapta pentru a schimba elementele și măriți imaginile cu butoanele, rotița mouse-ului, atingere dublă sau gestul de ciupire.",
+    "close": "Închideți previzualizarea",
+    "previous": "Elementul anterior",
+    "next": "Elementul următor",
+    "reset-zoom": "Resetați zoomul",
+    "image-alt": "Previzualizare imagine {{index}} din {{count}}",
+    "live-photo-alt": "Previzualizare fotografie live {{index}} din {{count}}",
+    "play-live-photo": "Treceți cu cursorul sau apăsați pentru a reda fotografia live"
+  },
+  "audio-player": {
+    "seek": "Derulați {{name}}",
+    "back": "Înapoi {{seconds}} secunde",
+    "forward": "Înainte {{seconds}} secunde",
+    "speed": "Viteză de redare {{rate}}x"
   }
 }

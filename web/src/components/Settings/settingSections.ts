@@ -4,6 +4,7 @@ import {
   BarChart3Icon,
   CogIcon,
   DatabaseIcon,
+  FileCogIcon,
   GaugeIcon,
   HeartHandshakeIcon,
   KeyIcon,
@@ -12,6 +13,7 @@ import {
   type LucideIcon,
   MailIcon,
   Settings2Icon,
+  SquarePenIcon,
   TagsIcon,
   UserIcon,
   UsersIcon,
@@ -20,6 +22,8 @@ import {
 import { type ComponentType } from "react";
 import AccessTokenSection from "@/components/Settings/AccessTokenSection";
 import AISection from "@/components/Settings/AISection";
+import ConfigurationSection from "@/components/Settings/ConfigurationSection";
+import EditorSection from "@/components/Settings/EditorSection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoExportSection from "@/components/Settings/MemoExportSection";
@@ -42,6 +46,7 @@ export type SettingSectionKey =
   | "spaces"
   | "access-token"
   | "preference"
+  | "editor"
   | "webhook"
   | "member"
   | "system"
@@ -52,7 +57,8 @@ export type SettingSectionKey =
   | "sso"
   | "tags"
   | "ai"
-  | "resource-stats";
+  | "resource-stats"
+  | "configuration";
 
 type SettingSectionScope = "basic" | "admin";
 
@@ -93,6 +99,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.preference.label",
     icon: CogIcon,
     component: PreferencesSection,
+  },
+  {
+    key: "editor",
+    scope: "basic",
+    labelKey: "setting.editor.label",
+    icon: SquarePenIcon,
+    component: EditorSection,
   },
   {
     key: "webhook",
@@ -180,6 +193,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.resource-stats.label",
     icon: BarChart3Icon,
     component: ResourceStatsSection,
+  },
+  {
+    key: "configuration",
+    scope: "admin",
+    labelKey: "setting.configuration.label",
+    icon: FileCogIcon,
+    component: ConfigurationSection,
   },
 ];
 

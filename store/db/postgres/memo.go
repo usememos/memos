@@ -333,3 +333,19 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	}
 	return nil
 }
+
+// RefreshMemoDerivedPayload sets the payload's tags and property while the
+// content is unchanged; jsonb_set keeps every other payload key.
+func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.RefreshMemoDerivedPayload) error {
+	tags, property, err := refresh.JSON()
+	if err != nil {
+		return err
+	}
+	if _, err := d.db.ExecContext(ctx,
+		"UPDATE memo SET payload = jsonb_set(jsonb_set(COALESCE(payload, '{}'::jsonb), '{tags}', "+placeholder(1)+"::jsonb), '{property}', "+placeholder(2)+"::jsonb) WHERE id = "+placeholder(3)+" AND content = "+placeholder(4),
+		tags, property, refresh.ID, refresh.Content,
+	); err != nil {
+		return errors.Wrap(err, "failed to refresh memo payload")
+	}
+	return nil
+}

@@ -1,7 +1,6 @@
 import { Code } from "@connectrpc/connect";
-import { LoaderCircleIcon } from "lucide-react";
+import { Button, buttonClasses, Spinner } from "@usememos/ui";
 import { Link, Outlet } from "react-router-dom";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { hasConnectCode } from "@/lib/error";
 import NotFound from "@/pages/NotFound";
@@ -19,19 +18,19 @@ export const SpaceRoute = () => {
     <section className="flex min-h-[50vh] w-full flex-col items-center justify-center gap-4 px-4 text-center" role="status">
       {!spaceError ? (
         <>
-          <LoaderCircleIcon className="size-5 animate-spin text-muted-foreground" />
+          <Spinner aria-hidden className="text-mu-ink-muted" />
           <p>{t("space.loading")}</p>
         </>
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">{t(unavailable ? "space.unavailable" : "space.load-error")}</p>
+          <p className="mu-body text-mu-ink-muted">{t(unavailable ? "space.unavailable" : "space.load-error")}</p>
           <div className="flex items-center gap-2">
             {!unavailable && (
-              <Button variant="outline" onClick={retrySpace}>
+              <Button variant="neutral" onClick={retrySpace}>
                 {t("search.retry")}
               </Button>
             )}
-            <Link className={buttonVariants({ variant: "outline" })} to={ROUTES.HOME}>
+            <Link className={buttonClasses({ variant: "neutral" })} to={ROUTES.HOME}>
               {t("space.back-to-memos")}
             </Link>
           </div>

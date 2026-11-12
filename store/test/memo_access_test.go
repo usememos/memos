@@ -208,6 +208,39 @@ func TestMemoAccessScopeAllowsArchivedCreatorButFiltersMissingCreatorBeforePagin
 		"a newer dangling-creator row must be removed before LIMIT is applied")
 }
 
+func TestMemoAccessScopeIgnoresFoldedFilterOperands(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	owner, err := ts.CreateUser(ctx, &store.User{Username: "access-folded-owner", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	viewer, err := ts.CreateUser(ctx, &store.User{Username: "access-folded-viewer", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	_, err = ts.CreateMemo(ctx, &store.Memo{UID: "access-folded-private", CreatorID: owner.ID, Content: "private", Visibility: store.Private})
+	require.NoError(t, err)
+	public, err := ts.CreateMemo(ctx, &store.Memo{UID: "access-folded-public", CreatorID: owner.ID, Content: "public", Visibility: store.Public})
+	require.NoError(t, err)
+
+	// Each filter folds an operand away. Its arguments must go with it, or they
+	// would bind to the row-status and access-scope placeholders that follow.
+	for _, memoFilter := range []string{
+		fmt.Sprintf(`(creator_id == %d || true) && visibility == "PUBLIC"`, owner.ID),
+		fmt.Sprintf(`(creator_id == %d && false) || visibility == "PUBLIC"`, owner.ID),
+		fmt.Sprintf(`!(creator_id == %d || true) || visibility == "PUBLIC"`, owner.ID),
+	} {
+		normal := store.Normal
+		memos, err := ts.ListMemos(ctx, &store.FindMemo{
+			RowStatus: &normal,
+			Filters:   []string{memoFilter},
+			Access:    &store.MemoAccessScope{UserID: &viewer.ID, AllowPublic: true, AllowProtected: true},
+		})
+		require.NoError(t, err, memoFilter)
+		require.Equal(t, []int32{public.ID}, memoIDs(memos), memoFilter)
+	}
+}
+
 func memoIDs(memos []*store.Memo) []int32 {
 	ids := make([]int32, 0, len(memos))
 	for _, memo := range memos {
