@@ -297,7 +297,7 @@ const PagedMemoList = (props: Props) => {
   const children = (
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
-        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
+        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-4xl")}>
           {useGrid ? (
             <>
               <ColumnGridUntrappedProvider>
