@@ -289,6 +289,10 @@ func (s *service) RenderMarkdown(content []byte) (string, error) {
 
 // GenerateSnippet creates a plain text summary from markdown content.
 func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error) {
+	if maxLength <= 0 {
+		return "", nil
+	}
+
 	root, err := s.parse(content)
 	if err != nil {
 		return "", err
@@ -646,6 +650,10 @@ func uniquePreserveCase(strs []string) []string {
 // truncateAtWord truncates a string at the last word boundary before maxLength.
 // maxLength is treated as a rune (character) count to properly handle UTF-8 multi-byte characters.
 func truncateAtWord(s string, maxLength int) string {
+	if maxLength <= 0 {
+		return ""
+	}
+
 	// Convert to runes to properly handle multi-byte UTF-8 characters
 	runes := []rune(s)
 	if len(runes) <= maxLength {
