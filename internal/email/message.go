@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"mime"
+	"mime/quotedprintable"
 	"net/mail"
 	"strings"
 	"time"
@@ -80,11 +81,14 @@ func (m *Message) Format(fromEmail, fromName string) string {
 		sb.WriteString("Content-Type: text/plain; charset=utf-8\r\n")
 	}
 
+	sb.WriteString("Content-Transfer-Encoding: quoted-printable\r\n")
 	// Empty line separating headers from body
 	sb.WriteString("\r\n")
 
 	// Body
-	sb.WriteString(m.Body)
+	body := quotedprintable.NewWriter(&sb)
+	_, _ = body.Write([]byte(m.Body)) // strings.Builder writes cannot fail.
+	_ = body.Close()
 
 	return sb.String()
 }
