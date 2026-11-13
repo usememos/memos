@@ -431,7 +431,7 @@
     "moved": "Memo verplaatst",
     "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
-    "grid-compact-hint": "Rasterindelingen gebruiken altijd compacte kaarten.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Indeling",
     "layout-auto": "Automatisch",
     "layout-auto-description": "Zoveel kolommen als er op het scherm passen",
@@ -441,7 +441,9 @@
     "layout-list-description": "Een enkele kolom met leesbreedte",
     "on-this-memo": "In deze memo",
     "parent-memo": "Hoofdmemo",
-    "view-options": "Weergaveopties"
+    "view-options": "Weergaveopties",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",

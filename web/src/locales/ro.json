@@ -470,7 +470,7 @@
     "moved": "Nota mutată",
     "back-to": "Înapoi la {{source}}",
     "connections": "Conexiuni",
-    "grid-compact-hint": "Aspectele de tip grilă utilizează întotdeauna carduri compacte.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Aspect",
     "layout-auto": "Automat",
     "layout-auto-description": "Atâtea coloane câte se potrivesc pe ecran",
@@ -480,7 +480,9 @@
     "layout-list-description": "O singură coloană cu lățime de citire",
     "on-this-memo": "Pe această notă",
     "parent-memo": "Notă părinte",
-    "view-options": "Opțiuni de vizualizare"
+    "view-options": "Opțiuni de vizualizare",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

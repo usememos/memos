@@ -431,7 +431,7 @@
     "moved": "Notat flyttet",
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
-    "grid-compact-hint": "Rutenettoppsett bruker alltid kompakte kort.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Oppsett",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som får plass på skjermen",
@@ -441,7 +441,9 @@
     "layout-list-description": "En enkelt kolonne med lesebredde",
     "on-this-memo": "På dette notatet",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsalternativer"
+    "view-options": "Visningsalternativer",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",

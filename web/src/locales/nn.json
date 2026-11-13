@@ -477,7 +477,7 @@
       "has-task-list": "Har gjeremålsliste",
       "remove": "Fjern filteret"
     },
-    "grid-compact-hint": "Rutenett nyttar alltid kompakte kort.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Oppsett",
     "layout-auto": "Automatisk",
     "layout-auto-description": "Så mange kolonnar som skjermen har plass til",
@@ -543,7 +543,9 @@
       "public-description": "Synleg for alle",
       "space": "Medlemer",
       "space-description": "Alle i {{space}}"
-    }
+    },
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arkivert",

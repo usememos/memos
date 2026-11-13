@@ -423,7 +423,7 @@
     "back-to": "العودة إلى {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} تم التحديث في {{date}}",
     "connections": "الاتصالات",
-    "grid-compact-hint": "تستخدم تخطيطات الشبكة دائمًا بطاقات مضغوطة.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "التخطيط",
     "layout-auto": "تلقائي",
     "layout-auto-description": "عدد الأعمدة حسب عرض الشاشة",
@@ -440,7 +440,9 @@
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },
-    "view-options": "خيارات العرض"
+    "view-options": "خيارات العرض",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",

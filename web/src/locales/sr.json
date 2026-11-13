@@ -470,7 +470,7 @@
     "moved": "Белешка је премештена",
     "back-to": "Назад на {{source}}",
     "connections": "Везе",
-    "grid-compact-hint": "Распореди мреже увек користе компактне картице.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Распоред",
     "layout-auto": "Аутоматски",
     "layout-auto-description": "Колико год колона стане на екран",
@@ -480,7 +480,9 @@
     "layout-list-description": "Једна колона ширине читања",
     "on-this-memo": "На овој поруци",
     "parent-memo": "Надређена порука",
-    "view-options": "Опције приказа"
+    "view-options": "Опције приказа",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

@@ -419,7 +419,7 @@
     "back-to": "Kembali ke {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
     "connections": "Koneksi",
-    "grid-compact-hint": "Tata letak grid selalu menggunakan kartu ringkas.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Tata Letak",
     "layout-auto": "Otomatis",
     "layout-auto-description": "Sebanyak kolom yang sesuai dengan layar",
@@ -436,7 +436,9 @@
       "uncheck-all": "Hapus centang semua tugas",
       "updated": "Tugas diperbarui"
     },
-    "view-options": "Opsi tampilan"
+    "view-options": "Opsi tampilan",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",

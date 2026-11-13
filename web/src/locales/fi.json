@@ -469,7 +469,7 @@
     "moved": "Muistio siirretty",
     "back-to": "Takaisin kohtaan {{source}}",
     "connections": "Yhteydet",
-    "grid-compact-hint": "Ruudukkoasetteluissa käytetään aina kompakteja kortteja.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Asettelu",
     "layout-auto": "Automaattinen",
     "layout-auto-description": "Niin monta saraketta kuin näytölle mahtuu",
@@ -479,7 +479,9 @@
     "layout-list-description": "Yksi lukuleveyden sarake",
     "on-this-memo": "Tässä muistiossa",
     "parent-memo": "Ylämuistio",
-    "view-options": "Näytä asetukset"
+    "view-options": "Näytä asetukset",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",

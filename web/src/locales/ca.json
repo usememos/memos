@@ -432,7 +432,7 @@
     "moved": "Nota moguda",
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
-    "grid-compact-hint": "Els dissenys de quadrícula sempre utilitzen targetes compactes.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Disseny",
     "layout-auto": "Automàtic",
     "layout-auto-description": "Tantes columnes com càpiguen a la pantalla",
@@ -442,7 +442,9 @@
     "layout-list-description": "Una sola columna d'amplada de lectura",
     "on-this-memo": "En aquesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Opcions de visualització"
+    "view-options": "Opcions de visualització",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

@@ -471,7 +471,7 @@
     "moved": "Priminimas perkeltas",
     "back-to": "Atgal į {{source}}",
     "connections": "Ryšiai",
-    "grid-compact-hint": "Tinklelio išdėstymuose visada naudojamos kompaktiškos kortelės.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Išdėstymas",
     "layout-auto": "Automatinis",
     "layout-auto-description": "Tiek stulpelių, kiek telpa ekrane",
@@ -481,7 +481,9 @@
     "layout-list-description": "Vienas skaitymo pločio stulpelis",
     "on-this-memo": "Šiame priminime",
     "parent-memo": "Pagrindinis priminimas",
-    "view-options": "Peržiūros parinktys"
+    "view-options": "Peržiūros parinktys",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",

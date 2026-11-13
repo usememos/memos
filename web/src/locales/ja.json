@@ -373,7 +373,7 @@
       "remove": "フィルターを削除"
     },
     "compact-mode": "コンパクト表示",
-    "grid-compact-hint": "グリッドレイアウトでは常にコンパクトなカードで表示されます。",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "レイアウト",
     "layout-auto": "自動",
     "layout-auto-description": "画面に収まる分だけ列を表示",
@@ -441,7 +441,9 @@
     "back-to": "{{source}}に戻る",
     "connections": "接続",
     "on-this-memo": "このメモについて",
-    "parent-memo": "親メモ"
+    "parent-memo": "親メモ",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",

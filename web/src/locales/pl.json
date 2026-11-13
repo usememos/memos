@@ -433,7 +433,7 @@
     "moved": "Notatka przeniesiona",
     "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
-    "grid-compact-hint": "Układy siatki zawsze korzystają z kart kompaktowych.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Układ",
     "layout-auto": "Automatycznie",
     "layout-auto-description": "Tyle kolumn, ile mieści się na ekranie",
@@ -443,7 +443,9 @@
     "layout-list-description": "Pojedyncza kolumna o szerokości odczytu",
     "on-this-memo": "W tej notatce",
     "parent-memo": "Notatka nadrzędna",
-    "view-options": "Opcje widoku"
+    "view-options": "Opcje widoku",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
