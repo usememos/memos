@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MemoEditorDraftProps } from "@/components/MemoEditor";
@@ -361,5 +361,67 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.editorProps).toMatchObject({
       draft: { scope: "global", space: undefined },
     });
+  });
+
+  it("opens with shared content once composing becomes possible, and drops it on close", async () => {
+    let openWithContent!: (content: string) => void;
+    const Probe = () => {
+      openWithContent = useGlobalMemoEditor().openEditorWithContent;
+      return null;
+    };
+    mocks.isUserSettingsInitialized = false;
+    const { rerender } = renderProvider(<Probe />);
+    act(() => openWithContent("Shared link"));
+    expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument();
+
+    mocks.isUserSettingsInitialized = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    await screen.findByRole("dialog", DIALOG);
+    expect(mocks.editorProps).toMatchObject({ draft: { scope: "global", content: "Shared link" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel editor" }));
+    await expectClosed();
+
+    // A later plain open starts from the draft alone.
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+        <Trigger />
+      </GlobalMemoEditorProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
+    await screen.findByRole("dialog", DIALOG);
+    expect(mocks.editorProps?.draft.content).toBeUndefined();
+  });
+
+  it("drops shared content queued for a user who is no longer signed in", async () => {
+    let openWithContent!: (content: string) => void;
+    const Probe = () => {
+      openWithContent = useGlobalMemoEditor().openEditorWithContent;
+      return null;
+    };
+    const rerenderProvider = (rerender: (ui: React.ReactElement) => void) =>
+      rerender(
+        <GlobalMemoEditorProvider>
+          <Probe />
+        </GlobalMemoEditorProvider>,
+      );
+    mocks.isUserSettingsInitialized = false;
+    const { rerender } = renderProvider(<Probe />);
+    act(() => openWithContent("First user's link"));
+
+    // Another user signs in before composing becomes possible.
+    mocks.currentUser = { name: "users/other" };
+    rerenderProvider(rerender);
+    mocks.isUserSettingsInitialized = true;
+    rerenderProvider(rerender);
+
+    await waitFor(() => expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument());
+    expect(mocks.editorProps).toBeUndefined();
   });
 });

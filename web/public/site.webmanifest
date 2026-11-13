@@ -9,6 +9,11 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  },
   "theme_color": "#faf9f5",
   "background_color": "#faf9f5"
 }

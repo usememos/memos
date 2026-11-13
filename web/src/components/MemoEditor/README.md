@@ -11,6 +11,7 @@ Both modes show the memo through the same binding of [`@usememos/editor`](https:
 <MemoEditor mode="edit" name="memos/abc" onConfirm onCancel />      // edit in place
 <MemoEditor draft={{ parent: "memos/abc" }} onConfirm onCancel />   // new comment
 <MemoEditor draft={{ scope: "home", space, createTime }} />         // new memo
+<MemoEditor draft={{ scope: "global", content }} />                 // new memo, content appended to the draft
 ```
 
 ## Layers
@@ -33,6 +34,7 @@ Code blocks use lazy-loaded `@pierre/highlights` tokens as editor decorations, w
 
 - **Reads are by name.** `useMemoByName` (`hooks/useMemoQueries.ts`) returns the freshest copy of the memo any query holds (a list, a comment page, the calendar month, a detail, a shared memo) and fetches the detail only when nothing holds it. A card in a list therefore costs no request beyond the list's, follows the list's refetches, and never refetches on its own.
 - **Writes are mutations.** A ticked task, a save and a new memo go through `useUpdateMemo` and `useCreateMemo`, which patch and refresh every query holding the memo, so the saved text shows wherever the memo is on the page as soon as the server answers.
+- **A seed's `content` is appended once.** The global composer passes an item shared from another app (the Web Share Target at `/share`, `router/ShareTargetRoute.tsx`) as `content`; `initialEditorState` appends it as its own paragraph to the restored draft, which then keeps it like anything typed.
 - **The draft is UI state keyed by identity.** `edit/draftKey.ts` derives the key from what is edited: `edit:<name>`, `comment:<parent>`, `new:<scope>[:<space>]`. `initialEditorState` computes the store's first state once, from the memo or the persisted draft over the host's defaults; `useAutoSave` persists it while the session is open; an edit of an existing memo persists no draft. A new identity is a new session (`key`).
 
 ## The editing session
