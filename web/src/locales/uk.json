@@ -438,7 +438,7 @@
     "moved": "Нотатку переміщено",
     "back-to": "Назад до {{source}}",
     "connections": "З'єднання",
-    "grid-compact-hint": "Макети сітки завжди використовують компактні картки.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Макет",
     "layout-auto": "Авто",
     "layout-auto-description": "Стільки стовпців, скільки поміщається на екран",
@@ -450,7 +450,9 @@
     "parent-memo": "Батьківська нотатка",
     "view-options": "Параметри перегляду",
     "add-reaction": "Додайте реакцію",
-    "remove-reaction": "Видалити реакцію"
+    "remove-reaction": "Видалити реакцію",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Архівовано успішно",

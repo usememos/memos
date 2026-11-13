@@ -474,7 +474,7 @@
     "moved": "Memo teisaldatud",
     "back-to": "Tagasi {{source}} juurde",
     "connections": "Ühendused",
-    "grid-compact-hint": "Ruudustikupaigutused kasutavad alati kompaktseid kaarte.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Paigutus",
     "layout-auto": "Automaatne",
     "layout-auto-description": "Nii palju veerge kui ekraanile mahub",
@@ -486,7 +486,9 @@
     "parent-memo": "Ülemmemo",
     "view-options": "Vaate valikud",
     "add-reaction": "Lisa reaktsioon",
-    "remove-reaction": "Eemaldage reaktsioon"
+    "remove-reaction": "Eemaldage reaktsioon",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",

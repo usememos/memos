@@ -474,7 +474,7 @@
     "moved": "Бележката е преместена",
     "back-to": "Обратно към {{source}}",
     "connections": "Връзки",
-    "grid-compact-hint": "Мрежовите оформления винаги използват компактни карти.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Оформление",
     "layout-auto": "Автоматично",
     "layout-auto-description": "Толкова колони, колкото се побират на екрана",
@@ -486,7 +486,9 @@
     "parent-memo": "Родителска бележка",
     "view-options": "Опции за преглед",
     "add-reaction": "Добавете реакция",
-    "remove-reaction": "Премахнете реакцията"
+    "remove-reaction": "Премахнете реакцията",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Архивиран успешно",

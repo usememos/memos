@@ -438,7 +438,7 @@
     "moved": "Zapisek premaknjen",
     "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
-    "grid-compact-hint": "Mrežne postavitve vedno uporabljajo kompaktne kartice.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Postavitev",
     "layout-auto": "Samodejno",
     "layout-auto-description": "Toliko stolpcev, kolikor se prilega zaslonu",
@@ -450,7 +450,9 @@
     "parent-memo": "Nadrejeni zapisek",
     "view-options": "Možnosti pogleda",
     "add-reaction": "Dodajte reakcijo",
-    "remove-reaction": "Odstrani reakcijo"
+    "remove-reaction": "Odstrani reakcijo",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",

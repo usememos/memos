@@ -424,7 +424,7 @@
     "back-to": "กลับไปที่ {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} อัปเดตเมื่อ {{date}}",
     "connections": "การเชื่อมต่อ",
-    "grid-compact-hint": "รูปแบบตารางจะใช้การ์ดแบบกะทัดรัดเสมอ",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "รูปแบบการจัดวาง",
     "layout-auto": "อัตโนมัติ",
     "layout-auto-description": "จำนวนคอลัมน์มากที่สุดเท่าที่จะพอดีกับหน้าจอ",
@@ -443,7 +443,9 @@
     },
     "view-options": "ตัวเลือกการดู",
     "add-reaction": "เพิ่มปฏิกิริยา",
-    "remove-reaction": "ลบการตอบสนอง"
+    "remove-reaction": "ลบการตอบสนอง",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",

@@ -416,7 +416,7 @@
     },
     "compact-mode": "Kompakt görünüm",
     "connections": "Bağlantılar",
-    "grid-compact-hint": "Izgara düzeninde kartlar her zaman kompakt gösterilir.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Düzen",
     "layout-auto": "Otomatik",
     "layout-auto-description": "Ekrana sığabildiği kadar sütun",
@@ -479,7 +479,9 @@
       "updated": "Görevler güncellendi"
     },
     "add-reaction": "Tepki ekle",
-    "remove-reaction": "Reaksiyonu kaldır"
+    "remove-reaction": "Reaksiyonu kaldır",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arşivlendi",

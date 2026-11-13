@@ -436,7 +436,7 @@
     "moved": "Nota movida",
     "back-to": "Volver a {{source}}",
     "connections": "Conexións",
-    "grid-compact-hint": "Os deseños de cuadrícula sempre usan tarxetas compactas.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Deseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como axusten á pantalla",
@@ -448,7 +448,9 @@
     "parent-memo": "Nota principal",
     "view-options": "Ver opcións",
     "add-reaction": "Engadir reacción",
-    "remove-reaction": "Eliminar a reacción"
+    "remove-reaction": "Eliminar a reacción",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",

@@ -436,7 +436,7 @@
     "moved": "Memo verplaatst",
     "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
-    "grid-compact-hint": "Rasterindelingen gebruiken altijd compacte kaarten.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Indeling",
     "layout-auto": "Automatisch",
     "layout-auto-description": "Zoveel kolommen als er op het scherm passen",
@@ -448,7 +448,9 @@
     "parent-memo": "Hoofdmemo",
     "view-options": "Weergaveopties",
     "add-reaction": "Reactie toevoegen",
-    "remove-reaction": "Reactie verwijderen"
+    "remove-reaction": "Reactie verwijderen",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",
