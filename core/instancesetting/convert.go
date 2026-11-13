@@ -179,9 +179,10 @@ func generalSettingFromStore(setting *storepb.InstanceGeneralSetting) *apipb.Ins
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &apipb.InstanceSetting_GeneralSetting_CustomProfile{
-			Title:       setting.CustomProfile.Title,
-			Description: setting.CustomProfile.Description,
-			LogoUrl:     setting.CustomProfile.LogoUrl,
+			Title:        setting.CustomProfile.Title,
+			Description:  setting.CustomProfile.Description,
+			LogoUrl:      setting.CustomProfile.LogoUrl,
+			AboutContent: setting.CustomProfile.AboutContent,
 		}
 	}
 	return generalSetting
@@ -202,9 +203,10 @@ func generalSettingToStore(setting *apipb.InstanceSetting_GeneralSetting) *store
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.InstanceCustomProfile{
-			Title:       setting.CustomProfile.Title,
-			Description: setting.CustomProfile.Description,
-			LogoUrl:     setting.CustomProfile.LogoUrl,
+			Title:        setting.CustomProfile.Title,
+			Description:  setting.CustomProfile.Description,
+			LogoUrl:      setting.CustomProfile.LogoUrl,
+			AboutContent: setting.CustomProfile.AboutContent,
 		}
 	}
 	return generalSetting
