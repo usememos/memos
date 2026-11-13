@@ -8,7 +8,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("MonthNavigator", () => {
-  it("keeps only previous and next month actions", () => {
+  it("keeps month and year actions around the displayed month", () => {
     const onMonthChange = vi.fn();
     render(<MonthNavigator visibleMonth="2026-08" onMonthChange={onMonthChange} />);
 
@@ -22,5 +22,27 @@ describe("MonthNavigator", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "common.next-month" }));
     expect(onMonthChange).toHaveBeenCalledWith("2026-09");
+
+    fireEvent.click(screen.getByRole("button", { name: "calendar.previous-year" }));
+    expect(onMonthChange).toHaveBeenCalledWith("2025-08");
+
+    fireEvent.click(screen.getByRole("button", { name: "calendar.next-year" }));
+    expect(onMonthChange).toHaveBeenCalledWith("2027-08");
+  });
+
+  it("preserves December and January across year boundaries", () => {
+    const onMonthChange = vi.fn();
+    const { rerender } = render(<MonthNavigator visibleMonth="2026-12" onMonthChange={onMonthChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "calendar.previous-year" }));
+    expect(onMonthChange).toHaveBeenLastCalledWith("2025-12");
+    fireEvent.click(screen.getByRole("button", { name: "calendar.next-year" }));
+    expect(onMonthChange).toHaveBeenLastCalledWith("2027-12");
+
+    rerender(<MonthNavigator visibleMonth="2027-01" onMonthChange={onMonthChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "calendar.previous-year" }));
+    expect(onMonthChange).toHaveBeenLastCalledWith("2026-01");
+    fireEvent.click(screen.getByRole("button", { name: "calendar.next-year" }));
+    expect(onMonthChange).toHaveBeenLastCalledWith("2028-01");
   });
 });

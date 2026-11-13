@@ -1,5 +1,5 @@
 import { Button, buttonClasses } from "@usememos/ui";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addMonths } from "@/lib/calendar-utils";
 import { collectionPathForLocation } from "@/router/routes";
@@ -42,12 +42,18 @@ export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable 
     // controls sit at the trailing edge so they never move as the title's width changes.
     <header className="flex h-9 shrink-0 items-center ps-px">
       <MonthPicker month={month} monthLabel={monthLabel} today={today} />
-      <div className="ms-auto flex items-center gap-0.5 pointer-coarse:gap-4">
+      <div className="ms-auto flex shrink-0 items-center gap-0.5 pointer-coarse:gap-4">
+        <CalendarLink to={buildCalendarPath(addMonths(month, -12))} aria-label={t("calendar.previous-year")} className={iconControlClassName}>
+          <ChevronsLeftIcon className="mu-icon rtl:rotate-180" />
+        </CalendarLink>
         <CalendarLink to={buildCalendarPath(addMonths(month, -1))} aria-label={t("common.previous-month")} className={iconControlClassName}>
           <ChevronLeftIcon className="mu-icon rtl:rotate-180" />
         </CalendarLink>
         <CalendarLink to={buildCalendarPath(addMonths(month, 1))} aria-label={t("common.next-month")} className={iconControlClassName}>
           <ChevronRightIcon className="mu-icon rtl:rotate-180" />
+        </CalendarLink>
+        <CalendarLink to={buildCalendarPath(addMonths(month, 12))} aria-label={t("calendar.next-year")} className={iconControlClassName}>
+          <ChevronsRightIcon className="mu-icon rtl:rotate-180" />
         </CalendarLink>
         {/* Today is a toggle, so it is a button that navigates; the search keeps the filter query.
             Its pressed state is the quiet variant's accent fill, keyed off aria-pressed. */}

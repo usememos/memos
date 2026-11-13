@@ -47,8 +47,11 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       {/* The month is the calendar page's title, so it is the page heading as well as the trigger. */}
-      <h1 className="min-w-0">
-        <Popover.Trigger aria-label={t("calendar.select-month")} className={cn(TITLE_CONTROL_CLASSES, "mu-heading text-mu-text")}>
+      <h1 className="min-w-0 flex-1">
+        <Popover.Trigger
+          aria-label={t("calendar.select-month")}
+          className={cn(TITLE_CONTROL_CLASSES, "max-w-full truncate mu-heading text-mu-text")}
+        >
           {monthLabel}
         </Popover.Trigger>
       </h1>
