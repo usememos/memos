@@ -77,7 +77,7 @@ const MemoRelatedSettings = () => {
         <SettingPanel
           header={
             <div className="flex items-center justify-between gap-3">
-              <span className="mu-label text-mu-ink-muted">{t("setting.memo.configured-reactions")}</span>
+              <span className="mu-label text-mu-text-secondary">{t("setting.memo.configured-reactions")}</span>
               <Badge tone="outline">{memoRelatedSetting.reactions.length}</Badge>
             </div>
           }

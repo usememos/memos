@@ -15,7 +15,7 @@ import { calculateMaxCount, getTooltipText } from "./utils";
  */
 const CALENDAR_GRID_CLASSES = "grid grid-cols-[repeat(7,28px)] justify-between gap-y-1";
 /** Weekday initials: caption weight in muted ink, so they sit under the day numbers rather than beside them. */
-export const WEEKDAY_LABEL_CLASSES = "mu-caption text-mu-ink-muted";
+export const WEEKDAY_LABEL_CLASSES = "mu-caption text-mu-text-secondary";
 
 /** Localized weekday labels starting on the instance's first day of the week. */
 export const useWeekdayLabels = (weekStartDayOffset: number) => {

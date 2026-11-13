@@ -45,7 +45,7 @@ type ImportStage =
 const IssueList = ({ issues, tone }: { issues: ImportMemosIssue[]; tone: "warning" | "failure" }) => {
   if (issues.length === 0) return null;
   return (
-    <ul className={`flex flex-col gap-1 mu-caption ${tone === "failure" ? "text-mu-danger" : "text-mu-ink-muted"}`}>
+    <ul className={`flex flex-col gap-1 mu-caption ${tone === "failure" ? "text-mu-danger" : "text-mu-text-secondary"}`}>
       {issues.map((issue, index) => (
         <li key={`${tone}-${index}`}>{issue.memoUid ? `${issue.memoUid}: ${issue.message}` : issue.message}</li>
       ))}
@@ -165,8 +165,8 @@ const MemoExportSection = () => {
                       <Field.Label className="items-start">
                         <Radio value={String(option.value)} className="mt-0.5" />
                         <span className="flex flex-col gap-1 leading-5">
-                          <span className="mu-body text-mu-ink">{t(option.label)}</span>
-                          <span className="mu-caption text-mu-ink-muted">{t(option.description)}</span>
+                          <span className="mu-body text-mu-text">{t(option.label)}</span>
+                          <span className="mu-caption text-mu-text-secondary">{t(option.description)}</span>
                         </span>
                       </Field.Label>
                     </Field.Item>

@@ -34,13 +34,13 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
     <div className="mu-compact flex h-7 w-full items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2">
         {isRequestingPermission || isTranscribing ? (
-          <Spinner size="sm" aria-hidden className="shrink-0 text-mu-ink-muted" />
+          <Spinner size="sm" aria-hidden className="shrink-0 text-mu-text-secondary" />
         ) : (
           <span aria-hidden className="size-2 shrink-0 rounded-full bg-mu-danger motion-safe:animate-pulse" />
         )}
         <span className="mu-visually-hidden">{srStatusText}</span>
         <VoiceWaveform levels={waveformLevels} className="max-w-[200px] overflow-hidden" />
-        <span className="shrink-0 font-mono mu-caption tabular-nums text-mu-ink-muted">
+        <span className="shrink-0 font-mono mu-caption tabular-nums text-mu-text-secondary">
           {isTranscribing ? t("editor.audio-recorder.transcribing") : formatAudioTime(elapsedSeconds)}
         </span>
       </div>

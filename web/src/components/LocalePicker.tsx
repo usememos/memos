@@ -46,7 +46,7 @@ const LocaleOptions = () => {
           <Combobox.Item key={locale} value={locale}>
             <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
               <span className="truncate">{localeLabel(locale)}</span>
-              <span className="shrink-0 mu-caption text-mu-ink-muted">{locale}</span>
+              <span className="shrink-0 mu-caption text-mu-text-secondary">{locale}</span>
             </span>
           </Combobox.Item>
         )}

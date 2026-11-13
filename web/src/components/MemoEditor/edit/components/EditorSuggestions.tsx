@@ -22,7 +22,7 @@ export function SuggestionsBar({
   if (!suggestions.length) return null;
   return (
     <div role="group" aria-labelledby={labelId} className="flex w-full items-start gap-2 mu-caption">
-      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-mu-ink-muted">
+      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-mu-text-secondary">
         <ZapIcon className="mu-icon-sm" aria-hidden />
         {t("editor.suggestions")}
       </span>
@@ -34,7 +34,7 @@ export function SuggestionsBar({
             disabled={disabled}
             aria-label={suggestion.accessibleLabel ?? suggestion.label}
             // A quiet pill until hovered, then the tag pill's own fill and ink, so it never reads as a tag already added.
-            className="inline-flex h-6 max-w-full items-center gap-1 rounded-mu-md bg-mu-hover/60 ps-1.5 pe-2 text-mu-ink-muted transition-colors hover:bg-mu-well hover:text-mu-ink disabled:cursor-not-allowed disabled:opacity-45 mu-focus"
+            className="inline-flex h-6 max-w-full items-center gap-1 rounded-mu-md bg-mu-hover/60 ps-1.5 pe-2 text-mu-text-secondary transition-colors hover:bg-mu-well hover:text-mu-text disabled:cursor-not-allowed disabled:opacity-45 border border-transparent mu-focus focus-visible:border-mu-focus"
             onClick={() => onAccept(suggestion.id)}
           >
             {suggestion.icon ? <suggestion.icon className="mu-icon-xs" aria-hidden /> : <PlusIcon className="mu-icon-xs" aria-hidden />}

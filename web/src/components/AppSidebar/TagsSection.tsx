@@ -29,8 +29,8 @@ const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
     <span ref={ref} className="min-w-0 flex-1 truncate text-start">
       {segments.map((segment, index) => (
         <span key={`${segment}-${index}`}>
-          {index > 0 && <span className="px-0.5 text-mu-ink-muted/40">/</span>}
-          <span className={index === segments.length - 1 ? "text-current" : "text-mu-ink-muted/75"}>{segment}</span>
+          {index > 0 && <span className="px-0.5 text-mu-text-secondary/40">/</span>}
+          <span className={index === segments.length - 1 ? "text-current" : "text-mu-text-secondary/75"}>{segment}</span>
         </span>
       ))}
     </span>

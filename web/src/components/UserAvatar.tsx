@@ -23,7 +23,7 @@ const UserAvatar = (props: Props) => {
           ? "border border-mu-line"
           : title
             ? "bg-[oklch(0.82_0.09_var(--avatar-hue))] text-[oklch(0.5_0.1_var(--avatar-hue))] [[data-theme=dark]_&]:bg-[oklch(0.42_0.09_var(--avatar-hue))] [[data-theme=dark]_&]:text-[oklch(0.85_0.06_var(--avatar-hue))]"
-            : "bg-mu-well text-mu-ink-muted",
+            : "bg-mu-well text-mu-text-secondary",
         className,
       )}
       style={style}

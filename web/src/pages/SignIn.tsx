@@ -62,7 +62,7 @@ const SignIn = () => {
         )
       )}
       {hasIdentityProviders && passwordAuthAllowed && (
-        <div className="my-4 flex items-center gap-3 mu-caption-xs text-mu-ink-muted">
+        <div className="my-4 flex items-center gap-3 mu-caption-xs text-mu-text-secondary">
           <div className="flex-1">
             <Separator />
           </div>

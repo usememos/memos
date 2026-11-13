@@ -50,7 +50,6 @@ describe("type roles", () => {
         "components/AppSidebar/ViewsSection.tsx",
         "components/CustomIconPicker.tsx",
         "components/MemoFilters.tsx",
-        "components/MemoReactionListView/ReactionSelector.tsx",
         "components/SpaceIcon.tsx",
         "components/SpaceMark.tsx",
         "pages/MemoViews.tsx",

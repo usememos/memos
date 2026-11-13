@@ -120,8 +120,8 @@ function SpaceInvitationMessage({ notification }: Props) {
           <UserAvatar className="w-10 h-10" avatarUrl={sender?.avatarUrl} name={sender?.displayName || sender?.username} />
           <div
             className={cn(
-              "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-mu-canvas flex items-center justify-center shadow-mu-pop transition-all",
-              isUnread ? "bg-mu-primary text-mu-on-primary" : "bg-mu-well/80 text-mu-ink-muted",
+              "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-mu-canvas flex items-center justify-center transition-all",
+              isUnread ? "bg-mu-primary text-mu-on-primary" : "bg-mu-well/80 text-mu-text-secondary",
             )}
           >
             <UsersIcon className="mu-icon-xs w-2.5 h-2.5" />
@@ -131,9 +131,9 @@ function SpaceInvitationMessage({ notification }: Props) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-              <span className="mu-label text-mu-ink/95">{sender?.displayName || sender?.username}</span>
-              <span className="mu-body text-mu-ink-muted/80">{t("inbox.space-invitation")}</span>
-              <span className="mu-caption text-mu-ink-muted/60">
+              <span className="mu-label text-mu-text/95">{sender?.displayName || sender?.username}</span>
+              <span className="mu-body text-mu-text-secondary/80">{t("inbox.space-invitation")}</span>
+              <span className="mu-caption text-mu-text-secondary/60">
                 {notification.createTime &&
                   t("common.date-at-time", {
                     date: timestampDate(notification.createTime).toLocaleDateString([], { month: "short", day: "numeric" }),
@@ -148,7 +148,7 @@ function SpaceInvitationMessage({ notification }: Props) {
                   className="p-1.5 hover:bg-mu-primary/10 rounded-mu-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
                   title={t("common.archive")}
                 >
-                  <CheckIcon className="mu-icon text-mu-ink-muted hover:text-mu-primary transition-colors" />
+                  <CheckIcon className="mu-icon text-mu-text-secondary hover:text-mu-primary transition-colors" />
                 </button>
               ) : (
                 <button
@@ -156,7 +156,7 @@ function SpaceInvitationMessage({ notification }: Props) {
                   className="p-1.5 hover:bg-mu-danger-soft rounded-mu-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
                   title={t("common.delete")}
                 >
-                  <TrashIcon className="mu-icon text-mu-ink-muted hover:text-mu-danger transition-colors" />
+                  <TrashIcon className="mu-icon text-mu-text-secondary hover:text-mu-danger transition-colors" />
                 </button>
               )}
             </div>
@@ -167,11 +167,11 @@ function SpaceInvitationMessage({ notification }: Props) {
               <SpaceMark icon={space.icon} size="lg" />
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-                  <span className="truncate mu-label text-mu-ink/95">{space.title}</span>
-                  <span className="mu-caption text-mu-ink-muted/70">{spaceUid}</span>
+                  <span className="truncate mu-label text-mu-text/95">{space.title}</span>
+                  <span className="mu-caption text-mu-text-secondary/70">{spaceUid}</span>
                   <SpaceRoleBadge role={payload.role} />
                 </div>
-                <p className="line-clamp-1 mu-caption text-mu-ink-muted/80">
+                <p className="line-clamp-1 mu-caption text-mu-text-secondary/80">
                   {isPending ? space.description || t("setting.spaces.invited-to-join") : t("inbox.space-invitation-accepted")}
                 </p>
               </div>

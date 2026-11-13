@@ -62,7 +62,8 @@ const TILE_PLACEHOLDER_CLASS = "border-dashed border-mu-edge bg-mu-well/50 shado
 /** The same for a row: an outlined, empty row. */
 const ROW_PLACEHOLDER_CLASS = "bg-transparent shadow-[inset_0_0_0_1px_var(--mu-edge)] hover:bg-transparent [&>*]:invisible";
 /** The lifted copy that follows the pointer while an item is dragged. */
-const GHOST_CLASS = "pointer-events-none fixed start-0 top-0 z-(--mu-layer-popup) overflow-hidden rounded-mu-md shadow-mu-pop [scale:1.03]";
+const GHOST_CLASS =
+  "pointer-events-none fixed start-0 top-0 z-(--mu-layer-popup) overflow-hidden rounded-mu-md border border-mu-edge [scale:1.03]";
 
 /** The attributes a reorderable item carries for `useDragReorder`. */
 interface ReorderAttributes {
@@ -160,7 +161,7 @@ const AttachmentTile: FC<{
   item: AttachmentItem;
   actions: ItemActions;
   className?: string;
-  /** A drawing alone in the gallery is a raised sheet, as in the saved memo; among others it is framed like them. */
+  /** A drawing alone in the gallery is a bordered sheet, as in the saved memo; among others it is framed like them. */
   alone: boolean;
   /** The tile is being dragged: its place shows as an empty slot while a lifted copy follows the pointer. */
   placeholder: boolean;
@@ -188,7 +189,7 @@ const AttachmentTile: FC<{
       className={cn(
         VISUAL_TILE_BUTTON_CLASS,
         "group/tile h-full min-h-0 touch-manipulation cursor-grab select-none [-webkit-touch-callout:none]",
-        drawing && alone && "border-0 shadow-mu-raised",
+        drawing && alone && "border-mu-edge",
         placeholder && TILE_PLACEHOLDER_CLASS,
         className,
       )}
@@ -209,7 +210,7 @@ const AttachmentTile: FC<{
       {item.category === "motion" && <span className={cn(TILE_BADGE_CLASS, "start-2 top-2")}>{t("attachment-library.labels.live")}</span>}
       {actions.badge && <span className={cn(TILE_BADGE_CLASS, "bottom-2 start-2")}>{actions.badge}</span>}
       {actions.isUploadingInline && (
-        <div className="absolute inset-0 flex items-center justify-center bg-mu-surface/40 text-mu-ink">
+        <div className="absolute inset-0 flex items-center justify-center bg-mu-surface/40 text-mu-text">
           <Spinner label={t("editor.insert-menu.uploading-inline-image")} />
         </div>
       )}
@@ -303,9 +304,9 @@ const AttachmentRow: FC<{
             />
           </>
         ) : category === "audio" ? (
-          <FileAudioIcon className="mu-icon-sm text-mu-ink-muted" />
+          <FileAudioIcon className="mu-icon-sm text-mu-text-secondary" />
         ) : (
-          <FileIcon className="mu-icon-sm text-mu-ink-muted" />
+          <FileIcon className="mu-icon-sm text-mu-text-secondary" />
         )}
       </div>
 
@@ -641,14 +642,14 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
         createPortal(
           <div
             ref={rowDrag.ghostRef}
-            className={cn(GHOST_CLASS, "flex items-center gap-1 bg-mu-surface px-2 mu-caption text-mu-ink")}
+            className={cn(GHOST_CLASS, "flex items-center gap-1 bg-mu-surface px-2 mu-caption text-mu-text")}
             style={{ width: rowDrag.grab.width, height: rowDrag.grab.height, translate: `${rowDrag.grab.left}px ${rowDrag.grab.top}px` }}
           >
             <span className={METADATA_ROW_SLOT_CLASSES}>
               {draggedRow.category === "audio" ? (
-                <FileAudioIcon className="mu-icon-sm text-mu-ink-muted" />
+                <FileAudioIcon className="mu-icon-sm text-mu-text-secondary" />
               ) : (
-                <FileIcon className="mu-icon-sm text-mu-ink-muted" />
+                <FileIcon className="mu-icon-sm text-mu-text-secondary" />
               )}
             </span>
             <span className="min-w-0 flex-1 truncate">{draggedRow.filename}</span>

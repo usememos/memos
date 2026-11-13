@@ -145,7 +145,7 @@ const AuthCallback = () => {
   if (!state.errorMessage) {
     return (
       <AuthPageLayout>
-        <div className="flex justify-center py-6 text-mu-ink-muted">
+        <div className="flex justify-center py-6 text-mu-text-secondary">
           <Spinner />
         </div>
       </AuthPageLayout>
@@ -156,7 +156,7 @@ const AuthCallback = () => {
     <AuthPageLayout title={t("auth.callback-failed-title")}>
       <pre
         role="alert"
-        className="m-0 rounded-mu-md bg-mu-well px-2.5 py-2 font-mono mu-caption-xs whitespace-pre-wrap break-words text-mu-ink-muted"
+        className="m-0 rounded-mu-md bg-mu-well px-2.5 py-2 font-mono mu-caption-xs whitespace-pre-wrap break-words text-mu-text-secondary"
       >
         {state.errorMessage}
       </pre>

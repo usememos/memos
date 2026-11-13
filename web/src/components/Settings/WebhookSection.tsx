@@ -82,13 +82,13 @@ const WebhookSection = () => {
           {
             key: "displayName",
             header: t("common.name"),
-            render: (_, webhook: UserWebhook) => <span className="text-mu-ink">{webhook.displayName}</span>,
+            render: (_, webhook: UserWebhook) => <span className="text-mu-text">{webhook.displayName}</span>,
           },
           {
             key: "url",
             header: t("setting.webhook.url"),
             render: (_, webhook: UserWebhook) => (
-              <span className="block max-w-[300px] truncate text-mu-ink" title={webhook.url}>
+              <span className="block max-w-[300px] truncate text-mu-text" title={webhook.url}>
                 {webhook.url}
               </span>
             ),

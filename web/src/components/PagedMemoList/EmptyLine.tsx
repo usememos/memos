@@ -12,7 +12,7 @@ interface Props {
  * empty timeline never reads as a failed search.
  */
 const EmptyLine = ({ message, action, onAction }: Props) => (
-  <div className="flex w-full flex-wrap items-center justify-center gap-x-1 py-10 mu-body text-mu-ink-muted">
+  <div className="flex w-full flex-wrap items-center justify-center gap-x-1 py-10 mu-body text-mu-text-secondary">
     <span>{message}</span>
     {action && onAction && (
       <>

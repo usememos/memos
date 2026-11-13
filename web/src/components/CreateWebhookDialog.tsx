@@ -201,7 +201,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     if (hasExistingSecret) {
       return (
         <div className="flex items-center gap-2">
-          <span className="flex-1 mu-caption text-mu-ink-muted">{t("setting.webhook.create-dialog.signing-secret-configured")}</span>
+          <span className="flex-1 mu-caption text-mu-text-secondary">{t("setting.webhook.create-dialog.signing-secret-configured")}</span>
           <Button
             type="button"
             variant="neutral"
@@ -217,7 +217,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     }
     return (
       <div className="flex items-center gap-2">
-        <span className="flex-1 mu-caption text-mu-ink-muted">{t("setting.webhook.create-dialog.signing-secret-not-configured")}</span>
+        <span className="flex-1 mu-caption text-mu-text-secondary">{t("setting.webhook.create-dialog.signing-secret-not-configured")}</span>
         <Button type="button" variant="neutral" onClick={handleGenerateSecret} disabled={secretState.isLoading}>
           {t("setting.webhook.create-dialog.generate-secret")}
         </Button>

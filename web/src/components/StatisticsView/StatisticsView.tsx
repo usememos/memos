@@ -20,7 +20,7 @@ const StatisticsView = (props: Props) => {
   const selectedDate = filters.find((filter) => filter.factor === "displayTime")?.value;
 
   return (
-    <div className="group flex w-full flex-col text-mu-ink-muted animate-fade-in">
+    <div className="group flex w-full flex-col text-mu-text-secondary animate-fade-in">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} />
 
       <div className="w-full animate-scale-in">

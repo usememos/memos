@@ -291,8 +291,8 @@ const StorageSection = () => {
                     <span className="grid min-w-0 flex-1 gap-1 sm:grid-cols-[minmax(12rem,16rem)_1fr] sm:gap-5">
                       <span className="flex min-w-0 flex-col gap-1">
                         <span className="flex min-w-0 items-center gap-2">
-                          <Icon className="mu-icon shrink-0 text-mu-ink-muted" />
-                          <span className="truncate text-mu-ink">{t(option.titleKey)}</span>
+                          <Icon className="mu-icon shrink-0 text-mu-text-secondary" />
+                          <span className="truncate text-mu-text">{t(option.titleKey)}</span>
                         </span>
                         {option.badges && (
                           <span className="flex flex-wrap gap-1.5 ps-6">
@@ -304,7 +304,7 @@ const StorageSection = () => {
                           </span>
                         )}
                       </span>
-                      <span className="mu-caption text-mu-ink-muted">{t(option.descriptionKey)}</span>
+                      <span className="mu-caption text-mu-text-secondary">{t(option.descriptionKey)}</span>
                     </span>
                   </Field.Label>
                 </Field.Item>
@@ -314,15 +314,15 @@ const StorageSection = () => {
         </Field.Root>
 
         <div>
-          <div className="mb-2 flex items-center gap-2 mu-label-sm text-mu-ink-muted">
+          <div className="mb-2 flex items-center gap-2 mu-label-sm text-mu-text-secondary">
             <SelectedStorageIcon className="mu-icon-sm" />
             <span>{t("setting.storage.current-storage")}</span>
-            <span className="text-mu-ink">{t(selectedStorageOption.titleKey)}</span>
+            <span className="text-mu-text">{t(selectedStorageOption.titleKey)}</span>
           </div>
-          <ul className="flex flex-col gap-1.5 mu-caption text-mu-ink-muted">
+          <ul className="flex flex-col gap-1.5 mu-caption text-mu-text-secondary">
             {selectedStorageOption.noteKeys.map((note) => (
               <li key={note} className="flex gap-2">
-                <span className="mt-2 size-1 rounded-full bg-mu-ink-muted/60" aria-hidden />
+                <span className="mt-2 size-1 rounded-full bg-mu-text-secondary/60" aria-hidden />
                 <span>{t(note)}</span>
               </li>
             ))}

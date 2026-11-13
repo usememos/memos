@@ -45,7 +45,7 @@ const TimestampInput: FC<{
 
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="mu-label-sm text-mu-ink-muted">
+      <label htmlFor={id} className="mu-label-sm text-mu-text-secondary">
         {label}
         {value !== initialValue.current && <span className="text-mu-primary ml-0.5">*</span>}
       </label>
@@ -77,7 +77,7 @@ export const TimestampPopover: FC = () => {
   const createTime = useEditorSelector((s) => s.timestamps.createTime);
   const updateTime = useEditorSelector((s) => s.timestamps.updateTime);
 
-  if (!createTime) return <span className="shrink-0 whitespace-nowrap mu-caption text-mu-ink-muted select-none">{nowLabel()}</span>;
+  if (!createTime) return <span className="shrink-0 whitespace-nowrap mu-caption text-mu-text-secondary select-none">{nowLabel()}</span>;
 
   return (
     <Popover.Root>

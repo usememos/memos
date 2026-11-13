@@ -227,8 +227,8 @@ export const memoResolveUrl =
  */
 export const MEMO_EDITOR_THEME: Theme = (() => {
   const colors = {
-    text: "var(--mu-ink)",
-    muted: "var(--mu-ink-muted)",
+    text: "var(--mu-text)",
+    muted: "var(--mu-text-secondary)",
     background: "transparent",
     accent: "var(--mu-accent)",
     link: "var(--mu-accent)",

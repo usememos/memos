@@ -189,7 +189,10 @@ export function MapView() {
       {!query.complete && !query.isError && (
         <p
           role="status"
-          className={cn("absolute start-3 top-3 z-10 flex h-7 items-center px-2.5 mu-caption text-mu-ink-muted tabular-nums", surfaceClass)}
+          className={cn(
+            "absolute start-3 top-3 z-10 flex h-7 items-center px-2.5 mu-caption text-mu-text-secondary tabular-nums",
+            surfaceClass,
+          )}
         >
           {t("map.loaded", { count: query.memos.length })}
         </p>
@@ -271,7 +274,7 @@ export function MapView() {
             <h2 className="font-medium">{t(filters.length ? "map.no-results" : "map.empty")}</h2>
             {/* Guests cannot add a location, so only filters get a hint for them. */}
             {(filters.length > 0 || user) && (
-              <p className="mt-2 mu-body text-mu-ink-muted">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
+              <p className="mt-2 mu-body text-mu-text-secondary">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
             )}
             {filters.length > 0 && (
               <Button className="mt-4" variant="neutral" onClick={() => removeFilter(() => true)}>

@@ -19,7 +19,7 @@
 @layer base {
   * {
     @apply border-mu-line outline-none ring-0;
-    scrollbar-color: color-mix(in oklch, var(--mu-ink-muted) 55%, transparent) transparent;
+    scrollbar-color: color-mix(in oklch, var(--mu-text-secondary) 55%, transparent) transparent;
     scrollbar-width: thin;
   }
 
@@ -33,16 +33,16 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: color-mix(in oklch, var(--mu-ink-muted) 45%, transparent);
+    background-color: color-mix(in oklch, var(--mu-text-secondary) 45%, transparent);
     border-radius: 999px;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background-color: color-mix(in oklch, var(--mu-ink-muted) 65%, transparent);
+    background-color: color-mix(in oklch, var(--mu-text-secondary) 65%, transparent);
   }
 
   body {
-    @apply bg-mu-canvas text-mu-ink;
+    @apply bg-mu-canvas text-mu-text;
   }
 
   /* Search hits in memo bodies (CSS Custom Highlight API, registered by useSearchMatchHighlight).
@@ -56,9 +56,9 @@
   /* Mermaid diagrams drawn by Pele take the theme's colors; a new scheme recolors them live. */
   .pele {
     --pele-bg: var(--mu-surface);
-    --pele-fg: var(--mu-ink);
-    --pele-muted: var(--mu-ink-muted);
-    --pele-line: var(--mu-ink);
+    --pele-fg: var(--mu-text);
+    --pele-muted: var(--mu-text-secondary);
+    --pele-line: var(--mu-text);
     --pele-surface: var(--mu-well);
     --pele-surface-alt: var(--mu-hover);
     --pele-border: var(--mu-line);
@@ -82,7 +82,7 @@
     margin: 0 0.25rem 0.25rem 0 !important;
     border-radius: 0.25rem;
     background: color-mix(in oklch, var(--mu-canvas) 90%, transparent);
-    color: var(--mu-ink-muted);
+    color: var(--mu-text-secondary);
     font-size: 10px;
     line-height: 1rem;
     padding: 0 0.25rem;
@@ -94,7 +94,7 @@
   }
 
   .map-attribution-minimal .leaflet-control-attribution a:hover {
-    color: var(--mu-ink);
+    color: var(--mu-text);
     text-decoration: underline;
   }
 

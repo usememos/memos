@@ -1,5 +1,5 @@
 import { Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
-import { MonitorIcon, MoonIcon, PaletteIcon, SunIcon } from "lucide-react";
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,6 @@ const THEMES: { value: Theme; icon: React.ReactElement; labelKey: Translations }
   { value: "system", icon: <MonitorIcon />, labelKey: "setting.preference.theme-system-short" },
   { value: "default", icon: <SunIcon />, labelKey: "setting.preference.theme-light" },
   { value: "default-dark", icon: <MoonIcon />, labelKey: "setting.preference.theme-dark" },
-  { value: "paper", icon: <PaletteIcon />, labelKey: "setting.preference.theme-paper" },
 ];
 
 interface Props {

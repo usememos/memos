@@ -132,7 +132,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       <div className="flex shrink-0 flex-row items-center justify-end gap-1">
         {/* Markdown mode is said beside the commit button, where it never covers the text. */}
         {sourceMode.isSourceMode && (
-          <span className="px-1.5 mu-label-xs font-mono text-mu-ink-muted select-none" aria-label={t("editor.markdown-mode")}>
+          <span className="px-1.5 mu-label-xs font-mono text-mu-text-secondary select-none" aria-label={t("editor.markdown-mode")}>
             Markdown
           </span>
         )}

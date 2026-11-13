@@ -1,7 +1,7 @@
 /*
- * Paper: memos' warm app theme on @usememos/ui's tokens. It sets all 32 names in the
- * package's `themeTokens` (27 colors and 5 shadows); tests/paper-theme.test.ts checks
- * that and the contrast of every text pair. Primary stays ink, warm at chroma about 0.02.
+ * Paper: memos' warm app theme on @usememos/ui's tokens. It sets all 29 colors in the
+ * package's `themeTokens`; tests/paper-theme.test.ts checks that and the contrast of
+ * every text pair. Primary stays ink, warm at chroma about 0.02.
  */
 [data-theme="paper"] {
   color-scheme: light;
@@ -9,14 +9,16 @@
   --mu-surface: #fbf6f0;
   --mu-well: #e7dccf;
   --mu-hover: #ede3d7;
+  --mu-selected: oklch(0.865 0.028 70);
   --mu-key: #fdf9f4;
   --mu-key-hover: #f8f1e9;
-  --mu-key-sheen: rgba(255, 255, 255, 0.18);
   --mu-edge: #d3c5b4;
+  --mu-control-edge: oklch(0.55 0.025 70);
   --mu-line: #e0d4c5;
   --mu-overlay: rgba(40, 28, 18, 0.32);
-  --mu-ink: #2b2219;
-  --mu-ink-muted: #5d5044;
+  --mu-text: #2b2219;
+  --mu-text-secondary: #5d5044;
+  --mu-text-disabled: var(--mu-text-secondary);
   --mu-primary: #2f251c;
   --mu-primary-hover: #44372a;
   --mu-on-primary: #fbf6f0;
@@ -31,16 +33,5 @@
   --mu-danger-soft: #f6e1d9;
   --mu-on-danger: #ffffff;
   --mu-focus: var(--mu-primary);
-  --mu-focus-edge: var(--mu-ink);
-  --mu-shadow-track: inset 0 1px 2px hsl(30 30% 15% / 0.12);
-  --mu-shadow-key:
-    0 1px 2px hsl(30 30% 15% / 0.16), 0 2px 6px hsl(30 30% 15% / 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 hsl(30 30% 15% / 0.05);
-  --mu-shadow-raised:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 hsl(30 30% 15% / 0.1), 0 0 0 0.5px hsl(30 30% 15% / 0.14),
-    0 1px 2px hsl(30 30% 15% / 0.12);
-  --mu-shadow-pressed: inset 0 1px 3px hsl(30 30% 15% / 0.22), 0 0 0 0.5px hsl(30 30% 15% / 0.12);
-  --mu-shadow-pop:
-    0 8px 24px hsl(30 30% 15% / 0.1), 0 1px 3px hsl(30 30% 15% / 0.08), 0 0 0 0.5px hsl(30 30% 15% / 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --mu-focus-edge: var(--mu-text);
 }

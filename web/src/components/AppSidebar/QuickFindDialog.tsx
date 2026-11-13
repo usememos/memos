@@ -157,7 +157,7 @@ const QuickFindDialog = () => {
         </Dialog.Description>
         <form onSubmit={handleSubmit}>
           <div className="flex items-center justify-between gap-3 border-b border-mu-line/50 px-4 py-2">
-            <span className="min-w-0 truncate mu-caption text-mu-ink-muted" title={scopeLabel}>
+            <span className="min-w-0 truncate mu-caption text-mu-text-secondary" title={scopeLabel}>
               {compactScopeLabel}
             </span>
             <ToggleGroup
@@ -188,13 +188,13 @@ const QuickFindDialog = () => {
                 aria-describedby={hintId}
               />
               <div className="flex items-end justify-between gap-3">
-                <div className="min-w-0 space-y-1 mu-caption text-mu-ink-muted">
+                <div className="min-w-0 space-y-1 mu-caption text-mu-text-secondary">
                   <p id={hintId}>{t("search.keyboard-hint")}</p>
                   <a
                     href="https://usememos.com/docs/usage/shortcuts#filter-expression-syntax"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block underline underline-offset-2 hover:text-mu-ink"
+                    className="inline-block underline underline-offset-2 hover:text-mu-text"
                   >
                     {t("search.syntax-help")}
                   </a>
@@ -206,12 +206,12 @@ const QuickFindDialog = () => {
             </div>
           ) : (
             <div className="flex h-[52px] shrink-0 items-center gap-2.5 px-4">
-              <SearchIcon className="mu-icon size-[17px] shrink-0 text-mu-ink-muted" />
+              <SearchIcon className="mu-icon size-[17px] shrink-0 text-mu-text-secondary" />
               {/* The dialog's own field, focused whenever it is open: the caret marks focus, as in a
                   command palette, so it draws no outline around the borderless header. */}
               <input
                 {...fieldProps}
-                className="h-10 min-w-0 flex-1 bg-transparent mu-body outline-none placeholder:text-mu-ink-muted"
+                className="h-10 min-w-0 flex-1 bg-transparent mu-body outline-none placeholder:text-mu-text-secondary"
                 placeholder={`${t("common.search")} ${compactScopeLabel}`}
                 aria-label={`${t("common.search")} ${scopeLabel}`}
               />

@@ -1,17 +1,15 @@
-import { Popover, Tooltip } from "@usememos/ui";
+import { Button, Popover, Toggle, Tooltip } from "@usememos/ui";
 import { SmilePlusIcon } from "lucide-react";
-import { type ReactElement, useState } from "react";
+import { type ReactElement, useRef, useState } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
-import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useReactionActions } from "./hooks";
-import { REACTION_ADD_CLASSES } from "./ReactionView";
 
 interface Props {
   memo: Memo;
   /**
-   * The element that opens the picker. Defaults to the round add control that closes a
+   * The element that opens the picker. Defaults to the quiet add control that closes a
    * strip of reaction pills; a host with its own action grammar (the memo header) passes
    * the control that belongs there.
    */
@@ -22,23 +20,34 @@ interface Props {
 const ReactionSelector = ({ memo, trigger }: Props) => {
   const t = useTranslate();
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const { memoRelatedSetting } = useInstance();
 
   const { hasReacted, handleReactionClick } = useReactionActions({
     memo,
-    onComplete: () => setOpen(false),
+    onComplete: () => {
+      if (popupRef.current?.contains(document.activeElement)) triggerRef.current?.focus({ preventScroll: true });
+      setOpen(false);
+    },
   });
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root
+      open={open}
+      onOpenChange={(nextOpen, details) => {
+        // Focus must reach the header trigger before closing hides its wrapper.
+        if (!nextOpen && details.reason === "escape-key") triggerRef.current?.focus({ preventScroll: true });
+        setOpen(nextOpen);
+      }}
+    >
       <Tooltip.Root>
         <Tooltip.Trigger
           render={
             <Popover.Trigger
+              ref={triggerRef}
               aria-label={t("setting.memo.add-reaction")}
-              render={trigger ?? <button type="button" className={REACTION_ADD_CLASSES} />}
-              // A host trigger brings its own icon; the default button draws this one.
-              children={trigger ? undefined : <SmilePlusIcon className="mu-icon" />}
+              render={trigger ?? <Button variant="ghost" shape="pill" size="sm" icon={<SmilePlusIcon />} />}
             />
           }
         />
@@ -50,21 +59,27 @@ const ReactionSelector = ({ memo, trigger }: Props) => {
        * and Base UI would briefly reposition the portal at (0, 0). Close this
        * picker immediately instead of animating an unanchored popup.
        */}
-      {/* The list variant gives the grid a Menu's inset; each emoji is a cell with a menu row's height, radius and hover fill. */}
-      <Popover.Popup align="center" variant="list" className="max-w-[90vw] transition-none sm:max-w-md">
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 max-h-64 overflow-y-auto">
+      <Popover.Popup
+        ref={popupRef}
+        align="start"
+        initialFocus={(interactionType) => (interactionType === "keyboard" ? true : popupRef.current)}
+        aria-label={t("setting.memo.add-reaction")}
+        className="mu-compact w-max p-[calc(var(--mu-space-2)-1px)] transition-none"
+      >
+        <div className="grid max-h-[var(--mu-list-height)] grid-flow-col gap-0.5 overflow-y-auto max-sm:grid-flow-row max-sm:grid-cols-[repeat(4,max-content)] [@media(pointer:coarse)]:grid-flow-row [@media(pointer:coarse)]:grid-cols-[repeat(4,max-content)]">
           {memoRelatedSetting.reactions.map((reactionType) => (
-            <button
-              type="button"
+            <Toggle
               key={reactionType}
-              className={cn(
-                "inline-flex h-8 items-center justify-center rounded-mu-lg text-base cursor-pointer hover:bg-mu-hover",
-                hasReacted(reactionType) && "bg-mu-key",
-              )}
-              onClick={() => handleReactionClick(reactionType)}
+              variant="ghost"
+              className="w-[var(--mu-row-height)] p-0 data-pressed:bg-mu-selected"
+              aria-label={reactionType}
+              pressed={hasReacted(reactionType)}
+              onPressedChange={() => handleReactionClick(reactionType)}
             >
-              {reactionType}
-            </button>
+              <span className="mu-body" aria-hidden>
+                {reactionType}
+              </span>
+            </Toggle>
           ))}
         </div>
       </Popover.Popup>

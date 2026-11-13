@@ -15,7 +15,7 @@ const VisibilityIcon = (props: Props) => {
     return null;
   }
 
-  return <VIcon className={cn("mu-icon text-mu-ink-muted", className)} />;
+  return <VIcon className={cn("mu-icon text-mu-text-secondary", className)} />;
 };
 
 export default VisibilityIcon;

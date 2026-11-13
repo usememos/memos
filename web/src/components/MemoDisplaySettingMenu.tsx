@@ -32,7 +32,7 @@ function MemoDisplaySettingsContent() {
   return (
     <div className="flex flex-col gap-3">
       <ToggleGroup
-        size="sm"
+        size="md"
         fullWidth
         aria-label={t("memo.layout")}
         value={[String(maxColumns)]}

@@ -30,7 +30,7 @@ const LocationDisplayView = ({ location }: LocationDisplayViewProps) => {
         {popoverOpen && <LazyLocationPicker latlng={{ lat: location.latitude, lng: location.longitude }} readonly className="h-52" />}
         <div className="space-y-1">
           {location.placeholder.trim() && <p className="wrap-anywhere mu-label">{displayText}</p>}
-          <p className="mu-caption tabular-nums text-mu-ink-muted">{getLocationCoordinatesText(location, 6)}</p>
+          <p className="mu-caption tabular-nums text-mu-text-secondary">{getLocationCoordinatesText(location, 6)}</p>
         </div>
       </Popover.Popup>
     </Popover.Root>

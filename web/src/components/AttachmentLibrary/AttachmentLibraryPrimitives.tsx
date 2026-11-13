@@ -38,7 +38,7 @@ export const AttachmentCreator = ({ creatorName, user }: AttachmentCreatorProps)
   return (
     <Link
       to={getCreatorHomePath(username)}
-      className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-mu-sm mu-caption text-mu-ink-muted hover:text-mu-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mu-focus"
+      className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-mu-sm mu-caption text-mu-text-secondary hover:text-mu-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mu-focus"
       viewTransition
     >
       <UserAvatar className="size-4" avatarUrl={user?.avatarUrl} name={displayName} />
@@ -57,13 +57,13 @@ export const AttachmentMetadataLine = ({ className, items }: AttachmentMetadataL
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 overflow-x-auto whitespace-nowrap mu-caption text-mu-ink-muted [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex items-center gap-1.5 overflow-x-auto whitespace-nowrap mu-caption text-mu-text-secondary [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >
       {visibleItems.map((item, index) => (
         <span key={`${item}-${index}`} className="contents">
-          {index > 0 && <span className="shrink-0 text-mu-ink-muted/50">•</span>}
+          {index > 0 && <span className="shrink-0 text-mu-text-secondary/50">•</span>}
           <span className="shrink-0">{item}</span>
         </span>
       ))}
@@ -86,7 +86,7 @@ export const AttachmentSourceChip = ({
     <Link
       to={`/${memoName}`}
       state={createMemoNavigationState(`${location.pathname}${location.search}`)}
-      className="inline-flex max-w-full items-center truncate rounded-full border border-mu-line/60 bg-mu-well/30 px-1.5 py-0.5 mu-caption text-mu-ink-muted hover:bg-mu-hover"
+      className="inline-flex max-w-full items-center truncate rounded-full border border-mu-line/60 bg-mu-well/30 px-1.5 py-0.5 mu-caption text-mu-text-secondary hover:bg-mu-hover"
     >
       <span className="truncate">{t("attachment-library.labels.memo")}</span>
     </Link>

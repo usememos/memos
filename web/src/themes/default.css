@@ -1,7 +1,7 @@
 /*
  * memos' theme entries on top of @usememos/ui (read web/node_modules/@usememos/ui/llms.txt).
- * Colors, radius and shadows are the package's tokens, used through its `mu-` utilities
- * (`bg-mu-surface`, `rounded-mu-md`, `shadow-mu-pop`) and `var(--mu-*)`; Light and Dark come
+ * Colors and radius are the package's tokens, used through its `mu-` utilities
+ * (`bg-mu-surface`, `rounded-mu-md`) and `var(--mu-*)`; Light and Dark come
  * from its tokens.css and Paper from paper.css. This file only sets the text fonts to the
  * package's and adds the serif face of the wordmark. App text uses the package's type classes
  * (`mu-caption`, `mu-body`, `mu-label`, `mu-title`, `mu-heading`), not Tailwind text sizes.

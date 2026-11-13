@@ -50,7 +50,7 @@ const Tag = ({ children }: { children: ReactNode }) => (
 const Task = ({ checked, children }: { checked?: boolean; children: ReactNode }) => (
   <div className="flex items-center gap-2 mu-body">
     <Checkbox checked={checked} disabled tabIndex={-1} />
-    <span className={cn(checked && "text-mu-ink-muted line-through")}>{children}</span>
+    <span className={cn(checked && "text-mu-text-secondary line-through")}>{children}</span>
   </div>
 );
 
@@ -59,7 +59,7 @@ const Card = ({ className, children }: { className?: string; children: ReactNode
 );
 
 const Meta = ({ time, children }: { time: string; children?: ReactNode }) => (
-  <div className="flex h-6 w-full items-center gap-2 mu-caption text-mu-ink-muted">
+  <div className="flex h-6 w-full items-center gap-2 mu-caption text-mu-text-secondary">
     <span>{time}</span>
     {children}
   </div>
@@ -68,7 +68,7 @@ const Meta = ({ time, children }: { time: string; children?: ReactNode }) => (
 const MetaActions = ({ visibility }: { visibility: Visibility }) => (
   <span className="ms-auto flex items-center gap-1">
     <VisibilityIcon visibility={visibility} />
-    <MoreVerticalIcon className="mu-icon text-mu-ink-muted" />
+    <MoreVerticalIcon className="mu-icon text-mu-text-secondary" />
   </span>
 );
 
@@ -114,12 +114,12 @@ export const WriteHeader = () => {
           <span className="flex size-7 items-center justify-center rounded-mu-md border border-mu-line/80 bg-mu-surface">
             <PlusIcon className="mu-icon" />
           </span>
-          <span className="flex h-7 items-center gap-1 rounded-mu-md px-2 mu-caption text-mu-ink-muted">
+          <span className="flex h-7 items-center gap-1 rounded-mu-md px-2 mu-caption text-mu-text-secondary">
             <LockIcon className="mu-icon-sm" />
             {t("memo.visibility.private")}
             <ChevronDownIcon className="mu-icon-xs" />
           </span>
-          <span className="ms-auto flex h-7 items-center rounded-mu-md bg-mu-primary px-3 mu-label text-mu-on-primary shadow-mu-key">
+          <span className="ms-auto flex h-7 items-center rounded-mu-md bg-mu-primary px-3 mu-label text-mu-on-primary">
             {t("editor.save")}
           </span>
         </div>
@@ -154,10 +154,10 @@ export const KeepHeader = () => {
             {t("common.timeline")}
             <ChevronDownIcon className="mu-icon-xs" />
           </span>
-          <CalendarDaysIcon className="mu-icon text-mu-ink-muted" />
-          <MapIcon className="mu-icon text-mu-ink-muted" />
-          <PaperclipIcon className="mu-icon text-mu-ink-muted" />
-          <SearchIcon className="mu-icon text-mu-ink-muted" />
+          <CalendarDaysIcon className="mu-icon text-mu-text-secondary" />
+          <MapIcon className="mu-icon text-mu-text-secondary" />
+          <PaperclipIcon className="mu-icon text-mu-text-secondary" />
+          <SearchIcon className="mu-icon text-mu-text-secondary" />
         </div>
         <SidebarSection label={t("common.views")}>
           <span className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}>
@@ -173,7 +173,7 @@ export const KeepHeader = () => {
             <span key={String(tag)} className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}>
               <SidebarRowIconSlot icon={HashIcon} />
               <span className="min-w-0 flex-1 truncate">{tag}</span>
-              <span className="mu-caption text-mu-ink-muted/60 tabular-nums">{count}</span>
+              <span className="mu-caption text-mu-text-secondary/60 tabular-nums">{count}</span>
             </span>
           ))}
         </SidebarSection>
@@ -200,10 +200,10 @@ export const ShareHeader = () => {
         <div className="mt-1 w-full border-t border-mu-line/70 pt-2">
           <div className="flex items-center gap-1.5 mu-caption">
             <UserAvatar className="size-4" name="alice" />
-            <span className="font-medium text-mu-ink">alice</span>
-            <span className="text-mu-ink-muted">{t("welcome.sample.comment-age")}</span>
+            <span className="font-medium text-mu-text">alice</span>
+            <span className="text-mu-text-secondary">{t("welcome.sample.comment-age")}</span>
           </div>
-          <p className="ps-[22px] mu-caption text-mu-ink">{t("welcome.sample.comment")}</p>
+          <p className="ps-[22px] mu-caption text-mu-text">{t("welcome.sample.comment")}</p>
         </div>
       </Card>
     </Still>

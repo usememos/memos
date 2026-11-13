@@ -50,7 +50,7 @@ const ResourceStatsSection = () => {
       description={t("setting.resource-stats.description")}
       actions={
         <>
-          {generatedTime ? <span className="mu-caption text-mu-ink-muted">{generatedTime}</span> : null}
+          {generatedTime ? <span className="mu-caption text-mu-text-secondary">{generatedTime}</span> : null}
           <Button
             variant="neutral"
             disabled={isFetching}
@@ -67,7 +67,7 @@ const ResourceStatsSection = () => {
       {isLoading && !data ? (
         <SettingList aria-busy aria-label={t("setting.resource-stats.label")}>
           <List.Item>
-            <span className="text-mu-ink-muted">…</span>
+            <span className="text-mu-text-secondary">…</span>
           </List.Item>
         </SettingList>
       ) : null}

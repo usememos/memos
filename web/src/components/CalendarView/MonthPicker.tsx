@@ -48,7 +48,7 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
     <Popover.Root open={open} onOpenChange={setOpen}>
       {/* The month is the calendar page's title, so it is the page heading as well as the trigger. */}
       <h1 className="min-w-0">
-        <Popover.Trigger aria-label={t("calendar.select-month")} className={cn(TITLE_CONTROL_CLASSES, "mu-heading text-mu-ink")}>
+        <Popover.Trigger aria-label={t("calendar.select-month")} className={cn(TITLE_CONTROL_CLASSES, "mu-heading text-mu-text")}>
           {monthLabel}
         </Popover.Trigger>
       </h1>
@@ -61,7 +61,7 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
             icon={<ChevronLeftIcon className="mu-icon rtl:rotate-180" />}
             onClick={() => setYear((value) => value - 1)}
           />
-          <span className="flex-1 text-center mu-label-sm tabular-nums text-mu-ink">{year}</span>
+          <span className="flex-1 text-center mu-label-sm tabular-nums text-mu-text">{year}</span>
           <Button
             variant="ghost"
             size="sm"
@@ -80,7 +80,7 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
                 key={key}
                 to={buildCalendarPath(key)}
                 aria-current={isShown ? "page" : undefined}
-                className={cn(TEXT_CONTROL_CLASSES, "relative text-mu-ink")}
+                className={cn(TEXT_CONTROL_CLASSES, "relative text-mu-text")}
                 onClick={() => setOpen(false)}
               >
                 {monthShortLabels[value - 1]}

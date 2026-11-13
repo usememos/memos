@@ -15,7 +15,7 @@ interface Props {
 
 // "Don't have an account yet? Sign up" style prompt for hopping between auth pages.
 export const AuthLinkPrompt = ({ prompt, to, label }: { prompt: string; to: string; label: string }) => (
-  <p className="mt-5 text-center mu-caption text-mu-ink-muted">
+  <p className="mt-5 text-center mu-caption text-mu-text-secondary">
     {prompt}{" "}
     <Link to={to} className="text-mu-accent hover:underline" viewTransition>
       {label}
@@ -48,8 +48,8 @@ const AuthPageLayout = ({ title, description, children }: Props) => (
     <main className="flex w-full flex-1 flex-col sm:w-90 sm:flex-none sm:rounded-mu-xl sm:border sm:border-mu-line sm:bg-mu-surface">
       <div className="flex flex-1 flex-col justify-center px-5 py-12 sm:px-7 sm:pt-8 sm:pb-7">
         <MemosLogo size="lg" className="mb-8" />
-        {title && <h1 className="mu-heading text-mu-ink">{title}</h1>}
-        {description && <p className="mt-1 mu-body text-mu-ink-muted">{description}</p>}
+        {title && <h1 className="mu-heading text-mu-text">{title}</h1>}
+        {description && <p className="mt-1 mu-body text-mu-text-secondary">{description}</p>}
         <div className={cn("w-full", title && "mt-6")}>{children}</div>
       </div>
       {/* Same side padding as the content above, so the footer's controls share its edges. */}

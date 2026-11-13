@@ -48,7 +48,7 @@ const INDICATORS = {
   grip: {
     base: "h-8 w-1 rounded-full transition-[background-color,opacity] duration-150",
     dragging: "bg-mu-primary/70 opacity-100",
-    rest: "bg-mu-ink-muted/50 opacity-0 group-hover:opacity-100 group-focus-visible:bg-mu-primary/70 group-focus-visible:opacity-100",
+    rest: "bg-mu-text-secondary/50 opacity-0 group-hover:opacity-100 group-focus-visible:bg-mu-primary/70 group-focus-visible:opacity-100",
   },
 } as const;
 

@@ -169,7 +169,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
                 onFocusModeExit={requestCloseEditor}
                 onSavingChange={reportSaving}
               />
-              <DialogPrimitive.Close className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:end-3 focus-visible:top-3 focus-visible:z-(--mu-layer-popup) focus-visible:h-9 focus-visible:rounded-mu-md focus-visible:bg-mu-canvas focus-visible:px-3 mu-label focus-visible:shadow-mu-pop mu-focus">
+              <DialogPrimitive.Close className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:end-3 focus-visible:top-3 focus-visible:z-(--mu-layer-popup) focus-visible:h-9 focus-visible:rounded-mu-md focus-visible:bg-mu-canvas focus-visible:px-3 mu-label border border-transparent mu-focus focus-visible:border-mu-focus">
                 {t("common.close")}
               </DialogPrimitive.Close>
             </DialogPrimitive.Popup>

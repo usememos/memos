@@ -270,7 +270,7 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
   return (
     <aside className="flex flex-col gap-5">
       <div className="rounded-mu-lg border border-mu-line p-4">
-        <h2 className="mu-label text-mu-ink">{t("setting.memo-view.examples-title")}</h2>
+        <h2 className="mu-label text-mu-text">{t("setting.memo-view.examples-title")}</h2>
         <div className="mt-3 flex flex-col gap-2">
           {memoViewExamples.map((example) => {
             const Icon = example.icon;
@@ -278,15 +278,15 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
               <button
                 type="button"
                 key={example.filter}
-                className="group w-full cursor-pointer rounded-mu-md border border-transparent p-2 text-left transition-colors hover:border-mu-line hover:bg-mu-hover mu-focus"
+                className="group w-full cursor-pointer rounded-mu-md border border-transparent p-2 text-left transition-colors hover:bg-mu-hover mu-focus focus-visible:border-mu-focus"
                 onClick={() => onUseExample(example)}
               >
-                <span className="flex items-center gap-2 mu-label text-mu-ink">
-                  <Icon className="mu-icon text-mu-ink-muted group-hover:text-mu-primary" />
+                <span className="flex items-center gap-2 mu-label text-mu-text">
+                  <Icon className="mu-icon text-mu-text-secondary group-hover:text-mu-primary" />
                   {t(example.titleKey)}
                 </span>
-                <span className="mt-1 block font-mono mu-caption text-mu-ink-muted">{example.filter}</span>
-                <span className="mt-1 block mu-caption text-mu-ink-muted">{t(example.descriptionKey)}</span>
+                <span className="mt-1 block font-mono mu-caption text-mu-text-secondary">{example.filter}</span>
+                <span className="mt-1 block mu-caption text-mu-text-secondary">{t(example.descriptionKey)}</span>
               </button>
             );
           })}
@@ -294,7 +294,7 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
       </div>
 
       <div className="rounded-mu-lg border border-mu-line p-4">
-        <h2 className="mu-label text-mu-ink">{t("setting.memo-view.fields-title")}</h2>
+        <h2 className="mu-label text-mu-text">{t("setting.memo-view.fields-title")}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {filterFields.map((field) => (
             <Badge key={field} className="font-mono">
@@ -497,12 +497,12 @@ const MemoViews = () => {
     <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 pb-10">
       <div className="flex flex-col gap-2 border-b border-mu-line pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-mu-ink-muted">
+          <div className="flex items-center gap-2 text-mu-text-secondary">
             <FilterIcon className="mu-icon" />
             <span className="mu-label">{t("common.views")}</span>
           </div>
-          <h1 className="mu-heading tracking-normal text-mu-ink">{t("common.views")}</h1>
-          <p className="max-w-2xl mu-body text-mu-ink-muted">{t("setting.memo-view.page-description")}</p>
+          <h1 className="mu-heading tracking-normal text-mu-text">{t("common.views")}</h1>
+          <p className="max-w-2xl mu-body text-mu-text-secondary">{t("setting.memo-view.page-description")}</p>
         </div>
         <Button
           variant="neutral"
@@ -525,8 +525,8 @@ const MemoViews = () => {
             <div className="grid gap-5 p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="mu-label text-mu-ink">{isEditing ? t("setting.memo-view.edit") : t("setting.memo-view.create")}</h2>
-                  <p className="mt-1 mu-body text-mu-ink-muted">{t("setting.memo-view.form-description")}</p>
+                  <h2 className="mu-label text-mu-text">{isEditing ? t("setting.memo-view.edit") : t("setting.memo-view.create")}</h2>
+                  <p className="mt-1 mu-body text-mu-text-secondary">{t("setting.memo-view.form-description")}</p>
                 </div>
                 <a
                   className="inline-flex items-center gap-1 mu-label text-mu-accent hover:underline"
@@ -595,23 +595,23 @@ const MemoViews = () => {
           {!(memoViews.length === 0 && isCreateFormOpen) && (
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="mu-label text-mu-ink">{t("setting.memo-view.all")}</h2>
+                <h2 className="mu-label text-mu-text">{t("setting.memo-view.all")}</h2>
                 {!isPending && !isError && <Badge tone="outline">{memoViews.length}</Badge>}
               </div>
 
               {isPending ? (
-                <p className="py-10 text-center mu-body text-mu-ink-muted">{t("setting.memo-view.loading")}</p>
+                <p className="py-10 text-center mu-body text-mu-text-secondary">{t("setting.memo-view.loading")}</p>
               ) : isError ? (
                 <div className="py-10 text-center">
-                  <p className="mu-body text-mu-ink-muted">{t("setting.memo-view.load-failed")}</p>
+                  <p className="mu-body text-mu-text-secondary">{t("setting.memo-view.load-failed")}</p>
                   <Button variant="neutral" className="mt-4" onClick={() => void refetch()}>
                     {t("common.retry")}
                   </Button>
                 </div>
               ) : memoViews.length === 0 ? (
                 <div className="rounded-mu-lg border border-dashed border-mu-line px-4 py-10 text-center">
-                  <p className="mu-label text-mu-ink">{t("setting.memo-view.empty-title")}</p>
-                  <p className="mt-1 mu-body text-mu-ink-muted">{t("setting.memo-view.empty-description")}</p>
+                  <p className="mu-label text-mu-text">{t("setting.memo-view.empty-title")}</p>
+                  <p className="mt-1 mu-body text-mu-text-secondary">{t("setting.memo-view.empty-description")}</p>
                   <Button variant="neutral" className="mt-4" onClick={handleOpenCreateForm} icon={<PlusIcon />}>
                     {t("setting.memo-view.create")}
                   </Button>
@@ -624,13 +624,13 @@ const MemoViews = () => {
                       className="grid gap-3 bg-mu-canvas px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
                     >
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 mu-label text-mu-ink">
+                        <div className="flex items-center gap-2 mu-label text-mu-text">
                           <MemoViewIcon icon={memoView.icon} className="text-base" />
                           <span className="truncate">{memoView.title}</span>
                         </div>
-                        <div className="mt-1 font-mono mu-caption text-mu-ink-muted">{getMemoViewId(memoView.name)}</div>
+                        <div className="mt-1 font-mono mu-caption text-mu-text-secondary">{getMemoViewId(memoView.name)}</div>
                       </div>
-                      <pre className="min-w-0 overflow-x-auto rounded-mu-md bg-mu-well/50 px-3 py-2 font-mono mu-caption text-mu-ink-muted">
+                      <pre className="min-w-0 overflow-x-auto rounded-mu-md bg-mu-well/50 px-3 py-2 font-mono mu-caption text-mu-text-secondary">
                         {memoView.filter}
                       </pre>
                       <Menu.Root modal={false}>

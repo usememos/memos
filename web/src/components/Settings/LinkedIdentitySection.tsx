@@ -153,7 +153,7 @@ const LinkedIdentitySection = () => {
             render: (_, row: LinkedIdentityRow) => (
               <div className="flex min-w-[16rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="mu-label text-mu-ink">{row.title}</span>
+                  <span className="mu-label text-mu-text">{row.title}</span>
                   <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -176,7 +176,7 @@ const LinkedIdentitySection = () => {
                   ) : null}
                   <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.linkedIdentity?.name ?? "")} />
                 </div>
-                <p className="mu-caption text-mu-ink-muted">
+                <p className="mu-caption text-mu-text-secondary">
                   {row.isLinked ? t("setting.sso.extern-uid-description") : t("setting.sso.not-linked-description")}
                 </p>
               </div>

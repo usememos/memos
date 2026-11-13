@@ -304,7 +304,7 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
     "aria-current": active ? ("page" as const) : undefined,
     className: cn(
       sidebarSurfaceVariants({ role: "navPill" }),
-      "mu-focus",
+      "border border-transparent mu-focus focus-visible:border-mu-focus",
       sidebarRowStateClasses(active ? "current" : "idle"),
       // The one pill with an open label gives way first, so the row always ends on the rail.
       expanded && "min-w-0 shrink",
@@ -392,7 +392,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
-    <aside className={cn("mu-compact flex h-full w-full select-none flex-col bg-mu-canvas text-mu-ink-muted", className)}>
+    <aside className={cn("mu-compact flex h-full w-full select-none flex-col bg-mu-canvas text-mu-text-secondary", className)}>
       <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
         <SpaceSwitcher className="min-w-0" size="header" />
         {canCompose && <NewMemoAction onClick={openEditor} />}
@@ -409,18 +409,18 @@ const AppSidebar = ({ className }: { className?: string }) => {
             onClick={() => setMobileOpen(false)}
             className={cn(
               sidebarSurfaceVariants({ role: "account" }),
-              "group mu-label text-mu-ink transition-colors hover:bg-mu-hover mu-focus",
+              "group mu-label text-mu-text transition-colors hover:bg-mu-hover border border-transparent mu-focus focus-visible:border-mu-focus",
             )}
           >
             <span className={SIDEBAR_LEADING_SLOT_CLASSES}>
-              <UserRoundIcon className="mu-icon me-auto text-mu-ink-muted" />
+              <UserRoundIcon className="mu-icon me-auto text-mu-text-secondary" />
             </span>
             <span data-sidebar-label className="min-w-0 flex-1 truncate">
               {t("common.sign-in-to-memos")}
             </span>
             <ArrowRightIcon
               data-sidebar-trailing
-              className="mu-icon-sm shrink-0 text-mu-ink-muted/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
+              className="mu-icon-sm shrink-0 text-mu-text-secondary/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
             />
           </Link>
         </footer>

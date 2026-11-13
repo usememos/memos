@@ -157,7 +157,7 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
               ))}
             </Combobox.List>
           </Combobox.Root>
-          {tab === "emoji" && <p className="px-1 pt-2 mu-caption text-mu-ink-muted">{t("space.icon.emoji-help")}</p>}
+          {tab === "emoji" && <p className="px-1 pt-2 mu-caption text-mu-text-secondary">{t("space.icon.emoji-help")}</p>}
         </div>
         <div className="mt-2 border-t pt-1.5">
           <Button

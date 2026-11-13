@@ -31,7 +31,7 @@ import SidebarSection from "./SidebarSection";
 /** The row's ⋯ menu: a trailing slot control that stays hidden until the row is engaged. */
 const VIEW_MENU_TRIGGER_CLASSES = cn(
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
-  "text-mu-ink-muted transition-opacity md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100",
+  "text-mu-text-secondary transition-opacity md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100",
 );
 
 const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {

@@ -128,12 +128,14 @@ const MemberSection = () => {
                 <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className={user.displayName ? "mu-label text-mu-ink" : "mu-label text-mu-ink-muted italic"}>
+                    <span className={user.displayName ? "mu-label text-mu-text" : "mu-label text-mu-text-secondary italic"}>
                       {user.displayName || t("common.empty-placeholder")}
                     </span>
-                    {currentUser?.name === user.name ? <span className="mu-caption text-mu-ink-muted">{t("common.yourself")}</span> : null}
+                    {currentUser?.name === user.name ? (
+                      <span className="mu-caption text-mu-text-secondary">{t("common.yourself")}</span>
+                    ) : null}
                   </div>
-                  <span className="truncate mu-caption text-mu-ink-muted">@{user.username}</span>
+                  <span className="truncate mu-caption text-mu-text-secondary">@{user.username}</span>
                 </div>
               </div>
             ),

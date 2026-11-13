@@ -33,8 +33,8 @@ const Archived = () => {
       filter={memoFilter}
       renderLeading={({ useGrid }) => (
         <header className={cn("flex items-center gap-2 px-1", !useGrid && "mb-4")}>
-          <ArchiveIcon className="mu-icon size-5 text-mu-ink-muted" />
-          <h1 className="mu-heading text-mu-ink">{t("common.archived")}</h1>
+          <ArchiveIcon className="mu-icon size-5 text-mu-text-secondary" />
+          <h1 className="mu-heading text-mu-text">{t("common.archived")}</h1>
         </header>
       )}
     />

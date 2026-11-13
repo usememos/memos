@@ -17,7 +17,7 @@ const PANEL_WIDTH_VAR = "--memo-panel-width";
 /** The card's current width as a CSS expression, for pages that give way to it. */
 export const MEMO_PANEL_WIDTH_CSS = `var(${PANEL_WIDTH_VAR})`;
 /** The title's type, shared with hosts that show the same content inline without the card. */
-export const MEMO_PANEL_TITLE_CLASS = "truncate mu-title text-mu-ink";
+export const MEMO_PANEL_TITLE_CLASS = "truncate mu-title text-mu-text";
 const PANEL_DEFAULT_WIDTH = 400;
 const PANEL_MIN_WIDTH = 320;
 const PANEL_MAX_WIDTH = 640;
@@ -127,9 +127,8 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
           aria-describedby={undefined}
           style={!desktop ? { height: `${sheetShare * 100}dvh` } : undefined}
           className={cn(
-            // A popover surface: lighter than the page in both themes, with the float shadow
-            // rather than the tight card shadow, so a 400px card reads as lifted, not pasted on.
-            "fixed z-30 flex min-h-0 flex-col border border-mu-line/70 bg-mu-surface text-mu-ink shadow-mu-pop outline-none transition-transform duration-200",
+            // A popover surface: lighter than the page in both themes.
+            "fixed z-30 flex min-h-0 flex-col border border-mu-line/70 bg-mu-surface text-mu-text outline-none transition-transform duration-200",
             desktop
               ? "inset-y-3 end-3 w-[var(--memo-panel-width)] rounded-mu-xl data-starting-style:translate-x-full data-ending-style:translate-x-full"
               : "inset-x-0 bottom-0 rounded-t-mu-2xl pb-[env(safe-area-inset-bottom)] data-starting-style:translate-y-full data-ending-style:translate-y-full",
@@ -158,13 +157,13 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
               aria-label={t(expanded ? "common.collapse-panel" : "common.expand-panel")}
               onClick={() => setExpanded((value) => !value)}
             >
-              <span className="h-1 w-10 rounded-full bg-mu-ink-muted/35" />
+              <span className="h-1 w-10 rounded-full bg-mu-text-secondary/35" />
             </button>
           )}
           <header className="flex shrink-0 items-center gap-0.5 border-b border-mu-line/70 py-2.5 ps-3 pe-3">
             <div className="min-w-0 flex-1">
               <Dialog.Title className={MEMO_PANEL_TITLE_CLASS}>{shown.title}</Dialog.Title>
-              {shown.subtitle && <p className="truncate mu-caption text-mu-ink-muted">{shown.subtitle}</p>}
+              {shown.subtitle && <p className="truncate mu-caption text-mu-text-secondary">{shown.subtitle}</p>}
             </div>
             <Dialog.Close disabled={busy} render={<Button variant="ghost" size="sm" aria-label={t("common.close")} icon={<XIcon />} />} />
           </header>

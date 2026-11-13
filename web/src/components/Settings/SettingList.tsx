@@ -43,13 +43,13 @@ export const SettingListItem = ({ label, description, children }: SettingListIte
 };
 
 export const StatValue = ({ value }: { value: string }) => (
-  <span className="block min-w-0 break-all text-right font-mono mu-body tabular-nums text-mu-ink">{value}</span>
+  <span className="block min-w-0 break-all text-right font-mono mu-body tabular-nums text-mu-text">{value}</span>
 );
 
 /** A read-only figure: its name at the start, the value at the end. No control, so no Field. */
 export const StatRow = ({ label, value }: { label: string; value: string }) => (
   <List.Item className="flex items-baseline justify-between gap-4">
-    <span className="min-w-0 mu-body text-mu-ink">{label}</span>
+    <span className="min-w-0 mu-body text-mu-text">{label}</span>
     <StatValue value={value} />
   </List.Item>
 );

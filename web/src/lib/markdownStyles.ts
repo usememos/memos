@@ -10,7 +10,7 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  * Markdown editor, so a heading looks the same while editing and after saving.
  */
 export const headingClasses: Readonly<Partial<Record<HeadingLevel, string>>> = {
-  6: "text-mu-ink-muted",
+  6: "text-mu-text-secondary",
 };
 
 /**
@@ -38,13 +38,13 @@ export const tagStyles = {
   /** The pill: shape, padding and typography. */
   base: "rich:inline-flex rich:h-5 rich:items-center rich:align-baseline rich:rounded-mu-sm rich:px-1.5 rich:text-[13px] rich:leading-[18px] rich:font-normal",
   /** Ink in the well, used when the tag has no color of its own. */
-  defaultColor: "text-mu-ink rich:bg-mu-well",
+  defaultColor: "text-mu-text rich:bg-mu-well",
   /**
    * The user's color, read from `--tag-color` on the element, as the package's Badge `color` draws
    * it: an 18% tint behind ink text, the same in both themes. The text never takes the color, since
    * no chosen color is readable as text on its own tint in both themes.
    */
-  customColor: "text-mu-ink rich:bg-[color-mix(in_srgb,var(--tag-color)_18%,transparent)]",
+  customColor: "text-mu-text rich:bg-[color-mix(in_srgb,var(--tag-color)_18%,transparent)]",
 } as const;
 
 /**

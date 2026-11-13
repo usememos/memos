@@ -23,7 +23,6 @@ describe("drawings in the memo gallery", () => {
     const drawing = screen.getByRole("button", { name: "drawing-20261106-101500.canvas.png" });
     const photo = screen.getByRole("button", { name: "beach.png" });
     expect(drawing).toHaveClass(...classesOf(VISUAL_TILE_BUTTON_CLASS));
-    expect(drawing).not.toHaveClass("shadow-mu-raised");
     expect(photo).toHaveClass(...classesOf(VISUAL_TILE_BUTTON_CLASS));
   });
 
@@ -32,7 +31,7 @@ describe("drawings in the memo gallery", () => {
     render(<AttachmentGallery visual={[drawing]} onImagePreview={vi.fn()} />);
 
     const sheet = screen.getByRole("button", { name: drawing.filename });
-    expect(sheet).toHaveClass("shadow-mu-raised", ...classesOf(DRAWING_SHEET_SINGLE_CLASS));
+    expect(sheet).toHaveClass("border", "border-mu-edge", ...classesOf(DRAWING_SHEET_SINGLE_CLASS));
     // The original file at 2x, not the thumbnail, so it shows at drawn size and stays sharp.
     const img = screen.getByRole("img", { name: drawing.filename });
     expect(img).toHaveAttribute("src", getAttachmentUrl(drawing));

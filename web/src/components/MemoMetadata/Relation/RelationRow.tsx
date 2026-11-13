@@ -34,7 +34,7 @@ const RelationRow = ({ memo, parentPage, icon = LinkIcon, variant = "row", trail
     >
       <MetadataRowIconSlot icon={icon} />
       <span className={METADATA_ROW_TEXT_CLASSES}>
-        {memo.snippet || <span className="italic text-mu-ink-muted/60">{t("common.no-content")}</span>}
+        {memo.snippet || <span className="italic text-mu-text-secondary/60">{t("common.no-content")}</span>}
       </span>
       {trailing}
     </Link>

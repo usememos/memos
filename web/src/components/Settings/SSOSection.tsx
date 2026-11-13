@@ -130,7 +130,7 @@ const SSOSection = () => {
             render: (_, row: IdentityProviderRow) => (
               <div className="flex min-w-[16rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="mu-label text-mu-ink">{row.title}</span>
+                  <span className="mu-label text-mu-text">{row.title}</span>
                   <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -145,7 +145,7 @@ const SSOSection = () => {
             header: t("setting.sso.configuration"),
             render: (_, row: IdentityProviderRow) => (
               <div className="flex min-w-[24rem] flex-col gap-2">
-                <p className="mu-caption text-mu-ink-muted">{t("setting.sso.configuration-summary-description")}</p>
+                <p className="mu-caption text-mu-text-secondary">{t("setting.sso.configuration-summary-description")}</p>
                 <div className="flex flex-wrap gap-2">
                   {row.summaryItems.map((item) => (
                     <InfoChip key={item.key} label={item.label} value={item.value} tooltip={item.tooltip} />

@@ -31,8 +31,10 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
           <div className="flex min-w-0 items-center gap-2.5">
             <UserAvatar avatarUrl={preview.avatarUrl} name={preview.displayName} className="h-8 w-8" />
             <div className="min-w-0">
-              <div className="truncate mu-label-sm text-mu-ink">{preview.displayName}</div>
-              {preview.formattedDisplayTime && <div className="truncate mu-caption text-mu-ink-muted">{preview.formattedDisplayTime}</div>}
+              <div className="truncate mu-label-sm text-mu-text">{preview.displayName}</div>
+              {preview.formattedDisplayTime && (
+                <div className="truncate mu-caption text-mu-text-secondary">{preview.formattedDisplayTime}</div>
+              )}
             </div>
           </div>
         </div>
@@ -61,7 +63,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
               >
                 <img src={item.posterUrl} alt={item.filename} className="h-full w-full object-cover" loading="eager" decoding="async" />
                 {index === 3 && preview.visualItems.length > 4 && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-mu-ink/35 mu-title text-mu-canvas">
+                  <div className="absolute inset-0 flex items-center justify-center bg-mu-text/35 mu-title text-mu-canvas">
                     +{preview.visualItems.length - 4}
                   </div>
                 )}
@@ -75,7 +77,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
             {preview.footerBadges.map((badge) => (
               <span
                 key={badge.type}
-                className="inline-flex rounded-full border border-mu-line/70 bg-mu-well/55 px-2 py-0.5 mu-caption text-mu-ink-muted"
+                className="inline-flex rounded-full border border-mu-line/70 bg-mu-well/55 px-2 py-0.5 mu-caption text-mu-text-secondary"
               >
                 {badge.count} {t("common.attachments").toLowerCase()}
               </span>

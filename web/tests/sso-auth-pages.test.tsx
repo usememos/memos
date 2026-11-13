@@ -86,7 +86,7 @@ describe("automatic SSO auth pages", () => {
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(button.querySelector(".mu-spinner")).toBeInTheDocument();
+    await waitFor(() => expect(button.querySelector(".mu-spinner")).toBeInTheDocument());
     expect(screen.queryByText("auth.redirecting-to-provider: Company SSO")).not.toBeInTheDocument();
   });
   it.each([

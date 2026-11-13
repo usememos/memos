@@ -64,9 +64,9 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
       title={title}
       className={cn(
         "inline-flex items-center justify-center h-8 w-8 rounded-mu-lg",
-        "border border-mu-line/80 bg-mu-canvas/88 text-mu-ink shadow-mu-key backdrop-blur-md",
-        "hover:scale-105 hover:bg-mu-canvas hover:shadow-mu-pop active:scale-95",
-        "mu-focus",
+        "border border-mu-line/80 bg-mu-canvas/88 text-mu-text backdrop-blur-md",
+        "hover:scale-105 hover:bg-mu-canvas active:scale-95",
+        "mu-focus focus-visible:border-mu-focus",
       )}
     >
       {icon}
@@ -88,20 +88,20 @@ const ControlButtons = ({ position, onZoomIn, onZoomOut, onOpenGoogleMaps }: Con
     <div className="flex flex-col gap-1.5">
       {position && (
         <GlassButton
-          icon={<ExternalLinkIcon size={16} className="text-mu-ink" />}
+          icon={<ExternalLinkIcon size={16} className="text-mu-text" />}
           onClick={onOpenGoogleMaps}
           ariaLabel={t("map.open-in-google-maps")}
           title={t("map.open-in-google-maps")}
         />
       )}
       <GlassButton
-        icon={<PlusIcon size={16} className="text-mu-ink" />}
+        icon={<PlusIcon size={16} className="text-mu-text" />}
         onClick={onZoomIn}
         ariaLabel={t("map.zoom-in")}
         title={t("map.zoom-in")}
       />
       <GlassButton
-        icon={<MinusIcon size={16} className="text-mu-ink" />}
+        icon={<MinusIcon size={16} className="text-mu-text" />}
         onClick={onZoomOut}
         ariaLabel={t("map.zoom-out")}
         title={t("map.zoom-out")}
@@ -244,7 +244,7 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
 
       {!readOnly && (
         <div className="pointer-events-none absolute left-3 top-3 z-[450] flex items-center gap-2">
-          <div className="rounded-full border border-mu-line bg-mu-canvas/92 px-2.5 py-1 mu-label-sm tracking-[0.02em] text-mu-ink/80 backdrop-blur-sm">
+          <div className="rounded-full border border-mu-line bg-mu-canvas/92 px-2.5 py-1 mu-label-sm tracking-[0.02em] text-mu-text/80 backdrop-blur-sm">
             {statusLabel}
           </div>
         </div>

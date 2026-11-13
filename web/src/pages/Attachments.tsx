@@ -160,13 +160,13 @@ const Attachments = () => {
       }
 
       return completeUnusedItems.length === 0 ? (
-        <div className="py-12 text-center mu-body text-mu-ink-muted">{t("message.no-data")}</div>
+        <div className="py-12 text-center mu-body text-mu-text-secondary">{t("message.no-data")}</div>
       ) : (
         <div className="space-y-4">
           <div className="flex flex-col gap-3 rounded-mu-xl border border-mu-warning/30 bg-mu-warning-soft p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="mu-label text-mu-ink">{t("attachment-library.unused.title")}</h2>
-              <p className="mt-1 mu-body text-mu-ink-muted">{t("attachment-library.unused.description")}</p>
+              <h2 className="mu-label text-mu-text">{t("attachment-library.unused.title")}</h2>
+              <p className="mt-1 mu-body text-mu-text-secondary">{t("attachment-library.unused.description")}</p>
             </div>
             <Button
               variant="neutral"
@@ -194,24 +194,24 @@ const Attachments = () => {
 
     if (attachmentSection === "all") {
       const total = stats.media + stats.documents + stats.audio;
-      if (total === 0) return <div className="py-16 text-center mu-body text-mu-ink-muted">{t("attachment-library.empty.all")}</div>;
+      if (total === 0) return <div className="py-16 text-center mu-body text-mu-text-secondary">{t("attachment-library.empty.all")}</div>;
       return (
         <div className="space-y-9">
           {stats.media > 0 && (
             <section className="space-y-3">
-              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.media")}</h2>
+              <h2 className="mu-label text-mu-text">{t("attachment-library.tabs.media")}</h2>
               <AttachmentMediaGrid groups={mediaGroups} creators={creators} onPreview={handlePreview} />
             </section>
           )}
           {stats.documents > 0 && (
             <section className="space-y-3">
-              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.documents")}</h2>
+              <h2 className="mu-label text-mu-text">{t("attachment-library.tabs.documents")}</h2>
               <AttachmentDocumentRows items={documentItems} creators={creators} />
             </section>
           )}
           {stats.audio > 0 && (
             <section className="space-y-3">
-              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.audio")}</h2>
+              <h2 className="mu-label text-mu-text">{t("attachment-library.tabs.audio")}</h2>
               <AttachmentAudioRows items={audioItems} creators={creators} />
             </section>
           )}
@@ -257,7 +257,7 @@ const Attachments = () => {
           )}
 
           {!isLoading && isFetching && !isFetchingNextPage && (
-            <div className="mt-4 text-center mu-caption text-mu-ink-muted">{t("resource.fetching-data")}</div>
+            <div className="mt-4 text-center mu-caption text-mu-text-secondary">{t("resource.fetching-data")}</div>
           )}
         </div>
       </div>

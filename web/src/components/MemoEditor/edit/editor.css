@@ -22,7 +22,7 @@
     flex: 1 0 auto;
   }
   & .memo-editor-root {
-    caret-color: var(--mu-ink);
+    caret-color: var(--mu-text);
     outline: none;
   }
   & .memo-editor-root ::selection {
@@ -113,7 +113,7 @@
   align-items: center;
   gap: 0.375rem;
   margin-inline-end: 0.125rem;
-  color: var(--mu-ink-muted);
+  color: var(--mu-text-secondary);
 }
 
 .memo-upload-anchor[data-status="failed"] .memo-upload-anchor-message {
@@ -135,11 +135,11 @@
    @usememos/ui popup surface and its tooltips the package's tooltip, so they line up with the
    app's own popups, without changing document typography or package internals. */
 .mbe-ui:is(.mbe-menu, .mbe-toolbar, .mbe-image-toolbar, .mbe-link-card, .mbe-input-popover) {
-  border: 0;
+  border: 1px solid var(--mu-edge);
   border-radius: var(--mu-radius-xl);
   background: var(--mu-surface);
-  box-shadow: var(--mu-shadow-pop);
-  color: var(--mu-ink);
+  box-shadow: none;
+  color: var(--mu-text);
   font: 400 13px / 18px var(--mu-font-sans);
   letter-spacing: 0;
 }

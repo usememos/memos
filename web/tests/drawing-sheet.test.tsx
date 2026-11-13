@@ -83,10 +83,10 @@ describe("DrawingSheet", () => {
     for (const name of ["common.cancel", "editor.drawing.tool-pen", "editor.drawing.undo", "editor.drawing.done"]) {
       expect(screen.getByRole("button", { name }).closest("[data-theme]")).toHaveAttribute("data-theme", "light");
     }
-    // One raised surface per group: the tools share a bar, while Cancel and Done stand alone.
-    expect(screen.getByRole("button", { name: "editor.drawing.tool-pen" }).closest(".shadow-mu-pop")).not.toBeNull();
+    // One bordered surface per group: the tools share a bar, while Cancel and Done stand alone.
+    expect(screen.getByRole("button", { name: "editor.drawing.tool-pen" }).closest(".border-mu-edge")).not.toBeNull();
     for (const name of ["common.cancel", "editor.drawing.done"]) {
-      expect(screen.getByRole("button", { name }).closest(".shadow-mu-pop")).toBeNull();
+      expect(screen.getByRole("button", { name }).closest(".border-mu-edge")).toBeNull();
     }
   });
 

@@ -104,7 +104,7 @@ const readPaperColor = (img: HTMLImageElement): string | undefined => {
 
 /**
  * A drawing as a sheet of paper. The sheet extends the drawing's own paper beyond its edges, so
- * it can be any size. On its own it is a raised sheet; in a collage (`framed`) it takes the photos'
+ * it can be any size. On its own it is a bordered sheet; in a collage (`framed`) it takes the photos'
  * hairline frame, so every cell of the grid has the same edge. The image is the original file at 2x: exports carry 2 pixels per drawn
  * pixel, so it shows at the size it was drawn and keeps strokes and text sharp.
  */
@@ -147,7 +147,7 @@ const DrawingTile = ({
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
   <div
     className={cn(
-      "pointer-events-none absolute flex items-center justify-center rounded-full bg-mu-canvas/80 text-mu-ink/70 backdrop-blur-sm",
+      "pointer-events-none absolute flex items-center justify-center rounded-full bg-mu-canvas/80 text-mu-text/70 backdrop-blur-sm",
       className,
     )}
   >

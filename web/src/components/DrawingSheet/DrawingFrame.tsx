@@ -53,13 +53,13 @@ export const FloatingAction = ({ children }: { children: ReactNode }) => (
 );
 
 /**
- * A group of controls floating on the paper: one raised bar with flat controls inside, so no
- * shadow sits inside another. Light in every theme, like the paper under it.
+ * A group of controls floating on the paper: one bordered bar with flat controls inside. Light in
+ * every theme, like the paper under it.
  */
 export const FloatingBar = ({ className, children }: { className?: string; children: ReactNode }) => (
   <div
     data-theme="light"
-    className={cn("pointer-events-auto flex items-center gap-0.5 rounded-mu-lg bg-mu-surface p-1 shadow-mu-pop", className)}
+    className={cn("pointer-events-auto flex items-center gap-0.5 rounded-mu-lg border border-mu-edge bg-mu-surface p-1", className)}
   >
     {children}
   </div>

@@ -42,7 +42,7 @@ const MemoListError = ({ error, onRetry, onEditQuery, onClearQuery }: Props) => 
     <div role="alert" className="w-full min-w-0 space-y-3 rounded-mu-lg border border-mu-line px-4 py-4">
       <p className="mu-label">{t(MESSAGE_KEYS[kind])}</p>
       {kind === "invalid" && (
-        <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono mu-caption text-mu-ink-muted">
+        <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono mu-caption text-mu-text-secondary">
           {getErrorMessage(error)}
         </pre>
       )}

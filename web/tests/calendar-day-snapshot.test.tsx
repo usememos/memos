@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { CalendarDayCell, layoutForCellSize } from "@/components/CalendarView/CalendarDayCell";
@@ -30,10 +30,21 @@ interface CellOptions {
   isToday?: boolean;
   isCurrentMonth?: boolean;
   showAuthor?: boolean;
+  isLastColumn?: boolean;
+  isLastRow?: boolean;
 }
 const cell = (
   value?: CalendarDaySummary,
-  { width = 170, height = 170, isSelected = true, isToday = true, isCurrentMonth = true, showAuthor = false }: CellOptions = {},
+  {
+    width = 170,
+    height = 170,
+    isSelected = true,
+    isToday = true,
+    isCurrentMonth = true,
+    showAuthor = false,
+    isLastColumn = false,
+    isLastRow = false,
+  }: CellOptions = {},
 ) =>
   render(
     <MemoryRouter initialEntries={["/spaces/work/calendar/2026/08?filter=test"]}>
@@ -46,8 +57,8 @@ const cell = (
         timeBasis="create_time"
         showAuthor={showAuthor}
         tabIndex={0}
-        isLastColumn={false}
-        isLastRow={false}
+        isLastColumn={isLastColumn}
+        isLastRow={isLastRow}
       />
     </MemoryRouter>,
   );
@@ -66,6 +77,14 @@ describe("calendar daily snapshot cell", () => {
     expect(screen.getAllByRole("link")).toHaveLength(1);
     expect(screen.queryByRole("button")).toBeNull();
   });
+  it("hides the end and bottom grid lines on the last column and row", () => {
+    cell(summary);
+    expect(screen.getByRole("link")).not.toHaveClass("border-e-transparent");
+    expect(screen.getByRole("link")).not.toHaveClass("border-b-transparent");
+    cleanup();
+    cell(summary, { isLastColumn: true, isLastRow: true });
+    expect(screen.getByRole("link")).toHaveClass("border-mu-line/70", "border-e-transparent", "border-b-transparent");
+  });
   it("keeps empty days clickable without a zero count or image space", () => {
     cell();
     expect(screen.getByRole("link")).toHaveAttribute("tabindex", "0");
@@ -83,19 +102,19 @@ describe("calendar daily snapshot cell", () => {
     cell(summary, { isToday: false });
     expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
     expect(screen.getByRole("link")).not.toHaveClass("bg-mu-hover");
-    expect(screen.getByText("7")).toHaveClass("bg-mu-ink/10", "text-mu-ink", "rounded-mu-md");
+    expect(screen.getByText("7")).toHaveClass("bg-mu-text/10", "text-mu-text", "rounded-mu-md");
     expect(screen.getByText("7")).not.toHaveClass("font-medium");
-    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-ink/10");
+    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-text/10");
   });
   it("marks today with the solid primary badge and no weight change", () => {
     cell(summary, { isSelected: false });
     expect(screen.getByText("7")).toHaveClass("bg-mu-primary", "text-mu-on-primary", "mu-caption");
-    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-ink/10");
+    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-text/10");
   });
   it("nests today's badge in a grey halo when today is also the open day", () => {
     cell(summary);
     expect(screen.getByText("7")).toHaveClass("bg-mu-primary", "text-mu-on-primary");
-    expect(screen.getByText("7").parentElement).toHaveClass("bg-mu-ink/10", "p-[3px]", "-m-[3px]");
+    expect(screen.getByText("7").parentElement).toHaveClass("bg-mu-text/10", "p-[3px]", "-m-[3px]");
   });
   it("removes failed photos while retaining the excerpt", () => {
     cell(summary);

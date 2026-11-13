@@ -9,7 +9,7 @@ const AuthNotice = ({ tone = "info", children, className }: { tone?: "info" | "e
       role={tone === "error" ? "alert" : "status"}
       className={cn(
         "flex items-start gap-2 rounded-mu-md px-2.5 py-2 mu-caption",
-        tone === "error" ? "bg-mu-danger-soft text-mu-danger" : "bg-mu-hover text-mu-ink-muted",
+        tone === "error" ? "bg-mu-danger-soft text-mu-danger" : "bg-mu-hover text-mu-text-secondary",
         className,
       )}
     >

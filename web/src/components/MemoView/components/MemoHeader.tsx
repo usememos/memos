@@ -145,8 +145,8 @@ export const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
   <>
     <Link
       className={cn(
-        "flex min-w-0 shrink items-center gap-1.5 rounded-mu-sm mu-label-sm text-mu-ink transition-colors hover:text-mu-ink/80",
-        "mu-focus",
+        "flex min-w-0 shrink items-center gap-1.5 rounded-mu-sm mu-label-sm text-mu-text transition-colors hover:text-mu-text/80",
+        "border border-transparent mu-focus focus-visible:border-mu-focus",
       )}
       to={getCreatorHomePath(creator.username)}
       viewTransition
@@ -156,7 +156,7 @@ export const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
-    <span aria-hidden="true" className="shrink-0 text-mu-ink-muted/40">
+    <span aria-hidden="true" className="shrink-0 text-mu-text-secondary/40">
       ·
     </span>
   </>
@@ -190,7 +190,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, memoName, parentPage, isCurrentPage }) => (
   <TimeTooltip content={timeTooltip}>
     {isCurrentPage ? (
-      <span className="shrink-0 whitespace-nowrap mu-caption text-mu-ink-muted select-none">{displayTime}</span>
+      <span className="shrink-0 whitespace-nowrap mu-caption text-mu-text-secondary select-none">{displayTime}</span>
     ) : (
       <Link
         className={cn(MEMO_TIME_CONTROL_CLASSES, "underline-offset-2 hover:underline")}

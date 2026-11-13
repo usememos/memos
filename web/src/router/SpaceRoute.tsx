@@ -18,12 +18,12 @@ export const SpaceRoute = () => {
     <section className="flex min-h-[50vh] w-full flex-col items-center justify-center gap-4 px-4 text-center" role="status">
       {!spaceError ? (
         <>
-          <Spinner aria-hidden className="text-mu-ink-muted" />
+          <Spinner aria-hidden className="text-mu-text-secondary" />
           <p>{t("space.loading")}</p>
         </>
       ) : (
         <>
-          <p className="mu-body text-mu-ink-muted">{t(unavailable ? "space.unavailable" : "space.load-error")}</p>
+          <p className="mu-body text-mu-text-secondary">{t(unavailable ? "space.unavailable" : "space.load-error")}</p>
           <div className="flex items-center gap-2">
             {!unavailable && (
               <Button variant="neutral" onClick={retrySpace}>

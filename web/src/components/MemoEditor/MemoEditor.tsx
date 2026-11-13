@@ -172,7 +172,7 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
       aria-hidden
       className={cn("flex w-full flex-col gap-2 rounded-mu-lg border border-mu-line/70 bg-mu-surface px-4 py-3", editing.className)}
     >
-      <div className="w-full text-base leading-6 text-mu-ink-muted">{editing.placeholder ?? " "}</div>
+      <div className="w-full text-base leading-6 text-mu-text-secondary">{editing.placeholder ?? " "}</div>
       <div className="h-9 w-full" />
     </div>
   );

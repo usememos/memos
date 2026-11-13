@@ -21,15 +21,20 @@ const DEFAULT_TITLE = "Memos";
 
 /** One card per project link; the welcome guide reopens from a button in the same frame. */
 const PROJECT_CARD_CLASSES =
-  "group flex h-full flex-col rounded-mu-xl border border-mu-line p-5 transition-colors hover:border-mu-ink-muted/40 hover:bg-mu-hover mu-focus @min-[60rem]:p-6";
+  "group flex h-full flex-col rounded-mu-xl border border-mu-edge p-5 transition-colors hover:bg-mu-hover mu-focus focus-visible:border-mu-focus @min-[60rem]:p-6";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
 
 const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) => {
-  const className = "inline-flex max-w-full items-center rounded-mu-md bg-mu-well px-2 py-1 font-mono mu-caption break-all text-mu-ink";
+  const className = "inline-flex max-w-full items-center rounded-mu-md bg-mu-well px-2 py-1 font-mono mu-caption break-all text-mu-text";
   if (href) {
     return (
-      <a className={`${className} hover:bg-mu-hover mu-focus`} href={href} target="_blank" rel="noreferrer">
+      <a
+        className={`${className} hover:bg-mu-hover border border-transparent mu-focus focus-visible:border-mu-focus`}
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+      >
         {children}
       </a>
     );
@@ -37,7 +42,7 @@ const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) 
   return <span className={className}>{children}</span>;
 };
 
-const SectionLabel = ({ children }: { children: React.ReactNode }) => <h2 className="mu-label text-mu-ink-muted">{children}</h2>;
+const SectionLabel = ({ children }: { children: React.ReactNode }) => <h2 className="mu-label text-mu-text-secondary">{children}</h2>;
 
 const About = () => {
   const t = useTranslate();
@@ -59,7 +64,7 @@ const About = () => {
   if (isCustomBranded) {
     buildRows.push({
       label: t("about.distribution"),
-      value: <span className="mu-caption text-mu-ink-muted">{t("about.powered-by")}</span>,
+      value: <span className="mu-caption text-mu-text-secondary">{t("about.powered-by")}</span>,
     });
   }
 
@@ -98,10 +103,10 @@ const About = () => {
                 </div>
               )}
             </div>
-            <p className="mt-6 text-balance mu-heading wrap-anywhere text-mu-ink">
+            <p className="mt-6 text-balance mu-heading wrap-anywhere text-mu-text">
               {customProfile?.description || "Simple note-taking for your everyday thoughts."}
             </p>
-            <p className="mt-6 max-w-md mu-body text-mu-ink-muted">{t("about.description")}</p>
+            <p className="mt-6 max-w-md mu-body text-mu-text-secondary">{t("about.description")}</p>
 
             {buildRows.length > 0 && (
               <section className="mt-8 border-t border-mu-line pt-5">
@@ -109,7 +114,7 @@ const About = () => {
                 <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-4">
                   {buildRows.map((row) => (
                     <div key={row.label} className="min-w-0 max-w-full">
-                      <dt className="mu-caption text-mu-ink-muted">{row.label}</dt>
+                      <dt className="mu-caption text-mu-text-secondary">{row.label}</dt>
                       <dd className="mt-2 flex min-h-6 items-center">{row.value}</dd>
                     </div>
                   ))}
@@ -125,23 +130,23 @@ const About = () => {
                 {projectLinks.map((link) => (
                   <li key={link.href} className="min-w-0">
                     <a className={PROJECT_CARD_CLASSES} href={link.href} target="_blank" rel="noreferrer">
-                      <span className="flex items-center justify-between text-mu-ink-muted">
+                      <span className="flex items-center justify-between text-mu-text-secondary">
                         <link.icon aria-hidden="true" className="mu-icon size-6 @min-[60rem]:size-7" />
-                        <ExternalLinkIcon aria-hidden="true" className="mu-icon transition-colors group-hover:text-mu-ink" />
+                        <ExternalLinkIcon aria-hidden="true" className="mu-icon transition-colors group-hover:text-mu-text" />
                       </span>
-                      <span className="mt-5 block mu-label text-mu-ink">{link.label}</span>
-                      <span className="mt-1 block mu-caption text-mu-ink-muted">{link.note}</span>
+                      <span className="mt-5 block mu-label text-mu-text">{link.label}</span>
+                      <span className="mt-1 block mu-caption text-mu-text-secondary">{link.note}</span>
                     </a>
                   </li>
                 ))}
                 {!profile.demo && (
                   <li className="min-w-0">
                     <button type="button" className={`${PROJECT_CARD_CLASSES} w-full text-start`} onClick={() => setGuideOpen(true)}>
-                      <span className="flex items-center justify-between text-mu-ink-muted">
+                      <span className="flex items-center justify-between text-mu-text-secondary">
                         <SparklesIcon aria-hidden="true" className="mu-icon size-6 @min-[60rem]:size-7" />
                       </span>
-                      <span className="mt-5 block mu-label text-mu-ink">{t("welcome.reopen")}</span>
-                      <span className="mt-1 block mu-caption text-mu-ink-muted">{t("welcome.reopen-note")}</span>
+                      <span className="mt-5 block mu-label text-mu-text">{t("welcome.reopen")}</span>
+                      <span className="mt-1 block mu-caption text-mu-text-secondary">{t("welcome.reopen-note")}</span>
                     </button>
                   </li>
                 )}

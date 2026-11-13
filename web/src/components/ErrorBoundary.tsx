@@ -47,12 +47,12 @@ export class ErrorBoundary extends Component<Props, State> {
               <h1 className="mu-heading">{translate("error.title")}</h1>
             </div>
 
-            <p className="text-mu-ink/70">{translate("error.description")}</p>
+            <p className="text-mu-text/70">{translate("error.description")}</p>
 
             {this.state.error && (
               <details className="bg-mu-well p-3 rounded-mu-md mu-body">
                 <summary className="cursor-pointer font-medium mb-2">{translate("error.details")}</summary>
-                <pre className="whitespace-pre-wrap break-words mu-caption text-mu-ink/60">{this.state.error.message}</pre>
+                <pre className="whitespace-pre-wrap break-words mu-caption text-mu-text/60">{this.state.error.message}</pre>
               </details>
             )}
 
@@ -80,12 +80,12 @@ export function ChunkLoadErrorFallback() {
           <h1 className="mu-heading">{translate("error.title")}</h1>
         </div>
 
-        <p className="text-mu-ink/70">{translate("error.description-update")}</p>
+        <p className="text-mu-text/70">{translate("error.description-update")}</p>
 
         {error?.message && (
           <details className="bg-mu-well p-3 rounded-mu-md mu-body">
             <summary className="cursor-pointer font-medium mb-2">{translate("error.details")}</summary>
-            <pre className="whitespace-pre-wrap break-words mu-caption text-mu-ink/60">{error.message}</pre>
+            <pre className="whitespace-pre-wrap break-words mu-caption text-mu-text/60">{error.message}</pre>
           </details>
         )}
 

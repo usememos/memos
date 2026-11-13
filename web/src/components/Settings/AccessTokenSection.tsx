@@ -29,7 +29,7 @@ const ApiUsageExample = () => {
 
   return (
     <div className="relative w-full min-w-0 rounded-mu-lg border border-mu-line/60 bg-mu-well/30">
-      <pre className="overflow-x-auto p-3 pe-12 font-mono mu-caption text-mu-ink/85">
+      <pre className="overflow-x-auto p-3 pe-12 font-mono mu-caption text-mu-text/85">
         <code>{example}</code>
       </pre>
       <Tooltip.Root>
@@ -63,7 +63,7 @@ const StatusDot = ({ status }: { status: TokenStatus }) => (
   <span
     aria-hidden="true"
     className={`size-1.5 shrink-0 rounded-full ${
-      status === "active" ? "bg-mu-success" : status === "expiring" ? "bg-mu-warning" : "bg-mu-ink-muted/40"
+      status === "active" ? "bg-mu-success" : status === "expiring" ? "bg-mu-warning" : "bg-mu-text-secondary/40"
     }`}
   />
 );
@@ -86,11 +86,11 @@ const HowToUseDisclosure = () => {
       <Collapsible.Panel>
         <div className="grid gap-4 pt-2 lg:grid-cols-2">
           <div className="flex min-w-0 flex-col gap-2.5">
-            <p className="mu-caption text-mu-ink-muted">{t("setting.access-token.about-description")}</p>
+            <p className="mu-caption text-mu-text-secondary">{t("setting.access-token.about-description")}</p>
             <ApiUsageExample />
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
               <a
-                className="inline-flex items-center gap-1 mu-caption text-mu-ink-muted underline-offset-4 hover:text-mu-accent hover:underline"
+                className="inline-flex items-center gap-1 mu-caption text-mu-text-secondary underline-offset-4 hover:text-mu-accent hover:underline"
                 href="https://usememos.com/docs/security/access-tokens"
                 target="_blank"
                 rel="noreferrer"
@@ -99,7 +99,7 @@ const HowToUseDisclosure = () => {
                 <ExternalLinkIcon className="mu-icon-xs" />
               </a>
               <a
-                className="inline-flex items-center gap-1 mu-caption text-mu-ink-muted underline-offset-4 hover:text-mu-accent hover:underline"
+                className="inline-flex items-center gap-1 mu-caption text-mu-text-secondary underline-offset-4 hover:text-mu-accent hover:underline"
                 href={WEB_CLIPPER_URL}
                 target="_blank"
                 rel="noreferrer"
@@ -110,7 +110,7 @@ const HowToUseDisclosure = () => {
               </a>
             </div>
           </div>
-          <ul className="m-0 flex list-none flex-col gap-1.5 p-0 mu-caption text-mu-ink-muted">
+          <ul className="m-0 flex list-none flex-col gap-1.5 p-0 mu-caption text-mu-text-secondary">
             {[
               t("setting.access-token.guideline-shown-once"),
               t("setting.access-token.guideline-one-per-app"),
@@ -118,7 +118,7 @@ const HowToUseDisclosure = () => {
               t("setting.access-token.guideline-review"),
             ].map((guideline) => (
               <li key={guideline} className="flex gap-2">
-                <span className="mt-[7px] size-1 shrink-0 rounded-full bg-mu-ink-muted/40" />
+                <span className="mt-[7px] size-1 shrink-0 rounded-full bg-mu-text-secondary/40" />
                 {guideline}
               </li>
             ))}
@@ -136,8 +136,8 @@ const EmptyState = ({ onCreate }: { onCreate: () => void }) => {
       <span className="mx-auto flex size-10 items-center justify-center rounded-mu-lg bg-mu-primary/10 text-mu-primary">
         <KeyRoundIcon className="mu-icon" />
       </span>
-      <h4 className="mt-3 mu-label text-mu-ink">{t("setting.access-token.empty-title")}</h4>
-      <p className="mx-auto mt-1 max-w-sm mu-caption text-mu-ink-muted">{t("setting.access-token.empty-description")}</p>
+      <h4 className="mt-3 mu-label text-mu-text">{t("setting.access-token.empty-title")}</h4>
+      <p className="mx-auto mt-1 max-w-sm mu-caption text-mu-text-secondary">{t("setting.access-token.empty-description")}</p>
       <div className="mx-auto mt-4 max-w-md text-left">
         <ApiUsageExample />
       </div>
@@ -146,7 +146,7 @@ const EmptyState = ({ onCreate }: { onCreate: () => void }) => {
           {t("setting.access-token.create-first")}
         </Button>
         <a
-          className="inline-flex items-center gap-1.5 mu-caption text-mu-ink-muted hover:text-mu-ink"
+          className="inline-flex items-center gap-1.5 mu-caption text-mu-text-secondary hover:text-mu-text"
           href={WEB_CLIPPER_URL}
           target="_blank"
           rel="noreferrer"
@@ -169,8 +169,8 @@ const TokenRow = ({ token, onDelete }: { token: PersonalAccessToken; onDelete: (
     <List.Item className="group flex items-center gap-3">
       <StatusDot status={status} />
       <div className="min-w-0 flex-1">
-        <div className="mu-label-sm text-mu-ink">{token.description}</div>
-        <div className="mt-0.5 mu-caption text-mu-ink-muted">
+        <div className="mu-label-sm text-mu-text">{token.description}</div>
+        <div className="mt-0.5 mu-caption text-mu-text-secondary">
           {lastUsedAt ? (
             <>
               {t("setting.access-token.last-used")} <RelativeTime date={lastUsedAt} />

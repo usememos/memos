@@ -90,15 +90,15 @@ const CORNER_CLASSES = { ss: "rounded-ss-mu-lg", se: "rounded-se-mu-lg", es: "ro
  */
 const BADGE = "inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-mu-md px-[5px]";
 const TODAY_BADGE = `${BADGE} bg-mu-primary text-mu-on-primary`;
-const OPEN_BADGE = `${BADGE} bg-mu-ink/10 text-mu-ink`;
+const OPEN_BADGE = `${BADGE} bg-mu-text/10 text-mu-text`;
 /** Negative margin keeps the badge where it was; only the halo grows outward. */
-const OPEN_TODAY_HALO = "-m-[3px] inline-flex rounded-[9px] bg-mu-ink/10 p-[3px]";
+const OPEN_TODAY_HALO = "-m-[3px] inline-flex rounded-[9px] bg-mu-text/10 p-[3px]";
 
 const getNumeralClass = (day: CalendarDayCellData, count: number): string => {
   if (day.isToday) return TODAY_BADGE;
   if (day.isSelected) return OPEN_BADGE;
-  if (!day.isCurrentMonth) return "text-mu-ink-muted/40";
-  return count > 0 ? "text-mu-ink" : "text-mu-ink-muted/70";
+  if (!day.isCurrentMonth) return "text-mu-text-secondary/40";
+  return count > 0 ? "text-mu-text" : "text-mu-text-secondary/70";
 };
 
 const NO_IMAGES: CalendarDaySummary["images"] = [];
@@ -145,7 +145,7 @@ const DayMark = ({
     );
   }
   return (
-    <span className="flex flex-col gap-[3px] text-mu-ink-muted/45 transition-colors group-hover/day:text-mu-ink-muted">
+    <span className="flex flex-col gap-[3px] text-mu-text-secondary/45 transition-colors group-hover/day:text-mu-text-secondary">
       <span className="h-0.5 w-4 rounded-full bg-current" />
       <span className="h-0.5 w-2.5 rounded-full bg-current" />
     </span>
@@ -188,12 +188,13 @@ export const CalendarDayCell = memo(
         aria-label={getTooltipText(count, day.date, t, timeBasis)}
         aria-current={day.isSelected ? "page" : undefined}
         className={cn(
-          "group/day relative flex min-h-14 min-w-0 flex-col overflow-hidden border-mu-line/70 px-1.5 py-2 text-start no-underline transition-colors sm:px-3 sm:min-h-20 md:min-h-[5.5rem]",
+          "group/day relative flex min-h-14 min-w-0 flex-col overflow-hidden px-1.5 py-2 text-start no-underline transition-colors sm:px-3 sm:min-h-20 md:min-h-[5.5rem]",
           layout.slim && "sm:px-2",
-          !isLastColumn && "border-e",
-          !isLastRow && "border-b",
           corner && CORNER_CLASSES[corner],
-          "mu-focus",
+          "border border-mu-line/70 border-s-transparent border-t-transparent mu-focus focus-visible:border-mu-focus",
+          // After the all-sides color: tailwind-merge drops a per-side color that comes before it.
+          isLastColumn && "border-e-transparent",
+          isLastRow && "border-b-transparent",
           // The open day keeps its heat tint; its numeral badge is the selection mark.
           day.isCurrentMonth ? DAY_CELL_FILLS[level] : "bg-mu-well/25 hover:bg-mu-hover",
         )}
@@ -225,8 +226,8 @@ export const CalendarDayCell = memo(
               <span
                 className={cn(
                   "overflow-hidden whitespace-pre-line break-words mu-caption [display:-webkit-box] [-webkit-box-orient:vertical]",
-                  "text-mu-ink-muted transition-colors group-hover/day:text-mu-ink",
-                  day.isSelected && "text-mu-ink",
+                  "text-mu-text-secondary transition-colors group-hover/day:text-mu-text",
+                  day.isSelected && "text-mu-text",
                   excerpt.isCode && "font-mono mu-caption",
                 )}
                 style={{ WebkitLineClamp: textLines }}
