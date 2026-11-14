@@ -346,6 +346,7 @@
     "clear-filters": "Hapus filter",
     "pinned": "Disematkan",
     "click-to-show-sensitive-content": "Klik untuk menampilkan konten NSFW",
+    "hide-sensitive-content": "Sembunyikan konten NSFW",
     "comment": {
       "self": "Komentar",
       "write-a-comment": "Tulis komentar",

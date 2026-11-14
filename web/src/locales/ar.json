@@ -346,6 +346,7 @@
     "clear-filters": "مسح عوامل التصفية",
     "pinned": "مثبّت",
     "click-to-show-sensitive-content": "انقر لإظهار المحتوى الحساس",
+    "hide-sensitive-content": "إخفاء المحتوى الحساس",
     "comment": {
       "self": "التعليقات",
       "write-a-comment": "اكتب تعليقاً",

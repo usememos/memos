@@ -459,6 +459,7 @@
     "moved": "Memo köçürüldü",
     "back-to": "{{source}} bölməsinə qayıt",
     "click-to-show-sensitive-content": "Həssas məzmunu göstərmək üçün klikləyin",
+    "hide-sensitive-content": "Həssas məzmunu gizlət",
     "comment": {
       "self": "Şərhlər",
       "write-a-comment": "Şərh yazın",

@@ -351,6 +351,7 @@
     "clear-filters": "Esborra els filtres",
     "pinned": "Fixat",
     "click-to-show-sensitive-content": "Fes clic per mostrar contingut sensible",
+    "hide-sensitive-content": "Amaga el contingut sensible",
     "comment": {
       "self": "Comentaris",
       "write-a-comment": "Escriu un comentari",

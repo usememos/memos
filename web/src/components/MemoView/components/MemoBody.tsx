@@ -20,10 +20,14 @@ import { CreatorDisplay } from "./MemoHeader";
 const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center">
-      <Button type="button" variant="neutral" size="sm" onClick={onClick} icon={<EyeIcon />}>
-        {t("memo.click-to-show-sensitive-content")}
-      </Button>
+    // The layer covers the whole body so blurred content stays unclickable, but the button
+    // centers in its first 12rem: a long memo shows it without scrolling down to find it.
+    <div className="absolute inset-0 z-10">
+      <div className="flex h-full max-h-48 items-center justify-center">
+        <Button type="button" variant="neutral" size="sm" onClick={onClick} icon={<EyeIcon />}>
+          {t("memo.click-to-show-sensitive-content")}
+        </Button>
+      </div>
     </div>
   );
 };

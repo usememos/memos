@@ -351,6 +351,7 @@
     "clear-filters": "Szűrők törlése",
     "pinned": "Rögzítve",
     "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
+    "hide-sensitive-content": "Kényes tartalom elrejtése",
     "comment": {
       "self": "Hozzászólások",
       "write-a-comment": "Írj hozzászólást",

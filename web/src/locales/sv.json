@@ -351,6 +351,7 @@
     "clear-filters": "Rensa filter",
     "pinned": "Fäst",
     "click-to-show-sensitive-content": "Klicka för att visa känsligt innehåll (NSFW)",
+    "hide-sensitive-content": "Dölj känsligt innehåll (NSFW)",
     "comment": {
       "self": "Kommentarer",
       "write-a-comment": "Skriv en kommentar",
