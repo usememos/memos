@@ -437,7 +437,9 @@
       "uncheck-all": "Desmarcar todas as tarefas",
       "updated": "Tarefas atualizadas"
     },
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "add-reaction": "Adicionar reação",
+    "remove-reaction": "Remover reação"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -894,16 +896,6 @@
       "disallow-password-auth-description": "Exigir que os usuários façam login por meio de um provedor de identidade em vez de login com senha.",
       "disallow-user-registration-description": "Impedir que novos usuários criem contas na página de cadastro.",
       "week-start-day-description": "Controla o primeiro dia exibido nas visualizações em estilo de calendário."
-    },
-    "memo": {
-      "reactions": "Reações",
-      "label": "Memo",
-      "reactions-required": "A lista de reações não deve estar vazia",
-      "add-reaction": "Adicionar reação",
-      "configured-reactions": "Reações configuradas",
-      "reaction-placeholder": "Ex.: 👍",
-      "reactions-description": "Definir as opções de reação que os usuários podem aplicar aos memorandos.",
-      "remove-reaction": "Remover reação"
     },
     "webhook": {
       "create-dialog": {

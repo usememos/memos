@@ -442,7 +442,9 @@
     "layout-list-description": "Une seule colonne de largeur lisible",
     "on-this-memo": "Sur ce mémo",
     "parent-memo": "Mémo parent",
-    "view-options": "Options d'affichage"
+    "view-options": "Options d'affichage",
+    "add-reaction": "Ajouter une réaction",
+    "remove-reaction": "Supprimer la réaction"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -573,16 +575,6 @@
       "username-password-required": "Le nom d'utilisateur et le mot de passe ne peuvent pas être vides",
       "create-success": "Utilisateur créé",
       "update-success": "Utilisateur mis à jour"
-    },
-    "memo": {
-      "label": "Note",
-      "reactions": "Réactions",
-      "reactions-required": "La liste des réactions ne doit pas être vide",
-      "add-reaction": "Ajouter une réaction",
-      "configured-reactions": "Réactions configurées",
-      "reaction-placeholder": "par ex. 👍",
-      "reactions-description": "Définissez les options de réaction que les utilisateurs peuvent appliquer aux mémos.",
-      "remove-reaction": "Supprimer la réaction"
     },
     "my-account": {
       "label": "Mon compte"

@@ -480,7 +480,9 @@
     "layout-list-description": "Једна колона ширине читања",
     "on-this-memo": "На овој поруци",
     "parent-memo": "Надређена порука",
-    "view-options": "Опције приказа"
+    "view-options": "Опције приказа",
+    "add-reaction": "Додајте реакцију",
+    "remove-reaction": "Уклоните реакцију"
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",
@@ -654,16 +656,6 @@
       "username-password-required": "Корисничко име и лозинка не могу бити празни",
       "create-success": "Корисник је направљен",
       "update-success": "Корисник је ажуриран"
-    },
-    "memo": {
-      "add-reaction": "Додајте реакцију",
-      "configured-reactions": "Конфигурисане реакције",
-      "label": "Мемо",
-      "reaction-placeholder": "нпр. 👍",
-      "reactions-description": "Дефинишите опције реакције које корисници могу применити на белешке.",
-      "remove-reaction": "Уклоните реакцију",
-      "reactions": "Reactионс",
-      "reactions-required": "Листа Reactионс не сме бити празна"
     },
     "my-account": {
       "label": "Мој налог"

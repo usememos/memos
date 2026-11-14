@@ -543,7 +543,9 @@
       "public-description": "Anyone, even signed out",
       "space": "Members",
       "space-description": "Everyone in {{space}}"
-    }
+    },
+    "add-reaction": "Add reaction",
+    "remove-reaction": "Remove reaction"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -731,16 +733,6 @@
       "username-password-required": "Username and password cannot be empty",
       "create-success": "User created",
       "update-success": "User updated"
-    },
-    "memo": {
-      "add-reaction": "Add reaction",
-      "configured-reactions": "Configured reactions",
-      "label": "Memo",
-      "reaction-placeholder": "e.g. 👍",
-      "reactions-description": "Define the reaction options users can apply to memos.",
-      "remove-reaction": "Remove reaction",
-      "reactions": "Reactions",
-      "reactions-required": "Reactions list must not be empty"
     },
     "memo-export": {
       "description": "Move your memos and attachments between Memos instances with a single ZIP file.",

@@ -479,7 +479,9 @@
     "layout-list-description": "Üks lugemislaiusega veerg",
     "on-this-memo": "Sellel memo peal",
     "parent-memo": "Ülemmemo",
-    "view-options": "Vaate valikud"
+    "view-options": "Vaate valikud",
+    "add-reaction": "Lisa reaktsioon",
+    "remove-reaction": "Eemaldage reaktsioon"
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",
@@ -653,16 +655,6 @@
       "username-password-required": "Kasutajanimi ja parool ei tohi olla tühjad",
       "create-success": "Kasutaja loodud",
       "update-success": "Kasutaja uuendatud"
-    },
-    "memo": {
-      "add-reaction": "Lisa reaktsioon",
-      "configured-reactions": "Konfigureeritud reaktsioonid",
-      "label": "Memo",
-      "reaction-placeholder": "nt. 👍",
-      "reactions-description": "Määratlege reaktsioonivalikud, mida kasutajad saavad memodele rakendada.",
-      "remove-reaction": "Eemaldage reaktsioon",
-      "reactions": "Reactions",
-      "reactions-required": "Reactionsi loend ei tohi olla tühi"
     },
     "my-account": {
       "label": "Minu konto"

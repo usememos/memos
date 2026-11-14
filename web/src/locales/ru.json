@@ -443,7 +443,9 @@
     "back-to": "Назад к {{source}}",
     "connections": "Подключения",
     "on-this-memo": "К этой заметке",
-    "parent-memo": "Родительская заметка"
+    "parent-memo": "Родительская заметка",
+    "add-reaction": "Добавить реакцию",
+    "remove-reaction": "Удалить реакцию"
   },
   "message": {
     "archived-successfully": "Перемещено в архив",
@@ -574,16 +576,6 @@
       "username-password-required": "Имя пользователя и пароль не могут быть пустыми",
       "create-success": "Пользователь создан",
       "update-success": "Пользователь обновлён"
-    },
-    "memo": {
-      "label": "Заметки",
-      "reactions": "Реакции",
-      "reactions-required": "Список реакций не должен быть пустым.",
-      "add-reaction": "Добавить реакцию",
-      "configured-reactions": "Настроенные реакции",
-      "reaction-placeholder": "например 👍",
-      "reactions-description": "Определите параметры реакции, которые пользователи могут применять к заметкам.",
-      "remove-reaction": "Удалить реакцию"
     },
     "my-account": {
       "label": "Мой аккаунт"

@@ -118,10 +118,6 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		var setting *storepb.InstanceGeneralSetting
 		setting, err = s.Store.GetInstanceGeneralSetting(ctx)
 		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: setting}}
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		var setting *storepb.InstanceMemoRelatedSetting
-		setting, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
-		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: setting}}
 	case storepb.InstanceSettingKey_STORAGE:
 		var setting *storepb.InstanceStorageSetting
 		setting, err = s.Store.GetInstanceStorageSetting(ctx)

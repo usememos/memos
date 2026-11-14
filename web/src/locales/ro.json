@@ -480,7 +480,9 @@
     "layout-list-description": "O singură coloană cu lățime de citire",
     "on-this-memo": "Pe această notă",
     "parent-memo": "Notă părinte",
-    "view-options": "Opțiuni de vizualizare"
+    "view-options": "Opțiuni de vizualizare",
+    "add-reaction": "Adăugați reacția",
+    "remove-reaction": "Îndepărtați reacția"
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",
@@ -654,16 +656,6 @@
       "username-password-required": "Numele de utilizator și parola nu pot fi goale",
       "create-success": "Utilizator creat",
       "update-success": "Utilizator actualizat"
-    },
-    "memo": {
-      "add-reaction": "Adăugați reacția",
-      "configured-reactions": "Reacții configurate",
-      "label": "Notă",
-      "reaction-placeholder": "de ex. 👍",
-      "reactions-description": "Definiți opțiunile de reacție pe care utilizatorii le pot aplica la memorii.",
-      "remove-reaction": "Îndepărtați reacția",
-      "reactions": "Reactions",
-      "reactions-required": "Lista Reactions nu trebuie să fie goală"
     },
     "my-account": {
       "label": "Contul meu"

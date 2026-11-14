@@ -436,7 +436,9 @@
       "uncheck-all": "Bỏ chọn tất cả nhiệm vụ",
       "updated": "Nhiệm vụ đã được cập nhật"
     },
-    "view-options": "Tùy chọn xem"
+    "view-options": "Tùy chọn xem",
+    "add-reaction": "Thêm biểu tượng cảm xúc",
+    "remove-reaction": "Xóa phản ứng"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "Yêu cầu người dùng đăng nhập thông qua nhà cung cấp danh tính thay vì đăng nhập bằng mật khẩu.",
       "disallow-user-registration-description": "Ngăn người dùng mới tạo tài khoản từ trang đăng ký.",
       "week-start-day-description": "Kiểm soát ngày đầu tiên được hiển thị trong chế độ xem kiểu lịch."
-    },
-    "memo": {
-      "reactions": "Phản ứng",
-      "label": "Ghi chú",
-      "reactions-required": "Danh sách phản ứng không được trống",
-      "add-reaction": "Thêm biểu tượng cảm xúc",
-      "configured-reactions": "Biểu tượng cảm xúc đã cấu hình",
-      "reaction-placeholder": "ví dụ: 👍",
-      "reactions-description": "Xác định các tùy chọn biểu tượng cảm xúc mà người dùng có thể áp dụng cho ghi chú.",
-      "remove-reaction": "Xóa phản ứng"
     },
     "webhook": {
       "create-dialog": {

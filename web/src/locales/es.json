@@ -442,7 +442,9 @@
     "layout-list-description": "Una sola columna de ancho de lectura",
     "on-this-memo": "En este memo",
     "parent-memo": "Memo principal",
-    "view-options": "Opciones de vista"
+    "view-options": "Opciones de vista",
+    "add-reaction": "Añadir reacción",
+    "remove-reaction": "Eliminar reacción"
   },
   "message": {
     "archived-successfully": "Archivado correctamente",
@@ -573,16 +575,6 @@
       "username-password-required": "El nombre de usuario y la contraseña no pueden estar vacíos",
       "create-success": "Usuario creado",
       "update-success": "Usuario actualizado"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reacciones",
-      "reactions-required": "La lista de reacciones no debe estar vacía.",
-      "add-reaction": "Añadir reacción",
-      "configured-reactions": "Reacciones configuradas",
-      "reaction-placeholder": "p.ej. 👍",
-      "reactions-description": "Defina las opciones de reacción que los usuarios pueden aplicar a las notas.",
-      "remove-reaction": "Eliminar reacción"
     },
     "my-account": {
       "label": "Mi cuenta"

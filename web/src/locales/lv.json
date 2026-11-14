@@ -480,7 +480,9 @@
     "layout-list-description": "Viena lasīšanas platuma kolonna",
     "on-this-memo": "Šajā piezīmē",
     "parent-memo": "Galvenā piezīme",
-    "view-options": "Skata opcijas"
+    "view-options": "Skata opcijas",
+    "add-reaction": "Pievienojiet reakciju",
+    "remove-reaction": "Noņemiet reakciju"
   },
   "message": {
     "archived-successfully": "Veiksmīgi arhivēts",
@@ -654,16 +656,6 @@
       "username-password-required": "Lietotājvārds un parole nedrīkst būt tukši",
       "create-success": "Lietotājs izveidots",
       "update-success": "Lietotājs atjaunināts"
-    },
-    "memo": {
-      "add-reaction": "Pievienojiet reakciju",
-      "configured-reactions": "Konfigurētas reakcijas",
-      "label": "Piezīme",
-      "reaction-placeholder": "piem. 👍",
-      "reactions-description": "Definējiet reakcijas opcijas, kuras lietotāji var lietot piezīmēm.",
-      "remove-reaction": "Noņemiet reakciju",
-      "reactions": "Reactions",
-      "reactions-required": "Reactions saraksts nedrīkst būt tukšs"
     },
     "my-account": {
       "label": "Mans konts"

@@ -436,7 +436,9 @@
       "uncheck-all": "انتخاب همه وظایف را بردارید",
       "updated": "وظایف به‌روزرسانی شدند"
     },
-    "view-options": "گزینه‌های مشاهده"
+    "view-options": "گزینه‌های مشاهده",
+    "add-reaction": "افزودن واکنش",
+    "remove-reaction": "حذف واکنش"
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "کاربران را ملزم کنید که به جای ورود با رمز عبور، از طریق یک ارائه‌دهنده هویت وارد سیستم شوند.",
       "disallow-user-registration-description": "از ایجاد حساب کاربری توسط کاربران جدید از صفحه ثبت‌نام جلوگیری کنید.",
       "week-start-day-description": "اولین روزی که در نماهای تقویم مانند نشان داده می‌شود را کنترل می‌کند."
-    },
-    "memo": {
-      "reactions": "واکنش‌ها",
-      "label": "یادداشت",
-      "reactions-required": "لیست واکنش ها نباید خالی باشد",
-      "add-reaction": "افزودن واکنش",
-      "configured-reactions": "واکنش‌های پیکربندی شده",
-      "reaction-placeholder": "مثلاً 👍",
-      "reactions-description": "گزینه‌های واکنشی را که کاربران می‌توانند برای یادداشت‌ها اعمال کنند، تعریف کنید.",
-      "remove-reaction": "حذف واکنش"
     },
     "webhook": {
       "create-dialog": {

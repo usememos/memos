@@ -25,6 +25,14 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 - `Memo.unassigned`: use an unset `Memo.space`. Removed in a later release.
 ```
 
+## Unreleased
+
+### Breaking
+
+- Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
+  Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
+  `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.
+
 ## 26.10.0
 
 ### Breaking

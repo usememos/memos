@@ -443,7 +443,9 @@
     "layout-list-description": "En sam stolpec za branje",
     "on-this-memo": "V tem zapisku",
     "parent-memo": "Nadrejeni zapisek",
-    "view-options": "Možnosti pogleda"
+    "view-options": "Možnosti pogleda",
+    "add-reaction": "Dodajte reakcijo",
+    "remove-reaction": "Odstrani reakcijo"
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",
@@ -574,16 +576,6 @@
       "username-password-required": "Uporabniško ime in geslo ne smeta biti prazna",
       "create-success": "Uporabnik ustvarjen",
       "update-success": "Uporabnik posodobljen"
-    },
-    "memo": {
-      "label": "Beležka",
-      "reactions": "Odzivi",
-      "reactions-required": "Seznam reakcij ne sme biti prazen",
-      "add-reaction": "Dodajte reakcijo",
-      "configured-reactions": "Konfigurirane reakcije",
-      "reaction-placeholder": "npr. 👍",
-      "reactions-description": "Določite možnosti odziva, ki jih lahko uporabniki uporabijo za beležke.",
-      "remove-reaction": "Odstrani reakcijo"
     },
     "my-account": {
       "label": "Moj račun"

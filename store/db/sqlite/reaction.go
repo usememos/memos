@@ -42,6 +42,7 @@ func upsertSQLiteReaction(ctx context.Context, querier sqliteReactionUpsertQueri
 		SELECT ?, memo.id, ?
 		FROM memo
 		WHERE memo.id = ?
+		ON CONFLICT (creator_id, memo_id, reaction_type) DO UPDATE SET reaction_type = excluded.reaction_type
 		RETURNING id, created_ts
 	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID).Scan(
 		&upsert.ID,

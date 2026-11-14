@@ -441,7 +441,9 @@
     "layout-list-description": "En enda kolumn med läsbredd",
     "on-this-memo": "På detta PM",
     "parent-memo": "Överordnat PM",
-    "view-options": "Visningsalternativ"
+    "view-options": "Visningsalternativ",
+    "add-reaction": "Lägg till reaktion",
+    "remove-reaction": "Ta bort reaktionen"
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",
@@ -572,16 +574,6 @@
       "username-password-required": "Användarnamn och lösenord får inte vara tomma",
       "create-success": "Användaren har skapats",
       "update-success": "Användaren har uppdaterats"
-    },
-    "memo": {
-      "label": "Anteckning",
-      "reactions": "Reaktioner",
-      "reactions-required": "Reaktionslistan får inte vara tom",
-      "add-reaction": "Lägg till reaktion",
-      "configured-reactions": "Konfigurerade reaktioner",
-      "reaction-placeholder": "till exempel 👍",
-      "reactions-description": "Definiera reaktionsalternativen som användare kan tillämpa på anteckningar.",
-      "remove-reaction": "Ta bort reaktionen"
     },
     "my-account": {
       "label": "Mitt konto"

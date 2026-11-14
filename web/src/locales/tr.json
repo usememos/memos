@@ -472,7 +472,9 @@
       "check-all": "Tüm görevleri kontrol et",
       "uncheck-all": "Tüm görevlerin işaretini kaldırın",
       "updated": "Görevler güncellendi"
-    }
+    },
+    "add-reaction": "Tepki ekle",
+    "remove-reaction": "Reaksiyonu kaldır"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
@@ -617,16 +619,6 @@
       "username-password-required": "Kullanıcı adı ve parola boş olamaz",
       "create-success": "Kullanıcı oluşturuldu",
       "update-success": "Kullanıcı güncellendi"
-    },
-    "memo": {
-      "label": "Not",
-      "reactions": "Tepkiler",
-      "reactions-required": "Tepki listesi boş olamaz",
-      "add-reaction": "Tepki ekle",
-      "configured-reactions": "Yapılandırılmış reaksiyonlar",
-      "reaction-placeholder": "örneğin 👍",
-      "reactions-description": "Kullanıcıların notlara uygulayabileceği reaksiyon seçeneklerini tanımlayın.",
-      "remove-reaction": "Reaksiyonu kaldır"
     },
     "memo-export": {
       "description": "Notlarınızı ve eklerinizi tek bir ZIP dosyasıyla Memos sunucuları arasında taşıyın.",

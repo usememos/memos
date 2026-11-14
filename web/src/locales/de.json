@@ -441,7 +441,9 @@
     "layout-list-description": "Eine einzelne Spalte in Lesebreite",
     "on-this-memo": "Zu diesem Memo",
     "parent-memo": "Übergeordnetes Memo",
-    "view-options": "Ansichtsoptionen"
+    "view-options": "Ansichtsoptionen",
+    "add-reaction": "Reaktion hinzufügen",
+    "remove-reaction": "Reaktion entfernen"
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",
@@ -572,16 +574,6 @@
       "username-password-required": "Benutzername und Passwort dürfen nicht leer sein",
       "create-success": "Benutzer erstellt",
       "update-success": "Benutzer aktualisiert"
-    },
-    "memo": {
-      "label": "Notiz",
-      "reactions": "Reaktionen",
-      "reactions-required": "Die Reaktionsliste darf nicht leer sein",
-      "add-reaction": "Reaktion hinzufügen",
-      "configured-reactions": "Konfigurierte Reaktionen",
-      "reaction-placeholder": "z.B. 👍",
-      "reactions-description": "Definieren Sie die Reaktionsoptionen, die Benutzer auf Memos anwenden können.",
-      "remove-reaction": "Reaktion entfernen"
     },
     "my-account": {
       "label": "Mein Konto"

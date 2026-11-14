@@ -479,7 +479,9 @@
     "layout-list-description": "Μία στήλη πλάτους ανάγνωσης",
     "on-this-memo": "Σε αυτό το σημείωμα",
     "parent-memo": "Γονικό σημείωμα",
-    "view-options": "Επιλογές προβολής"
+    "view-options": "Επιλογές προβολής",
+    "add-reaction": "Προσθέστε την αντίδραση",
+    "remove-reaction": "Αφαιρέστε την αντίδραση"
   },
   "message": {
     "archived-successfully": "Αρχειοθετήθηκε με επιτυχία",
@@ -653,16 +655,6 @@
       "username-password-required": "Το όνομα χρήστη και ο κωδικός πρόσβασης δεν μπορούν να είναι κενά",
       "create-success": "Ο χρήστης δημιουργήθηκε",
       "update-success": "Ο χρήστης ενημερώθηκε"
-    },
-    "memo": {
-      "add-reaction": "Προσθέστε την αντίδραση",
-      "configured-reactions": "Διαμορφωμένες αντιδράσεις",
-      "label": "Σημείωμα",
-      "reaction-placeholder": "π.χ. 👍",
-      "reactions-description": "Καθορίστε τις επιλογές αντίδρασης που μπορούν να εφαρμόσουν οι χρήστες σε σημειώσεις.",
-      "remove-reaction": "Αφαιρέστε την αντίδραση",
-      "reactions": "Reactions",
-      "reactions-required": "Η λίστα Reactions δεν πρέπει να είναι κενή"
     },
     "my-account": {
       "label": "Ο λογαριασμός μου"

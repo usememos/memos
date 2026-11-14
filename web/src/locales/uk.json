@@ -443,7 +443,9 @@
     "layout-list-description": "Один стовпець ширини для читання",
     "on-this-memo": "У цій нотатці",
     "parent-memo": "Батьківська нотатка",
-    "view-options": "Параметри перегляду"
+    "view-options": "Параметри перегляду",
+    "add-reaction": "Додайте реакцію",
+    "remove-reaction": "Видалити реакцію"
   },
   "message": {
     "archived-successfully": "Архівовано успішно",
@@ -574,16 +576,6 @@
       "username-password-required": "Ім’я користувача та пароль не можуть бути порожніми",
       "create-success": "Користувача створено",
       "update-success": "Користувача оновлено"
-    },
-    "memo": {
-      "label": "Нотатка",
-      "reactions": "Реакції",
-      "reactions-required": "Список реакцій не повинен бути порожнім",
-      "add-reaction": "Додайте реакцію",
-      "configured-reactions": "Налаштовані реакції",
-      "reaction-placeholder": "напр. 👍",
-      "reactions-description": "Визначте варіанти реакції, які користувачі можуть застосувати до нагадувань.",
-      "remove-reaction": "Видалити реакцію"
     },
     "my-account": {
       "label": "Мій обліковий запис"

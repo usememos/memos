@@ -512,7 +512,9 @@
     "back-to": "חזרה אל {{source}}",
     "connections": "חיבורים",
     "on-this-memo": "על תזכיר זה",
-    "parent-memo": "תזכיר אב"
+    "parent-memo": "תזכיר אב",
+    "add-reaction": "הוסף תגובה",
+    "remove-reaction": "הסר תגובה"
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",
@@ -686,16 +688,6 @@
       "username-password-required": "שם המשתמש והסיסמה אינם יכולים להיות ריקים",
       "create-success": "המשתמש נוצר",
       "update-success": "המשתמש עודכן"
-    },
-    "memo": {
-      "add-reaction": "הוסף תגובה",
-      "configured-reactions": "תגובות שהוגדרו",
-      "label": "פתק",
-      "reaction-placeholder": "לדוגמה 👍",
-      "reactions-description": "הגדירו את אפשרויות התגובה שמשתמשים יכולים להחיל על פתקים.",
-      "remove-reaction": "הסר תגובה",
-      "reactions": "תגובות",
-      "reactions-required": "רשימת התגובות לא יכולה להיות ריקה"
     },
     "my-account": {
       "label": "החשבון שלי"

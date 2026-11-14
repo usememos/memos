@@ -197,6 +197,7 @@ func TestLoadChecksSchema(t *testing.T) {
 		"basic":              {`{"instanceSettings":[{"name":"instance/settings/BASIC"}]}`, "BASIC holds the instance secret"},
 		"tags":               {`{"instanceSettings":[{"name":"instance/settings/TAGS","tagsSetting":{}}]}`, "TAGS is kept only for compatibility"},
 		"unknown key":        {`{"instanceSettings":[{"name":"instance/settings/THEME"}]}`, "unknown instance setting"},
+		"retired reactions":  {`{"instanceSettings":[{"name":"instance/settings/MEMO_RELATED"}]}`, "unknown instance setting"},
 		"state record":       {`{"instanceSettings":[{"name":"instance/settings/CONFIGURATION_STATE"}]}`, "is the configuration state record"},
 		"missing value":      {`{"instanceSettings":[{"name":"instance/settings/GENERAL"}]}`, "generalSetting is required for GENERAL"},
 		"mismatched value":   {`{"instanceSettings":[{"name":"instance/settings/GENERAL","accessSetting":{}}]}`, "accessSetting does not match GENERAL; use generalSetting"},

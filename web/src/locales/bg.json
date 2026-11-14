@@ -479,7 +479,9 @@
     "layout-list-description": "Една колона с ширина за четене",
     "on-this-memo": "В тази бележка",
     "parent-memo": "Родителска бележка",
-    "view-options": "Опции за преглед"
+    "view-options": "Опции за преглед",
+    "add-reaction": "Добавете реакция",
+    "remove-reaction": "Премахнете реакцията"
   },
   "message": {
     "archived-successfully": "Архивиран успешно",
@@ -653,16 +655,6 @@
       "username-password-required": "Потребителското име и паролата не могат да бъдат празни",
       "create-success": "Потребителят е създаден",
       "update-success": "Потребителят е обновен"
-    },
-    "memo": {
-      "add-reaction": "Добавете реакция",
-      "configured-reactions": "Конфигурирани реакции",
-      "label": "Бележка",
-      "reaction-placeholder": "напр. 👍",
-      "reactions-description": "Определете опциите за реакция, които потребителите могат да прилагат към бележките.",
-      "remove-reaction": "Премахнете реакцията",
-      "reactions": "Reactions",
-      "reactions-required": "Списъкът Reactions не трябва да е празен"
     },
     "my-account": {
       "label": "Моят акаунт"

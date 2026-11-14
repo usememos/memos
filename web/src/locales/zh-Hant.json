@@ -520,7 +520,9 @@
     "back-to": "返回 {{source}}",
     "connections": "關聯",
     "on-this-memo": "在此備忘錄中",
-    "parent-memo": "原始備忘錄"
+    "parent-memo": "原始備忘錄",
+    "add-reaction": "新增表情回應",
+    "remove-reaction": "移除表情回應"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -694,16 +696,6 @@
       "username-password-required": "使用者名稱和密碼不可為空白",
       "create-success": "已建立使用者",
       "update-success": "已更新使用者"
-    },
-    "memo": {
-      "add-reaction": "新增表情回應",
-      "configured-reactions": "已設定的表情回應",
-      "label": "備忘錄",
-      "reaction-placeholder": "例如 👍",
-      "reactions-description": "定義使用者可以對備忘錄套用的表情回應選項。",
-      "remove-reaction": "移除表情回應",
-      "reactions": "表情回應",
-      "reactions-required": "反應列表不能為空"
     },
     "my-account": {
       "label": "我的帳號"

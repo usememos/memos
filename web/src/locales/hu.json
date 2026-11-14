@@ -441,7 +441,9 @@
     "layout-list-description": "Egyetlen olvasási szélességű oszlop",
     "on-this-memo": "Ezen a feljegyzésen",
     "parent-memo": "Szülő feljegyzés",
-    "view-options": "Megtekintési beállítások"
+    "view-options": "Megtekintési beállítások",
+    "add-reaction": "Adja hozzá a reakciót",
+    "remove-reaction": "Távolítsa el a reakciót"
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",
@@ -572,16 +574,6 @@
       "username-password-required": "A felhasználónév és a jelszó nem lehet üres",
       "create-success": "Felhasználó létrehozva",
       "update-success": "Felhasználó frissítve"
-    },
-    "memo": {
-      "label": "Jegyzet",
-      "reactions": "Reakciók",
-      "reactions-required": "A reakciólista nem lehet üres",
-      "add-reaction": "Adja hozzá a reakciót",
-      "configured-reactions": "Konfigurált reakciók",
-      "reaction-placeholder": "például 👍",
-      "reactions-description": "Határozza meg azokat a reakciólehetőségeket, amelyeket a felhasználók a jegyzetekre alkalmazhatnak.",
-      "remove-reaction": "Távolítsa el a reakciót"
     },
     "my-account": {
       "label": "Fiókom"

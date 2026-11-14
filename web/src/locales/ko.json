@@ -436,7 +436,9 @@
       "uncheck-all": "모든 작업 선택 해제",
       "updated": "작업 업데이트됨"
     },
-    "view-options": "보기 옵션"
+    "view-options": "보기 옵션",
+    "add-reaction": "반응 추가",
+    "remove-reaction": "반응 제거"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "사용자가 암호 로그인 대신 ID 공급자를 통해 로그인하도록 요구합니다.",
       "disallow-user-registration-description": "신규 사용자가 가입 페이지에서 계정을 만들지 못하도록 합니다.",
       "week-start-day-description": "캘린더 스타일 보기에서 표시되는 첫 번째 날짜를 제어합니다."
-    },
-    "memo": {
-      "reactions": "반응",
-      "label": "메모",
-      "reactions-required": "반응 목록은 비워둘 수 없습니다.",
-      "add-reaction": "반응 추가",
-      "configured-reactions": "구성된 반응",
-      "reaction-placeholder": "예: 👍",
-      "reactions-description": "사용자가 메모에 적용할 수 있는 반응 옵션을 정의합니다.",
-      "remove-reaction": "반응 제거"
     },
     "webhook": {
       "create-dialog": {

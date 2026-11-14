@@ -443,7 +443,9 @@
     "layout-list-description": "Jeden sloupec na šířku pro čtení",
     "on-this-memo": "V této poznámkě",
     "parent-memo": "Nadřazená poznámka",
-    "view-options": "Možnosti zobrazení"
+    "view-options": "Možnosti zobrazení",
+    "add-reaction": "Přidejte reakci",
+    "remove-reaction": "Odstraňte reakci"
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",
@@ -574,16 +576,6 @@
       "username-password-required": "Uživatelské jméno a heslo nesmí být prázdné",
       "create-success": "Uživatel byl vytvořen",
       "update-success": "Uživatel byl aktualizován"
-    },
-    "memo": {
-      "label": "Poznámky",
-      "reactions": "Reakce",
-      "reactions-required": "Seznam reakcí nesmí být prázdný",
-      "add-reaction": "Přidejte reakci",
-      "configured-reactions": "Nastavené reakce",
-      "reaction-placeholder": "např. 👍",
-      "reactions-description": "Definujte možnosti reakce, které mohou uživatelé použít na poznámky.",
-      "remove-reaction": "Odstraňte reakci"
     },
     "my-account": {
       "label": "Můj účet"

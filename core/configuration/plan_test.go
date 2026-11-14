@@ -243,7 +243,7 @@ func TestPlanUndeclaredManagedResources(t *testing.T) {
 		managed("identity-providers/vanished", "IdentityProvider"),
 		locked,
 		managed("identity-providers/forgotten", "IdentityProvider"),
-		managed("instance/settings/MEMO_RELATED", "InstanceSetting"),
+		managed("instance/settings/NOTIFICATION", "InstanceSetting"),
 		managed("users/old", "User"),
 		managed("users/kept", "User"),
 	}}
@@ -254,7 +254,7 @@ func TestPlanUndeclaredManagedResources(t *testing.T) {
 		{"resource":"identity-providers/destroyed","destroy":true},
 		{"resource":"identity-providers/vanished","destroy":true},
 		{"resource":"identity-providers/locked","destroy":true},
-		{"resource":"instance/settings/MEMO_RELATED","destroy":true},
+		{"resource":"instance/settings/NOTIFICATION","destroy":true},
 		{"resource":"users/old","destroy":true},
 		{"resource":"users/kept"},
 		{"resource":"users/never-managed","destroy":true}
@@ -265,7 +265,7 @@ func TestPlanUndeclaredManagedResources(t *testing.T) {
 		"identity-providers/vanished":    apipb.ResourceChange_RELEASE,
 		"identity-providers/locked":      apipb.ResourceChange_ERROR,
 		"identity-providers/forgotten":   apipb.ResourceChange_ERROR,
-		"instance/settings/MEMO_RELATED": apipb.ResourceChange_RESET,
+		"instance/settings/NOTIFICATION": apipb.ResourceChange_RESET,
 		"users/old":                      apipb.ResourceChange_ERROR,
 		"users/kept":                     apipb.ResourceChange_RELEASE,
 	}
@@ -279,6 +279,18 @@ func TestPlanUndeclaredManagedResources(t *testing.T) {
 	require.Contains(t, strings.Join(result.Message.Errors, "\n"), "identity-providers/forgotten: managed but no longer declared")
 	require.Contains(t, strings.Join(result.Message.Errors, "\n"), "identity-providers/locked: preventDestroy was set")
 	require.Equal(t, int64(4), result.Message.Serial)
+}
+
+func TestPlanReleasesRetiredReactionSetting(t *testing.T) {
+	reader := newFakeReader()
+	reader.state = &storepb.InstanceConfigurationState{Resources: []*storepb.InstanceConfigurationState_ManagedResource{
+		{Name: "instance/settings/MEMO_RELATED", Kind: "InstanceSetting", ManagedFields: []string{"*"}},
+	}}
+	desired := loadDesired(t, map[string]string{"empty.json": `{}`})
+	plan := planFor(t, desired, reader)
+	require.True(t, plan.Valid())
+	require.Equal(t, apipb.ResourceChange_RELEASE, changeFor(t, plan, "instance/settings/MEMO_RELATED").Action)
+	require.Empty(t, plan.next.Resources)
 }
 
 func TestPlanOrdersActions(t *testing.T) {

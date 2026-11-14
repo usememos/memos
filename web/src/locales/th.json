@@ -436,7 +436,9 @@
       "uncheck-all": "ยกเลิกการเลือกงานทั้งหมด",
       "updated": "อัปเดตงานแล้ว"
     },
-    "view-options": "ตัวเลือกการดู"
+    "view-options": "ตัวเลือกการดู",
+    "add-reaction": "เพิ่มปฏิกิริยา",
+    "remove-reaction": "ลบการตอบสนอง"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "กำหนดให้ผู้ใช้ลงชื่อเข้าใช้ผ่านผู้ให้บริการข้อมูลประจำตัวแทนการเข้าสู่ระบบด้วยรหัสผ่าน",
       "disallow-user-registration-description": "ป้องกันไม่ให้ผู้ใช้ใหม่สร้างบัญชีจากหน้าลงทะเบียน",
       "week-start-day-description": "ควบคุมวันแรกที่แสดงในมุมมองแบบปฏิทิน"
-    },
-    "memo": {
-      "reactions": "ปฏิกิริยา",
-      "label": "บันทึก",
-      "reactions-required": "รายการความรู้สึกต้องไม่ว่��งเปล่า",
-      "add-reaction": "เพิ่มปฏิกิริยา",
-      "configured-reactions": "ปฏิกิริยาที่กำหนดค่าไว้",
-      "reaction-placeholder": "เช่น 👍",
-      "reactions-description": "กำหนดตัวเลือกการตอบสนองที่ผู้ใช้สามารถใช้กับบันทึกช่วยจำ",
-      "remove-reaction": "ลบการตอบสนอง"
     },
     "webhook": {
       "create-dialog": {

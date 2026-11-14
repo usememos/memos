@@ -543,7 +543,9 @@
       "public-description": "Hamıya görünür",
       "space": "Üzvlər",
       "space-description": "{{space}} daxilində hamı"
-    }
+    },
+    "add-reaction": "Reaksiya əlavə et",
+    "remove-reaction": "Reaksiyanı çıxar"
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",
@@ -731,16 +733,6 @@
       "username-password-required": "İstifadəçi adı və parol boş ola bilməz",
       "create-success": "İstifadəçi yaradıldı",
       "update-success": "İstifadəçi yeniləndi"
-    },
-    "memo": {
-      "add-reaction": "Reaksiya əlavə et",
-      "configured-reactions": "Təyin edilmiş reaksiyalar",
-      "label": "Qeyd",
-      "reaction-placeholder": "məs. 👍",
-      "reactions-description": "İstifadəçilərin qeydlərə tətbiq edə biləcəyi reaksiya variantlarını təyin edin.",
-      "remove-reaction": "Reaksiyanı çıxar",
-      "reactions": "Reaksiyalar",
-      "reactions-required": "Reaksiyalar siyahısı boş ola bilməz"
     },
     "memo-export": {
       "description": "Qeydlərinizi və qoşmalarınızı tək bir ZIP faylı ilə Memos nüsxələri arasında köçürün.",

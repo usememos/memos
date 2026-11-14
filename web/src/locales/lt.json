@@ -481,7 +481,9 @@
     "layout-list-description": "Vienas skaitymo pločio stulpelis",
     "on-this-memo": "Šiame priminime",
     "parent-memo": "Pagrindinis priminimas",
-    "view-options": "Peržiūros parinktys"
+    "view-options": "Peržiūros parinktys",
+    "add-reaction": "Pridėti reakciją",
+    "remove-reaction": "Pašalinti reakciją"
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",
@@ -655,16 +657,6 @@
       "username-password-required": "Vartotojo vardas ir slaptažodis negali būti tušti",
       "create-success": "Vartotojas sukurtas",
       "update-success": "Vartotojas atnaujintas"
-    },
-    "memo": {
-      "add-reaction": "Pridėti reakciją",
-      "configured-reactions": "Sukonfigūruotos reakcijos",
-      "label": "Atmintinė",
-      "reaction-placeholder": "pvz. 👍",
-      "reactions-description": "Apibrėžkite reakcijos parinktis, kurias vartotojai gali pritaikyti atmintinėms.",
-      "remove-reaction": "Pašalinti reakciją",
-      "reactions": "Reactions",
-      "reactions-required": "Reactions sąrašas negali būti tuščias"
     },
     "my-account": {
       "label": "Mano paskyra"

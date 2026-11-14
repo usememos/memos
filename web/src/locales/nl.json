@@ -441,7 +441,9 @@
     "layout-list-description": "Een enkele kolom met leesbreedte",
     "on-this-memo": "In deze memo",
     "parent-memo": "Hoofdmemo",
-    "view-options": "Weergaveopties"
+    "view-options": "Weergaveopties",
+    "add-reaction": "Reactie toevoegen",
+    "remove-reaction": "Reactie verwijderen"
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",
@@ -572,16 +574,6 @@
       "username-password-required": "Gebruikersnaam en wachtwoord mogen niet leeg zijn",
       "create-success": "Gebruiker aangemaakt",
       "update-success": "Gebruiker bijgewerkt"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reacties",
-      "reactions-required": "Reactielijst mag niet leeg zijn",
-      "add-reaction": "Reactie toevoegen",
-      "configured-reactions": "Geconfigureerde reacties",
-      "reaction-placeholder": "bijv. 👍",
-      "reactions-description": "Definieer de reactieopties die gebruikers op memo's kunnen toepassen.",
-      "remove-reaction": "Reactie verwijderen"
     },
     "my-account": {
       "label": "Mijn account"

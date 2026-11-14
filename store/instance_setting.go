@@ -39,8 +39,7 @@ func encodeInstanceSetting(upsert *storepb.InstanceSetting) (*InstanceSetting, e
 	} else if upsert.Key == storepb.InstanceSettingKey_STORAGE {
 		NormalizeInstanceStorageSetting(upsert.GetStorageSetting())
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
-	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
-		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+
 	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
 		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_NOTIFICATION {
@@ -229,31 +228,6 @@ func (s *Store) AllowsAnonymousAccess(ctx context.Context) (bool, error) {
 	return setting.AccessMode == storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, nil
 }
 
-// DefaultReactions is the default reactions for memo related setting.
-var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
-
-func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.InstanceMemoRelatedSetting, error) {
-	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
-		Name: storepb.InstanceSettingKey_MEMO_RELATED.String(),
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get instance general setting")
-	}
-
-	instanceMemoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
-	if instanceSetting != nil {
-		instanceMemoRelatedSetting = instanceSetting.GetMemoRelatedSetting()
-	}
-	if len(instanceMemoRelatedSetting.Reactions) == 0 {
-		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)
-	}
-	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: instanceMemoRelatedSetting},
-	})
-	return instanceMemoRelatedSetting, nil
-}
-
 func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTagsSetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_TAGS.String(),
@@ -379,12 +353,6 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_StorageSetting{StorageSetting: storageSetting}
-	case storepb.InstanceSettingKey_MEMO_RELATED.String():
-		memoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), memoRelatedSetting); err != nil {
-			return nil, err
-		}
-		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
 	case storepb.InstanceSettingKey_TAGS.String():
 		tagsSetting := &storepb.InstanceTagsSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), tagsSetting); err != nil {

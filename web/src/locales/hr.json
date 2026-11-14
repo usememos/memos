@@ -442,7 +442,9 @@
     "layout-list-description": "Jedan stupac širine za čitanje",
     "on-this-memo": "Na ovom podsjetniku",
     "parent-memo": "Nadređeni podsjetnik",
-    "view-options": "Opcije prikaza"
+    "view-options": "Opcije prikaza",
+    "add-reaction": "Dodajte reakciju",
+    "remove-reaction": "Ukloni reakciju"
   },
   "message": {
     "archived-successfully": "Uspješno arhivirano",
@@ -573,16 +575,6 @@
       "username-password-required": "Korisničko ime i lozinka ne smiju biti prazni",
       "create-success": "Korisnik je stvoren",
       "update-success": "Korisnik je ažuriran"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reakcije",
-      "reactions-required": "Popis reakcija ne smije biti prazan",
-      "add-reaction": "Dodajte reakciju",
-      "configured-reactions": "Konfigurirane reakcije",
-      "reaction-placeholder": "npr. 👍",
-      "reactions-description": "Definirajte opcije reakcije koje korisnici mogu primijeniti na dopise.",
-      "remove-reaction": "Ukloni reakciju"
     },
     "my-account": {
       "label": "Moj račun"

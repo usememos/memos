@@ -19,7 +19,7 @@ import { memoShareKeys } from "@/hooks/useMemoShareQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import { shouldRetry } from "@/lib/query-client";
-import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/memo_service_pb";
+import type { ListMemosRequest, ListMemosResponse, Memo, Reaction } from "@/types/proto/api/memo_service_pb";
 import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 // Query keys factory for consistent cache management
@@ -182,7 +182,7 @@ export function findMemoRecord(queryClient: QueryClient, name: string): Memo | n
   let foundAt = -1;
   for (const root of MEMO_QUERY_ROOTS) {
     for (const query of queryClient.getQueryCache().findAll({ queryKey: root })) {
-      if (query.state.dataUpdatedAt <= foundAt) continue;
+      if (query.state.dataUpdatedAt < foundAt || (query.state.dataUpdatedAt === foundAt && !isMemo(query.state.data))) continue;
       const memo = findMemoInQueryData(query.state.data, name);
       if (memo) {
         found = memo;
@@ -197,6 +197,19 @@ function patchMemoInCollectionQueries(queryClient: QueryClient, update: MemoPatc
   queryClient.setQueriesData<unknown>({ queryKey: memoKeys.all }, (data: unknown) =>
     isMemo(data) ? data : mapMemoCollection(data, (memos) => patchMemos(memos, update)),
   );
+}
+
+/** Updates reactions wherever a memo is cached without replacing its other fields. */
+export function updateMemoReactions(queryClient: QueryClient, name: string, update: (reactions: Reaction[]) => Reaction[]) {
+  const current = findMemoRecord(queryClient, name);
+  if (!current) return;
+  const reactions = update(current.reactions);
+  const patch = (memo: Memo) => (memo.name === name ? { ...memo, reactions } : memo);
+  for (const root of MEMO_QUERY_ROOTS) {
+    queryClient.setQueriesData<unknown>({ queryKey: root }, (data: unknown) =>
+      isMemo(data) ? patch(data) : mapMemoCollection(data, (memos) => memos.map(patch)),
+    );
+  }
 }
 
 /**

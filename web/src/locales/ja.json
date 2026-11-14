@@ -441,7 +441,9 @@
     "back-to": "{{source}}に戻る",
     "connections": "接続",
     "on-this-memo": "このメモについて",
-    "parent-memo": "親メモ"
+    "parent-memo": "親メモ",
+    "add-reaction": "リアクションを追加",
+    "remove-reaction": "反応を取り除く"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
@@ -572,16 +574,6 @@
       "username-password-required": "ユーザー名とパスワードは必須です",
       "create-success": "ユーザーを作成しました",
       "update-success": "ユーザーを更新しました"
-    },
-    "memo": {
-      "label": "メモ",
-      "reactions": "リアクション",
-      "reactions-required": "リアクションリストは空にできません",
-      "add-reaction": "リアクションを追加",
-      "configured-reactions": "設定された反応",
-      "reaction-placeholder": "例えば 👍",
-      "reactions-description": "ユーザーがメモに適用できる反応オプションを定義します。",
-      "remove-reaction": "反応を取り除く"
     },
     "my-account": {
       "label": "アカウント設定"

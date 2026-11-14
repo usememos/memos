@@ -225,25 +225,16 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.NotNil(t, storageSetting)
 	})
 
-	t.Run("GetInstanceSetting - memo related setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - retired reaction setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetInstanceSetting for memo related setting
-		req := &apipb.GetInstanceSettingRequest{
+		_, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{
 			Name: "instance/settings/MEMO_RELATED",
-		}
-		resp, err := ts.Service.GetInstanceSetting(ctx, req)
+		})
+		require.Error(t, err)
 
-		// Verify response
-		require.NoError(t, err)
-		require.NotNil(t, resp)
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.Name)
-
-		// The memo related setting should have a memo_related_setting field
-		memoRelatedSetting := resp.GetMemoRelatedSetting()
-		require.NotNil(t, memoRelatedSetting)
 	})
 
 	t.Run("GetInstanceSetting - tags setting", func(t *testing.T) {
@@ -366,7 +357,7 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 			Names: []string{
 				"instance/settings/TAGS",
 				"instance/settings/GENERAL",
-				"instance/settings/MEMO_RELATED",
+				"instance/settings/ACCESS",
 			},
 		})
 
@@ -377,8 +368,8 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 		require.NotNil(t, resp.InstanceSettings[0].GetTagsSetting())
 		require.Equal(t, "instance/settings/GENERAL", resp.InstanceSettings[1].Name)
 		require.NotNil(t, resp.InstanceSettings[1].GetGeneralSetting())
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.InstanceSettings[2].Name)
-		require.NotNil(t, resp.InstanceSettings[2].GetMemoRelatedSetting())
+		require.Equal(t, "instance/settings/ACCESS", resp.InstanceSettings[2].Name)
+		require.NotNil(t, resp.InstanceSettings[2].GetAccessSetting())
 	})
 
 	t.Run("BatchGetInstanceSettings - admin-only setting requires admin", func(t *testing.T) {

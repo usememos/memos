@@ -543,7 +543,9 @@
       "public-description": "Synleg for alle",
       "space": "Medlemer",
       "space-description": "Alle i {{space}}"
-    }
+    },
+    "add-reaction": "Legg til reaksjon",
+    "remove-reaction": "Fjern reaksjon"
   },
   "message": {
     "archived-successfully": "Arkivert",
@@ -731,16 +733,6 @@
       "username-password-required": "Brukarnamn og passord kan ikkje vere tomme",
       "create-success": "Brukaren er oppretta",
       "update-success": "Brukaren er oppdatert"
-    },
-    "memo": {
-      "add-reaction": "Legg til reaksjon",
-      "configured-reactions": "Oppsette reaksjonar",
-      "label": "Notat",
-      "reaction-placeholder": "t.d. 👍",
-      "reactions": "Reaksjonar",
-      "reactions-description": "Fastset kva reaksjonar brukarane kan leggje til på notat.",
-      "reactions-required": "Reaksjonslista kan ikkje vera tom",
-      "remove-reaction": "Fjern reaksjon"
     },
     "memo-export": {
       "description": "Flytt notata og vedlegga dine mellom Memos-instansar med éi ZIP-fil.",

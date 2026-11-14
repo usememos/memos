@@ -43,6 +43,7 @@ func upsertPostgresReaction(ctx context.Context, querier postgresReactionUpsertQ
 		FROM memo
 		WHERE memo.id = $3
 		FOR KEY SHARE OF memo
+		ON CONFLICT (creator_id, memo_id, reaction_type) DO UPDATE SET reaction_type = EXCLUDED.reaction_type
 		RETURNING id, created_ts
 	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID).Scan(
 		&upsert.ID,

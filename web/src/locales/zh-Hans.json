@@ -472,7 +472,9 @@
     "parent-load-error": "无法加载原始备忘录。",
     "parent-unavailable": "原始备忘录不可用",
     "parent-unavailable-description": "它可能已被删除，或者您可能已失去访问权限。",
-    "moved": "备忘录已移动"
+    "moved": "备忘录已移动",
+    "add-reaction": "添加表态",
+    "remove-reaction": "移除表态"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -972,16 +974,6 @@
       "week-start-day": "周开始日",
       "allow-public-access-description": "允许未登录的访客浏览公开备忘录。即使禁用此功能，共享备忘录的链接仍然可用。",
       "allow-public-access": "允许公开访问"
-    },
-    "memo": {
-      "add-reaction": "添加表态",
-      "configured-reactions": "已配置表态",
-      "reactions": "表态",
-      "reaction-placeholder": "例如 👍",
-      "reactions-description": "定义用户可以添加到备忘录上的表态选项。",
-      "remove-reaction": "移除表态",
-      "label": "备忘录",
-      "reactions-required": "反应列表不能为空"
     },
     "webhook": {
       "create-dialog": {

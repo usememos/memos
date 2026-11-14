@@ -32,9 +32,6 @@ func TestConversionRoundTrips(t *testing.T) {
 			},
 			DefaultStorageId: "s3",
 		}}},
-		{Key: storepb.InstanceSettingKey_MEMO_RELATED, Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-			Reactions: []string{"👍", "🎉"},
-		}}},
 		{Key: storepb.InstanceSettingKey_TAGS, Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: &storepb.InstanceTagsSetting{
 			Tags: map[string]*storepb.InstanceTagMetadata{"work": {BackgroundColor: &colorpb.Color{Red: 1}, BlurContent: true}},
 		}}},

@@ -436,7 +436,9 @@
       "uncheck-all": "सभी टास्क अनचेक करें",
       "updated": "टास्क अपडेट किए गए"
     },
-    "view-options": "ऑप्शन देखें"
+    "view-options": "ऑप्शन देखें",
+    "add-reaction": "रिएक्शन जोड़ें",
+    "remove-reaction": "रिएक्शन हटाएँ"
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "यूज़र्स को पासवर्ड लॉगिन के बजाय आइडेंटिटी प्रोवाइडर से साइन इन करने की ज़रूरत है।",
       "disallow-user-registration-description": "नए यूज़र्स को साइन-अप पेज से अकाउंट बनाने से रोकें।",
       "week-start-day-description": "कैलेंडर-स्टाइल व्यू में दिखाए जाने वाले पहले दिन को कंट्रोल करता है।"
-    },
-    "memo": {
-      "reactions": "प्रतिक्रियाएँ",
-      "label": "मेमो",
-      "reactions-required": "प्रतिक्रिया सूची खाली नहीं होनी चाहिए",
-      "add-reaction": "रिएक्शन जोड़ें",
-      "configured-reactions": "कॉन्फ़िगर किए गए रिएक्शन",
-      "reaction-placeholder": "जैसे 👍",
-      "reactions-description": "उन रिएक्शन ऑप्शन को डिफाइन करें जिन्हें यूज़र्स मेमो पर अप्लाई कर सकते हैं।",
-      "remove-reaction": "रिएक्शन हटाएँ"
     },
     "webhook": {
       "create-dialog": {

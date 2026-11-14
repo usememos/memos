@@ -443,7 +443,9 @@
     "layout-list-description": "Pojedyncza kolumna o szerokości odczytu",
     "on-this-memo": "W tej notatce",
     "parent-memo": "Notatka nadrzędna",
-    "view-options": "Opcje widoku"
+    "view-options": "Opcje widoku",
+    "add-reaction": "Dodaj reakcję",
+    "remove-reaction": "Usuń reakcję"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
@@ -574,16 +576,6 @@
       "username-password-required": "Nazwa użytkownika i hasło nie mogą być puste",
       "create-success": "Utworzono użytkownika",
       "update-success": "Zaktualizowano użytkownika"
-    },
-    "memo": {
-      "label": "Notatki",
-      "reactions": "Reakcje",
-      "reactions-required": "Lista reakcji nie może być pusta",
-      "add-reaction": "Dodaj reakcję",
-      "configured-reactions": "Skonfigurowane reakcje",
-      "reaction-placeholder": "np. 👍",
-      "reactions-description": "Zdefiniuj opcje reakcji, które użytkownicy mogą zastosować do notatek.",
-      "remove-reaction": "Usuń reakcję"
     },
     "my-account": {
       "label": "Moje konto"

@@ -442,7 +442,9 @@
     "layout-list-description": "Una sola columna d'amplada de lectura",
     "on-this-memo": "En aquesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Opcions de visualització"
+    "view-options": "Opcions de visualització",
+    "add-reaction": "Afegeix reacció",
+    "remove-reaction": "Elimina la reacció"
   },
   "message": {
     "archived-successfully": "Arxivat correctament",
@@ -573,16 +575,6 @@
       "username-password-required": "El nom d'usuari i la contrasenya no poden estar buits",
       "create-success": "S'ha creat l'usuari",
       "update-success": "S'ha actualitzat l'usuari"
-    },
-    "memo": {
-      "label": "Nota",
-      "reactions": "Reaccions",
-      "reactions-required": "La llista de reaccions no ha d'estar buida",
-      "add-reaction": "Afegeix reacció",
-      "configured-reactions": "Reaccions configurades",
-      "reaction-placeholder": "p. ex. 👍",
-      "reactions-description": "Definiu les opcions de reacció que els usuaris poden aplicar a les notes.",
-      "remove-reaction": "Elimina la reacció"
     },
     "my-account": {
       "label": "El meu compte"

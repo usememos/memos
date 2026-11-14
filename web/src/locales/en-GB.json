@@ -441,7 +441,9 @@
     "new-badge": "New",
     "on-this-memo": "On this memo",
     "parent-memo": "Parent memo",
-    "view-options": "View options"
+    "view-options": "View options",
+    "add-reaction": "Add reaction",
+    "remove-reaction": "Remove reaction"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -572,16 +574,6 @@
       "username-password-required": "Username and password cannot be empty",
       "create-success": "User created",
       "update-success": "User updated"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reactions",
-      "reactions-required": "Reactions list must not be empty",
-      "add-reaction": "Add reaction",
-      "configured-reactions": "Configured reactions",
-      "reaction-placeholder": "e.g. 👍",
-      "reactions-description": "Define the reaction options users can apply to memos.",
-      "remove-reaction": "Remove reaction"
     },
     "my-account": {
       "label": "My Account"

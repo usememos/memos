@@ -440,7 +440,9 @@
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },
-    "view-options": "خيارات العرض"
+    "view-options": "خيارات العرض",
+    "add-reaction": "إضافة رد فعل",
+    "remove-reaction": "إزالة التفاعل"
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",
@@ -897,16 +899,6 @@
       "disallow-password-auth-description": "إلزام المستخدمين بتسجيل الدخول عبر موفر هوية بدلاً من تسجيل الدخول بكلمة المرور.",
       "disallow-user-registration-description": "منع المستخدمين الجدد من إنشاء حسابات من صفحة التسجيل.",
       "week-start-day-description": "التحكم في اليوم الأول المعروض في العروض التي تشبه التقويم."
-    },
-    "memo": {
-      "reactions": "تفاعلات",
-      "label": "مذكرة",
-      "reactions-required": "يجب ألا تكون قائمة التفاعلات فارغة",
-      "add-reaction": "إضافة رد فعل",
-      "configured-reactions": "ردود الفعل المُهيأة",
-      "reaction-placeholder": "مثال: 👍",
-      "reactions-description": "حدد خيارات التفاعل التي يمكن للمستخدمين تطبيقها على المذكرات.",
-      "remove-reaction": "إزالة التفاعل"
     },
     "webhook": {
       "create-dialog": {

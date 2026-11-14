@@ -442,7 +442,9 @@
     "layout-list-description": "Una singola colonna a larghezza di lettura",
     "on-this-memo": "Su questo memo",
     "parent-memo": "Memo principale",
-    "view-options": "Opzioni di visualizzazione"
+    "view-options": "Opzioni di visualizzazione",
+    "add-reaction": "Aggiungi reazione",
+    "remove-reaction": "Rimuovi la reazione"
   },
   "message": {
     "archived-successfully": "Archiviato con successo",
@@ -573,16 +575,6 @@
       "username-password-required": "Nome utente e password non possono essere vuoti",
       "create-success": "Utente creato",
       "update-success": "Utente aggiornato"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reazioni",
-      "reactions-required": "L'elenco delle reazioni non deve essere vuoto",
-      "add-reaction": "Aggiungi reazione",
-      "configured-reactions": "Reazioni configurate",
-      "reaction-placeholder": "per esempio. 👍",
-      "reactions-description": "Definire le opzioni di reazione che gli utenti possono applicare ai promemoria.",
-      "remove-reaction": "Rimuovi la reazione"
     },
     "my-account": {
       "label": "Il mio account"

@@ -109,8 +109,8 @@ func TestConfigurationGuard(t *testing.T) {
 
 	// Unmanaged resources are not guarded.
 	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: &apipb.InstanceSetting{
-		Name:  "instance/settings/MEMO_RELATED",
-		Value: &apipb.InstanceSetting_MemoRelatedSetting_{MemoRelatedSetting: &apipb.InstanceSetting_MemoRelatedSetting{Reactions: []string{"👍"}}},
+		Name:  "instance/settings/NOTIFICATION",
+		Value: &apipb.InstanceSetting_NotificationSetting_{NotificationSetting: &apipb.InstanceSetting_NotificationSetting{}},
 	}})
 	require.NoError(t, err)
 }

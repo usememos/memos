@@ -29,6 +29,13 @@ func TestReactionStore(t *testing.T) {
 	require.NotNil(t, reaction)
 	require.NotEmpty(t, reaction.ID)
 
+	repeated, err := ts.UpsertReaction(ctx, &store.Reaction{
+		CreatorID: user.ID, MemoID: memo.ID, ReactionType: "💗",
+	})
+	require.NoError(t, err)
+	require.Equal(t, reaction.ID, repeated.ID)
+	require.Equal(t, reaction.CreatedTs, repeated.CreatedTs)
+
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
 		MemoID: &memo.ID,
 	})

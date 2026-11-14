@@ -27,7 +27,7 @@ const (
 )
 
 // ConfigurableInstanceSettingKeys are the instance setting keys a file may declare.
-var ConfigurableInstanceSettingKeys = []string{"ACCESS", "GENERAL", "STORAGE", "MEMO_RELATED", "NOTIFICATION", "AI", "USAGE_LIMITS"}
+var ConfigurableInstanceSettingKeys = []string{"ACCESS", "GENERAL", "STORAGE", "NOTIFICATION", "AI", "USAGE_LIMITS"}
 
 // userFields are the User fields a file may set. The rest of a profile belongs
 // to the user.

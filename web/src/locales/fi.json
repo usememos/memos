@@ -479,7 +479,9 @@
     "layout-list-description": "Yksi lukuleveyden sarake",
     "on-this-memo": "Tässä muistiossa",
     "parent-memo": "Ylämuistio",
-    "view-options": "Näytä asetukset"
+    "view-options": "Näytä asetukset",
+    "add-reaction": "Lisää reaktio",
+    "remove-reaction": "Poista reaktio"
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",
@@ -653,16 +655,6 @@
       "username-password-required": "Käyttäjätunnus ja salasana eivät voi olla tyhjiä",
       "create-success": "Käyttäjä luotu",
       "update-success": "Käyttäjä päivitetty"
-    },
-    "memo": {
-      "add-reaction": "Lisää reaktio",
-      "configured-reactions": "Konfiguroidut reaktiot",
-      "label": "Muistio",
-      "reaction-placeholder": "esim. 👍",
-      "reactions-description": "Määritä reaktiovaihtoehdot, joita käyttäjät voivat soveltaa muistioihin.",
-      "remove-reaction": "Poista reaktio",
-      "reactions": "Reactions",
-      "reactions-required": "Reactions-luettelo ei saa olla tyhjä"
     },
     "my-account": {
       "label": "Oma tili"

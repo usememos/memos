@@ -436,7 +436,9 @@
       "uncheck-all": "सर्व कार्ये निवड रद्द करा",
       "updated": "कार्ये अद्यतनित केली"
     },
-    "view-options": "पाहण्याचे पर्याय"
+    "view-options": "पाहण्याचे पर्याय",
+    "add-reaction": "प्रतिक्रिया जोडा",
+    "remove-reaction": "प्रतिक्रिया काढून टाका"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "वापरकर्त्यांना पासवर्ड लॉगिनऐवजी आयडेंटिटी प्रोव्हायडरद्वारे साइन इन करणे आवश्यक करा.",
       "disallow-user-registration-description": "नवीन वापरकर्त्यांना साइन-अप पेजवरून खाती तयार करण्यापासून प्रतिबंधित करा.",
       "week-start-day-description": "कॅलेंडर-शैलीतील दृश्यांमध्ये दर्शविल्या जाणाऱ्या पहिल्या दिवसावर नियंत्रण ठेवते."
-    },
-    "memo": {
-      "reactions": "प्रतिक्रिया",
-      "label": "मेमो",
-      "reactions-required": "प्रतिक्रियांची यादी रिकामी असू नये",
-      "add-reaction": "प्रतिक्रिया जोडा",
-      "configured-reactions": "कॉन्फिगर केलेल्या प्रतिक्रिया",
-      "reaction-placeholder": "उदा. 👍",
-      "reactions-description": "वापरकर्ते मेमोंवर लागू करू शकतील असे प्रतिक्रिया पर्याय परिभाषित करा.",
-      "remove-reaction": "प्रतिक्रिया काढून टाका"
     },
     "webhook": {
       "create-dialog": {

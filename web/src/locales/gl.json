@@ -441,7 +441,9 @@
     "layout-list-description": "Unha única columna de ancho de lectura",
     "on-this-memo": "Nesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Ver opcións"
+    "view-options": "Ver opcións",
+    "add-reaction": "Engadir reacción",
+    "remove-reaction": "Eliminar a reacción"
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",
@@ -572,16 +574,6 @@
       "username-password-required": "O nome de usuario e o contrasinal non poden estar baleiros",
       "create-success": "Usuario creado",
       "update-success": "Usuario actualizado"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reaccións",
-      "reactions-required": "A lista de reaccións non debe estar baleira",
-      "add-reaction": "Engadir reacción",
-      "configured-reactions": "Reaccións configuradas",
-      "reaction-placeholder": "p.ex. 👍",
-      "reactions-description": "Define as opcións de reacción que os usuarios poden aplicar ás notas.",
-      "remove-reaction": "Eliminar a reacción"
     },
     "my-account": {
       "label": "A miña conta"

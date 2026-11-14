@@ -135,14 +135,15 @@ message InstanceSetting {
   // Format: instance/settings/{setting}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
+  reserved 4;
+  reserved "memo_related_setting";
+
   // The setting value. The set field matches the key in name.
   oneof value {
     // The value of the GENERAL setting.
     GeneralSetting general_setting = 2;
     // The value of the STORAGE setting.
     StorageSetting storage_setting = 3;
-    // The value of the MEMO_RELATED setting.
-    MemoRelatedSetting memo_related_setting = 4;
     // The value of the TAGS setting.
     TagsSetting tags_setting = 5;
     // The value of the NOTIFICATION setting.
@@ -162,8 +163,8 @@ message InstanceSetting {
     GENERAL = 1;
     // Attachment storage settings.
     STORAGE = 2;
-    // Memo-related settings.
-    MEMO_RELATED = 3;
+    reserved 3;
+    reserved "MEMO_RELATED";
     // Tag metadata.
     TAGS = 4;
     // Notification transport settings.
@@ -337,12 +338,6 @@ message InstanceSetting {
       // man-in-the-middle attacks.
       bool insecure_skip_tls_verify = 7;
     }
-  }
-
-  // MemoRelatedSetting is the memo-related instance configuration.
-  message MemoRelatedSetting {
-    // The reactions users can choose from. Defaults to a built-in emoji set when empty.
-    repeated string reactions = 1;
   }
 
   // TagsSetting is the instance-wide tag metadata configuration.

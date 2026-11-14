@@ -441,7 +441,9 @@
     "layout-list-description": "ერთი წაკითხვის სიგანის სვეტი",
     "on-this-memo": "ამ მემოზე",
     "parent-memo": "მშობელი მემო",
-    "view-options": "ნახვის პარამეტრები"
+    "view-options": "ნახვის პარამეტრები",
+    "add-reaction": "დაამატეთ რეაქცია",
+    "remove-reaction": "რეაქციის ამოღება"
   },
   "message": {
     "archived-successfully": "წარმატებით დაარქივდა",
@@ -572,16 +574,6 @@
       "username-password-required": "მომხმარებლის სახელი და პაროლი არ შეიძლება იყოს ცარიელი",
       "create-success": "მომხმარებელი შეიქმნა",
       "update-success": "მომხმარებელი განახლდა"
-    },
-    "memo": {
-      "label": "მემო",
-      "reactions": "რეაქციები",
-      "reactions-required": "რეაქციების სია არ უნდა იყოს ცარიელი",
-      "add-reaction": "დაამატეთ რეაქცია",
-      "configured-reactions": "კონფიგურირებული რეაქციები",
-      "reaction-placeholder": "მაგ. 👍",
-      "reactions-description": "განსაზღვრეთ რეაქციის ვარიანტები, რომლებიც მომხმარებლებს შეუძლიათ მიმართონ შენიშვნებზე.",
-      "remove-reaction": "რეაქციის ამოღება"
     },
     "my-account": {
       "label": "ჩემი ანგარიში"

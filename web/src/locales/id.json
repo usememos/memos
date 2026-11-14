@@ -436,7 +436,9 @@
       "uncheck-all": "Hapus centang semua tugas",
       "updated": "Tugas diperbarui"
     },
-    "view-options": "Opsi tampilan"
+    "view-options": "Opsi tampilan",
+    "add-reaction": "Tambahkan reaksi",
+    "remove-reaction": "Hapus reaksi"
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
@@ -893,16 +895,6 @@
       "disallow-password-auth-description": "Wajibkan pengguna untuk masuk melalui penyedia identitas, bukan login kata sandi.",
       "disallow-user-registration-description": "Cegah pengguna baru membuat akun dari halaman pendaftaran.",
       "week-start-day-description": "Mengontrol hari pertama yang ditampilkan dalam tampilan bergaya kalender."
-    },
-    "memo": {
-      "reactions": "Reaksi",
-      "label": "Memo",
-      "reactions-required": "Daftar reaksi wajib diisi",
-      "add-reaction": "Tambahkan reaksi",
-      "configured-reactions": "Reaksi yang dikonfigurasi",
-      "reaction-placeholder": "contoh: 👍",
-      "reactions-description": "Tentukan opsi reaksi yang dapat diterapkan pengguna pada memo.",
-      "remove-reaction": "Hapus reaksi"
     },
     "webhook": {
       "create-dialog": {

@@ -14,7 +14,6 @@ func TestValidateRequiresValueMatchingKey(t *testing.T) {
 	for _, key := range []storepb.InstanceSettingKey{
 		storepb.InstanceSettingKey_GENERAL,
 		storepb.InstanceSettingKey_STORAGE,
-		storepb.InstanceSettingKey_MEMO_RELATED,
 		storepb.InstanceSettingKey_TAGS,
 		storepb.InstanceSettingKey_NOTIFICATION,
 		storepb.InstanceSettingKey_AI,
@@ -22,13 +21,13 @@ func TestValidateRequiresValueMatchingKey(t *testing.T) {
 		storepb.InstanceSettingKey_USAGE_LIMITS,
 	} {
 		// A GENERAL value under every other key is a mismatch; under GENERAL
-		// the MEMO_RELATED value is.
+		// the TAGS value is.
 		setting := &storepb.InstanceSetting{
 			Key:   key,
 			Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{}},
 		}
 		if key == storepb.InstanceSettingKey_GENERAL {
-			setting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{}}
+			setting.Value = &storepb.InstanceSetting_TagsSetting{TagsSetting: &storepb.InstanceTagsSetting{}}
 		}
 		require.Error(t, Validate(setting), key.String())
 	}

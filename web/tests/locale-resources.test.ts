@@ -19,7 +19,7 @@ const placeholders = (value: string) =>
 const source = flatten(english);
 const locales = import.meta.glob<{ default: Messages }>("../src/locales/*.json", { eager: true });
 const sourceFiles = import.meta.glob<string>(
-  ["../src/**/*.{ts,tsx}", "!../src/types/proto/**", "!../src/**/*.d.ts", "!../src/**/*.test.{ts,tsx}"],
+  ["../src/**/*.{ts,tsx}", "!../src/types/proto/**", "!../src/lib/emoji-data.ts", "!../src/**/*.d.ts", "!../src/**/*.test.{ts,tsx}"],
   { eager: true, query: "?raw", import: "default" },
 );
 

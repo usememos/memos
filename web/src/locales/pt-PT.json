@@ -442,7 +442,9 @@
     "layout-list-description": "Uma única coluna com uma largura de leitura",
     "on-this-memo": "Neste memorando",
     "parent-memo": "Memorando pai",
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "add-reaction": "Adicionar reação",
+    "remove-reaction": "Remover reação"
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",
@@ -573,16 +575,6 @@
       "username-password-required": "O nome de utilizador e a palavra-passe não podem estar vazios",
       "create-success": "Utilizador criado",
       "update-success": "Utilizador atualizado"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reações",
-      "reactions-required": "A lista de reações não deve estar vazia",
-      "add-reaction": "Adicionar reação",
-      "configured-reactions": "Reações configuradas",
-      "reaction-placeholder": "por exemplo 👍",
-      "reactions-description": "Defina as opções de reação que os usuários podem aplicar aos memorandos.",
-      "remove-reaction": "Remover reação"
     },
     "my-account": {
       "label": "A Minha Conta"

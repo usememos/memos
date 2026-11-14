@@ -136,7 +136,7 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-text-secondary`, `rounded-mu-md`),
   text with its type classes (`mu-caption`, `mu-body`, `mu-label`, `mu-title`), and `cn()` for class merging. No Tailwind
   text sizes or old color names (`muted-foreground`, `destructive`, `popover`). The exceptions are the brand wordmark and
-  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`).
+  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`, `ReactionSelector`).
 - Custom controls using `mu-focus` must reserve a real 1px border (transparent for borderless controls).
 - Focus shows through `mu-focus`. Never add `ring-*` or `focus-visible:ring-*`, and never pair `mu-focus` with
   `outline-none`, which overrides it. Visually hidden text uses `mu-visually-hidden`; a control that appears on focus keeps
