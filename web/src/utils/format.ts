@@ -2,9 +2,14 @@ export function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
   if (bytes < 0) return "Invalid size";
 
-  const units = ["B", "KB", "MB", "GB", "TB"];
+  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
   const k = 1024;
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  let i = Math.min(Math.max(Math.floor(Math.log(bytes) / Math.log(k)), 0), units.length - 1);
+  // Just under the next unit, rounding to one decimal reaches 1024 (1048575 bytes is "1024.0 KB"),
+  // so show it as 1.0 of the next unit instead
+  if (i > 0 && i < units.length - 1 && Number((bytes / Math.pow(k, i)).toFixed(1)) >= k) {
+    i++;
+  }
   const size = bytes / Math.pow(k, i);
   const formatted = i === 0 ? size.toString() : size.toFixed(1);
 
