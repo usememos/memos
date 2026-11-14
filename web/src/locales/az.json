@@ -724,9 +724,7 @@
       "delete-warning-description": "BU ƏMƏLİYYAT GERİ QAYTARILA BİLMƏZ",
       "label": "Üzv",
       "list-title": "Üzv siyahısı",
-      "member-column": "Üzv",
       "restore-success": "{{username}} uğurla bərpa edildi",
-      "summary-column": "Xülasə",
       "user": "İstifadəçi",
       "no-members-found": "Üzv tapılmadı",
       "export-memos": "Qeydləri ixrac et",
@@ -1078,7 +1076,6 @@
       "client-id": "Client ID",
       "client-secret": "Client secret",
       "client-secret-optional-description": "Mövcud client secret dəyişməz qalsın deyə boş buraxın.",
-      "configuration": "Konfiqurasiya",
       "configuration-summary-description": "Tam konfiqurasiyanı sətir içində açmadan provayderi tanımağa və yoxlamağa kömək edən əsas məlumatları göstərir.",
       "confirm-delete": "`{{name}}` SSO konfiqurasiyasını silmək istədiyinizə əminsiniz? BU ƏMƏLİYYAT GERİ QAYTARILA BİLMƏZ",
       "create-sso": "SSO yarat",
@@ -1107,7 +1104,6 @@
       "not-linked-description": "Hələ heç bir xarici kimlik bağlanmayıb. Sonradan onunla daxil olmaq üçün bu provayderi qoşa bilərsiniz.",
       "oauth-configuration": "OAuth konfiqurasiyası",
       "oauth-configuration-description": "Giriş zamanı istifadə olunan OAuth müştəri məlumatlarını və provayder endpoint-lərini doldurun.",
-      "provider": "Provayder",
       "provider-id": "Provayder ID-si",
       "provider-id-description": "Yalnız kiçik hərflər, rəqəmlər və defislər. Bu dəyər provayder resursunun adının bir hissəsinə çevrilir.",
       "provider-uid": "UID",
@@ -1255,7 +1251,6 @@
       },
       "no-webhooks-found": "Webhook tapılmadı.",
       "title": "Webhook-lar",
-      "url": "URL",
       "label": "Webhook-lar"
     },
     "tags": {

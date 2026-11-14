@@ -647,9 +647,7 @@
       "delete-warning-description": "ŠĪ DARBĪBA IR NEATgriezeniska",
       "label": "Biedrs",
       "list-title": "Dalībnieku saraksts",
-      "member-column": "Biedrs",
       "restore-success": "{{username}} ir veiksmīgi atjaunots",
-      "summary-column": "Kopsavilkums",
       "user": "Lietotājs",
       "no-members-found": "Nav atrasts neviens dalībnieks",
       "export-memos": "Eksportēt piezīmes",
@@ -878,7 +876,6 @@
       "client-id": "Klienta ID",
       "client-secret": "Klienta noslēpums",
       "client-secret-optional-description": "Atstājiet tukšu, lai saglabātu esošā klienta noslēpumu nemainīgu.",
-      "configuration": "Konfigurācija",
       "configuration-summary-description": "Parādiet būtisko informāciju, kas palīdz identificēt un pārbaudīt pakalpojumu sniedzēju, neatklājot visu konfigurāciju.",
       "confirm-delete": "Vai tiešām vēlaties dzēst `{{name}}` SSO konfigurāciju? ŠĪ DARBĪBA IR NEATgriezeniska",
       "create-sso": "Izveidojiet SSO",
@@ -907,7 +904,6 @@
       "not-linked-description": "Ārēja identitāte vēl nav saistīta. Varat izveidot savienojumu ar šo pakalpojumu sniedzēju, lai vēlāk pierakstītos.",
       "oauth-configuration": "OAuth konfigurācija",
       "oauth-configuration-description": "Ievadiet OAuth klienta akreditācijas datus un nodrošinātāja galapunktus, kas izmantoti pierakstīšanās laikā.",
-      "provider": "Pakalpojumu sniedzējs",
       "provider-id": "Pakalpojumu sniedzēja ID",
       "provider-id-description": "Tikai mazie burti, cipari un defises. Šī vērtība kļūst par daļu no nodrošinātāja resursa nosaukuma.",
       "provider-uid": "UID",
@@ -1055,7 +1051,6 @@
       },
       "no-webhooks-found": "Tīmekļa aizķeres netika atrastas.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

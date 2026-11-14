@@ -34,7 +34,9 @@ describe("CreateAccessTokenDialog", () => {
   it("creates a non-expiring token by default", async () => {
     render(<CreateAccessTokenDialog open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
 
-    expect(screen.getByRole("radio", { name: "setting.access-token.create-dialog.duration-never" })).toBeChecked();
+    expect(screen.getByRole("combobox", { name: /setting.access-token.create-dialog.expiration/ })).toHaveTextContent(
+      "setting.access-token.create-dialog.duration-never",
+    );
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "CLI token" } });
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
 
@@ -43,6 +45,25 @@ describe("CreateAccessTokenDialog", () => {
         parent: "users/alice",
         description: "CLI token",
         expiresInDays: 0,
+      }),
+    );
+  });
+
+  it("creates a token with the selected expiration", async () => {
+    render(<CreateAccessTokenDialog open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("combobox", { name: /setting.access-token.create-dialog.expiration/ }));
+    const option = await screen.findByRole("option", { name: "setting.access-token.create-dialog.duration-90d" });
+    fireEvent.pointerDown(option, { pointerType: "mouse" });
+    fireEvent.click(option);
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "CLI token" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.create" }));
+
+    await waitFor(() =>
+      expect(createPersonalAccessToken).toHaveBeenCalledWith({
+        parent: "users/alice",
+        description: "CLI token",
+        expiresInDays: 90,
       }),
     );
   });

@@ -1,4 +1,4 @@
-import { Button, Dialog, Textarea, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
+import { Button, Dialog, Input, Textarea, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
 import { CornerDownLeftIcon, SearchIcon } from "lucide-react";
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -205,22 +205,23 @@ const QuickFindDialog = () => {
               </div>
             </div>
           ) : (
-            <div className="flex h-[52px] shrink-0 items-center gap-2.5 px-4">
-              <SearchIcon className="mu-icon size-[17px] shrink-0 text-mu-text-secondary" />
-              {/* The dialog's own field, focused whenever it is open: the caret marks focus, as in a
-                  command palette, so it draws no outline around the borderless header. */}
-              <input
+            <div className="px-4 py-3">
+              <Input
                 {...fieldProps}
-                className="h-10 min-w-0 flex-1 bg-transparent mu-body outline-none placeholder:text-mu-text-secondary"
+                prefix={<SearchIcon />}
                 placeholder={`${t("common.search")} ${compactScopeLabel}`}
                 aria-label={`${t("common.search")} ${scopeLabel}`}
+                suffix={
+                  <Tooltip.Root>
+                    <Tooltip.Trigger
+                      render={
+                        <Button type="submit" variant="ghost" size="sm" aria-label={t("common.search")} icon={<CornerDownLeftIcon />} />
+                      }
+                    />
+                    <Tooltip.Popup>{t("common.search")}</Tooltip.Popup>
+                  </Tooltip.Root>
+                }
               />
-              <Tooltip.Root>
-                <Tooltip.Trigger
-                  render={<Button type="submit" variant="ghost" size="sm" aria-label={t("common.search")} icon={<CornerDownLeftIcon />} />}
-                />
-                <Tooltip.Popup>{t("common.search")}</Tooltip.Popup>
-              </Tooltip.Root>
             </div>
           )}
         </form>

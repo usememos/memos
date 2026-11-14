@@ -568,8 +568,6 @@
       "no-members-found": "Geen leden gevonden",
       "active": "Actief",
       "archived": "Gearchiveerd",
-      "member-column": "Lid",
-      "summary-column": "Samenvatting",
       "export-memos": "Memo's exporteren",
       "username-password-required": "Gebruikersnaam en wachtwoord mogen niet leeg zijn",
       "create-success": "Gebruiker aangemaakt",
@@ -777,7 +775,6 @@
       "basic-settings": "Basisinstellingen",
       "basic-settings-description": "Stel de identiteit van de provider, de weergavenaam en de optionele identificatieregels in voordat u de OAuth-gegevens invult.",
       "client-secret-optional-description": "Laat dit veld leeg om het bestaande klantgeheim ongewijzigd te laten.",
-      "configuration": "Configuratie",
       "configuration-summary-description": "Toon de essentie die helpt bij het identificeren en controleren van een provider zonder de volledige inline configuratie bloot te leggen.",
       "create-sso-description": "Maak een nieuwe identiteitsprovider voor door de beheerder beheerde eenmalige aanmelding.",
       "endpoints": "Eindpunten",
@@ -799,7 +796,6 @@
       "not-linked-description": "Er is nog geen externe identiteit gekoppeld. Je kunt deze provider koppelen om er later mee in te loggen.",
       "oauth-configuration": "OAuth-configuratie",
       "oauth-configuration-description": "Vul de OAuth-clientreferenties in en de providereindpunten die zijn gebruikt tijdens het inloggen.",
-      "provider": "Aanbieder",
       "provider-id": "Provider-ID",
       "provider-id-description": "Alleen kleine letters, cijfers en koppeltekens. Deze waarde wordt onderdeel van de resourcenaam van de provider.",
       "provider-uid": "UID",
@@ -938,7 +934,6 @@
       },
       "no-webhooks-found": "Geen webhooks gevonden.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

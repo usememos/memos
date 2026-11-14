@@ -570,8 +570,6 @@
       "no-members-found": "Nie znaleziono żadnych członków",
       "active": "Aktywny",
       "archived": "Zarchiwizowane",
-      "member-column": "Członek",
-      "summary-column": "Streszczenie",
       "export-memos": "Eksportuj notatki",
       "username-password-required": "Nazwa użytkownika i hasło nie mogą być puste",
       "create-success": "Utworzono użytkownika",
@@ -779,7 +777,6 @@
       "basic-settings": "Podstawowe ustawienia",
       "basic-settings-description": "Przed wypełnieniem szczegółów OAuth ustaw tożsamość dostawcy, nazwę wyświetlaną i opcjonalne reguły identyfikatora.",
       "client-secret-optional-description": "Pozostaw puste, aby zachować istniejący klucz tajny klienta bez zmian.",
-      "configuration": "Konfiguracja",
       "configuration-summary-description": "Pokaż najważniejsze elementy, które pomagają zidentyfikować i przeprowadzić audyt dostawcy, bez ujawniania pełnej konfiguracji.",
       "create-sso-description": "Utwórz nowego dostawcę tożsamości na potrzeby pojedynczego logowania zarządzanego przez administratora.",
       "endpoints": "Endpointy",
@@ -801,7 +798,6 @@
       "not-linked-description": "Żadna tożsamość zewnętrzna nie jest jeszcze połączona. Możesz połączyć się z tym dostawcą, aby zalogować się u niego później.",
       "oauth-configuration": "Konfiguracja OAuth",
       "oauth-configuration-description": "Wprowadź poświadczenia klienta OAuth i punkty końcowe dostawcy używane podczas logowania.",
-      "provider": "Dostawca",
       "provider-id": "Identyfikator dostawcy",
       "provider-id-description": "Tylko małe litery, cyfry i łączniki. Ta wartość staje się częścią nazwy zasobu dostawcy.",
       "provider-uid": "UID",
@@ -940,7 +936,6 @@
       },
       "no-webhooks-found": "Nie znaleziono webhooków.",
       "title": "Webhooki",
-      "url": "URL",
       "label": "Webhooki"
     },
     "tags": {

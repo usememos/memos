@@ -224,7 +224,7 @@ const AttachmentTile: FC<{
             ))}
           </div>
           <div className="hidden pointer-coarse:flex">
-            <Menu.Root modal={false} size="sm">
+            <Menu.Root modal={false} size="md">
               <Menu.Trigger
                 render={<Button variant="neutral" size="sm" icon={<EllipsisIcon />} aria-label={t("common.more")} onClick={stop} />}
               />

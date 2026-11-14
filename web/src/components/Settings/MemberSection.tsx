@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
+import { Badge, Button, List, Menu, Tooltip } from "@usememos/ui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -19,8 +19,8 @@ import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
+import { SettingList } from "./SettingList";
 import SettingSection from "./SettingSection";
-import SettingTable from "./SettingTable";
 import { useExportMemos } from "./useExportMemos";
 
 const MemberSection = () => {
@@ -117,95 +117,86 @@ const MemberSection = () => {
         </Button>
       }
     >
-      <SettingTable
-        variant="info-flow"
-        columns={[
-          {
-            key: "member",
-            header: t("setting.member.member-column"),
-            render: (_, user: User) => (
-              <div className="flex min-w-[18rem] items-start gap-3">
-                <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className={user.displayName ? "mu-label text-mu-text" : "mu-label text-mu-text-secondary italic"}>
-                      {user.displayName || t("common.empty-placeholder")}
-                    </span>
-                    {currentUser?.name === user.name ? (
-                      <span className="mu-caption text-mu-text-secondary">{t("common.yourself")}</span>
-                    ) : null}
+      {sortedUsers.length === 0 ? (
+        <p className="py-6 text-center mu-body text-mu-text-secondary">{t("setting.member.no-members-found")}</p>
+      ) : (
+        <SettingList aria-label={t("setting.member.list-title")}>
+          {sortedUsers.map((user) => (
+            <List.Item key={user.name} className="flex items-start gap-3">
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="flex min-w-0 items-start gap-3">
+                  <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span
+                        className={
+                          user.displayName ? "min-w-0 mu-label break-words text-mu-text" : "mu-label text-mu-text-secondary italic"
+                        }
+                      >
+                        {user.displayName || t("common.empty-placeholder")}
+                      </span>
+                      {currentUser?.name === user.name ? (
+                        <span className="mu-caption text-mu-text-secondary">{t("common.yourself")}</span>
+                      ) : null}
+                    </div>
+                    <span className="truncate mu-caption text-mu-text-secondary">@{user.username}</span>
                   </div>
-                  <span className="truncate mu-caption text-mu-text-secondary">@{user.username}</span>
+                </div>
+                <div className="flex min-w-0 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge>{stringifyUserRole(user.role)}</Badge>
+                    <Badge tone={user.state === State.ARCHIVED ? "outline" : "neutral"}>
+                      {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
+                    </Badge>
+                  </div>
+                  {user.email || findManagedResource(configurationStatus, user.name) ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.email ? <InfoChip label={t("common.email")} value={user.email} tooltip={user.email} /> : null}
+                      <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, user.name)} />
+                    </div>
+                  ) : null}
                 </div>
               </div>
-            ),
-          },
-          {
-            key: "summary",
-            header: t("setting.member.summary-column"),
-            render: (_, user: User) => (
-              <div className="flex min-w-[18rem] flex-col gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge>{stringifyUserRole(user.role)}</Badge>
-                  <Badge tone={user.state === State.ARCHIVED ? "outline" : "neutral"}>
-                    {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
-                  </Badge>
+              {currentUser?.name === user.name ? null : (
+                <div className="shrink-0">
+                  <Menu.Root modal={false}>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger
+                        render={
+                          <Menu.Trigger
+                            render={
+                              <Button variant="ghost" aria-label={`${t("common.more")}: ${user.username}`} icon={<MoreVerticalIcon />} />
+                            }
+                          />
+                        }
+                      />
+                      <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                    </Tooltip.Root>
+                    <Menu.Popup align="end">
+                      <Menu.Item onClick={() => handleEditUser(user)}>{t("common.update")}</Menu.Item>
+                      <Menu.Item disabled={exporting} onClick={() => exportMemos(user.username)}>
+                        {t("setting.member.export-memos")}
+                      </Menu.Item>
+                      {user.state === State.NORMAL ? (
+                        <Menu.Item onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</Menu.Item>
+                      ) : (
+                        <>
+                          <Menu.Item onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</Menu.Item>
+                          {findManagedResource(configurationStatus, user.name) ? null : (
+                            <Menu.Item onClick={() => handleDeleteUserClick(user)} danger>
+                              {t("setting.member.delete-member")}
+                            </Menu.Item>
+                          )}
+                        </>
+                      )}
+                    </Menu.Popup>
+                  </Menu.Root>
                 </div>
-                {user.email || findManagedResource(configurationStatus, user.name) ? (
-                  <div className="flex flex-wrap gap-2">
-                    {user.email ? <InfoChip label={t("common.email")} value={user.email} tooltip={user.email} /> : null}
-                    <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, user.name)} />
-                  </div>
-                ) : null}
-              </div>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            className: "w-px",
-            alignEnd: true,
-            render: (_, user: User) =>
-              currentUser?.name === user.name ? null : (
-                <Menu.Root modal={false}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger
-                      render={
-                        <Menu.Trigger
-                          render={
-                            <Button variant="ghost" aria-label={`${t("common.more")}: ${user.username}`} icon={<MoreVerticalIcon />} />
-                          }
-                        />
-                      }
-                    />
-                    <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
-                  </Tooltip.Root>
-                  <Menu.Popup align="end">
-                    <Menu.Item onClick={() => handleEditUser(user)}>{t("common.update")}</Menu.Item>
-                    <Menu.Item disabled={exporting} onClick={() => exportMemos(user.username)}>
-                      {t("setting.member.export-memos")}
-                    </Menu.Item>
-                    {user.state === State.NORMAL ? (
-                      <Menu.Item onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</Menu.Item>
-                    ) : (
-                      <>
-                        <Menu.Item onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</Menu.Item>
-                        {findManagedResource(configurationStatus, user.name) ? null : (
-                          <Menu.Item onClick={() => handleDeleteUserClick(user)} danger>
-                            {t("setting.member.delete-member")}
-                          </Menu.Item>
-                        )}
-                      </>
-                    )}
-                  </Menu.Popup>
-                </Menu.Root>
-              ),
-          },
-        ]}
-        data={sortedUsers}
-        emptyMessage={t("setting.member.no-members-found")}
-        getRowKey={(user) => user.name}
-      />
+              )}
+            </List.Item>
+          ))}
+        </SettingList>
+      )}
 
       {/* Create User Dialog */}
       <CreateUserDialog open={createDialog.isOpen} onOpenChange={createDialog.setOpen} onSuccess={refetchUsers} />

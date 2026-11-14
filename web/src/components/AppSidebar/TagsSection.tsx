@@ -96,7 +96,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
     <SidebarSection
       label={t("common.tags")}
       action={
-        <Menu.Root modal={false} size="sm">
+        <Menu.Root modal={false} size="md">
           <Tooltip.Root>
             <Tooltip.Trigger
               render={

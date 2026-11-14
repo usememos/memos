@@ -724,9 +724,7 @@
       "delete-warning-description": "THIS ACTION IS IRREVERSIBLE",
       "label": "Member",
       "list-title": "Member list",
-      "member-column": "Member",
       "restore-success": "{{username}} restored successfully",
-      "summary-column": "Summary",
       "user": "User",
       "no-members-found": "No members found",
       "export-memos": "Export memos",
@@ -1078,7 +1076,6 @@
       "client-id": "Client ID",
       "client-secret": "Client secret",
       "client-secret-optional-description": "Leave blank to keep the existing client secret unchanged.",
-      "configuration": "Configuration",
       "configuration-summary-description": "Show the essentials that help identify and audit a provider without exposing the full configuration inline.",
       "confirm-delete": "Are you sure you want to delete `{{name}}` SSO configuration? THIS ACTION IS IRREVERSIBLE",
       "create-sso": "Create SSO",
@@ -1107,7 +1104,6 @@
       "not-linked-description": "No external identity is linked yet. You can connect this provider to sign in with it later.",
       "oauth-configuration": "OAuth configuration",
       "oauth-configuration-description": "Fill in the OAuth client credentials and the provider endpoints used during sign-in.",
-      "provider": "Provider",
       "provider-id": "Provider ID",
       "provider-id-description": "Lowercase letters, numbers, and hyphens only. This value becomes part of the provider resource name.",
       "provider-uid": "UID",
@@ -1255,7 +1251,6 @@
       },
       "no-webhooks-found": "No webhooks found.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

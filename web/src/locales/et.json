@@ -646,9 +646,7 @@
       "delete-warning-description": "SEE TEGEVUS ON Pöördumatu",
       "label": "liige",
       "list-title": "Liikmete nimekiri",
-      "member-column": "liige",
       "restore-success": "{{username}} taastati edukalt",
-      "summary-column": "Kokkuvõte",
       "user": "Kasutaja",
       "no-members-found": "Ühtegi liiget ei leitud",
       "export-memos": "Ekspordi märkmed",
@@ -877,7 +875,6 @@
       "client-id": "Kliendi ID",
       "client-secret": "Kliendi saladus",
       "client-secret-optional-description": "Jätke tühjaks, et olemasoleva kliendi saladus jääks muutumatuks.",
-      "configuration": "Seadistamine",
       "configuration-summary-description": "Näidake olulisi elemente, mis aitavad teenusepakkujat tuvastada ja auditeerida ilma kogu konfiguratsiooni tekstisiseselt paljastamata.",
       "confirm-delete": "Kas olete kindel, et soovite `{{name}}` SSO konfiguratsiooni kustutada? SEE TEGEVUS ON Pöördumatu",
       "create-sso": "Looge SSO",
@@ -906,7 +903,6 @@
       "not-linked-description": "Välist identiteeti pole veel lingitud. Saate selle teenusepakkujaga ühendada, et sellega hiljem sisse logida.",
       "oauth-configuration": "OAuth konfiguratsioon",
       "oauth-configuration-description": "Sisestage OAuth kliendi mandaadid ja sisselogimisel kasutatud pakkuja lõpp-punktid.",
-      "provider": "Pakkuja",
       "provider-id": "Pakkuja ID",
       "provider-id-description": "Ainult väikesed tähed, numbrid ja sidekriipsud. Sellest väärtusest saab osa pakkuja ressursi nimest.",
       "provider-uid": "UID",
@@ -1054,7 +1050,6 @@
       },
       "no-webhooks-found": "Veebihaake ei leitud.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

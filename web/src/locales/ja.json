@@ -568,8 +568,6 @@
       "no-members-found": "メンバーが見つかりません",
       "active": "アクティブ",
       "archived": "アーカイブ済み",
-      "member-column": "メンバー",
-      "summary-column": "まとめ",
       "export-memos": "メモをエクスポート",
       "username-password-required": "ユーザー名とパスワードは必須です",
       "create-success": "ユーザーを作成しました",
@@ -777,7 +775,6 @@
       "basic-settings": "基本設定",
       "basic-settings-description": "OAuth の詳細を入力する前に、プロバイダー ID、表示名、およびオプションの ID ルールを設定します。",
       "client-secret-optional-description": "既存のクライアント シークレットを変更しない場合は、空白のままにします。",
-      "configuration": "構成",
       "configuration-summary-description": "完全な構成をインラインで公開することなく、プロバイダーの識別と監査に役立つ重要な要素を示します。",
       "create-sso-description": "管理者が管理するシングル サインオン用の新しい ID プロバイダーを作成します。",
       "endpoints": "エンドポイント",
@@ -799,7 +796,6 @@
       "not-linked-description": "外部 ID はまだリンクされていません。 このプロバイダーに接続して、後でサインインできます。",
       "oauth-configuration": "OAuthの構成",
       "oauth-configuration-description": "OAuth クライアントの資格情報と、サインイン時に使用されるプロバイダー エンドポイントを入力します。",
-      "provider": "プロバイダー",
       "provider-id": "プロバイダーID",
       "provider-id-description": "小文字、数字、ハイフンのみ。 この値はプロバイダー リソース名の一部になります。",
       "provider-uid": "UID",
@@ -938,7 +934,6 @@
       },
       "no-webhooks-found": "Webhookが見つかりません。",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

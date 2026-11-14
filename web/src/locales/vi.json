@@ -486,9 +486,7 @@
       "list-title": "Danh sách thành viên",
       "no-members-found": "Không tìm thấy thành viên nào",
       "archived": "Đã lưu trữ",
-      "member-column": "Thành viên",
       "active": "Đang hoạt động",
-      "summary-column": "Tóm tắt",
       "export-memos": "Xuất ghi chú",
       "username-password-required": "Tên người dùng và mật khẩu không được để trống",
       "create-success": "Đã tạo người dùng",
@@ -687,7 +685,6 @@
       "basic-settings": "Cài đặt cơ bản",
       "basic-settings-description": "Đặt danh tính nhà cung cấp, tên hiển thị và các quy tắc định danh tùy chọn trước khi điền thông tin chi tiết OAuth.",
       "client-secret-optional-description": "Để trống để giữ nguyên mã bí mật máy khách hiện có.",
-      "configuration": "Cấu hình",
       "configuration-summary-description": "Hiển thị các thông tin cần thiết giúp xác định và kiểm toán nhà cung cấp mà không hiển thị toàn bộ cấu hình trực tiếp.",
       "create-sso-description": "Tạo nhà cung cấp danh tính mới cho đăng nhập một lần do quản trị viên quản lý.",
       "endpoints": "Điểm cuối",
@@ -709,7 +706,6 @@
       "not-linked-description": "Chưa có định danh bên ngoài nào được liên kết. Bạn có thể kết nối nhà cung cấp này để đăng nhập sau.",
       "oauth-configuration": "Cấu hình OAuth",
       "oauth-configuration-description": "Điền thông tin đăng nhập máy khách OAuth và các điểm cuối của nhà cung cấp được sử dụng trong quá trình đăng nhập.",
-      "provider": "Nhà cung cấp",
       "provider-id": "ID nhà cung cấp",
       "provider-id-description": "Chỉ chữ cái viết thường, số và dấu gạch ngang. Giá trị này trở thành một phần của tên tài nguyên nhà cung cấp.",
       "redirect-url-description": "Đăng ký URL gọi lại này với nhà cung cấp danh tính của bạn để luồng mã ủy quyền có thể hoàn tất.",
@@ -933,7 +929,6 @@
       },
       "no-webhooks-found": "Không tìm thấy webhook nào.",
       "title": "Webhook",
-      "url": "Url",
       "label": "Webhook"
     },
     "tags": {

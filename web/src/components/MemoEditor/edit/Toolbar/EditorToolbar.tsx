@@ -105,7 +105,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
 
   return (
     // md controls with mu-compact: 14px labels and 16px icons at 28px, the sidebar's height.
-    // The menus they open are portaled outside, so they stay sm.
+    // The portaled menus use the regular md row.
     <div className="mu-compact flex w-full min-w-0 flex-row items-center justify-between gap-1">
       <div className="flex min-w-0 flex-1 flex-row items-center justify-start gap-1">
         <InsertMenu

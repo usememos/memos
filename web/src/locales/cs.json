@@ -570,8 +570,6 @@
       "no-members-found": "Nebyli nalezeni žádní členové",
       "active": "Aktivní",
       "archived": "Archivováno",
-      "member-column": "Člen",
-      "summary-column": "Shrnutí",
       "export-memos": "Exportovat poznámky",
       "username-password-required": "Uživatelské jméno a heslo nesmí být prázdné",
       "create-success": "Uživatel byl vytvořen",
@@ -779,7 +777,6 @@
       "basic-settings": "Základní nastavení",
       "basic-settings-description": "Před vyplněním podrobností OAuth nastavte identitu poskytovatele, zobrazovaný název a volitelná pravidla pro identifikátory.",
       "client-secret-optional-description": "Ponechte prázdné, chcete-li zachovat tajemství stávajícího klienta beze změny.",
-      "configuration": "Konfigurace",
       "configuration-summary-description": "Ukažte základní informace, které pomáhají identifikovat a auditovat poskytovatele, aniž byste odhalili celou přímou konfiguraci.",
       "create-sso-description": "Vytvořte nového poskytovatele identity pro jednotné přihlášení spravované správcem.",
       "endpoints": "Koncové body",
@@ -801,7 +798,6 @@
       "not-linked-description": "Zatím není propojena žádná externí identita. K tomuto poskytovateli se můžete připojit a přihlásit se k němu později.",
       "oauth-configuration": "Konfigurace OAuth",
       "oauth-configuration-description": "Vyplňte přihlašovací údaje klienta OAuth a koncové body poskytovatele použité během přihlašování.",
-      "provider": "Poskytovatel",
       "provider-id": "ID poskytovatele",
       "provider-id-description": "Pouze malá písmena, čísla a pomlčky. Tato hodnota se stane součástí názvu prostředku poskytovatele.",
       "provider-uid": "UID",
@@ -941,7 +937,6 @@
       },
       "no-webhooks-found": "Žádné webhooky nenalezeny.",
       "title": "Webhooky",
-      "url": "URL",
       "label": "Webhooky"
     },
     "tags": {

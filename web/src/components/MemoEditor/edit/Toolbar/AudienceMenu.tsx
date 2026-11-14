@@ -42,7 +42,7 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
   ];
 
   return (
-    <Menu.Root modal={false} size="sm">
+    <Menu.Root modal={false} size="md">
       {/* The trigger starts with an icon (a space mark or the lock) inside a span, so it takes the
           package's icon-side padding itself; its gaps are the md icon gap, like a Button's. */}
       <Menu.Trigger

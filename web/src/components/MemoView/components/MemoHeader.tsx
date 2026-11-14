@@ -84,15 +84,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         {isNew && <NewBadge />}
       </div>
 
-      <div
-        data-slot="memo-header-actions"
-        // The same 4px gaps on touch screens, so the actions read as one group. Each square's hit
-        // area keeps its 44px height but narrows to the 28px pitch, so neighbors meet halfway
-        // instead of a later square's area covering the edge of the one before it. The selector only
-        // resizes the package's touch-screen pseudo-element; Tailwind's `after:` would also create
-        // one on desktop, where it sits beside the icon and pushes it off center.
-        className="flex shrink-0 select-none flex-row items-center justify-end gap-1 [&_.mu-hit::after]:w-7"
-      >
+      <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {currentUser && !isArchived && (
           // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
           <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">

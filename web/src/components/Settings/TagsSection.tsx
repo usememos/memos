@@ -192,7 +192,7 @@ const TagsSection = () => {
                 {newTagError && <Field.Error match>{newTagError}</Field.Error>}
               </Field.Root>
 
-              <div className="flex h-8 items-center gap-2 rounded-mu-md border border-mu-line bg-mu-canvas px-2 mu-body text-mu-text-secondary">
+              <div className="flex min-h-8 flex-wrap items-center gap-2 rounded-mu-md border border-mu-line bg-mu-canvas px-2 py-1 mu-body text-mu-text-secondary">
                 <PaletteIcon className="mu-icon" />
                 <span>{t("setting.tags.background-color")}</span>
                 <input
@@ -202,7 +202,7 @@ const TagsSection = () => {
                   onChange={(e) => setNewTagColor(e.target.value)}
                   aria-label={t("setting.tags.background-color")}
                 />
-                <Button variant="ghost" size="xs" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
+                <Button variant="ghost" size="md" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
                   {t("common.clear")}
                 </Button>
               </div>
@@ -259,7 +259,7 @@ const TagsSection = () => {
                     onChange={(e) => handleColorChange(row.name, e.target.value)}
                     aria-label={t("setting.tags.background-color")}
                   />
-                  <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
+                  <Button variant="ghost" size="md" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
                     {localTags[row.name].color ?? t("setting.tags.default-color")}
                   </Button>
                 </div>

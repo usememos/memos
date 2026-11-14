@@ -66,7 +66,7 @@ const ReactionSelector = ({ memo, trigger }: Props) => {
         aria-label={t("setting.memo.add-reaction")}
         className="mu-compact w-max p-[calc(var(--mu-space-2)-1px)] transition-none"
       >
-        <div className="grid max-h-[var(--mu-list-height)] grid-flow-col gap-0.5 overflow-y-auto max-sm:grid-flow-row max-sm:grid-cols-[repeat(4,max-content)] [@media(pointer:coarse)]:grid-flow-row [@media(pointer:coarse)]:grid-cols-[repeat(4,max-content)]">
+        <div className="grid max-h-[var(--mu-list-height)] grid-flow-col gap-0.5 overflow-y-auto max-sm:grid-flow-row max-sm:grid-cols-[repeat(4,max-content)]">
           {memoRelatedSetting.reactions.map((reactionType) => (
             <Toggle
               key={reactionType}

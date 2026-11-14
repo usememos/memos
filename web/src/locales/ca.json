@@ -569,8 +569,6 @@
       "no-members-found": "No s'han trobat membres",
       "active": "Actius",
       "archived": "Arxivat",
-      "member-column": "Membre",
-      "summary-column": "Resum",
       "export-memos": "Exportar notes",
       "username-password-required": "El nom d'usuari i la contrasenya no poden estar buits",
       "create-success": "S'ha creat l'usuari",
@@ -778,7 +776,6 @@
       "basic-settings": "Configuració bàsica",
       "basic-settings-description": "Establiu la identitat del proveïdor, el nom de visualització i les regles d'identificació opcionals abans d'emplenar els detalls de OAuth.",
       "client-secret-optional-description": "Deixeu-lo en blanc per mantenir el secret del client existent sense canvis.",
-      "configuration": "Configuració",
       "configuration-summary-description": "Mostra els elements essencials que ajuden a identificar i auditar un proveïdor sense exposar la configuració completa en línia.",
       "create-sso-description": "Creeu un proveïdor d'identitat nou per a l'inici de sessió únic gestionat per l'administrador.",
       "endpoints": "Punts finals",
@@ -800,7 +797,6 @@
       "not-linked-description": "Encara no hi ha cap identitat externa vinculada. Podeu connectar aquest proveïdor per iniciar-hi la sessió més tard.",
       "oauth-configuration": "Configuració OAuth",
       "oauth-configuration-description": "Empleneu les credencials del client OAuth i els punts finals del proveïdor utilitzats durant l'inici de sessió.",
-      "provider": "Proveïdor",
       "provider-id": "Identificador del proveïdor",
       "provider-id-description": "Només lletres minúscules, números i guions. Aquest valor passa a formar part del nom del recurs del proveïdor.",
       "provider-uid": "UID",
@@ -939,7 +935,6 @@
       },
       "no-webhooks-found": "No s'han trobat webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

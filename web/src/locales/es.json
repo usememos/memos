@@ -569,8 +569,6 @@
       "no-members-found": "No se encontraron miembros",
       "active": "Activa",
       "archived": "Archivada",
-      "member-column": "Miembro",
-      "summary-column": "Resumen",
       "export-memos": "Exportar notas",
       "username-password-required": "El nombre de usuario y la contraseña no pueden estar vacíos",
       "create-success": "Usuario creado",
@@ -778,7 +776,6 @@
       "basic-settings": "Configuraciones básicas",
       "basic-settings-description": "Establezca la identidad del proveedor, el nombre para mostrar y las reglas de identificador opcionales antes de completar los detalles de OAuth.",
       "client-secret-optional-description": "Déjelo en blanco para mantener el secreto del cliente existente sin cambios.",
-      "configuration": "Configuración",
       "configuration-summary-description": "Muestre los elementos esenciales que ayudan a identificar y auditar a un proveedor sin exponer la configuración completa en línea.",
       "create-sso-description": "Cree un nuevo proveedor de identidad para el inicio de sesión único administrado por el administrador.",
       "endpoints": "Puntos finales",
@@ -800,7 +797,6 @@
       "not-linked-description": "Ninguna identidad externa está vinculada todavía. Puede conectar este proveedor para iniciar sesión con él más tarde.",
       "oauth-configuration": "Configuración OAuth",
       "oauth-configuration-description": "Complete las credenciales del cliente OAuth y los puntos finales del proveedor utilizados durante el inicio de sesión.",
-      "provider": "Proveedora",
       "provider-id": "ID del proveedor",
       "provider-id-description": "Sólo letras minúsculas, números y guiones. Este valor pasa a formar parte del nombre del recurso del proveedor.",
       "provider-uid": "UID",
@@ -939,7 +935,6 @@
       },
       "no-webhooks-found": "No se encontraron webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

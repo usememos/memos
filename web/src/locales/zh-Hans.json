@@ -522,8 +522,6 @@
       "user": "普通用户",
       "label": "成员",
       "list-title": "成员列表",
-      "member-column": "成员",
-      "summary-column": "摘要",
       "no-members-found": "没有找到会员",
       "export-memos": "导出备忘录",
       "username-password-required": "用户名和密码不能为空",
@@ -749,7 +747,6 @@
       "client-id": "客户端ID（Client ID）",
       "client-secret": "客户端密钥（Client Secret）",
       "client-secret-optional-description": "留空则保留现有的客户端密钥，不会覆盖。",
-      "configuration": "配置摘要",
       "configuration-summary-description": "这里只展示便于识别和审查 provider 的关键信息，完整配置仍然通过编辑入口查看。",
       "confirm-delete": "您确定要删除“{{name}}”单点登录配置吗？（此操作不可逆）",
       "create-sso": "创建单点登录",
@@ -770,7 +767,6 @@
       "not-linked": "未绑定",
       "oauth-configuration": "OAuth 配置",
       "oauth-configuration-description": "填写 OAuth 客户端凭据，以及登录流程中使用的 provider 端点。",
-      "provider": "提供程序",
       "provider-id": "供应商 ID",
       "provider-id-description": "仅支持小写字母、数字和连字符。该值会成为 provider 资源名的一部分。",
       "provider-uid": "用户 UID",
@@ -1012,7 +1008,6 @@
       },
       "no-webhooks-found": "没有 Webhook。",
       "title": "Webhook",
-      "url": "链接",
       "label": "Webhook"
     },
     "tags": {

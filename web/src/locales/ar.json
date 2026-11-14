@@ -490,9 +490,7 @@
       "list-title": "قائمة الأعضاء",
       "no-members-found": "لم يتم العثور على أعضاء",
       "archived": "المؤرشفة",
-      "member-column": "عضو",
       "active": "نشط",
-      "summary-column": "ملخص",
       "export-memos": "تصدير الملاحظات",
       "username-password-required": "لا يمكن ترك اسم المستخدم وكلمة المرور فارغين",
       "create-success": "تم إنشاء المستخدم",
@@ -691,7 +689,6 @@
       "basic-settings": "الإعدادات الأساسية",
       "basic-settings-description": "حدد هوية الموفر، واسم العرض، وقواعد المعرف الاختيارية قبل إدخال تفاصيل OAuth.",
       "client-secret-optional-description": "اترك هذا الحقل فارغًا للحفاظ على سر العميل الحالي دون تغيير.",
-      "configuration": "التكوين",
       "configuration-summary-description": "اعرض المعلومات الأساسية التي تساعد في تحديد الموفر ومراجعته دون عرض التكوين الكامل.",
       "create-sso-description": "أنشئ موفر هوية جديدًا لتسجيل الدخول الموحد المُدار من قِبل المسؤول.",
       "endpoints": "نقاط النهاية",
@@ -713,7 +710,6 @@
       "not-linked-description": "لم يتم ربط أي هوية خارجية حتى الآن. يُمكنك ربط هذا المزوّد لتسجيل الدخول به لاحقًا.",
       "oauth-configuration": "إعدادات OAuth",
       "oauth-configuration-description": "أدخل بيانات اعتماد العميل OAuth ونقاط نهاية الموفر المستخدمة أثناء تسجيل الدخول.",
-      "provider": "الموفر",
       "provider-id": "معرّف الموفر",
       "provider-id-description": "الأحرف الصغيرة والأرقام والواصلات فقط. تصبح هذه القيمة جزءًا من اسم مورد الموفر.",
       "redirect-url-description": "سجّل عنوان URL لإعادة التوجيه هذا مع موفر الهوية الخاص بك حتى يكتمل تدفق رمز التفويض.",
@@ -937,7 +933,6 @@
       },
       "no-webhooks-found": "لم يتم العثور على Webhooks.",
       "title": "Webhooks",
-      "url": "الرابط",
       "label": "Webhooks"
     },
     "tags": {

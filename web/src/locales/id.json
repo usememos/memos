@@ -486,9 +486,7 @@
       "list-title": "Daftar Anggota",
       "no-members-found": "Tidak ada anggota yang ditemukan",
       "archived": "Diarsipkan",
-      "member-column": "Anggota",
       "active": "Aktif",
-      "summary-column": "Ringkasan",
       "export-memos": "Ekspor memo",
       "username-password-required": "Nama pengguna dan kata sandi tidak boleh kosong",
       "create-success": "Pengguna dibuat",
@@ -687,7 +685,6 @@
       "basic-settings": "Pengaturan dasar",
       "basic-settings-description": "Tetapkan identitas penyedia, nama tampilan, dan aturan pengidentifikasi opsional sebelum mengisi detail OAuth.",
       "client-secret-optional-description": "Biarkan kosong untuk menjaga agar rahasia klien yang ada tetap tidak berubah.",
-      "configuration": "Konfigurasi",
       "configuration-summary-description": "Tampilkan hal-hal penting yang membantu mengidentifikasi dan mengaudit penyedia tanpa mengekspos konfigurasi lengkap secara langsung.",
       "create-sso-description": "Buat penyedia identitas baru untuk single sign-on yang dikelola administrator.",
       "endpoints": "Endpoint",
@@ -709,7 +706,6 @@
       "not-linked-description": "Belum ada identitas eksternal yang tertaut. Anda dapat menghubungkan penyedia ini untuk masuk dengannya nanti.",
       "oauth-configuration": "Konfigurasi OAuth",
       "oauth-configuration-description": "Isi kredensial klien OAuth dan titik akhir penyedia yang digunakan selama masuk.",
-      "provider": "Penyedia",
       "provider-id": "ID Penyedia",
       "provider-id-description": "Hanya huruf kecil, angka, dan tanda hubung. Nilai ini menjadi bagian dari nama sumber daya penyedia.",
       "redirect-url-description": "Daftarkan URL callback ini dengan penyedia identitas Anda agar alur kode otorisasi dapat diselesaikan.",
@@ -933,7 +929,6 @@
       },
       "no-webhooks-found": "Tidak ada webhook yang ditemukan.",
       "title": "Webhook",
-      "url": "URL",
       "label": "Webhook"
     },
     "tags": {

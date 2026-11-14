@@ -1,4 +1,4 @@
-import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
+import { Badge, Button, List, Menu, Tooltip } from "@usememos/ui";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -19,10 +19,10 @@ import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
+import { SettingList } from "./SettingList";
 import SettingSection from "./SettingSection";
-import SettingTable from "./SettingTable";
 
-interface IdentityProviderRow extends Record<string, unknown> {
+interface IdentityProviderRow {
   name: string;
   providerUid: string;
   title: string;
@@ -121,30 +121,21 @@ const SSOSection = () => {
         </Button>
       }
     >
-      <SettingTable
-        variant="info-flow"
-        columns={[
-          {
-            key: "title",
-            header: t("setting.sso.provider"),
-            render: (_, row: IdentityProviderRow) => (
-              <div className="flex min-w-[16rem] flex-col gap-2">
+      {rows.length === 0 ? (
+        <p className="py-6 text-center mu-body text-mu-text-secondary">{t("setting.sso.no-sso-found")}</p>
+      ) : (
+        <SettingList aria-label={t("setting.sso.sso-list")}>
+          {rows.map((row) => (
+            <List.Item key={row.name} className="flex items-start gap-3">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="mu-label text-mu-text">{row.title}</span>
+                  <span className="min-w-0 mu-label break-words text-mu-text">{row.title}</span>
                   <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
                   <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.name)} />
                 </div>
-              </div>
-            ),
-          },
-          {
-            key: "summaryItems",
-            header: t("setting.sso.configuration"),
-            render: (_, row: IdentityProviderRow) => (
-              <div className="flex min-w-[24rem] flex-col gap-2">
                 <p className="mu-caption text-mu-text-secondary">{t("setting.sso.configuration-summary-description")}</p>
                 <div className="flex flex-wrap gap-2">
                   {row.summaryItems.map((item) => (
@@ -152,46 +143,37 @@ const SSOSection = () => {
                   ))}
                 </div>
               </div>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            className: "w-px",
-            alignEnd: true,
-            render: (_, row: IdentityProviderRow) => (
-              <Menu.Root modal={false}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger
-                    render={
-                      <Menu.Trigger
-                        render={<Button variant="ghost" aria-label={`${t("common.more")}: ${row.title}`} icon={<MoreVerticalIcon />} />}
-                      />
-                    }
-                  />
-                  <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
-                </Tooltip.Root>
-                <Menu.Popup align="end">
-                  <Menu.Item
-                    disabled={!!findManagedResource(configurationStatus, row.name)}
-                    onClick={() => handleEditIdentityProvider(row.provider)}
-                  >
-                    {t("common.edit")}
-                  </Menu.Item>
-                  {findManagedResource(configurationStatus, row.name) ? null : (
-                    <Menu.Item onClick={() => handleDeleteIdentityProvider(row.provider)} danger>
-                      {t("common.delete")}
+              <div className="shrink-0">
+                <Menu.Root modal={false}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger
+                      render={
+                        <Menu.Trigger
+                          render={<Button variant="ghost" aria-label={`${t("common.more")}: ${row.title}`} icon={<MoreVerticalIcon />} />}
+                        />
+                      }
+                    />
+                    <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                  </Tooltip.Root>
+                  <Menu.Popup align="end">
+                    <Menu.Item
+                      disabled={!!findManagedResource(configurationStatus, row.name)}
+                      onClick={() => handleEditIdentityProvider(row.provider)}
+                    >
+                      {t("common.edit")}
                     </Menu.Item>
-                  )}
-                </Menu.Popup>
-              </Menu.Root>
-            ),
-          },
-        ]}
-        data={rows}
-        emptyMessage={t("setting.sso.no-sso-found")}
-        getRowKey={(row) => row.name}
-      />
+                    {findManagedResource(configurationStatus, row.name) ? null : (
+                      <Menu.Item onClick={() => handleDeleteIdentityProvider(row.provider)} danger>
+                        {t("common.delete")}
+                      </Menu.Item>
+                    )}
+                  </Menu.Popup>
+                </Menu.Root>
+              </div>
+            </List.Item>
+          ))}
+        </SettingList>
+      )}
 
       <CreateIdentityProviderDialog
         open={idpDialog.isOpen}

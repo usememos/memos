@@ -570,8 +570,6 @@
       "no-members-found": "Ni članov",
       "active": "Aktiven",
       "archived": "Arhivirano",
-      "member-column": "član",
-      "summary-column": "Povzetek",
       "export-memos": "Izvozi zapiske",
       "username-password-required": "Uporabniško ime in geslo ne smeta biti prazna",
       "create-success": "Uporabnik ustvarjen",
@@ -779,7 +777,6 @@
       "basic-settings": "Osnovne nastavitve",
       "basic-settings-description": "Nastavite identiteto ponudnika, prikazno ime in pravila izbirnega identifikatorja, preden izpolnite podrobnosti OAuth.",
       "client-secret-optional-description": "Pustite prazno, da obstoječa skrivnost odjemalca ostane nespremenjena.",
-      "configuration": "Konfiguracija",
       "configuration-summary-description": "Prikažite bistvene elemente, ki pomagajo identificirati in revidirati ponudnika, ne da bi pri tem izpostavili celotno konfiguracijo.",
       "create-sso-description": "Ustvarite novega ponudnika identitete za enotno prijavo, ki jo upravlja skrbnik.",
       "endpoints": "Končne točke",
@@ -801,7 +798,6 @@
       "not-linked-description": "Nobena zunanja identiteta še ni povezana. Tega ponudnika lahko povežete, da se pozneje prijavite z njim.",
       "oauth-configuration": "konfiguracija OAuth",
       "oauth-configuration-description": "Izpolnite poverilnice odjemalca OAuth in končne točke ponudnika, uporabljene med prijavo.",
-      "provider": "Ponudnik",
       "provider-id": "ID ponudnika",
       "provider-id-description": "Samo male črke, številke in vezaji. Ta vrednost postane del imena vira ponudnika.",
       "provider-uid": "UID",
@@ -940,7 +936,6 @@
       },
       "no-webhooks-found": "Ne najdem nobenega webhooka.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

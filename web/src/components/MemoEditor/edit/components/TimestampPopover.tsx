@@ -1,5 +1,5 @@
-import { Popover } from "@usememos/ui";
-import { type FC, useId, useRef, useState } from "react";
+import { Field, Input, Popover } from "@usememos/ui";
+import { type FC, useRef, useState } from "react";
 import { MEMO_TIME_CONTROL_CLASSES } from "@/components/MemoView/constants";
 import i18n from "@/i18n";
 import { useTranslate } from "@/utils/i18n";
@@ -27,7 +27,6 @@ const TimestampInput: FC<{
   date: Date | undefined;
   onChange: (date: Date) => void;
 }> = ({ label, date, onChange }) => {
-  const id = useId();
   const initialValue = useRef(date ? formatDate(date) : "");
   const [value, setValue] = useState(initialValue.current);
   const [invalid, setInvalid] = useState(false);
@@ -44,23 +43,21 @@ const TimestampInput: FC<{
   };
 
   return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="mu-label-sm text-mu-text-secondary">
+    <Field.Root invalid={invalid}>
+      <Field.Label>
         {label}
         {value !== initialValue.current && <span className="text-mu-primary ml-0.5">*</span>}
-      </label>
-      <input
-        id={id}
+      </Field.Label>
+      <Input
         type="text"
-        className="block w-full rounded-mu-md border border-mu-line bg-mu-canvas px-2 py-1 mu-body font-mono data-[invalid=true]:border-mu-danger"
-        data-invalid={invalid}
+        className="font-mono"
         aria-invalid={invalid}
         placeholder={DATETIME_FORMAT}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         onBlur={() => setInvalid(!parseDate(value))}
       />
-    </div>
+    </Field.Root>
   );
 };
 

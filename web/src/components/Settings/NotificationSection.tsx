@@ -21,7 +21,7 @@ import {
 import { useTranslate } from "@/utils/i18n";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
-import SettingRow from "./SettingRow";
+import { SettingList, SettingListItem } from "./SettingList";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
@@ -187,134 +187,139 @@ const NotificationSection = () => {
         description={t("setting.notification.email-description")}
         actions={EMAIL_FIELDS.some(emailLocked) ? <ManagedByConfigurationChip resource={managed} /> : undefined}
       >
-        <SettingRow label={t("setting.notification.email-enabled")} description={t("setting.notification.email-enabled-description")}>
-          <Checkbox
-            disabled={emailLocked("enabled")}
-            checked={emailSetting.enabled}
-            onCheckedChange={(enabled) => updateEmailSetting({ enabled })}
-          />
-        </SettingRow>
+        <SettingList>
+          <SettingListItem
+            label={t("setting.notification.email-enabled")}
+            description={t("setting.notification.email-enabled-description")}
+          >
+            <Checkbox
+              disabled={emailLocked("enabled")}
+              checked={emailSetting.enabled}
+              onCheckedChange={(enabled) => updateEmailSetting({ enabled })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.smtp-host"), "required")}
-          description={t("setting.notification.smtp-host-description")}
-        >
-          <Input
-            className="w-full sm:w-80"
-            value={emailSetting.smtpHost}
-            disabled={emailLocked("smtpHost")}
-            placeholder="smtp.gmail.com"
-            aria-required={emailSetting.enabled}
-            onChange={(e) => updateEmailSetting({ smtpHost: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.smtp-host"), "required")}
+            description={t("setting.notification.smtp-host-description")}
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              value={emailSetting.smtpHost}
+              disabled={emailLocked("smtpHost")}
+              placeholder="smtp.gmail.com"
+              aria-required={emailSetting.enabled}
+              onChange={(e) => updateEmailSetting({ smtpHost: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.smtp-port"), "required")}
-          description={t("setting.notification.smtp-port-description")}
-        >
-          <Input
-            className="w-28 font-mono"
-            type="number"
-            min={1}
-            max={65535}
-            value={emailSetting.smtpPort}
-            disabled={emailLocked("smtpPort")}
-            placeholder="587"
-            aria-required={emailSetting.enabled}
-            onChange={handlePortChanged}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.smtp-port"), "required")}
+            description={t("setting.notification.smtp-port-description")}
+          >
+            <Input
+              className="w-28 font-mono"
+              type="number"
+              min={1}
+              max={65535}
+              value={emailSetting.smtpPort}
+              disabled={emailLocked("smtpPort")}
+              placeholder="587"
+              aria-required={emailSetting.enabled}
+              onChange={handlePortChanged}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.smtp-username"), "gmail")}
-          description={t("setting.notification.smtp-username-description")}
-        >
-          <Input
-            className="w-full sm:w-80"
-            type="email"
-            value={emailSetting.smtpUsername}
-            disabled={emailLocked("smtpUsername")}
-            placeholder="your.name@gmail.com"
-            autoComplete="username"
-            onChange={(e) => updateEmailSetting({ smtpUsername: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.smtp-username"), "gmail")}
+            description={t("setting.notification.smtp-username-description")}
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              type="email"
+              value={emailSetting.smtpUsername}
+              disabled={emailLocked("smtpUsername")}
+              placeholder="your.name@gmail.com"
+              autoComplete="username"
+              onChange={(e) => updateEmailSetting({ smtpUsername: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.smtp-password"), "gmail")}
-          description={
-            hasExistingEmailSetting
-              ? t("setting.notification.smtp-password-preserve-description")
-              : t("setting.notification.smtp-password-description")
-          }
-        >
-          <Input
-            className="w-full sm:w-80"
-            type="password"
-            value={emailSetting.smtpPassword}
-            disabled={emailLocked("smtpPassword")}
-            placeholder={hasExistingEmailSetting ? t("setting.notification.smtp-password-placeholder-existing") : "abcd efgh ijkl mnop"}
-            autoComplete="new-password"
-            onChange={(e) => updateEmailSetting({ smtpPassword: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.smtp-password"), "gmail")}
+            description={
+              hasExistingEmailSetting
+                ? t("setting.notification.smtp-password-preserve-description")
+                : t("setting.notification.smtp-password-description")
+            }
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              type="password"
+              value={emailSetting.smtpPassword}
+              disabled={emailLocked("smtpPassword")}
+              placeholder={hasExistingEmailSetting ? t("setting.notification.smtp-password-placeholder-existing") : "abcd efgh ijkl mnop"}
+              autoComplete="new-password"
+              onChange={(e) => updateEmailSetting({ smtpPassword: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.from-email"), "required")}
-          description={t("setting.notification.from-email-description")}
-        >
-          <Input
-            className="w-full sm:w-80"
-            type="email"
-            value={emailSetting.fromEmail}
-            disabled={emailLocked("fromEmail")}
-            placeholder="your.name@gmail.com"
-            aria-required={emailSetting.enabled}
-            onChange={(e) => updateEmailSetting({ fromEmail: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.from-email"), "required")}
+            description={t("setting.notification.from-email-description")}
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              type="email"
+              value={emailSetting.fromEmail}
+              disabled={emailLocked("fromEmail")}
+              placeholder="your.name@gmail.com"
+              aria-required={emailSetting.enabled}
+              onChange={(e) => updateEmailSetting({ fromEmail: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.from-name"), "optional")}
-          description={t("setting.notification.from-name-description")}
-        >
-          <Input
-            className="w-full sm:w-80"
-            value={emailSetting.fromName}
-            disabled={emailLocked("fromName")}
-            placeholder="Memos"
-            onChange={(e) => updateEmailSetting({ fromName: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.from-name"), "optional")}
+            description={t("setting.notification.from-name-description")}
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              value={emailSetting.fromName}
+              disabled={emailLocked("fromName")}
+              placeholder="Memos"
+              onChange={(e) => updateEmailSetting({ fromName: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.reply-to"), "optional")}
-          description={t("setting.notification.reply-to-description")}
-        >
-          <Input
-            className="w-full sm:w-80"
-            type="email"
-            value={emailSetting.replyTo}
-            disabled={emailLocked("replyTo")}
-            placeholder="support@example.com"
-            onChange={(e) => updateEmailSetting({ replyTo: e.target.value })}
-          />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.reply-to"), "optional")}
+            description={t("setting.notification.reply-to-description")}
+          >
+            <Input
+              className="w-full max-w-full sm:w-80"
+              type="email"
+              value={emailSetting.replyTo}
+              disabled={emailLocked("replyTo")}
+              placeholder="support@example.com"
+              onChange={(e) => updateEmailSetting({ replyTo: e.target.value })}
+            />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.use-tls"), "recommended")}
-          description={t("setting.notification.use-tls-description")}
-        >
-          <Checkbox disabled={emailLocked("useTls")} checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.use-tls"), "recommended")}
+            description={t("setting.notification.use-tls-description")}
+          >
+            <Checkbox disabled={emailLocked("useTls")} checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
+          </SettingListItem>
 
-        <SettingRow
-          label={fieldLabel(t("setting.notification.use-ssl"), "optional")}
-          description={t("setting.notification.use-ssl-description")}
-        >
-          <Checkbox disabled={emailLocked("useSsl")} checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
-        </SettingRow>
+          <SettingListItem
+            label={fieldLabel(t("setting.notification.use-ssl"), "optional")}
+            description={t("setting.notification.use-ssl-description")}
+          >
+            <Checkbox disabled={emailLocked("useSsl")} checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
+          </SettingListItem>
+        </SettingList>
       </SettingGroup>
 
       <div className="w-full flex flex-col justify-end gap-2 sm:flex-row">

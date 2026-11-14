@@ -613,8 +613,6 @@
       "no-members-found": "Üye bulunamadı",
       "active": "Aktif",
       "archived": "Arşivlendi",
-      "member-column": "Üye",
-      "summary-column": "Özet",
       "export-memos": "Notları dışa aktar",
       "username-password-required": "Kullanıcı adı ve parola boş olamaz",
       "create-success": "Kullanıcı oluşturuldu",
@@ -945,7 +943,6 @@
       "basic-settings": "Temel ayarlar",
       "basic-settings-description": "OAuth ayrıntılarını doldurmadan önce sağlayıcı kimliğini, görünen adı ve isteğe bağlı tanımlayıcı kurallarını ayarlayın.",
       "client-secret-optional-description": "Mevcut istemci sırrını değiştirmeden tutmak için boş bırakın.",
-      "configuration": "Yapılandırma",
       "configuration-summary-description": "Tam yapılandırmayı satır içi olarak açığa çıkarmadan bir sağlayıcının tanımlanmasına ve denetlenmesine yardımcı olan temel bilgileri gösterin.",
       "create-sso-description": "Yönetici tarafından yönetilen çoklu oturum açma için yeni bir kimlik sağlayıcı oluşturun.",
       "endpoints": "Uç noktalar",
@@ -967,7 +964,6 @@
       "not-linked-description": "Henüz hiçbir harici kimlik bağlantılı değil. Daha sonra oturum açmak için bu sağlayıcıya bağlanabilirsiniz.",
       "oauth-configuration": "OAuth yapılandırması",
       "oauth-configuration-description": "Oturum açma sırasında kullanılan OAuth istemci kimlik bilgilerini ve sağlayıcı uç noktalarını girin.",
-      "provider": "sağlayıcı",
       "provider-id": "Sağlayıcı kimliği",
       "provider-id-description": "Yalnızca küçük harfler, sayılar ve kısa çizgiler. Bu değer, sağlayıcı kaynak adının bir parçası haline gelir.",
       "provider-uid": "UID",
@@ -1106,7 +1102,6 @@
       },
       "no-webhooks-found": "Webhook bulunamadı.",
       "title": "Webhook'lar",
-      "url": "URL",
       "label": "Webhook'lar"
     },
     "tags": {

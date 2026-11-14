@@ -568,8 +568,6 @@
       "no-members-found": "Non se atopou ningún membro",
       "active": "Activo",
       "archived": "Arquivado",
-      "member-column": "Membro",
-      "summary-column": "Resumo",
       "export-memos": "Exportar notas",
       "username-password-required": "O nome de usuario e o contrasinal non poden estar baleiros",
       "create-success": "Usuario creado",
@@ -777,7 +775,6 @@
       "basic-settings": "Configuración básica",
       "basic-settings-description": "Establece a identidade do provedor, o nome para mostrar e as regras de identificador opcionais antes de cubrir os detalles do OAuth.",
       "client-secret-optional-description": "Deixa en branco para manter o segredo do cliente existente sen cambios.",
-      "configuration": "Configuración",
       "configuration-summary-description": "Mostra os elementos esenciais que axudan a identificar e auditar un provedor sen expor a configuración completa en liña.",
       "create-sso-description": "Crea un novo provedor de identidade para o inicio de sesión único xestionado polo administrador.",
       "endpoints": "Puntos finais",
@@ -799,7 +796,6 @@
       "not-linked-description": "Aínda non hai ningunha identidade externa vinculada. Podes conectar este provedor para iniciar sesión con el máis tarde.",
       "oauth-configuration": "Configuración OAuth",
       "oauth-configuration-description": "Encha as credenciais do cliente OAuth e os puntos finais do provedor utilizados durante o inicio de sesión.",
-      "provider": "Provedor",
       "provider-id": "ID do provedor",
       "provider-id-description": "Só letras minúsculas, números e guións. Este valor pasa a formar parte do nome do recurso do provedor.",
       "provider-uid": "UID",
@@ -938,7 +934,6 @@
       },
       "no-webhooks-found": "Non hai webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

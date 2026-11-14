@@ -647,9 +647,7 @@
       "delete-warning-description": "ACEASTA ACȚIUNE ESTE IRREVERSIBILĂ",
       "label": "Membru",
       "list-title": "Lista de membri",
-      "member-column": "Membru",
       "restore-success": "{{username}} a fost restaurat cu succes",
-      "summary-column": "Rezumat",
       "user": "Utilizator",
       "no-members-found": "Nu s-au găsit membri",
       "export-memos": "Exportă notițele",
@@ -878,7 +876,6 @@
       "client-id": "ID client",
       "client-secret": "Secretul clientului",
       "client-secret-optional-description": "Lăsați necompletat pentru a păstra secretul clientului existent neschimbat.",
-      "configuration": "Configurare",
       "configuration-summary-description": "Afișați elementele esențiale care ajută la identificarea și auditarea unui furnizor fără a expune configurația completă în linie.",
       "confirm-delete": "Sigur doriți să ștergeți configurația `{{name}}` SSO? ACEASTA ACȚIUNE ESTE IRREVERSIBILĂ",
       "create-sso": "Creați SSO",
@@ -907,7 +904,6 @@
       "not-linked-description": "Nicio identitate externă nu este încă legată. Puteți conecta acest furnizor pentru a vă conecta mai târziu.",
       "oauth-configuration": "Configurația OAuth",
       "oauth-configuration-description": "Completați acreditările clientului OAuth și punctele finale ale furnizorului utilizate în timpul conectării.",
-      "provider": "Furnizor",
       "provider-id": "ID furnizor",
       "provider-id-description": "Numai litere mici, cifre și cratime. Această valoare devine parte din numele resursei furnizorului.",
       "provider-uid": "UID",
@@ -1055,7 +1051,6 @@
       },
       "no-webhooks-found": "Nu s-au găsit webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

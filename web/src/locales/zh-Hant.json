@@ -687,9 +687,7 @@
       "delete-warning-description": "此操作無法恢復。",
       "label": "使用者",
       "list-title": "使用者列表",
-      "member-column": "成員",
       "restore-success": "{{username}} 恢復成功",
-      "summary-column": "摘要",
       "user": "使用者",
       "no-members-found": "沒有找到成員",
       "export-memos": "匯出備忘錄",
@@ -918,7 +916,6 @@
       "client-id": "用戶端 ID（Client ID）",
       "client-secret": "客戶端金鑰（Client Secret）",
       "client-secret-optional-description": "留空以保留現有的客戶端金鑰不變。",
-      "configuration": "設定",
       "configuration-summary-description": "顯示有助於識別和稽核身分識別提供者的基本資訊，而不會內嵌揭露完整設定。",
       "confirm-delete": "您確定要刪除 `{{name}}` 的單一登入（SSO）設定嗎？此操作無法復原。",
       "create-sso": "新增 SSO",
@@ -947,7 +944,6 @@
       "not-linked-description": "尚未連結外部身分。您可以連接此身分識別提供者，以便日後使用它登入。",
       "oauth-configuration": "OAuth 設定",
       "oauth-configuration-description": "填寫 OAuth 用戶端憑證及登入時使用的身分識別提供者端點。",
-      "provider": "身分識別提供者",
       "provider-id": "提供者 ID",
       "provider-id-description": "僅限小寫字母、數字和連字號。此值將成為身分識別提供者資源名稱的一部分。",
       "provider-uid": "UID",
@@ -1176,7 +1172,6 @@
       },
       "no-webhooks-found": "尚未建立任何 Webhook。",
       "title": "Webhook",
-      "url": "網址",
       "label": "Webhook"
     },
     "tags": {

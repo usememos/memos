@@ -1,4 +1,4 @@
-import { Button, Table, Tooltip } from "@usememos/ui";
+import { Button, List, Tooltip } from "@usememos/ui";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -9,8 +9,8 @@ import { UserWebhook } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateWebhookDialog from "../CreateWebhookDialog";
 import LearnMore from "../LearnMore";
+import { SettingList } from "./SettingList";
 import SettingSection from "./SettingSection";
-import SettingTable from "./SettingTable";
 
 const WebhookSection = () => {
   const t = useTranslate();
@@ -77,28 +77,17 @@ const WebhookSection = () => {
         </Button>
       }
     >
-      <SettingTable
-        columns={[
-          {
-            key: "displayName",
-            header: t("common.name"),
-            render: (_, webhook: UserWebhook) => <span className="text-mu-text">{webhook.displayName}</span>,
-          },
-          {
-            key: "url",
-            header: t("setting.webhook.url"),
-            render: (_, webhook: UserWebhook) => (
-              <span className="block max-w-[300px] truncate text-mu-text" title={webhook.url}>
-                {webhook.url}
-              </span>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            alignEnd: true,
-            render: (_, webhook: UserWebhook) => (
-              <Table.Actions className="pointer-coarse:gap-5">
+      {webhooks.length === 0 ? (
+        <p className="py-6 text-center mu-body text-mu-text-secondary">{t("setting.webhook.no-webhooks-found")}</p>
+      ) : (
+        <SettingList aria-label={t("setting.webhook.title")}>
+          {webhooks.map((webhook) => (
+            <List.Item key={webhook.name} className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="mu-label break-words">{webhook.displayName}</p>
+                <p className="mt-1 break-all mu-caption text-mu-text-secondary">{webhook.url}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
                 <Tooltip.Root>
                   <Tooltip.Trigger
                     render={
@@ -125,14 +114,11 @@ const WebhookSection = () => {
                   />
                   <Tooltip.Popup>{t("common.delete")}</Tooltip.Popup>
                 </Tooltip.Root>
-              </Table.Actions>
-            ),
-          },
-        ]}
-        data={webhooks}
-        emptyMessage={t("setting.webhook.no-webhooks-found")}
-        getRowKey={(webhook) => webhook.name}
-      />
+              </div>
+            </List.Item>
+          ))}
+        </SettingList>
+      )}
 
       <CreateWebhookDialog
         open={isCreateWebhookDialogOpen}

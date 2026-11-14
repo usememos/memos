@@ -568,8 +568,6 @@
       "no-members-found": "Ingen medlemmer funnet",
       "active": "Aktiv",
       "archived": "Arkivert",
-      "member-column": "Medlem",
-      "summary-column": "Sammendrag",
       "export-memos": "Eksporter notater",
       "username-password-required": "Brukernavn og passord kan ikke være tomme",
       "create-success": "Bruker opprettet",
@@ -777,7 +775,6 @@
       "basic-settings": "Grunnleggende innstillinger",
       "basic-settings-description": "Angi leverandørens identitet, visningsnavn og valgfrie identifikatorregler før du fyller ut OAuth-detaljene.",
       "client-secret-optional-description": "La stå tomt for å beholde den eksisterende klienthemmeligheten uendret.",
-      "configuration": "Konfigurasjon",
       "configuration-summary-description": "Vis det essensielle som hjelper til med å identifisere og revidere en leverandør uten å avsløre hele konfigurasjonen inline.",
       "create-sso-description": "Opprett en ny identitetsleverandør for administratoradministrert enkel pålogging.",
       "endpoints": "Endepunkter",
@@ -799,7 +796,6 @@
       "not-linked-description": "Ingen ekstern identitet er knyttet ennå. Du kan koble til denne leverandøren for å logge på med den senere.",
       "oauth-configuration": "OAuth-konfigurasjon",
       "oauth-configuration-description": "Fyll inn OAuth-klientlegitimasjonen og leverandørendepunktene som ble brukt under pålogging.",
-      "provider": "Leverandør",
       "provider-id": "Leverandør-ID",
       "provider-id-description": "Bare små bokstaver, tall og bindestreker. Denne verdien blir en del av leverandørressursnavnet.",
       "provider-uid": "UID",
@@ -938,7 +934,6 @@
       },
       "no-webhooks-found": "Ingen webhooks funnet.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

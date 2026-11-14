@@ -679,9 +679,7 @@
       "delete-warning-description": "פעולה זו אינה הפיכה",
       "label": "חבר",
       "list-title": "רשימת חברים",
-      "member-column": "חבר",
       "restore-success": "{{username}} שוחזר/ה בהצלחה",
-      "summary-column": "סיכום",
       "user": "משתמש",
       "no-members-found": "לא נמצאו חברים",
       "export-memos": "ייצוא פתקים",
@@ -910,7 +908,6 @@
       "client-id": "מזהה לקוח",
       "client-secret": "סוד לקוח",
       "client-secret-optional-description": "השאירו ריק כדי להשאיר את סוד הלקוח הקיים ללא שינוי.",
-      "configuration": "הגדרה",
       "configuration-summary-description": "הציגו את הפרטים החיוניים לזיהוי וביקורת של ספק בלי לחשוף את התצורה המלאה בתוך השורה.",
       "confirm-delete": "האם אתם בטוחים שברצונכם למחוק את הגדרת ה־SSO \"{{name}}\"? פעולה זו אינה הפיכה",
       "create-sso": "צור SSO",
@@ -939,7 +936,6 @@
       "not-linked-description": "עדיין לא קושרה זהות חיצונית. תוכלו לחבר את הספק הזה כדי להתחבר באמצעותו מאוחר יותר.",
       "oauth-configuration": "הגדרת OAuth",
       "oauth-configuration-description": "מלאו את פרטי הכניסה של לקוח OAuth ואת נקודות הקצה של הספק המשמשות בעת ההתחברות.",
-      "provider": "ספק",
       "provider-id": "מזהה ספק",
       "provider-id-description": "מותר להשתמש באותיות קטנות, מספרים ומקפים בלבד. ערך זה יהפוך לחלק משם המשאב של הספק.",
       "provider-uid": "UID",
@@ -1087,7 +1083,6 @@
       },
       "no-webhooks-found": "לא נמצאו Webhooks.",
       "title": "Webhooks",
-      "url": "כתובת",
       "label": "Webhooks"
     },
     "tags": {

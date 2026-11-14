@@ -646,9 +646,7 @@
       "delete-warning-description": "DENNE HANDLING ER IRREVERSIBEL",
       "label": "Medlem",
       "list-title": "Medlemsliste",
-      "member-column": "Medlem",
       "restore-success": "{{username}} gendannet med succes",
-      "summary-column": "Oversigt",
       "user": "Bruger",
       "no-members-found": "Ingen medlemmer fundet",
       "export-memos": "Eksportér noter",
@@ -877,7 +875,6 @@
       "client-id": "Klient-id",
       "client-secret": "Klientens hemmelighed",
       "client-secret-optional-description": "Lad stå tomt for at holde den eksisterende klienthemmelighed uændret.",
-      "configuration": "Konfiguration",
       "configuration-summary-description": "Vis det væsentlige, der hjælper med at identificere og revidere en udbyder uden at afsløre hele konfigurationen inline.",
       "confirm-delete": "Er du sikker på, at du vil slette `{{name}}` SSO-konfigurationen? DENNE HANDLING ER IRREVERSIBEL",
       "create-sso": "Opret SSO",
@@ -906,7 +903,6 @@
       "not-linked-description": "Der er endnu ikke knyttet nogen ekstern identitet. Du kan oprette forbindelse til denne udbyder for at logge ind med den senere.",
       "oauth-configuration": "OAuth konfiguration",
       "oauth-configuration-description": "Udfyld OAuth-klientens legitimationsoplysninger og udbyderens slutpunkter, der bruges under login.",
-      "provider": "Udbyder",
       "provider-id": "Udbyder-id",
       "provider-id-description": "Kun små bogstaver, tal og bindestreger. Denne værdi bliver en del af udbyderens ressourcenavn.",
       "provider-uid": "UID",
@@ -1054,7 +1050,6 @@
       },
       "no-webhooks-found": "Ingen webhooks fundet.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

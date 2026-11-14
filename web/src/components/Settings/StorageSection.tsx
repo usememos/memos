@@ -21,7 +21,7 @@ import {
 import { useTranslate } from "@/utils/i18n";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
-import SettingRow from "./SettingRow";
+import { SettingList, SettingListItem } from "./SettingList";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
@@ -330,19 +330,21 @@ const StorageSection = () => {
         </div>
 
         {selectedStorageType !== InstanceSetting_StorageType.DATABASE && (
-          <SettingRow
-            label={t("setting.storage.filepath-template")}
-            description={t("setting.storage.filepath-template-description")}
-            vertical
-          >
-            <Input
-              className="w-full max-w-lg font-mono"
-              value={instanceStorageSetting.filepathTemplate}
-              disabled={templateLocked}
-              placeholder={DEFAULT_FILEPATH_TEMPLATE}
-              onChange={handleFilepathTemplateChanged}
-            />
-          </SettingRow>
+          <SettingList>
+            <SettingListItem
+              label={t("setting.storage.filepath-template")}
+              description={t("setting.storage.filepath-template-description")}
+              orientation="vertical"
+            >
+              <Input
+                className="w-full max-w-lg font-mono"
+                value={instanceStorageSetting.filepathTemplate}
+                disabled={templateLocked}
+                placeholder={DEFAULT_FILEPATH_TEMPLATE}
+                onChange={handleFilepathTemplateChanged}
+              />
+            </SettingListItem>
+          </SettingList>
         )}
       </SettingGroup>
 
@@ -352,75 +354,77 @@ const StorageSection = () => {
           description={t("setting.storage.s3-configuration-description")}
           showSeparator
         >
-          <SettingRow label={t("setting.storage.accesskey")} description={t("setting.storage.accesskey-description")}>
-            <Input
-              className="w-64"
-              value={selectedS3Config?.accessKeyId ?? ""}
-              disabled={registryLocked}
-              onChange={(e) => handleS3FieldChange("accessKeyId", e.target.value)}
-            />
-          </SettingRow>
+          <SettingList>
+            <SettingListItem label={t("setting.storage.accesskey")} description={t("setting.storage.accesskey-description")}>
+              <Input
+                className="w-full max-w-full sm:w-64"
+                value={selectedS3Config?.accessKeyId ?? ""}
+                disabled={registryLocked}
+                onChange={(e) => handleS3FieldChange("accessKeyId", e.target.value)}
+              />
+            </SettingListItem>
 
-          <SettingRow
-            label={t("setting.storage.secretkey")}
-            description={
-              canReuseSelectedS3Secret ? t("setting.storage.secretkey-preserve-description") : t("setting.storage.secretkey-description")
-            }
-          >
-            <Input
-              className="w-64"
-              type="password"
-              value={selectedS3Config?.accessKeySecret ?? ""}
-              disabled={registryLocked}
-              onChange={(e) => handleS3FieldChange("accessKeySecret", e.target.value)}
-            />
-          </SettingRow>
+            <SettingListItem
+              label={t("setting.storage.secretkey")}
+              description={
+                canReuseSelectedS3Secret ? t("setting.storage.secretkey-preserve-description") : t("setting.storage.secretkey-description")
+              }
+            >
+              <Input
+                className="w-full max-w-full sm:w-64"
+                type="password"
+                value={selectedS3Config?.accessKeySecret ?? ""}
+                disabled={registryLocked}
+                onChange={(e) => handleS3FieldChange("accessKeySecret", e.target.value)}
+              />
+            </SettingListItem>
 
-          <SettingRow label={t("setting.storage.endpoint")} description={t("setting.storage.endpoint-description")}>
-            <Input
-              className="w-64"
-              value={selectedS3Config?.endpoint ?? ""}
-              disabled={registryLocked}
-              onChange={(e) => handleS3FieldChange("endpoint", e.target.value)}
-            />
-          </SettingRow>
+            <SettingListItem label={t("setting.storage.endpoint")} description={t("setting.storage.endpoint-description")}>
+              <Input
+                className="w-full max-w-full sm:w-64"
+                value={selectedS3Config?.endpoint ?? ""}
+                disabled={registryLocked}
+                onChange={(e) => handleS3FieldChange("endpoint", e.target.value)}
+              />
+            </SettingListItem>
 
-          <SettingRow label={t("setting.storage.region")} description={t("setting.storage.region-description")}>
-            <Input
-              className="w-64"
-              value={selectedS3Config?.region ?? ""}
-              disabled={registryLocked}
-              onChange={(e) => handleS3FieldChange("region", e.target.value)}
-            />
-          </SettingRow>
+            <SettingListItem label={t("setting.storage.region")} description={t("setting.storage.region-description")}>
+              <Input
+                className="w-full max-w-full sm:w-64"
+                value={selectedS3Config?.region ?? ""}
+                disabled={registryLocked}
+                onChange={(e) => handleS3FieldChange("region", e.target.value)}
+              />
+            </SettingListItem>
 
-          <SettingRow label={t("setting.storage.bucket")} description={t("setting.storage.bucket-description")}>
-            <Input
-              className="w-64"
-              value={selectedS3Config?.bucket ?? ""}
-              disabled={registryLocked}
-              onChange={(e) => handleS3FieldChange("bucket", e.target.value)}
-            />
-          </SettingRow>
+            <SettingListItem label={t("setting.storage.bucket")} description={t("setting.storage.bucket-description")}>
+              <Input
+                className="w-full max-w-full sm:w-64"
+                value={selectedS3Config?.bucket ?? ""}
+                disabled={registryLocked}
+                onChange={(e) => handleS3FieldChange("bucket", e.target.value)}
+              />
+            </SettingListItem>
 
-          <SettingRow label={t("setting.storage.use-path-style")} description={t("setting.storage.use-path-style-description")}>
-            <Checkbox
-              checked={selectedS3Config?.usePathStyle ?? false}
-              disabled={registryLocked}
-              onCheckedChange={(checked) => handleS3FieldChange("usePathStyle", checked)}
-            />
-          </SettingRow>
+            <SettingListItem label={t("setting.storage.use-path-style")} description={t("setting.storage.use-path-style-description")}>
+              <Checkbox
+                checked={selectedS3Config?.usePathStyle ?? false}
+                disabled={registryLocked}
+                onCheckedChange={(checked) => handleS3FieldChange("usePathStyle", checked)}
+              />
+            </SettingListItem>
 
-          <SettingRow
-            label={t("setting.storage.insecure-skip-tls-verify")}
-            description={t("setting.storage.insecure-skip-tls-verify-description")}
-          >
-            <Checkbox
-              checked={selectedS3Config?.insecureSkipTlsVerify ?? false}
-              disabled={registryLocked}
-              onCheckedChange={(checked) => handleS3FieldChange("insecureSkipTlsVerify", checked)}
-            />
-          </SettingRow>
+            <SettingListItem
+              label={t("setting.storage.insecure-skip-tls-verify")}
+              description={t("setting.storage.insecure-skip-tls-verify-description")}
+            >
+              <Checkbox
+                checked={selectedS3Config?.insecureSkipTlsVerify ?? false}
+                disabled={registryLocked}
+                onCheckedChange={(checked) => handleS3FieldChange("insecureSkipTlsVerify", checked)}
+              />
+            </SettingListItem>
+          </SettingList>
         </SettingGroup>
       )}
 

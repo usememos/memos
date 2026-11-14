@@ -487,9 +487,7 @@
       "list-title": "Lista de membros",
       "no-members-found": "Nenhum membro encontrado",
       "archived": "Arquivo",
-      "member-column": "Membro",
       "active": "Ativo",
-      "summary-column": "Resumo",
       "export-memos": "Exportar memos",
       "username-password-required": "Nome de usuário e senha não podem ficar vazios",
       "create-success": "Usuário criado",
@@ -688,7 +686,6 @@
       "basic-settings": "Configurações básicas",
       "basic-settings-description": "Defina a identidade do provedor, o nome de exibição e as regras de identificação opcionais antes de preencher os detalhes OAuth.",
       "client-secret-optional-description": "Deixe em branco para manter o segredo do cliente existente inalterado.",
-      "configuration": "Configuração",
       "configuration-summary-description": "Mostre os itens essenciais que ajudam a identificar e auditar um provedor sem expor a configuração completa em linha.",
       "create-sso-description": "Crie um novo provedor de identidade para logon único gerenciado pelo administrador.",
       "endpoints": "Pontos de extremidade",
@@ -710,7 +707,6 @@
       "not-linked-description": "Nenhuma identidade externa está vinculada ainda. Você pode conectar este provedor para fazer login com ele posteriormente.",
       "oauth-configuration": "Configuração OAuth",
       "oauth-configuration-description": "Preencha as credenciais do cliente OAuth e os endpoints do provedor usados ​​durante o login.",
-      "provider": "Provedor",
       "provider-id": "ID do Provedor",
       "provider-id-description": "Somente letras minúsculas, números e hífens. Este valor se torna parte do nome do recurso do provedor.",
       "redirect-url-description": "Registre este URL de retorno de chamada com seu provedor de identidade para que o fluxo do código de autorização possa ser concluído.",
@@ -934,7 +930,6 @@
       },
       "no-webhooks-found": "Nenhum webhook encontrado.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

@@ -1,4 +1,4 @@
-import { Badge, Button } from "@usememos/ui";
+import { Badge, Button, List } from "@usememos/ui";
 import { useEffect, useMemo, useState } from "react";
 import InfoChip from "@/components/Settings/InfoChip";
 import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/components/Settings/sso-display";
@@ -14,9 +14,9 @@ import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
-import SettingTable from "./SettingTable";
+import { SettingList } from "./SettingList";
 
-interface LinkedIdentityRow extends Record<string, unknown> {
+interface LinkedIdentityRow {
   name: string;
   providerUid: string;
   title: string;
@@ -144,29 +144,20 @@ const LinkedIdentitySection = () => {
 
   return (
     <SettingGroup showSeparator title={t("setting.sso.accounts-title")} description={t("setting.sso.accounts-description")}>
-      <SettingTable<LinkedIdentityRow>
-        variant="info-flow"
-        columns={[
-          {
-            key: "title",
-            header: t("setting.sso.provider"),
-            render: (_, row: LinkedIdentityRow) => (
-              <div className="flex min-w-[16rem] flex-col gap-2">
+      {rows.length === 0 ? (
+        <p className="py-6 text-center mu-body text-mu-text-secondary">{t("setting.sso.no-sso-found")}</p>
+      ) : (
+        <SettingList>
+          {rows.map((row) => (
+            <List.Item key={row.name} className="flex items-start gap-3">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="mu-label text-mu-text">{row.title}</span>
+                  <span className="min-w-0 mu-label break-words text-mu-text">{row.title}</span>
                   <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
                 </div>
-              </div>
-            ),
-          },
-          {
-            key: "externalUid",
-            header: t("setting.sso.account"),
-            render: (_, row: LinkedIdentityRow) => (
-              <div className="flex min-w-[22rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone={row.isLinked ? "neutral" : "outline"}>
                     {row.isLinked ? t("setting.sso.linked") : t("setting.sso.not-linked")}
@@ -180,32 +171,24 @@ const LinkedIdentitySection = () => {
                   {row.isLinked ? t("setting.sso.extern-uid-description") : t("setting.sso.not-linked-description")}
                 </p>
               </div>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            className: "w-px",
-            alignEnd: true,
-            render: (_, row: LinkedIdentityRow) =>
-              row.linkedIdentity ? (
-                // A link the configuration declares is unlinked in its file, not here.
-                findManagedResource(configurationStatus, row.linkedIdentity.name) ? null : (
-                  <Button variant="neutral" onClick={() => handleUnlinkIdentityProvider(row)}>
-                    {t("common.unlink")}
+              <div className="shrink-0">
+                {row.linkedIdentity ? (
+                  // A link the configuration declares is unlinked in its file, not here.
+                  findManagedResource(configurationStatus, row.linkedIdentity.name) ? null : (
+                    <Button variant="neutral" onClick={() => handleUnlinkIdentityProvider(row)}>
+                      {t("common.unlink")}
+                    </Button>
+                  )
+                ) : (
+                  <Button variant="neutral" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
+                    {t("common.link")}
                   </Button>
-                )
-              ) : (
-                <Button variant="neutral" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
-                  {t("common.link")}
-                </Button>
-              ),
-          },
-        ]}
-        data={rows}
-        emptyMessage={t("setting.sso.no-sso-found")}
-        getRowKey={(row) => row.name}
-      />
+                )}
+              </div>
+            </List.Item>
+          ))}
+        </SettingList>
+      )}
     </SettingGroup>
   );
 };

@@ -648,9 +648,7 @@
       "delete-warning-description": "ŠIS VEIKSMAS YRA NEGRĮŽTAMAS",
       "label": "narys",
       "list-title": "Narių sąrašas",
-      "member-column": "narys",
       "restore-success": "{{username}} sėkmingai atkurtas",
-      "summary-column": "Santrauka",
       "user": "Vartotojas",
       "no-members-found": "Narių nerasta",
       "export-memos": "Eksportuoti užrašus",
@@ -879,7 +877,6 @@
       "client-id": "Kliento ID",
       "client-secret": "Kliento paslaptis",
       "client-secret-optional-description": "Palikite tuščią, kad esamo kliento paslaptis liktų nepakitusi.",
-      "configuration": "Konfigūracija",
       "configuration-summary-description": "Parodykite esminius dalykus, kurie padeda identifikuoti ir tikrinti teikėją, neatskleidžiant visos konfigūracijos.",
       "confirm-delete": "Ar tikrai norite ištrinti `{{name}}` SSO konfigūraciją? ŠIS VEIKSMAS YRA NEGRĮŽTAMAS",
       "create-sso": "Sukurkite SSO",
@@ -908,7 +905,6 @@
       "not-linked-description": "Jokia išorinė tapatybė dar nesusieta. Galite prisijungti prie šio teikėjo, kad prisijungtumėte prie jo vėliau.",
       "oauth-configuration": "OAuth konfigūracija",
       "oauth-configuration-description": "Įveskite OAuth kliento kredencialus ir teikėjo galinius taškus, naudojamus prisijungiant.",
-      "provider": "Teikėjas",
       "provider-id": "Teikėjo ID",
       "provider-id-description": "Tik mažosios raidės, skaičiai ir brūkšneliai. Ši reikšmė tampa teikėjo ištekliaus pavadinimo dalimi.",
       "provider-uid": "UID",
@@ -1056,7 +1052,6 @@
       },
       "no-webhooks-found": "Žiniatinklio kabliukų nerasta.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

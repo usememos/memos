@@ -106,7 +106,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
               </span>
               <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
             </button>
-            <Menu.Root modal={false} size="sm">
+            <Menu.Root modal={false} size="md">
               <Menu.Trigger
                 nativeButton={false}
                 render={

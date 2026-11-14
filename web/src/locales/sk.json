@@ -648,9 +648,7 @@
       "delete-warning-description": "TÁTO AKCIA JE NEVRATNÁ",
       "label": "člen",
       "list-title": "Zoznam členov",
-      "member-column": "člen",
       "restore-success": "{{username}} bol úspešne obnovený",
-      "summary-column": "Zhrnutie",
       "user": "Používateľ",
       "no-members-found": "Nenašli sa žiadni členovia",
       "export-memos": "Exportovať poznámky",
@@ -879,7 +877,6 @@
       "client-id": "ID klienta",
       "client-secret": "Tajomstvo klienta",
       "client-secret-optional-description": "Ak chcete zachovať tajomstvo existujúceho klienta bez zmeny, nechajte pole prázdne.",
-      "configuration": "Konfigurácia",
       "configuration-summary-description": "Ukážte základy, ktoré pomáhajú identifikovať a auditovať poskytovateľa bez toho, aby ste odhalili celú konfiguráciu.",
       "confirm-delete": "Naozaj chcete vymazať konfiguráciu `{{name}}` SSO? TÁTO AKCIA JE NEVRATNÁ",
       "create-sso": "Vytvorte SSO",
@@ -908,7 +905,6 @@
       "not-linked-description": "Zatiaľ nie je prepojená žiadna externá identita. Môžete pripojiť tohto poskytovateľa a prihlásiť sa s ním neskôr.",
       "oauth-configuration": "Konfigurácia OAuth",
       "oauth-configuration-description": "Vyplňte poverenia klienta OAuth a koncové body poskytovateľa použité počas prihlásenia.",
-      "provider": "Poskytovateľ",
       "provider-id": "ID poskytovateľa",
       "provider-id-description": "Len malé písmená, čísla a spojovníky. Táto hodnota sa stane súčasťou názvu prostriedku poskytovateľa.",
       "provider-uid": "UID",
@@ -1056,7 +1052,6 @@
       },
       "no-webhooks-found": "Nenašli sa žiadne webhooky.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

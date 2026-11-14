@@ -569,8 +569,6 @@
       "no-members-found": "Nessun membro trovato",
       "active": "Attiva",
       "archived": "Archiviata",
-      "member-column": "Membro",
-      "summary-column": "Riepilogo",
       "export-memos": "Esporta note",
       "username-password-required": "Nome utente e password non possono essere vuoti",
       "create-success": "Utente creato",
@@ -778,7 +776,6 @@
       "basic-settings": "Impostazioni di base",
       "basic-settings-description": "Imposta l'identità del provider, il nome visualizzato e le regole dell'identificatore facoltativo prima di compilare i dettagli OAuth.",
       "client-secret-optional-description": "Lascia vuoto per mantenere invariato il segreto client esistente.",
-      "configuration": "Configurazione",
       "configuration-summary-description": "Mostra gli elementi essenziali che aiutano a identificare e controllare un fornitore senza esporre l'intera configurazione in linea.",
       "create-sso-description": "Creare un nuovo provider di identità per il Single Sign-On gestito dall'amministratore.",
       "endpoints": "Endpoint",
@@ -800,7 +797,6 @@
       "not-linked-description": "Nessuna identità esterna è ancora collegata. Puoi connettere questo provider per accedervi in ​​un secondo momento.",
       "oauth-configuration": "Configurazione OAuth",
       "oauth-configuration-description": "Compila le credenziali del client OAuth e gli endpoint del provider utilizzati durante l'accesso.",
-      "provider": "Fornitrice",
       "provider-id": "Identificativo del fornitore",
       "provider-id-description": "Solo lettere minuscole, numeri e trattini. Questo valore diventa parte del nome della risorsa del provider.",
       "provider-uid": "UID",
@@ -939,7 +935,6 @@
       },
       "no-webhooks-found": "Nessun webhook trovato.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

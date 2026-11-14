@@ -131,6 +131,8 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
   components). Controls come from the package; build a part it lacks on Base UI as its `custom-components.md` describes.
 - Use a package component when one fits (`Button`, `Link`, `Spinner`, `Badge`). Its class functions (`buttonClasses()`,
   `menuClasses()`, `badgeClasses()`) are for elements it can't render, such as a router link or a Base UI trigger.
+- Action menus use `md`, including custom rows styled with `menuClasses()`. Compact three-dot trigger buttons keep `sm`.
+- Field text follows its component size on every device; do not add touch-specific font sizing.
 - Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-text-secondary`, `rounded-mu-md`),
   text with its type classes (`mu-caption`, `mu-body`, `mu-label`, `mu-title`), and `cn()` for class merging. No Tailwind
   text sizes or old color names (`muted-foreground`, `destructive`, `popover`). The exceptions are the brand wordmark and

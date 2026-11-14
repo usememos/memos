@@ -569,8 +569,6 @@
       "no-members-found": "Aucun membre trouvé",
       "active": "Active",
       "archived": "Archivé",
-      "member-column": "Membre",
-      "summary-column": "Résumé",
       "export-memos": "Exporter les mémos",
       "username-password-required": "Le nom d'utilisateur et le mot de passe ne peuvent pas être vides",
       "create-success": "Utilisateur créé",
@@ -778,7 +776,6 @@
       "basic-settings": "Paramètres de base",
       "basic-settings-description": "Définissez les règles d'identité du fournisseur, de nom d'affichage et d'identifiant facultatif avant de remplir les détails OAuth.",
       "client-secret-optional-description": "Laissez vide pour conserver le secret client existant inchangé.",
-      "configuration": "Configuration",
       "configuration-summary-description": "Présentez les éléments essentiels qui permettent d’identifier et d’auditer un fournisseur sans exposer la configuration complète en ligne.",
       "create-sso-description": "Créez un nouveau fournisseur d'identité pour l'authentification unique gérée par l'administrateur.",
       "endpoints": "Points de terminaison",
@@ -800,7 +797,6 @@
       "not-linked-description": "Aucune identité externe n'est encore liée. Vous pouvez connecter ce fournisseur pour vous y connecter ultérieurement.",
       "oauth-configuration": "Configuration OAuth",
       "oauth-configuration-description": "Remplissez les informations d'identification du client OAuth et les points de terminaison du fournisseur utilisés lors de la connexion.",
-      "provider": "Fournisseuse",
       "provider-id": "Identifiant du fournisseur",
       "provider-id-description": "Lettres minuscules, chiffres et traits d'union uniquement. Cette valeur fait partie du nom de la ressource du fournisseur.",
       "provider-uid": "UID",
@@ -939,7 +935,6 @@
       },
       "no-webhooks-found": "Aucun webhook trouvé.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

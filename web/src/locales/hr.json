@@ -569,8 +569,6 @@
       "no-members-found": "Nema pronađenih članova",
       "active": "Aktivan",
       "archived": "Arhivirano",
-      "member-column": "Član",
-      "summary-column": "Sažetak",
       "export-memos": "Izvezi bilješke",
       "username-password-required": "Korisničko ime i lozinka ne smiju biti prazni",
       "create-success": "Korisnik je stvoren",
@@ -778,7 +776,6 @@
       "basic-settings": "Osnovne postavke",
       "basic-settings-description": "Postavite identitet pružatelja usluga, ime za prikaz i izborna pravila identifikatora prije ispunjavanja pojedinosti OAuth.",
       "client-secret-optional-description": "Ostavite prazno kako bi postojeća klijentska tajna ostala nepromijenjena.",
-      "configuration": "Konfiguracija",
       "configuration-summary-description": "Pokažite bitne elemente koji pomažu u identificiranju i reviziji davatelja bez izlaganja pune konfiguracije.",
       "create-sso-description": "Stvorite novog davatelja identiteta za jedinstvenu prijavu kojom upravlja administrator.",
       "endpoints": "Krajnje točke",
@@ -800,7 +797,6 @@
       "not-linked-description": "Nijedan vanjski identitet još nije povezan. Možete povezati ovog pružatelja usluga da biste se kasnije prijavili s njim.",
       "oauth-configuration": "OAuth konfiguracija",
       "oauth-configuration-description": "Ispunite OAuth vjerodajnice klijenta i krajnje točke pružatelja korištene tijekom prijave.",
-      "provider": "Davatelj",
       "provider-id": "ID davatelja usluga",
       "provider-id-description": "Samo mala slova, brojke i crtice. Ova vrijednost postaje dio naziva resursa pružatelja.",
       "provider-uid": "UID",
@@ -939,7 +935,6 @@
       },
       "no-webhooks-found": "Nema pronađenih webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

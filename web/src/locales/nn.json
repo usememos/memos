@@ -724,10 +724,8 @@
       "delete-warning-description": "DENNE HANDLINGA KAN IKKJE GJERAST OM",
       "label": "Medlem",
       "list-title": "Medlemsliste",
-      "member-column": "Medlem",
       "no-members-found": "Ingen medlemer funne",
       "restore-success": "{{username}} er gjenoppretta",
-      "summary-column": "Samandrag",
       "user": "Brukar",
       "export-memos": "Eksporter notat",
       "username-password-required": "Brukarnamn og passord kan ikkje vere tomme",
@@ -1096,7 +1094,6 @@
       "client-id": "Klient-ID",
       "client-secret": "Klientløyndom",
       "client-secret-optional-description": "Lat feltet stå tomt for å halda på den noverande klientløyndomen.",
-      "configuration": "Oppsett",
       "configuration-summary-description": "Vis dei viktigaste opplysningane for å kjenne att og kontrollere ein tilbydar, utan å vise heile oppsettet direkte.",
       "confirm-delete": "Er du viss på at du vil slette SSO-oppsettet `{{name}}`? DENNE HANDLINGA KAN IKKJE GJERAST OM",
       "create-sso": "Opprett SSO",
@@ -1125,7 +1122,6 @@
       "not-linked-description": "Ingen ekstern identitet er knytt til kontoen din enno. Du kan knyte til denne tilbydaren for å logge inn med han seinare.",
       "oauth-configuration": "OAuth-oppsett",
       "oauth-configuration-description": "Fyll ut OAuth-klientlegitimasjonen og endepunkta til tilbydaren som vert nytta ved innlogging.",
-      "provider": "Tilbydar",
       "provider-id": "Tilbydar-ID",
       "provider-id-description": "Berre små bokstavar, tal og bindestrekar. Denne verdien vert ein del av ressursnamnet til tilbydaren.",
       "provider-uid": "UID",
@@ -1290,8 +1286,7 @@
       },
       "label": "Vevkrokar",
       "no-webhooks-found": "Ingen vevkrokar funne.",
-      "title": "Vevkrokar",
-      "url": "Adresse"
+      "title": "Vevkrokar"
     }
   },
   "space": {

@@ -486,9 +486,7 @@
       "list-title": "멤버 목록",
       "no-members-found": "회원을 찾을 수 없습니다.",
       "archived": "보관 목록",
-      "member-column": "멤버",
       "active": "활성",
-      "summary-column": "요약",
       "export-memos": "메모 내보내기",
       "username-password-required": "사용자 이름과 비밀번호는 비워 둘 수 없습니다",
       "create-success": "사용자를 만들었습니다",
@@ -687,7 +685,6 @@
       "basic-settings": "기본 설정",
       "basic-settings-description": "OAuth 세부 정보를 입력하기 전에 공급자 ID, 표시 이름 및 선택적 식별자 규칙을 설정하십시오.",
       "client-secret-optional-description": "기존 클라이언트 암호를 변경하지 않으려면 비워 두십시오.",
-      "configuration": "구성",
       "configuration-summary-description": "전체 구성을 인라인으로 노출하지 않고 공급자를 식별하고 감사하는 데 도움이 되는 필수 정보를 표시합니다.",
       "create-sso-description": "관리자가 관리하는 싱글 사인온(SSO)을 위한 새 ID 공급자를 생성합니다.",
       "endpoints": "엔드포인트",
@@ -709,7 +706,6 @@
       "not-linked-description": "아직 외부 ID가 연결되지 않았습니다. 나중에 이 공급자를 연결하여 로그인할 수 있습니다.",
       "oauth-configuration": "OAuth 구성",
       "oauth-configuration-description": "OAuth 클라이언트 자격 증명과 로그인 시 사용되는 공급자 엔드포인트를 입력합니다.",
-      "provider": "공급자",
       "provider-id": "공급자 ID",
       "provider-id-description": "소문자, 숫자 및 하이픈만 사용 가능합니다. 이 값은 공급자 리소스 이름의 일부가 됩니다.",
       "redirect-url-description": "인증 코드 흐름을 완료할 수 있도록 이 콜백 URL을 ID 공급자에 등록합니다.",
@@ -933,7 +929,6 @@
       },
       "no-webhooks-found": "Webhook이 없습니다.",
       "title": "Webhook",
-      "url": "URL",
       "label": "Webhook"
     },
     "tags": {

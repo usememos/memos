@@ -1,5 +1,6 @@
 import { Field, List, Textarea } from "@usememos/ui";
 import { createContext, type ReactNode, useContext } from "react";
+import { cn } from "@/lib/utils";
 
 /** The id of the enclosing SettingGroup's title, so a SettingList inside it is named by that title. */
 export const SettingGroupTitleContext = createContext<string | undefined>(undefined);
@@ -25,15 +26,24 @@ export const SettingList = ({ children, ...props }: SettingListProps) => {
 interface SettingListItemProps {
   label: ReactNode;
   description?: ReactNode;
+  orientation?: "horizontal" | "vertical";
   /** The row's one control, placed at the end of the row. */
   children?: ReactNode;
 }
 
-/** A settings row: a horizontal Field, so the label and description name the one control at the end. */
-export const SettingListItem = ({ label, description, children }: SettingListItemProps) => {
+/** A labeled settings control; wide controls stack when the row has little room. */
+export const SettingListItem = ({ label, description, children, orientation = "horizontal" }: SettingListItemProps) => {
   return (
-    <List.Item>
-      <Field.Root orientation="horizontal">
+    <List.Item className="@container">
+      <Field.Root
+        orientation={orientation}
+        className={cn(
+          "@max-sm:has-[.mu-input-root,.mu-textarea,.mu-select-trigger,.mu-combobox-input]:flex",
+          "@max-sm:has-[.mu-input-root,.mu-textarea,.mu-select-trigger,.mu-combobox-input]:flex-col",
+          "@max-sm:has-[.mu-input-root,.mu-textarea,.mu-select-trigger,.mu-combobox-input]:items-stretch",
+          "@max-sm:has-[.mu-input-root,.mu-textarea,.mu-select-trigger,.mu-combobox-input]:gap-2",
+        )}
+      >
         <Field.Label>{label}</Field.Label>
         {description && <Field.Description>{description}</Field.Description>}
         {children}

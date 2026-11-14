@@ -646,9 +646,7 @@
       "delete-warning-description": "TÄMÄ TOIMINTA ON PERUUTTAMATON",
       "label": "Jäsen",
       "list-title": "Jäsenluettelo",
-      "member-column": "Jäsen",
       "restore-success": "{{username}} palautettiin onnistuneesti",
-      "summary-column": "Yhteenveto",
       "user": "Käyttäjä",
       "no-members-found": "Jäseniä ei löytynyt",
       "export-memos": "Vie muistiinpanot",
@@ -877,7 +875,6 @@
       "client-id": "Asiakastunnus",
       "client-secret": "Asiakkaan salaisuus",
       "client-secret-optional-description": "Jätä tyhjäksi, jotta nykyisen asiakkaan salaisuus pysyy muuttumattomana.",
-      "configuration": "Kokoonpano",
       "configuration-summary-description": "Näytä olennaiset asiat, jotka auttavat tunnistamaan ja tarkastamaan palveluntarjoajan paljastamatta koko määritystä.",
       "confirm-delete": "Haluatko varmasti poistaa `{{name}}` SSO -kokoonpanon? TÄMÄ TOIMINTA ON PERUUTTAMATON",
       "create-sso": "Luo SSO",
@@ -906,7 +903,6 @@
       "not-linked-description": "Ulkoista identiteettiä ei ole vielä linkitetty. Voit yhdistää tämän palveluntarjoajan kirjautuaksesi siihen myöhemmin.",
       "oauth-configuration": "OAuth-kokoonpano",
       "oauth-configuration-description": "Täytä OAuth-asiakastunnistetiedot ja sisäänkirjautumisen aikana käytetyt palveluntarjoajan päätepisteet.",
-      "provider": "Palveluntarjoaja",
       "provider-id": "Palveluntarjoajan tunnus",
       "provider-id-description": "Vain pienet kirjaimet, numerot ja yhdysmerkit. Tästä arvosta tulee osa toimittajan resurssin nimeä.",
       "provider-uid": "UID",
@@ -1054,7 +1050,6 @@
       },
       "no-webhooks-found": "Webhookeja ei löytynyt.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

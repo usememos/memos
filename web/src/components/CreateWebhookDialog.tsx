@@ -205,7 +205,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
           <Button
             type="button"
             variant="neutral"
-            size="sm"
+            size="md"
             onClick={handleRevealSecret}
             disabled={secretState.isLoading}
             icon={<EyeIcon />}
