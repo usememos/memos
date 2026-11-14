@@ -389,6 +389,7 @@
     "clear-filters": "Tühjenda filtrid",
     "pinned": "Kinnitatud",
     "click-to-show-sensitive-content": "Tundliku sisu kuvamiseks klõpsake",
+    "hide-sensitive-content": "Peida tundlik sisu",
     "comment": {
       "self": "Kommentaarid",
       "write-a-comment": "Kirjutage kommentaar",

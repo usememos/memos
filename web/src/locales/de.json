@@ -351,6 +351,7 @@
     "clear-filters": "Filter löschen",
     "pinned": "Angeheftet",
     "click-to-show-sensitive-content": "Klicken, um sensible Inhalte anzuzeigen",
+    "hide-sensitive-content": "Sensible Inhalte ausblenden",
     "comment": {
       "self": "Kommentare",
       "write-a-comment": "Schreibe einen Kommentar",

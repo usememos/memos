@@ -351,6 +351,7 @@
     "clear-filters": "Clear filters",
     "pinned": "Pinned",
     "click-to-show-sensitive-content": "Click to show sensitive content",
+    "hide-sensitive-content": "Hide sensitive content",
     "comment": {
       "self": "Comments",
       "write-a-comment": "Write a comment",

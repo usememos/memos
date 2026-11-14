@@ -383,6 +383,7 @@
     "pinned": "已置顶",
     "back-to": "返回{{source}}",
     "click-to-show-sensitive-content": "点击显示敏感内容",
+    "hide-sensitive-content": "隐藏敏感内容",
     "comment": {
       "self": "评论",
       "write-a-comment": "写评论",

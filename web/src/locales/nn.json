@@ -453,6 +453,7 @@
     "clear-filters": "Tøm filter",
     "back-to": "Attende til {{source}}",
     "click-to-show-sensitive-content": "Trykk for å vise sensitivt innhald",
+    "hide-sensitive-content": "Gøym sensitivt innhald",
     "comment": {
       "self": "Kommentarar",
       "write-a-comment": "Skriv ein kommentar",

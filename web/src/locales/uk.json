@@ -351,6 +351,7 @@
     "clear-filters": "Очистити фільтри",
     "pinned": "Закріплено",
     "click-to-show-sensitive-content": "Натисніть, щоб показати NSFW-контент",
+    "hide-sensitive-content": "Приховати NSFW-контент",
     "comment": {
       "self": "Коментарі",
       "write-a-comment": "Напишіть коментар",

@@ -346,6 +346,7 @@
     "clear-filters": "ล้างตัวกรอง",
     "pinned": "ปักหมุดแล้ว",
     "click-to-show-sensitive-content": "คลิกเพื่อแสดงเนื้อหาไม่เหมาะสม (NSFW)",
+    "hide-sensitive-content": "ซ่อนเนื้อหาไม่เหมาะสม (NSFW)",
     "comment": {
       "self": "ความคิดเห็น",
       "write-a-comment": "เขียนความคิดเห็น",
