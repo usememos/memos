@@ -234,7 +234,6 @@ func TestGetInstanceSetting(t *testing.T) {
 			Name: "instance/settings/MEMO_RELATED",
 		})
 		require.Error(t, err)
-
 	})
 
 	t.Run("GetInstanceSetting - tags setting", func(t *testing.T) {

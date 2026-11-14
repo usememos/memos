@@ -39,7 +39,6 @@ func encodeInstanceSetting(upsert *storepb.InstanceSetting) (*InstanceSetting, e
 	} else if upsert.Key == storepb.InstanceSettingKey_STORAGE {
 		NormalizeInstanceStorageSetting(upsert.GetStorageSetting())
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
-
 	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
 		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_NOTIFICATION {
