@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { isTrustedIframeSrc } from "@/lib/html-sanitize-schema";
 import { memoResolveUrl } from "@/lib/memo-markdown";
 import { sanitizeMemoHtml } from "@/lib/sanitized-html";
+import { isCustomSchemeUri } from "@/lib/url-policy";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 // As the editor hands raw HTML to `sanitizeHtml`: parsed by the browser into a fragment that is not in the page.
@@ -129,6 +130,35 @@ describe("trusted iframe providers", () => {
     expect(isTrustedIframeSrc("https://player.bilibili.com/video/BV1xx411c7mD")).toBe(false);
     expect(isTrustedIframeSrc("http://player.bilibili.com/player.html?bvid=BV1xx411c7mD")).toBe(false);
     expect(isTrustedIframeSrc("https://evil.example/embed/abc123")).toBe(false);
+  });
+});
+
+describe("link URL policy", () => {
+  const resolve = memoResolveUrl();
+
+  it("keeps links to web pages and to other apps, and drops the script-capable schemes", () => {
+    expect(resolve("/notes", "link")).toBe("/notes");
+    expect(resolve("https://example.com/a", "link")).toBe("https://example.com/a");
+    expect(resolve("obsidian://open?vault=notes", "link")).toBe("obsidian://open?vault=notes");
+    expect(resolve("slack://channel?team=T123", "link")).toBe("slack://channel?team=T123");
+    expect(resolve("sms:+44", "link")).toBe("sms:+44");
+    expect(resolve("javascript:alert(1)", "link")).toBeNull();
+    expect(resolve("JaVaScRiPt:alert(1)", "link")).toBeNull();
+    expect(resolve("java\tscript:alert(1)", "link")).toBeNull();
+    expect(resolve("java\nscript:alert(1)", "link")).toBeNull();
+    expect(resolve("\u0001javascript:alert(1)", "link")).toBeNull();
+    expect(resolve("data:text/html,<script>alert(1)</script>", "link")).toBeNull();
+  });
+
+  it("refuses a paste of a blocked scheme whatever its case and spacing", () => {
+    expect(isCustomSchemeUri("JaVaScRiPt:alert(1)")).toBe(false);
+    expect(isCustomSchemeUri("DaTa:text/html,x")).toBe(false);
+    expect(isCustomSchemeUri("java\tscript:alert(1)")).toBe(false);
+  });
+
+  it("keeps a custom-scheme anchor's href in raw HTML", () => {
+    expect(renderHtml('<p><a href="obsidian://open?vault=notes">notes</a></p>')).toContain('href="obsidian://open?vault=notes"');
+    expect(renderHtml('<p><a href="javascript:alert(1)">x</a></p>')).not.toContain("javascript:");
   });
 });
 
