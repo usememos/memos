@@ -9,7 +9,7 @@ import { memoMentionOptions, memoTagOptions } from "@/lib/memo-markdown";
 const MENTION_LOOKUP_DELAY_MS = 400;
 
 export interface MemoDecorations {
-  /** `tags()` class, attributes and click: pills in the viewer's custom tag colors. */
+  /** `tags()` class, attributes and click: inline tints in the viewer's custom tag colors. */
   readonly tags: Pick<TagsOptions, "class" | "attributes" | "onClick">;
   /** `mentions()` class, attributes and click: the primary color for people who exist. */
   readonly mentions: Pick<TagsOptions, "class" | "attributes" | "onClick">;
@@ -47,23 +47,66 @@ export function useMemoDecorations(
   tagsSettingRef.current = userTagsSetting;
   const resolvedRef = useRef(resolved);
   resolvedRef.current = resolved;
-  const handlersRef = useRef(handlers);
-  handlersRef.current = handlers;
+  const handlersRef = useRef({ ...handlers, editable });
+  handlersRef.current = { ...handlers, editable };
+  const tagsInteractive = !editable && Boolean(handlers.onTagClick);
+
+  useEffect(() => {
+    if (!editor || !tagsInteractive) return;
+    let pressedTag: HTMLElement | null = null;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (editor.isEditable || event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
+      const tag = event.target;
+      if (!(tag instanceof HTMLElement) || !tag.matches('[data-tag][role="button"]')) return;
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.repeat) return;
+      if (event.key === "Enter") tag.click();
+      else pressedTag = tag;
+    };
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key !== " ") return;
+      const tag = pressedTag;
+      pressedTag = null;
+      if (!tag || event.target !== tag || editor.isEditable) return;
+      event.preventDefault();
+      event.stopPropagation();
+      tag.click();
+    };
+    const handleFocusOut = () => {
+      pressedTag = null;
+    };
+    editor.root.addEventListener("keydown", handleKeyDown);
+    editor.root.addEventListener("keyup", handleKeyUp);
+    editor.root.addEventListener("focusout", handleFocusOut);
+    return () => {
+      editor.root.removeEventListener("keydown", handleKeyDown);
+      editor.root.removeEventListener("keyup", handleKeyUp);
+      editor.root.removeEventListener("focusout", handleFocusOut);
+    };
+  }, [editor, tagsInteractive]);
 
   // Decorate again only when what the decorations read changed: a new editor already
   // decorates with the current values, and a lookup that answers the same is a no-op.
   const mentionKey = useMemo(() => [...resolved].sort().join(" "), [resolved]);
-  const decorated = useRef({ mentionKey, userTagsSetting });
+  const decorated = useRef({ mentionKey, userTagsSetting, tagsInteractive });
   useEffect(() => {
-    const changed = decorated.current.mentionKey !== mentionKey || decorated.current.userTagsSetting !== userTagsSetting;
-    decorated.current = { mentionKey, userTagsSetting };
+    const changed =
+      decorated.current.mentionKey !== mentionKey ||
+      decorated.current.userTagsSetting !== userTagsSetting ||
+      decorated.current.tagsInteractive !== tagsInteractive;
+    decorated.current = { mentionKey, userTagsSetting, tagsInteractive };
     if (changed) editor?.redecorate();
-  }, [editor, mentionKey, userTagsSetting]);
+  }, [editor, mentionKey, userTagsSetting, tagsInteractive]);
 
   return useMemo(
     () => ({
       tags: {
-        ...memoTagOptions(() => tagsSettingRef.current),
+        ...memoTagOptions(
+          () => tagsSettingRef.current,
+          () => !handlersRef.current.editable && Boolean(handlersRef.current.onTagClick),
+        ),
         onClick: ({ match }) => {
           const onTagClick = handlersRef.current.onTagClick;
           if (!onTagClick) return false;

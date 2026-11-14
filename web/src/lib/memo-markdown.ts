@@ -146,16 +146,24 @@ const CUSTOM_TAG_CLASS = cn(TAG_CLASS, tagStyles.customColor);
 
 /**
  * How a #tag looks wherever a memo is shown, in the composer and the memo view alike:
- * a pill in the theme color, or in the color the user gave the tag, which the element
+ * an inline tint in the theme color, or in the color the user gave the tag, which the element
  * carries as `--tag-color` for tagStyles.customColor to draw from. `getTagsSetting`
  * is read when a block is decorated; call `editor.redecorate()` when it changes.
  */
-export const memoTagOptions = (getTagsSetting: () => UserSetting_TagsSetting | undefined): Pick<TagsOptions, "class" | "attributes"> => ({
-  class: (match) => (tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS),
+export const memoTagOptions = (
+  getTagsSetting: () => UserSetting_TagsSetting | undefined,
+  isInteractive: () => boolean = () => false,
+): Pick<TagsOptions, "class" | "attributes"> => ({
+  class: (match) =>
+    cn(tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS, isInteractive() && tagStyles.interactive),
   attributes: (match): Record<string, string> => {
     const tag = match.slice(1);
     const color = tagColor(tag, getTagsSetting());
-    return color ? { "data-tag": tag, style: `--tag-color: ${color}` } : { "data-tag": tag };
+    return {
+      "data-tag": tag,
+      ...(color ? { style: `--tag-color: ${color}` } : {}),
+      ...(isInteractive() ? { role: "button", tabindex: "0" } : {}),
+    };
   },
 });
 
@@ -177,7 +185,7 @@ export const memoMentionOptions = (isResolved: (username: string) => boolean): P
 });
 
 interface MemoExtensionOptions {
-  /** `tags()` class and attributes, for the memo view's pills and colors. */
+  /** `tags()` class and attributes, for the memo view's inline tags and colors. */
   readonly tags?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
   /** `mentions()` class and attributes, for links to the people who exist. */
   readonly mentions?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
