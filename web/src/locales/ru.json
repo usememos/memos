@@ -159,6 +159,7 @@
     "add-your-comment-here": "Напишите свой комментарий...",
     "any-thoughts": "Напишите что-нибудь...",
     "exit-focus-mode": "Выйти из режима фокуса",
+    "temporarily-collapse-focus-mode": "Временно свернуть",
     "focus-mode": "Режим фокуса",
     "markdown-mode": "Режим Markdown",
     "insert-menu": {
@@ -616,6 +617,8 @@
     },
     "editor": {
       "label": "Редактор",
+      "auto-focus-mode": "Автоматический режим фокуса",
+      "auto-focus-mode-description": "Автоматически переходить в режим фокуса при редактировании заметки.",
       "markdown-mode-description": "Создавайте и редактируйте заметки как текст Markdown вместо форматированного текста."
     },
     "memo-view": {

@@ -159,6 +159,7 @@
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",
     "exit-focus-mode": "फोकस मोड सोडा",
+    "temporarily-collapse-focus-mode": "तात्पुरते संकुचित करा",
     "focus-mode": "फोकस मोड",
     "markdown-mode": "Markdown मोड",
     "no-changes-detected": "कोणतेही बदल आढळले नाहीत",
@@ -523,6 +524,8 @@
     },
     "editor": {
       "label": "संपादक",
+      "auto-focus-mode": "स्वयंचलित फोकस मोड",
+      "auto-focus-mode-description": "मेमो संपादित करताना आपोआप फोकस मोडमध्ये प्रवेश करा.",
       "markdown-mode-description": "मेमो स्वरूपित मजकुराऐवजी Markdown मजकूर म्हणून लिहा आणि संपादित करा."
     },
     "memo-view": {

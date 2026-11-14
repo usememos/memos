@@ -5691,6 +5691,11 @@ components:
                         Optional. Whether the official client's memo editor uses source mode,
                          which shows and edits memos as Markdown text instead of formatted text.
                          The official client calls this "Markdown mode".
+                autoFocusMode:
+                    type: boolean
+                    description: |-
+                        Optional. Whether the official client automatically enters focus mode
+                         when creating or editing a memo.
             description: EditorSetting holds the user's memo editor preferences.
         UserSetting_GeneralSetting:
             type: object

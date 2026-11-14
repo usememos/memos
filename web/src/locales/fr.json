@@ -159,6 +159,7 @@
     "add-your-comment-here": "Ajoutez votre commentaire ici...",
     "any-thoughts": "Des idées...",
     "exit-focus-mode": "Quitter le mode concentration",
+    "temporarily-collapse-focus-mode": "Réduire temporairement",
     "focus-mode": "Mode concentration",
     "markdown-mode": "Mode Markdown",
     "insert-menu": {
@@ -615,6 +616,8 @@
     },
     "editor": {
       "label": "Éditeur",
+      "auto-focus-mode": "Mode concentration automatique",
+      "auto-focus-mode-description": "Passer automatiquement en mode concentration lors de la modification d'un mémo.",
       "markdown-mode-description": "Rédigez et modifiez les mémos en texte Markdown plutôt qu'en texte mis en forme."
     },
     "memo-view": {

@@ -159,6 +159,7 @@
     "add-your-comment-here": "Dodaj svoj komentar ovdje...",
     "any-thoughts": "Imaš li misli...",
     "exit-focus-mode": "Izlazi iz načina rada za fokus",
+    "temporarily-collapse-focus-mode": "Privremeno skupi",
     "focus-mode": "Način rada za fokus",
     "markdown-mode": "Način rada Markdown",
     "insert-menu": {
@@ -615,6 +616,8 @@
     },
     "editor": {
       "label": "Uređivač",
+      "auto-focus-mode": "Automatski način rada za fokus",
+      "auto-focus-mode-description": "Automatski uđite u način rada za fokus prilikom uređivanja bilješke.",
       "markdown-mode-description": "Pišite i uređujte bilješke kao Markdown tekst umjesto oblikovanog teksta."
     },
     "memo-view": {

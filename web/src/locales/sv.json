@@ -159,6 +159,7 @@
     "add-your-comment-here": "Lägg till din kommentar här...",
     "any-thoughts": "Några tankar...",
     "exit-focus-mode": "Avsluta fokusläge",
+    "temporarily-collapse-focus-mode": "Fäll ihop tillfälligt",
     "focus-mode": "Fokusläge",
     "markdown-mode": "Markdown-läge",
     "insert-menu": {
@@ -614,6 +615,8 @@
     },
     "editor": {
       "label": "Redigerare",
+      "auto-focus-mode": "Automatiskt fokusläge",
+      "auto-focus-mode-description": "Gå automatiskt in i fokusläge när du redigerar ett memo.",
       "markdown-mode-description": "Skriv och redigera memon som Markdown-text i stället för formaterad text."
     },
     "memo-view": {

@@ -197,6 +197,7 @@
     "add-your-comment-here": "Pridėkite savo komentarą čia...",
     "any-thoughts": "Bet kokios mintys...",
     "exit-focus-mode": "Išeikite iš fokusavimo režimo",
+    "temporarily-collapse-focus-mode": "Laikinai sutraukti",
     "focus-mode": "Fokusavimo režimas",
     "markdown-mode": "Markdown režimas",
     "insert-menu": {
@@ -732,6 +733,8 @@
     },
     "editor": {
       "label": "Redaktorius",
+      "auto-focus-mode": "Automatinis fokusavimo režimas",
+      "auto-focus-mode-description": "Redaguojant pastabą automatiškai įjungti fokusavimo režimą.",
       "markdown-mode-description": "Rašykite ir redaguokite pastabas kaip Markdown tekstą, o ne formatuotą tekstą."
     },
     "memo-view": {

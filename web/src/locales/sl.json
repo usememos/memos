@@ -159,6 +159,7 @@
     "add-your-comment-here": "Tu dodaj svoj komentar...",
     "any-thoughts": "Kakšne misli...",
     "exit-focus-mode": "Izhod iz načina osredotočanja",
+    "temporarily-collapse-focus-mode": "Začasno strni",
     "focus-mode": "Način osredotočanja",
     "markdown-mode": "Način Markdown",
     "insert-menu": {
@@ -616,6 +617,8 @@
     },
     "editor": {
       "label": "Urejevalnik",
+      "auto-focus-mode": "Samodejni način osredotočanja",
+      "auto-focus-mode-description": "Ob urejanju beležke samodejno preklopi v način osredotočanja.",
       "markdown-mode-description": "Pišite in urejajte beležke kot besedilo Markdown namesto oblikovanega besedila."
     },
     "memo-view": {

@@ -230,6 +230,7 @@
     "add-your-comment-here": "הוסיפו את התגובה שלכם כאן...",
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",
+    "temporarily-collapse-focus-mode": "כווץ זמנית",
     "focus-mode": "מצב מיקוד",
     "markdown-mode": "מצב Markdown",
     "format": {
@@ -763,6 +764,8 @@
     },
     "editor": {
       "label": "עורך",
+      "auto-focus-mode": "מצב מיקוד אוטומטי",
+      "auto-focus-mode-description": "מעבר אוטומטי למצב מיקוד בעת עריכת פתק.",
       "markdown-mode-description": "כתבו וערכו פתקים כטקסט Markdown במקום כטקסט מעוצב."
     },
     "memo-view": {

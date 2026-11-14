@@ -190,6 +190,7 @@
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",
     "exit-focus-mode": "Odak modundan çık",
+    "temporarily-collapse-focus-mode": "Geçici olarak daralt",
     "focus-mode": "Odak modu",
     "markdown-mode": "Markdown modu",
     "comment": "Yorum yap",
@@ -782,6 +783,8 @@
     },
     "editor": {
       "label": "Editör",
+      "auto-focus-mode": "Otomatik odak modu",
+      "auto-focus-mode-description": "Bir notu düzenlerken otomatik olarak odak moduna geç.",
       "markdown-mode-description": "Notları biçimlendirilmiş metin yerine Markdown metni olarak yazın ve düzenleyin."
     },
     "memo-view": {

@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -259,6 +260,52 @@ func TestUserTagSettingsPermissionDeniedForOtherUser(t *testing.T) {
 	require.Contains(t, err.Error(), "permission denied")
 }
 
+func TestConcurrentUserEditorSettingUpdates(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "concurrent-editor-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	name := "users/concurrent-editor-user/settings/EDITOR"
+	update := func(setting *apipb.UserSetting_EditorSetting, paths ...string) error {
+		_, err := ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+			UserSetting: &apipb.UserSetting{
+				Name: name,
+				Value: &apipb.UserSetting_EditorSetting_{
+					EditorSetting: setting,
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: paths},
+		})
+		return err
+	}
+
+	for range 50 {
+		require.NoError(t, update(&apipb.UserSetting_EditorSetting{}, "source_mode", "auto_focus_mode"))
+		start := make(chan struct{})
+		errs := make(chan error, 2)
+		var wg sync.WaitGroup
+		for _, field := range []string{"source_mode", "auto_focus_mode"} {
+			wg.Go(func() {
+				<-start
+				errs <- update(&apipb.UserSetting_EditorSetting{SourceMode: true, AutoFocusMode: true}, field)
+			})
+		}
+		close(start)
+		wg.Wait()
+		close(errs)
+		for err := range errs {
+			require.NoError(t, err)
+		}
+		got, err := ts.Service.GetUserSetting(userCtx, &apipb.GetUserSettingRequest{Name: name})
+		require.NoError(t, err)
+		require.True(t, got.GetEditorSetting().GetSourceMode())
+		require.True(t, got.GetEditorSetting().GetAutoFocusMode())
+	}
+}
+
 func TestUserEditorSetting(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
@@ -274,6 +321,7 @@ func TestUserEditorSetting(t *testing.T) {
 	require.Equal(t, settingName, defaultSetting.Name)
 	require.NotNil(t, defaultSetting.GetEditorSetting())
 	require.False(t, defaultSetting.GetEditorSetting().GetSourceMode())
+	require.False(t, defaultSetting.GetEditorSetting().GetAutoFocusMode())
 
 	// An unset editor setting is not listed.
 	listed, err := ts.Service.ListUserSettings(userCtx, &apipb.ListUserSettingsRequest{Parent: api.BuildUserName(user.Username)})
@@ -305,6 +353,46 @@ func TestUserEditorSetting(t *testing.T) {
 	require.NotNil(t, listedEditor)
 	require.Equal(t, settingName, listedEditor.Name)
 	require.True(t, listedEditor.GetEditorSetting().GetSourceMode())
+
+	// Updating either preference must preserve the other, including when disabling it.
+	updated, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+		UserSetting: &apipb.UserSetting{
+			Name: settingName,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{AutoFocusMode: true},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"auto_focus_mode"}},
+	})
+	require.NoError(t, err)
+	require.True(t, updated.GetEditorSetting().GetSourceMode())
+	require.True(t, updated.GetEditorSetting().GetAutoFocusMode())
+
+	updated, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+		UserSetting: &apipb.UserSetting{
+			Name: settingName,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"source_mode"}},
+	})
+	require.NoError(t, err)
+	require.False(t, updated.GetEditorSetting().GetSourceMode())
+	require.True(t, updated.GetEditorSetting().GetAutoFocusMode())
+
+	updated, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+		UserSetting: &apipb.UserSetting{
+			Name: settingName,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{SourceMode: true},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"source_mode", "auto_focus_mode"}},
+	})
+	require.NoError(t, err)
+	require.True(t, updated.GetEditorSetting().GetSourceMode())
+	require.False(t, updated.GetEditorSetting().GetAutoFocusMode())
 
 	_, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
 		UserSetting: &apipb.UserSetting{

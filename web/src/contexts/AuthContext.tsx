@@ -1,5 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { clearAccessToken, getAccessToken } from "@/auth-state";
 import { authServiceClient, refreshAccessToken, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -32,7 +42,7 @@ interface AuthContextValue extends AuthState {
   refetchSettings: () => Promise<void>;
   setCurrentUser: (user: User | undefined) => void;
   /** Applies an editor setting locally, ahead of or instead of a refetch. */
-  setUserEditorSetting: (setting: UserSetting_EditorSetting | undefined) => void;
+  setUserEditorSetting: Dispatch<SetStateAction<UserSetting_EditorSetting | undefined>>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -52,6 +62,7 @@ const UNAUTHENTICATED_STATE: AuthState = {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const editorSettingVersion = useRef(0);
   const [state, setState] = useState<AuthState>({
     currentUser: undefined,
     userGeneralSetting: undefined,
@@ -65,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const fetchUserSettings = useCallback(async (userName: string) => {
+    const version = editorSettingVersion.current;
     const { userSettings: settings } = await userServiceClient.listUserSettings({ parent: userName });
     const generalSetting = settings.find((s) => s.value.case === "generalSetting");
     const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
@@ -77,19 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userEditorSetting: editorSetting?.value.case === "editorSetting" ? editorSetting.value.value : undefined,
     };
 
-    // Tag settings control sensitive-content blurring. Publish them as soon as
-    // this request settles; memo views are managed separately by React Query.
-    setState((prev) =>
-      prev.currentUser?.name === userName
-        ? {
-            ...prev,
-            ...userSettings,
-            isUserSettingsInitialized: true,
-          }
-        : prev,
-    );
-
-    return userSettings;
+    return { userSettings, version };
   }, []);
 
   const initialize = useCallback(async () => {
@@ -137,16 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(userKeys.currentUser(), currentUser);
       queryClient.setQueryData(userKeys.detail(currentUser.name), currentUser);
 
-      const settings = await fetchUserSettings(currentUser.name);
+      const { userSettings, version } = await fetchUserSettings(currentUser.name);
 
-      setState({
+      setState((prev) => ({
+        ...prev,
         currentUser,
-        ...settings,
+        ...userSettings,
+        userEditorSetting: version === editorSettingVersion.current ? userSettings.userEditorSetting : prev.userEditorSetting,
         isIdentityInitialized: true,
         isUserSettingsInitialized: true,
         isInitialized: true,
         isLoading: false,
-      });
+      }));
     } catch (error) {
       console.error("Failed to initialize auth:", error);
       clearAccessToken();
@@ -172,12 +174,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const settings = await fetchUserSettings(currentUserName);
+    const { userSettings, version } = await fetchUserSettings(currentUserName);
     setState((prev) => {
       if (prev.currentUser?.name !== currentUserName) {
         return prev;
       }
-      return { ...prev, ...settings };
+      return {
+        ...prev,
+        ...userSettings,
+        userEditorSetting: version === editorSettingVersion.current ? userSettings.userEditorSetting : prev.userEditorSetting,
+        isUserSettingsInitialized: true,
+      };
     });
   }, [fetchUserSettings, state.currentUser?.name]);
 
@@ -199,8 +206,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
-  const setUserEditorSetting = useCallback((setting: UserSetting_EditorSetting | undefined) => {
-    setState((prev) => ({ ...prev, userEditorSetting: setting }));
+  const setUserEditorSetting = useCallback<Dispatch<SetStateAction<UserSetting_EditorSetting | undefined>>>((setting) => {
+    editorSettingVersion.current += 1;
+    setState((prev) => ({
+      ...prev,
+      userEditorSetting: typeof setting === "function" ? setting(prev.userEditorSetting) : setting,
+    }));
   }, []);
 
   // Memoize context value to prevent unnecessary re-renders of consumers

@@ -159,6 +159,7 @@
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",
     "exit-focus-mode": "Thoát chế độ tập trung",
+    "temporarily-collapse-focus-mode": "Thu gọn tạm thời",
     "focus-mode": "Chế độ tập trung",
     "markdown-mode": "Chế độ Markdown",
     "no-changes-detected": "Không phát hiện thay đổi",
@@ -523,6 +524,8 @@
     },
     "editor": {
       "label": "Trình chỉnh sửa",
+      "auto-focus-mode": "Chế độ tập trung tự động",
+      "auto-focus-mode-description": "Tự động vào chế độ tập trung khi chỉnh sửa ghi chú.",
       "markdown-mode-description": "Viết và chỉnh sửa ghi chú dưới dạng văn bản Markdown thay vì văn bản có định dạng."
     },
     "memo-view": {

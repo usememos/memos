@@ -238,6 +238,7 @@
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
+    "temporarily-collapse-focus-mode": "暫時收合",
     "focus-mode": "專注模式",
     "markdown-mode": "Markdown 模式",
     "format": {
@@ -771,6 +772,8 @@
     },
     "editor": {
       "label": "編輯器",
+      "auto-focus-mode": "自動專注模式",
+      "auto-focus-mode-description": "編輯備忘錄時自動進入專注模式。",
       "markdown-mode-description": "以 Markdown 文字而非格式化文字撰寫和編輯備忘錄。"
     },
     "memo-view": {

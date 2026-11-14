@@ -159,6 +159,7 @@
     "add-your-comment-here": "Aggiungi qui il tuo commento...",
     "any-thoughts": "Qualsiasi cosa pensi...",
     "exit-focus-mode": "Esci Modalità Focus",
+    "temporarily-collapse-focus-mode": "Comprimi temporaneamente",
     "focus-mode": "Modalità Focus",
     "markdown-mode": "Modalità Markdown",
     "insert-menu": {
@@ -615,6 +616,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Modalità Focus automatica",
+      "auto-focus-mode-description": "Entra automaticamente in Modalità Focus durante la modifica di un promemoria.",
       "markdown-mode-description": "Scrivi e modifica i promemoria come testo Markdown anziché come testo formattato."
     },
     "memo-view": {

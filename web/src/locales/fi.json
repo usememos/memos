@@ -197,6 +197,7 @@
     "add-your-comment-here": "Lisää kommenttisi tähän...",
     "any-thoughts": "Mitään ajatuksia...",
     "exit-focus-mode": "Poistu tarkennustilasta",
+    "temporarily-collapse-focus-mode": "Supista tilapäisesti",
     "focus-mode": "Tarkennustila",
     "markdown-mode": "Markdown-tila",
     "insert-menu": {
@@ -730,6 +731,8 @@
     },
     "editor": {
       "label": "Editori",
+      "auto-focus-mode": "Automaattinen tarkennustila",
+      "auto-focus-mode-description": "Siirry tarkennustilaan automaattisesti muistiota muokattaessa.",
       "markdown-mode-description": "Kirjoita ja muokkaa muistioita Markdown-tekstinä muotoillun tekstin sijaan."
     },
     "memo-view": {

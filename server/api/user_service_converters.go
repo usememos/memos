@@ -222,7 +222,8 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 	case storepb.UserSetting_EDITOR:
 		setting.Value = &apipb.UserSetting_EditorSetting_{
 			EditorSetting: &apipb.UserSetting_EditorSetting{
-				SourceMode: storeSetting.GetEditor().GetSourceMode(),
+				SourceMode:    storeSetting.GetEditor().GetSourceMode(),
+				AutoFocusMode: storeSetting.GetEditor().GetAutoFocusMode(),
 			},
 		}
 	default:
@@ -284,7 +285,8 @@ func convertUserSettingToStore(apiSetting *apipb.UserSetting, userID int32, key 
 		if editor := apiSetting.GetEditorSetting(); editor != nil {
 			storeSetting.Value = &storepb.UserSetting_Editor{
 				Editor: &storepb.EditorUserSetting{
-					SourceMode: editor.SourceMode,
+					SourceMode:    editor.SourceMode,
+					AutoFocusMode: editor.AutoFocusMode,
 				},
 			}
 		} else {

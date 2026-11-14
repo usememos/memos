@@ -159,6 +159,7 @@
     "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
     "any-thoughts": "فکر شما...",
     "exit-focus-mode": "خروج از حالت تمرکز",
+    "temporarily-collapse-focus-mode": "جمع کردن موقت",
     "focus-mode": "حالت تمرکز",
     "markdown-mode": "حالت Markdown",
     "no-changes-detected": "تغییری شناسایی نشد",
@@ -523,6 +524,8 @@
     },
     "editor": {
       "label": "ویرایشگر",
+      "auto-focus-mode": "حالت تمرکز خودکار",
+      "auto-focus-mode-description": "هنگام ویرایش یادداشت، به‌طور خودکار وارد حالت تمرکز شوید.",
       "markdown-mode-description": "یادداشت‌ها را به‌جای متن قالب‌بندی‌شده، به‌صورت متن Markdown بنویسید و ویرایش کنید."
     },
     "memo-view": {
