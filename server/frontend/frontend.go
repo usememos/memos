@@ -65,6 +65,7 @@ func (*FrontendService) Handler(fallback http.Handler) http.Handler {
 		}
 		if err != nil {
 			if !shouldServeFrontendHTML(requestPath) {
+				w.Header().Set("Cache-Control", "no-store")
 				return &httphandler.Error{Code: http.StatusNotFound, Message: http.StatusText(http.StatusNotFound)}
 			}
 			filename = "index.html"
