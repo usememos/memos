@@ -431,7 +431,7 @@
     "moved": "მემორანდუმი გადატანილია",
     "back-to": "დაბრუნება {{source}}-ზე",
     "connections": "კავშირები",
-    "grid-compact-hint": "ბადისებრი განლაგებები ყოველთვის კომპაქტურ ბარათებს იყენებს.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "განლაგება",
     "layout-auto": "ავტომატური",
     "layout-auto-description": "ეკრანზე რამდენიც უნდა მოთავსდეს",
@@ -441,7 +441,9 @@
     "layout-list-description": "ერთი წაკითხვის სიგანის სვეტი",
     "on-this-memo": "ამ მემოზე",
     "parent-memo": "მშობელი მემო",
-    "view-options": "ნახვის პარამეტრები"
+    "view-options": "ნახვის პარამეტრები",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "წარმატებით დაარქივდა",

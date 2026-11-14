@@ -425,7 +425,7 @@
       "uncheck-all": "Снимите галочки со всех задач",
       "updated": "Задачи обновлены"
     },
-    "grid-compact-hint": "В макетах с сеткой всегда используются компактные карточки.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Макет",
     "layout-auto": "Автоматически",
     "layout-auto-description": "Столько столбцов, сколько помещается на экране",
@@ -443,7 +443,9 @@
     "back-to": "Назад к {{source}}",
     "connections": "Подключения",
     "on-this-memo": "К этой заметке",
-    "parent-memo": "Родительская заметка"
+    "parent-memo": "Родительская заметка",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Перемещено в архив",

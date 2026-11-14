@@ -432,7 +432,7 @@
     "moved": "Memorando movido",
     "back-to": "Voltar para {{source}}",
     "connections": "Ligações",
-    "grid-compact-hint": "Os layouts de grelha utilizam sempre cartões compactos.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem no ecrã",
@@ -442,7 +442,9 @@
     "layout-list-description": "Uma única coluna com uma largura de leitura",
     "on-this-memo": "Neste memorando",
     "parent-memo": "Memorando pai",
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",

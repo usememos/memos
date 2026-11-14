@@ -420,7 +420,7 @@
     "back-to": "Voltar para {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} atualizado em {{date}}",
     "connections": "Conexões",
-    "grid-compact-hint": "Os layouts de grade sempre usam cartões compactos.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem na tela",
@@ -437,7 +437,9 @@
       "uncheck-all": "Desmarcar todas as tarefas",
       "updated": "Tarefas atualizadas"
     },
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",

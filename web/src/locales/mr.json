@@ -419,7 +419,7 @@
     "back-to": "{{source}} कडे परत",
     "count-memos-updated-in-date": "{{count}} {{memos}} हे {{date}} वर अद्यतनित केले",
     "connections": "जोडण्या",
-    "grid-compact-hint": "ग्रिड लेआउटमध्ये नेहमी संक्षिप्त कार्ड वापरले जातात.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीनवर मावतील तितके स्तंभ",
@@ -436,7 +436,9 @@
       "uncheck-all": "सर्व कार्ये निवड रद्द करा",
       "updated": "कार्ये अद्यतनित केली"
     },
-    "view-options": "पाहण्याचे पर्याय"
+    "view-options": "पाहण्याचे पर्याय",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

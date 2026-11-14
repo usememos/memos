@@ -419,7 +419,7 @@
     "back-to": "بازگشت به {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} به‌روزرسانی شده در {{date}}",
     "connections": "اتصالات",
-    "grid-compact-hint": "طرح‌بندی‌های شبکه‌ای همیشه از کارت‌های فشرده استفاده می‌کنند.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "طرح‌بندی",
     "layout-auto": "خودکار",
     "layout-auto-description": "به تعداد ستون‌هایی که صفحه نمایش را پر می‌کنند",
@@ -436,7 +436,9 @@
       "uncheck-all": "انتخاب همه وظایف را بردارید",
       "updated": "وظایف به‌روزرسانی شدند"
     },
-    "view-options": "گزینه‌های مشاهده"
+    "view-options": "گزینه‌های مشاهده",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",

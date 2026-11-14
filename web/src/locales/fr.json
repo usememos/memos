@@ -432,7 +432,7 @@
     "moved": "Mémo déplacé",
     "back-to": "Retour à {{source}}",
     "connections": "Connexions",
-    "grid-compact-hint": "Les mises en page en grille utilisent toujours des cartes compactes.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Mise en page",
     "layout-auto": "Automatique",
     "layout-auto-description": "Autant de colonnes que l'écran peut en afficher",
@@ -442,7 +442,9 @@
     "layout-list-description": "Une seule colonne de largeur lisible",
     "on-this-memo": "Sur ce mémo",
     "parent-memo": "Mémo parent",
-    "view-options": "Options d'affichage"
+    "view-options": "Options d'affichage",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",

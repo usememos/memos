@@ -431,7 +431,7 @@
     "moved": "Nota movida",
     "back-to": "Volver a {{source}}",
     "connections": "Conexións",
-    "grid-compact-hint": "Os deseños de cuadrícula sempre usan tarxetas compactas.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Deseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como axusten á pantalla",
@@ -441,7 +441,9 @@
     "layout-list-description": "Unha única columna de ancho de lectura",
     "on-this-memo": "Nesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Ver opcións"
+    "view-options": "Ver opcións",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",

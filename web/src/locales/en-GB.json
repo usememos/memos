@@ -430,7 +430,7 @@
     "moved": "Memo moved",
     "back-to": "Back to {{source}}",
     "connections": "Connections",
-    "grid-compact-hint": "Grid layouts always use compact cards.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",
@@ -441,7 +441,9 @@
     "new-badge": "New",
     "on-this-memo": "On this memo",
     "parent-memo": "Parent memo",
-    "view-options": "View options"
+    "view-options": "View options",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Archived successfully",

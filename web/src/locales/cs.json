@@ -433,7 +433,7 @@
     "moved": "Poznámka přesunuta",
     "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
-    "grid-compact-hint": "Mřížkové rozvržení vždy používá kompaktní karty.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Rozvržení",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Tolik sloupců, kolik se vejde na obrazovku",
@@ -443,7 +443,9 @@
     "layout-list-description": "Jeden sloupec na šířku pro čtení",
     "on-this-memo": "V této poznámkě",
     "parent-memo": "Nadřazená poznámka",
-    "view-options": "Možnosti zobrazení"
+    "view-options": "Možnosti zobrazení",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",

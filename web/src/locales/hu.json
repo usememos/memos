@@ -431,7 +431,7 @@
     "moved": "Feljegyzés áthelyezve.",
     "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
-    "grid-compact-hint": "A rácsos elrendezések mindig kompakt kártyákat használnak.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Elrendezés",
     "layout-auto": "Automatikus",
     "layout-auto-description": "Annyi oszlop, amennyi elfér a képernyőn",
@@ -441,7 +441,9 @@
     "layout-list-description": "Egyetlen olvasási szélességű oszlop",
     "on-this-memo": "Ezen a feljegyzésen",
     "parent-memo": "Szülő feljegyzés",
-    "view-options": "Megtekintési beállítások"
+    "view-options": "Megtekintési beállítások",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",

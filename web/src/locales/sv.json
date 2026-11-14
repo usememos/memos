@@ -431,7 +431,7 @@
     "moved": "Memot flyttat",
     "back-to": "Tillbaka till {{source}}",
     "connections": "Anslutningar",
-    "grid-compact-hint": "Rutnätslayouter använder alltid kompakta kort.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så många kolumner som får plats på skärmen",
@@ -441,7 +441,9 @@
     "layout-list-description": "En enda kolumn med läsbredd",
     "on-this-memo": "På detta PM",
     "parent-memo": "Överordnat PM",
-    "view-options": "Visningsalternativ"
+    "view-options": "Visningsalternativ",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",

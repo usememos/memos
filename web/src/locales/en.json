@@ -482,8 +482,10 @@
       "remove": "Remove filter"
     },
     "compact-mode": "Compact mode",
+    "full-width": "Full width",
     "connections": "Connections",
-    "grid-compact-hint": "Grid layouts always use compact cards.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "full-width-hint": "Use entire width of the memo timeline.",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",

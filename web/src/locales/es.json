@@ -432,7 +432,7 @@
     "moved": "Memorándum movido.",
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
-    "grid-compact-hint": "Los diseños de cuadrícula siempre utilizan tarjetas compactas.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Diseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como quepan en la pantalla",
@@ -442,7 +442,9 @@
     "layout-list-description": "Una sola columna de ancho de lectura",
     "on-this-memo": "En este memo",
     "parent-memo": "Memo principal",
-    "view-options": "Opciones de vista"
+    "view-options": "Opciones de vista",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Archivado correctamente",

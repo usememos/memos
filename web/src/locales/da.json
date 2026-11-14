@@ -469,7 +469,7 @@
     "moved": "Notat flyttet",
     "back-to": "Tilbage til {{source}}",
     "connections": "Forbindelser",
-    "grid-compact-hint": "Gitterlayout bruger altid kompakte kort.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som der er plads til på skærmen",
@@ -479,7 +479,9 @@
     "layout-list-description": "En enkelt kolonne med læsebredde",
     "on-this-memo": "På dette notat",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsmuligheder"
+    "view-options": "Visningsmuligheder",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Arkiveret",

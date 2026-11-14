@@ -469,7 +469,7 @@
     "moved": "Το σημειώμα μετακινήθηκε",
     "back-to": "Επιστροφή στο {{source}}",
     "connections": "Συνδέσεις",
-    "grid-compact-hint": "Οι διατάξεις πλέγματος χρησιμοποιούν πάντα συμπαγείς κάρτες.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Διάταξη",
     "layout-auto": "Αυτόματη",
     "layout-auto-description": "Τόσες στήλες όσες χωράνε στην οθόνη",
@@ -479,7 +479,9 @@
     "layout-list-description": "Μία στήλη πλάτους ανάγνωσης",
     "on-this-memo": "Σε αυτό το σημείωμα",
     "parent-memo": "Γονικό σημείωμα",
-    "view-options": "Επιλογές προβολής"
+    "view-options": "Επιλογές προβολής",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Αρχειοθετήθηκε με επιτυχία",

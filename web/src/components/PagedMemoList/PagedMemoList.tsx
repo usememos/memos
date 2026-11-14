@@ -29,8 +29,6 @@ import { estimateMemoCardHeight } from "./memoCardHeight";
 // reconcile in place (updateTime is a protobuf Timestamp object, not usable in a template string).
 export const getMemoKey = (memo: Memo) => memo.name;
 
-// Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
-// grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
 
 /** Memos still loading: skeleton cards in the shape of the memos about to appear. */
@@ -136,7 +134,7 @@ const PagedMemoList = (props: Props) => {
   const { isUserSettingsInitialized } = useAuth();
   const { filters, memoView, removeFilter, setFilters, setMemoView } = useMemoFilterContext();
   const { setQuickFindOpen } = useAppSidebar();
-  const { maxColumns, compactMode } = useView();
+  const { maxColumns, compactMode, fullWidth } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
   // column renders in normal document flow; anything wider becomes the packed grid.
   const multiColumn = maxColumns !== 1;
@@ -297,7 +295,7 @@ const PagedMemoList = (props: Props) => {
   const children = (
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
-        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
+        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid || fullWidth ? "max-w-none" : "max-w-2xl")}>
           {useGrid ? (
             <>
               <ColumnGridUntrappedProvider>
@@ -310,7 +308,7 @@ const PagedMemoList = (props: Props) => {
                   leading={gridLeading}
                   priorityKey={priorityKey}
                   maxColumns={maxColumns}
-                  maxColumnWidth={MAX_COLUMN_WIDTH}
+                  maxColumnWidth={fullWidth ? undefined : MAX_COLUMN_WIDTH}
                 />
               </ColumnGridUntrappedProvider>
               {!isDisplayPending && footer}

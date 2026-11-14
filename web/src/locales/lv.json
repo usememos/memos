@@ -470,7 +470,7 @@
     "moved": "Piezīme pārvietota",
     "back-to": "Atpakaļ uz {{source}}",
     "connections": "Savienojumi",
-    "grid-compact-hint": "Režģa izkārtojumos vienmēr tiek izmantotas kompaktas kartes.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Izkārtojums",
     "layout-auto": "Automātiski",
     "layout-auto-description": "Tik daudz kolonnu, cik ietilpst ekrānā",
@@ -480,7 +480,9 @@
     "layout-list-description": "Viena lasīšanas platuma kolonna",
     "on-this-memo": "Šajā piezīmē",
     "parent-memo": "Galvenā piezīme",
-    "view-options": "Skata opcijas"
+    "view-options": "Skata opcijas",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Veiksmīgi arhivēts",

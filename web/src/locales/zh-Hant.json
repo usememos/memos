@@ -453,7 +453,7 @@
       "remove": "移除篩選條件"
     },
     "compact-mode": "精簡模式",
-    "grid-compact-hint": "網格版面一律使用精簡卡片。",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "版面配置",
     "layout-auto": "自動",
     "layout-auto-description": "依螢幕寬度顯示最多可容納的欄數",
@@ -520,7 +520,9 @@
     "back-to": "返回 {{source}}",
     "connections": "關聯",
     "on-this-memo": "在此備忘錄中",
-    "parent-memo": "原始備忘錄"
+    "parent-memo": "原始備忘錄",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "封存成功",

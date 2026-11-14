@@ -419,7 +419,7 @@
     "back-to": "{{source}} पर वापस जाएं",
     "count-memos-updated-in-date": "{{count}} {{memos}} को {{date}} पर अपडेट किया गया",
     "connections": "कनेक्शन",
-    "grid-compact-hint": "ग्रिड लेआउट हमेशा कॉम्पैक्ट कार्ड का इस्तेमाल करते हैं।",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीन में जितने कॉलम फिट हों",
@@ -436,7 +436,9 @@
       "uncheck-all": "सभी टास्क अनचेक करें",
       "updated": "टास्क अपडेट किए गए"
     },
-    "view-options": "ऑप्शन देखें"
+    "view-options": "ऑप्शन देखें",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",

@@ -419,7 +419,7 @@
     "back-to": "Quay lại {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
-    "grid-compact-hint": "Bố cục lưới luôn sử dụng thẻ nhỏ gọn.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Bố cục",
     "layout-auto": "Tự động",
     "layout-auto-description": "Số cột tùy ý cho vừa màn hình",
@@ -436,7 +436,9 @@
       "uncheck-all": "Bỏ chọn tất cả nhiệm vụ",
       "updated": "Nhiệm vụ đã được cập nhật"
     },
-    "view-options": "Tùy chọn xem"
+    "view-options": "Tùy chọn xem",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",

@@ -411,7 +411,7 @@
     },
     "compact-mode": "Kompakt mod",
     "connections": "Bağlantılar",
-    "grid-compact-hint": "Izgara düzenleri her zaman kompakt kartlar kullanır.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Düzen",
     "layout-auto": "Otomatik",
     "layout-auto-description": "Ekrana sığdığı kadar sütun",
@@ -472,7 +472,9 @@
       "check-all": "Tüm görevleri kontrol et",
       "uncheck-all": "Tüm görevlerin işaretini kaldırın",
       "updated": "Görevler güncellendi"
-    }
+    },
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",

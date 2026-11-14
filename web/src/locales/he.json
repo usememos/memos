@@ -445,7 +445,7 @@
       "remove": "הסרת מסנן"
     },
     "compact-mode": "מצב קומפקטי",
-    "grid-compact-hint": "פריסות רשת משתמשות תמיד בכרטיסים קומפקטיים.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "פריסה",
     "layout-auto": "אוטומטי",
     "layout-auto-description": "מספר העמודות המרבי שמתאים למסך",
@@ -512,7 +512,9 @@
     "back-to": "חזרה אל {{source}}",
     "connections": "חיבורים",
     "on-this-memo": "על תזכיר זה",
-    "parent-memo": "תזכיר אב"
+    "parent-memo": "תזכיר אב",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

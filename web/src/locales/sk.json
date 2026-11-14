@@ -471,7 +471,7 @@
     "moved": "Poznámka presunutá",
     "back-to": "Späť na {{source}}",
     "connections": "Pripojenia",
-    "grid-compact-hint": "Mriežkové rozloženia vždy používajú kompaktné karty.",
+    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Rozloženie",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Toľko stĺpcov, koľko sa zmestí na obrazovku",
@@ -481,7 +481,9 @@
     "layout-list-description": "Jeden stĺpec na šírku čítania",
     "on-this-memo": "V tejto poznámke",
     "parent-memo": "Nadradená poznámka",
-    "view-options": "Možnosti zobrazenia"
+    "view-options": "Možnosti zobrazenia",
+    "full-width": "Full width",
+    "full-width-hint": "Use entire width of the memo timeline."
   },
   "message": {
     "archived-successfully": "Úspešne archivované",
