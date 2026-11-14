@@ -7,6 +7,7 @@ import { useSourceMode } from "@/hooks/useSourceMode";
 import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 
@@ -103,8 +104,14 @@ export const EditSession: React.FC<EditSessionProps> = ({
     return Boolean(provider?.apiKeySet);
   }, [aiSetting.providers, aiSetting.transcription?.providerId]);
 
-  // Get default visibility from user settings
-  const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
+  // When posting into a Space, seed visibility to SPACE so the memo is
+  // immediately readable by all Space members. Outside a Space, fall back to
+  // the user's global preference.
+  const defaultVisibility = defaultSpace
+    ? Visibility.SPACE
+    : userGeneralSetting?.memoVisibility
+      ? convertVisibilityFromString(userGeneralSetting.memoVisibility)
+      : undefined;
 
   // Source mode only changes how the text is edited, so every composer offers it.
   const [editorMode, setEditorMode] = useSourceMode();
