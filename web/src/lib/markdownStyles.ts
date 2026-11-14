@@ -22,6 +22,10 @@ export const headingClasses: Readonly<Partial<Record<HeadingLevel, string>>> = {
 export const markdownStyles = {
   // Relative size so code inside headings scales with the heading.
   inlineCode: "font-mono text-[0.875em] bg-mu-well px-1 py-0.5 rounded-mu-md",
+  codeBlock: "bg-mu-well!",
+  // Keep the editor's white checkmark readable when Dark uses a pale accent.
+  taskList:
+    "[--mbe-border:var(--mu-control-edge)] [--mbe-accent:light-dark(var(--mu-accent),color-mix(in_oklab,var(--mu-accent)_55%,var(--mu-surface)))]",
   link: "text-mu-accent underline decoration-mu-accent/50 underline-offset-2 transition-colors hover:decoration-mu-accent",
   image: "max-w-full my-2 rounded-mu-lg",
 } as const;
@@ -38,11 +42,11 @@ export const tagStyles = {
   defaultColor: "text-mu-text rich:bg-mu-well rich:[&[role=button]]:hover:bg-mu-hover",
   /**
    * The user's color, read from `--tag-color` on the element, as the package's Badge `color` draws
-   * it: an 18% tint behind ink text, the same in both themes. The text never takes the color, since
-   * no chosen color is readable as text on its own tint in both themes.
+   * it: lightness kept between 50% and 75%, then clipped to sRGB before the 18% tint.
+   * The text stays ink so user-chosen colors cannot reduce its contrast.
    */
   customColor:
-    "text-mu-text rich:bg-[color-mix(in_srgb,var(--tag-color)_18%,transparent)] rich:[&[role=button]]:hover:bg-[color-mix(in_srgb,var(--tag-color)_26%,transparent)]",
+    "text-mu-text rich:[--tag-tint:color(from_oklch(from_var(--tag-color)_clamp(0.5,l,0.75)_c_h)_srgb_clamp(0,r,1)_clamp(0,g,1)_clamp(0,b,1))] rich:bg-[color-mix(in_srgb,var(--tag-tint)_18%,transparent)] rich:[&[role=button]]:hover:bg-[color-mix(in_srgb,var(--tag-tint)_26%,transparent)]",
 } as const;
 
 /**

@@ -246,6 +246,11 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
     popupBorder: "var(--mu-line)",
     hover: "var(--mu-hover)",
     danger: "var(--mu-danger)",
+    calloutNote: "var(--mu-accent)",
+    calloutTip: "var(--mu-success)",
+    calloutImportant: "var(--mu-accent)",
+    calloutWarning: "var(--mu-warning)",
+    calloutCaution: "var(--mu-danger)",
   };
   return {
     colorScheme: "inherit",
@@ -256,11 +261,13 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       fontSize: 16,
       lineHeight: 24,
       radius: "var(--mu-radius-md)",
-      blockGap: 8,
+      blockGap: 12,
     },
     classes: {
       heading: headingClasses,
       code: markdownStyles.inlineCode,
+      codeBlock: markdownStyles.codeBlock,
+      taskList: markdownStyles.taskList,
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
       image: "rounded-mu-lg",
