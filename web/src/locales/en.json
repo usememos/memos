@@ -459,6 +459,7 @@
     "moved": "Memo moved",
     "back-to": "Back to {{source}}",
     "click-to-show-sensitive-content": "Click to show sensitive content",
+    "hide-sensitive-content": "Hide sensitive content",
     "comment": {
       "self": "Comments",
       "write-a-comment": "Write a comment",

@@ -351,6 +351,7 @@
     "clear-filters": "Wyczyść filtry",
     "pinned": "Przypięto",
     "click-to-show-sensitive-content": "Kliknij, aby pokazać treści NSFW",
+    "hide-sensitive-content": "Ukryj treści NSFW",
     "comment": {
       "self": "Komentarze",
       "write-a-comment": "Napisz komentarz",

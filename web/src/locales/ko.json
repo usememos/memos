@@ -346,6 +346,7 @@
     "clear-filters": "필터 지우기",
     "pinned": "고정됨",
     "click-to-show-sensitive-content": "숨겨진 콘텐츠 보기",
+    "hide-sensitive-content": "콘텐츠 다시 숨기기",
     "comment": {
       "self": "댓글",
       "write-a-comment": "댓글 작성",

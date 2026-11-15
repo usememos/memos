@@ -1,5 +1,5 @@
 import { Badge, Button, buttonClasses, Popover, Tooltip } from "@usememos/ui";
-import { SmilePlusIcon } from "lucide-react";
+import { EyeOffIcon, SmilePlusIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
 import { useNewMemo } from "@/contexts/NewMemoContext";
@@ -26,7 +26,19 @@ const MEMO_HEADER_ACTION_CLASSES = buttonClasses({ variant: "ghost", size: "sm",
 const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
   const t = useTranslate();
 
-  const { memo, creator, currentUser, parentPage, isArchived, readonly, isEditing, openEditor } = useMemoViewContext();
+  const {
+    memo,
+    creator,
+    currentUser,
+    parentPage,
+    isArchived,
+    readonly,
+    isEditing,
+    openEditor,
+    blurred,
+    showBlurredContent,
+    toggleBlurVisibility,
+  } = useMemoViewContext();
   const location = useLocation();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
@@ -110,6 +122,24 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
               </Popover.Popup>
             )}
           </Popover.Root>
+        )}
+
+        {blurred && showBlurredContent && (
+          // Revealed sensitive content can be blurred again without leaving or reloading the page.
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<EyeOffIcon />}
+                  aria-label={t("memo.hide-sensitive-content")}
+                  onClick={toggleBlurVisibility}
+                />
+              }
+            />
+            <Tooltip.Popup>{t("memo.hide-sensitive-content")}</Tooltip.Popup>
+          </Tooltip.Root>
         )}
 
         <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />

@@ -351,6 +351,7 @@
     "clear-filters": "Tøm filtre",
     "pinned": "Festet",
     "click-to-show-sensitive-content": "Klikk for å vise NSFW-innhold",
+    "hide-sensitive-content": "Skjul NSFW-innhold",
     "comment": {
       "self": "Kommentarer",
       "write-a-comment": "Skriv en kommentar",

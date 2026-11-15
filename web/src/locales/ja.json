@@ -351,6 +351,7 @@
     "clear-filters": "フィルターをクリア",
     "pinned": "ピン留め済み",
     "click-to-show-sensitive-content": "クリックしてセンシティブな内容を表示",
+    "hide-sensitive-content": "センシティブな内容を隠す",
     "comment": {
       "self": "コメント",
       "write-a-comment": "コメントを書く",

@@ -389,6 +389,7 @@
     "clear-filters": "Tyhjennä suodattimet",
     "pinned": "Kiinnitetty",
     "click-to-show-sensitive-content": "Napsauta näyttääksesi arkaluontoisen sisällön",
+    "hide-sensitive-content": "Piilota arkaluontoinen sisältö",
     "comment": {
       "self": "Kommentit",
       "write-a-comment": "Kirjoita kommentti",

@@ -346,6 +346,7 @@
     "clear-filters": "فیلترها را پاک کنید",
     "pinned": "سنجاق‌شده",
     "click-to-show-sensitive-content": "برای نمایش محتوای حساس کلیک کنید",
+    "hide-sensitive-content": "پنهان کردن محتوای حساس",
     "comment": {
       "self": "نظرات",
       "write-a-comment": "یک نظر بنویسید",

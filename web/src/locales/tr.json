@@ -388,6 +388,7 @@
     "moved": "Not taşındı",
     "back-to": "Geri dön: {{source}}",
     "click-to-show-sensitive-content": "Hassas içeriği göstermek için tıklayın",
+    "hide-sensitive-content": "Hassas içeriği gizle",
     "comment": {
       "self": "Yorumlar",
       "write-a-comment": "Yorum yaz",

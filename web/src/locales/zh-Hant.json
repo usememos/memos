@@ -430,6 +430,7 @@
     "clear-filters": "清除篩選條件",
     "pinned": "已置頂",
     "click-to-show-sensitive-content": "點擊顯示敏感內容",
+    "hide-sensitive-content": "隱藏敏感內容",
     "comment": {
       "self": "評論",
       "write-a-comment": "寫下評論",

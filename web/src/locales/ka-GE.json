@@ -351,6 +351,7 @@
     "clear-filters": "ფილტრების გასუფთავება",
     "pinned": "მიმაგრებულია",
     "click-to-show-sensitive-content": "დააწკაპუნეთ NSFW კონტენტის საჩვენებლად",
+    "hide-sensitive-content": "NSFW კონტენტის დამალვა",
     "comment": {
       "self": "კომენტარები",
       "write-a-comment": "კომენტარის დაწერა",

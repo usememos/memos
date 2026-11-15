@@ -389,6 +389,7 @@
     "clear-filters": "Изчистване на филтрите",
     "pinned": "Закачено",
     "click-to-show-sensitive-content": "Кликнете, за да покажете чувствително съдържание",
+    "hide-sensitive-content": "Скриване на чувствителното съдържание",
     "comment": {
       "self": "Коментари",
       "write-a-comment": "Напишете коментар",
