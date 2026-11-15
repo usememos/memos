@@ -250,3 +250,18 @@ The `FieldKindExists` kind makes further relation-backed flags one schema entry 
 
 `title`, which the payload already stores, is still not a filter field. A scalar JSON string field would allow `title.contains(...)`
 and a `has_title` presence flag; it is a content fact and belongs in the payload where it already is.
+
+## Amendments
+
+### 2026-11-15: Attachment lookup indexes
+
+The deferred lookup index is added in schema 26.11.1 after measurements showed
+that SQLite attachment filters repeatedly scan blob overflow pages. SQLite and
+MySQL use `(memo_id, type)` to cover both existence predicates. PostgreSQL uses
+`memo_id` alone because its unbounded MIME text can exceed the B-tree entry limit.
+
+Index creation runs in the existing startup migration. Upgrades require stopping
+all instances and other writers, migrating once, then restarting, as described in
+[the migration procedure](../../store/migration/README.md#coordinating-an-upgrade).
+The migrations reject conflicting index definitions; MySQL also accepts a
+completed index when retrying after an implicit DDL commit.
