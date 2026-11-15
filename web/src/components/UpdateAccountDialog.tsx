@@ -2,7 +2,7 @@ import { Code } from "@connectrpc/connect";
 import { Button, Dialog, Field, Input, Textarea, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -43,6 +43,20 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     description: currentUser?.description ?? "",
   });
   const [emailError, setEmailError] = useState<string | undefined>();
+
+  // The dialog stays mounted while closed, so each opening starts again from the saved account;
+  // otherwise a cancelled edit is saved with the next change.
+  useEffect(() => {
+    if (!open) return;
+    setState({
+      avatarUrl: currentUser?.avatarUrl ?? "",
+      username: currentUser?.username ?? "",
+      displayName: currentUser?.displayName ?? "",
+      email: currentUser?.email ?? "",
+      description: currentUser?.description ?? "",
+    });
+    setEmailError(undefined);
+  }, [open]);
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
