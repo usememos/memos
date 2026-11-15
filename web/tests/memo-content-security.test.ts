@@ -132,6 +132,50 @@ describe("trusted iframe providers", () => {
   });
 });
 
+describe("link URL policy", () => {
+  const resolve = memoResolveUrl();
+
+  it("keeps links to web pages and to other apps, and drops the script-capable schemes", () => {
+    expect(resolve("/notes", "link")).toBe("/notes");
+    expect(resolve("https://example.com/a", "link")).toBe("https://example.com/a");
+    expect(resolve("obsidian://open?vault=notes", "link")).toBe("obsidian://open?vault=notes");
+    expect(resolve("slack://channel?team=T123", "link")).toBe("slack://channel?team=T123");
+    expect(resolve("sms:+44", "link")).toBe("sms:+44");
+    expect(resolve("javascript:alert(1)", "link")).toBeNull();
+    expect(resolve("JaVaScRiPt:alert(1)", "link")).toBeNull();
+    expect(resolve("java\tscript:alert(1)", "link")).toBeNull();
+    expect(resolve("java\nscript:alert(1)", "link")).toBeNull();
+    expect(resolve("\u0001javascript:alert(1)", "link")).toBeNull();
+    expect(resolve("data:text/html,<script>alert(1)</script>", "link")).toBeNull();
+  });
+
+  it.each([
+    "javascript:alert(1)",
+    "JaVaScRiPt:alert(1)",
+    "java\tscript:alert(1)",
+    "java\nscript:alert(1)",
+    "\u0001javascript:alert(1)",
+    "data:text/html,x",
+    "vbscript:msgbox(1)",
+    "livescript:alert(1)",
+    "mocha:alert(1)",
+  ])("strips unsafe raw HTML link targets: %s", (url) => {
+    const element = document.createElement("a");
+    element.setAttribute("href", url);
+    element.textContent = "unsafe";
+    const tree = document.createDocumentFragment();
+    tree.append(element);
+    const sanitized = sanitizeMemoHtml(tree);
+    expect(sanitized.querySelector("a")?.hasAttribute("href")).toBe(false);
+    expect(resolve(url, "link")).toBeNull();
+  });
+
+  it("keeps a custom-scheme anchor's href in raw HTML", () => {
+    expect(renderHtml('<p><a href="obsidian://open?vault=notes">notes</a></p>')).toContain('href="obsidian://open?vault=notes"');
+    expect(renderHtml('<p><a href="javascript:alert(1)">x</a></p>')).not.toContain("javascript:");
+  });
+});
+
 describe("image URL policy", () => {
   const resolve = memoResolveUrl([create(AttachmentSchema, { name: "attachments/photo", filename: "photo.png", type: "image/png" })]);
 
@@ -140,6 +184,8 @@ describe("image URL policy", () => {
     expect(resolve("https://img.example/a.png", "image")).toBe("https://img.example/a.png");
     expect(resolve("http://tracker.example/a.png", "image")).toBeNull();
     expect(resolve("javascript:alert(1)", "image")).toBeNull();
+    expect(resolve("obsidian://open?vault=notes", "image")).toBeNull();
+    expect(renderHtml('<img src="obsidian://open?vault=notes">')).not.toContain("obsidian:");
   });
 
   it("resolves a managed attachment image to the instance's own URL, even over plain http", () => {
