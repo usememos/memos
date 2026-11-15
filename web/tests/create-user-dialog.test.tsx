@@ -92,6 +92,18 @@ describe("CreateUserDialog", () => {
     expect(screen.getByPlaceholderText("common.password")).toHaveValue("");
   });
 
+  it("clears validation errors when the create dialog reopens", () => {
+    const onOpenChange = vi.fn();
+    const { rerender } = render(<CreateUserDialog open onOpenChange={onOpenChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    expect(screen.getByText("setting.member.username-password-required")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    rerender(<CreateUserDialog open={false} onOpenChange={onOpenChange} />);
+    rerender(<CreateUserDialog open onOpenChange={onOpenChange} />);
+    expect(screen.queryByText("setting.member.username-password-required")).toBeNull();
+    expect(screen.getByPlaceholderText("common.username")).not.toHaveAttribute("aria-invalid", "true");
+  });
+
   it("keeps a role managed by configuration disabled", () => {
     state.managed = true;
     render(<CreateUserDialog open onOpenChange={vi.fn()} user={user} />);

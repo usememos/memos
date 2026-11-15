@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UpdateAccountDialog from "@/components/UpdateAccountDialog";
@@ -85,5 +86,39 @@ describe("UpdateAccountDialog", () => {
 
     await waitFor(() => expect(state.updateUser).toHaveBeenCalledTimes(1));
     expect(state.updateUser.mock.calls[0][0].updateMask).toEqual(["description"]);
+  });
+
+  it.each(["username", "avatar"] as const)("clears %s validation when reopened", (field) => {
+    const onOpenChange = vi.fn();
+    const { rerender } = render(<UpdateAccountDialog open onOpenChange={onOpenChange} />);
+    const message = field === "username" ? "message.fill-all" : "setting.account.avatar-too-large";
+    if (field === "username") {
+      fireEvent.change(document.getElementById("username")!, { target: { value: "" } });
+      fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    } else {
+      const image = new File(["avatar"], "large.png", { type: "image/png" });
+      Object.defineProperty(image, "size", { value: 3 * 1024 * 1024 });
+      fireEvent.change(document.querySelector('input[type="file"]')!, { target: { files: [image] } });
+    }
+    expect(screen.getByText(message)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    rerender(<UpdateAccountDialog open={false} onOpenChange={onOpenChange} />);
+    rerender(<UpdateAccountDialog open onOpenChange={onOpenChange} />);
+    expect(screen.queryByText(message)).toBeNull();
+    expect(document.getElementById("username")).toHaveValue("alice");
+  });
+
+  it("clears a server email error when reopened", async () => {
+    state.updateUser.mockRejectedValueOnce(new ConnectError("email is already in use", Code.AlreadyExists));
+    const onOpenChange = vi.fn();
+    const { rerender } = render(<UpdateAccountDialog open onOpenChange={onOpenChange} />);
+    fireEvent.change(document.getElementById("email")!, { target: { value: "taken@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    expect(await screen.findByText("setting.account.email-in-use")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    rerender(<UpdateAccountDialog open={false} onOpenChange={onOpenChange} />);
+    rerender(<UpdateAccountDialog open onOpenChange={onOpenChange} />);
+    expect(screen.queryByText("setting.account.email-in-use")).toBeNull();
+    expect(document.getElementById("email")).toHaveValue("alice@example.com");
   });
 });

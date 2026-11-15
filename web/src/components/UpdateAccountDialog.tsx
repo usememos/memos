@@ -51,6 +51,8 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   useEffect(() => {
     openingRef.current += 1;
     if (!open) return;
+    fieldErrors.clear("avatar");
+    fieldErrors.clear("username");
     setState({
       avatarUrl: currentUser?.avatarUrl ?? "",
       username: currentUser?.username ?? "",

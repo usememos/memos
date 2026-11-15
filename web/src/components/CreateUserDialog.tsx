@@ -38,6 +38,8 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
   // otherwise a cancelled edit, such as a typed password, is sent with the next change.
   useEffect(() => {
     if (!open) return;
+    fieldErrors.clear("username");
+    fieldErrors.clear("password");
     if (initialUser) {
       setUser(create(UserSchema, { name: initialUser.name, username: initialUser.username, role: initialUser.role }));
     } else {
