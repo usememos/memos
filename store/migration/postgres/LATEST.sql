@@ -97,7 +97,7 @@ CREATE TABLE attachment (
 );
 
 CREATE INDEX idx_attachment_creator_id ON attachment(creator_id);
-CREATE INDEX idx_attachment_memo_id_type ON attachment(memo_id, type);
+CREATE INDEX idx_attachment_memo_id ON attachment(memo_id);
 
 -- idp
 CREATE TABLE idp (
