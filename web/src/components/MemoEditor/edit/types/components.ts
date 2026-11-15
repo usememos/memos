@@ -55,6 +55,8 @@ export interface EditSessionProps {
 export interface EditorContentProps {
   placeholder?: string;
   sourceMode: EditorSourceModeToggle;
+  /** Called after a user inserts text, including a completed input-method composition. */
+  onUserTextInput?: () => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;

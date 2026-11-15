@@ -1,13 +1,16 @@
+import { create } from "@bufbuild/protobuf";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
+import { useAllUserStats, useUpdateUserEditorSetting, useUserStats } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/common_pb";
+import { UserSetting_EditorSettingSchema } from "@/types/proto/api/user_service_pb";
 
 const clients = vi.hoisted(() => ({
   getUserStats: vi.fn(),
   listUserStats: vi.fn(),
+  updateUserSetting: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
@@ -20,6 +23,20 @@ const createWrapper = () => {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
   };
 };
+
+describe("editor setting mutation", () => {
+  it.each(["source_mode", "auto_focus_mode"])("sends only the %s field mask", async (field) => {
+    clients.updateUserSetting.mockReset().mockResolvedValue({});
+    const { result } = renderHook(() => useUpdateUserEditorSetting("users/test"), { wrapper: createWrapper() });
+    await result.current.mutateAsync({ editorSetting: create(UserSetting_EditorSettingSchema), updateMask: [field] });
+    expect(clients.updateUserSetting).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userSetting: expect.objectContaining({ name: "users/test/settings/EDITOR" }),
+        updateMask: expect.objectContaining({ paths: [field] }),
+      }),
+    );
+  });
+});
 
 describe("User statistics filter queries", () => {
   beforeEach(() => {

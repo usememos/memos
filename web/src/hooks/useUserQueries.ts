@@ -318,7 +318,7 @@ export function useUpdateUserEditorSetting(currentUserName?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (editorSetting: UserSetting_EditorSetting) => {
+    mutationFn: async ({ editorSetting, updateMask }: { editorSetting: UserSetting_EditorSetting; updateMask: string[] }) => {
       if (!currentUserName) {
         throw new Error("No current user");
       }
@@ -329,7 +329,7 @@ export function useUpdateUserEditorSetting(currentUserName?: string) {
       });
       return await userServiceClient.updateUserSetting({
         userSetting,
-        updateMask: create(FieldMaskSchema, { paths: ["source_mode"] }),
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
     },
     onSuccess: () => {

@@ -4507,7 +4507,10 @@ type UserSetting_EditorSetting struct {
 	// Optional. Whether the official client's memo editor uses source mode,
 	// which shows and edits memos as Markdown text instead of formatted text.
 	// The official client calls this "Markdown mode".
-	SourceMode    bool `protobuf:"varint,1,opt,name=source_mode,json=sourceMode,proto3" json:"source_mode,omitempty"`
+	SourceMode bool `protobuf:"varint,1,opt,name=source_mode,json=sourceMode,proto3" json:"source_mode,omitempty"`
+	// Optional. Whether the official client automatically enters focus mode
+	// when creating or editing a memo.
+	AutoFocusMode bool `protobuf:"varint,2,opt,name=auto_focus_mode,json=autoFocusMode,proto3" json:"auto_focus_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4545,6 +4548,13 @@ func (*UserSetting_EditorSetting) Descriptor() ([]byte, []int) {
 func (x *UserSetting_EditorSetting) GetSourceMode() bool {
 	if x != nil {
 		return x.SourceMode
+	}
+	return false
+}
+
+func (x *UserSetting_EditorSetting) GetAutoFocusMode() bool {
+	if x != nil {
+		return x.AutoFocusMode
 	}
 	return false
 }
@@ -5065,7 +5075,7 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x11DeleteUserRequest\x12*\n" +
 	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
 	"\x0ememos.api/UserR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xee\b\n" +
+	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x9b\t\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12P\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2%.memos.api.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12S\n" +
@@ -5086,10 +5096,11 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\v2\".memos.api.UserSetting.TagMetadataR\x05value:\x028\x01\x1ay\n" +
 	"\vTagMetadata\x12B\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorB\x03\xe0A\x01R\x0fbackgroundColor\x12&\n" +
-	"\fblur_content\x18\x02 \x01(\bB\x03\xe0A\x01R\vblurContent\x1a5\n" +
+	"\fblur_content\x18\x02 \x01(\bB\x03\xe0A\x01R\vblurContent\x1ab\n" +
 	"\rEditorSetting\x12$\n" +
 	"\vsource_mode\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"sourceMode\"K\n" +
+	"sourceMode\x12+\n" +
+	"\x0fauto_focus_mode\x18\x02 \x01(\bB\x03\xe0A\x01R\rautoFocusMode\"K\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\f\n" +

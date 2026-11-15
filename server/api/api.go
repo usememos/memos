@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"sync"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -89,6 +90,9 @@ type APIService struct {
 
 	// instanceStatsCache memoizes GetInstanceStats results for instanceStatsCacheTTL.
 	instanceStatsCache instanceStatsCache
+
+	// editorSettingMu protects the EDITOR setting's read-modify-write sequence.
+	editorSettingMu sync.Mutex
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads

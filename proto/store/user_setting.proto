@@ -55,6 +55,8 @@ message GeneralUserSetting {
 message EditorUserSetting {
   // Whether the memo editor shows and edits memos as Markdown text.
   bool source_mode = 1;
+  // Whether the memo editor automatically enters focus mode.
+  bool auto_focus_mode = 2;
 }
 
 message UserTagMetadata {

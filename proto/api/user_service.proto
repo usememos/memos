@@ -541,6 +541,10 @@ message UserSetting {
     // which shows and edits memos as Markdown text instead of formatted text.
     // The official client calls this "Markdown mode".
     bool source_mode = 1 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Whether the official client automatically enters focus mode
+    // when creating or editing a memo.
+    bool auto_focus_mode = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 }
 
