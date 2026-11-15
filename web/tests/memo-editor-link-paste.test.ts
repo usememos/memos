@@ -69,6 +69,15 @@ describe("memo editor link paste", () => {
     expect(root.textContent).toContain("literalobsidian://open?vault=x");
   });
 
+  it.each(["https://example.com/", "obsidian://open?vault=notes"])("keeps %s literal inside inline code", (url) => {
+    const { root, editor } = setup("`literal`");
+    editor.setSelection({ anchor: { block: 0, offset: 3 }, focus: { block: 0, offset: 3 } });
+    paste(root, url);
+    expect(root.querySelector("a")).toBeNull();
+    expect(root.querySelectorAll("code")).toHaveLength(1);
+    expect(root.querySelector("code")?.textContent).toBe(`lit${url}eral`);
+  });
+
   it("allows manually linking selected text to another app", () => {
     const { root, editor } = setup("notes");
     editor.setSelection({ anchor: { block: 0, offset: 0 }, focus: { block: 0, offset: 5 } });
