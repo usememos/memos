@@ -1,6 +1,7 @@
 import type { Scene } from "@usememos/canvas";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { fetchAttachmentFile } from "@/utils/attachment";
+import type { Translations } from "@/utils/i18n";
 
 /**
  * A drawing is a PNG attachment with its editable scene embedded. The name is a hint
@@ -26,3 +27,17 @@ export const readDrawing = async (file: Blob): Promise<DrawingContent> => {
   const { scene } = await readScenePng(file);
   return scene ? { scene } : { background: file };
 };
+
+export class DrawingActionError extends Error {
+  constructor(public readonly label: Translations) {
+    super(label);
+  }
+}
+
+export const sceneContent = (scene: Scene) =>
+  JSON.stringify({
+    elements: scene.elements,
+    files: scene.files,
+    background: scene.appState.viewBackgroundColor,
+    handDrawn: scene.appState.handDrawn,
+  });

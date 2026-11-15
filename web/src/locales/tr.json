@@ -216,7 +216,7 @@
       "image-upload-failed": "Bazı görseller yüklenemedi. Yeniden deneyin ya da yüklenen dosyaları ek olarak tutun.",
       "image-upload-stopped": "Görsel yükleme durdu {{completed}}/{{total}}",
       "insert-image": "Görsel ekle",
-      "drawing": "Çizim",
+      "drawing": "İşaretleme",
       "keep-as-attachments": "Ek olarak tut",
       "link-memo": "Not bağla",
       "retry-image-upload": "Yeniden dene",
@@ -224,8 +224,7 @@
       "uploading-images": "Görseller yükleniyor {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "Yeni çizim",
-      "edit": "Çizimi düzenle",
+      "edit": "İşaretlemeyi düzenle",
       "tools": "Araçlar",
       "tool-select": "Seç",
       "tool-pen": "Kalem",
@@ -250,8 +249,8 @@
       "color-violet": "Mor",
       "undo": "Geri al",
       "redo": "Yinele",
+      "zoom": "Yakınlaştırma",
       "zoom-to-fit": "Pencereye sığdır",
-      "done": "Bitti",
       "discard-title": "Bu çizim silinsin mi?",
       "discard-description": "Henüz nota eklenmedi.",
       "discard-edit-title": "Değişiklikler silinsin mi?",
@@ -261,7 +260,13 @@
       "open-failed": "Çizim açılamadı. Yeniden deneyin.",
       "export-failed": "Çizim kaydedilemedi. Yeniden deneyin.",
       "image-failed": "Görsel çizime eklenemedi.",
-      "saved-without-drawing": "Not kaydedildi ancak çizim kaydedilmedi. Yeniden denemek için tekrar kaydedin."
+      "saved-without-drawing": "Not kaydedildi ancak çizim kaydedilmedi. Yeniden denemek için tekrar kaydedin.",
+      "annotate": "İşaretleme",
+      "save-copy": "Kopyayı kaydet",
+      "unavailable": "Hedef kullanılamıyor.",
+      "saved-needs-update": "Çizim kaydedildi. Notu güncellemeyi yeniden deneyin.",
+      "changed-save-copy": "Orijinal değişti. Bir kopya kaydedin.",
+      "bind-failed": "Çizim yüklendi. Nota eklemeyi yeniden deneyin."
     },
     "new-memo": "Yeni not",
     "no-changes-detected": "Değişiklik yok",
@@ -1221,7 +1226,7 @@
       "search-emoji": "Emoji arayın ya da yapıştırın…",
       "no-results": "Eşleşme yok",
       "emoji-help": "Yaygın bir emoji seçin ya da kendinizinkini yapıştırın.",
-      "reset": "Varsayılana sıfırla",
+      "reset": "Varsayılan simgeyi kullan",
       "use-emoji": "{{emoji}} kullan"
     },
     "unavailable": "Bu alan mevcut değil ya da erişiminiz yok.",

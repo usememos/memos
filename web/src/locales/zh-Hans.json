@@ -231,7 +231,7 @@
       "image-upload-failed": "部分图片上传失败，请重试或将已上传文件保留为附件。",
       "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
       "insert-image": "插入图片",
-      "drawing": "绘图",
+      "drawing": "标注",
       "keep-as-attachments": "保留为附件",
       "link-memo": "链接备忘录",
       "retry-image-upload": "重试",
@@ -239,8 +239,7 @@
       "uploading-images": "正在上传图片 {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "新建绘图",
-      "edit": "编辑绘图",
+      "edit": "编辑标注",
       "tools": "工具",
       "tool-select": "选择",
       "tool-pen": "画笔",
@@ -265,8 +264,8 @@
       "color-violet": "紫色",
       "undo": "撤销",
       "redo": "重做",
+      "zoom": "缩放",
       "zoom-to-fit": "缩放至适合",
-      "done": "完成",
       "discard-title": "放弃此绘图？",
       "discard-description": "它尚未添加到备忘录中。",
       "discard-edit-title": "放弃所做的更改？",
@@ -276,7 +275,13 @@
       "open-failed": "无法打开绘图，请重试。",
       "export-failed": "无法保存绘图，请重试。",
       "image-failed": "无法将图片添加到绘图中。",
-      "saved-without-drawing": "备忘录已保存，但绘图未保存。请再次保存以重试。"
+      "saved-without-drawing": "备忘录已保存，但绘图未保存。请再次保存以重试。",
+      "annotate": "标注",
+      "save-copy": "保存副本",
+      "unavailable": "保存位置不可用。",
+      "saved-needs-update": "绘图已保存。请重试更新笔记。",
+      "changed-save-copy": "原图已更改。请保存副本以保留绘图。",
+      "bind-failed": "绘图已上传。请重试添加到笔记。"
     },
     "audio-recorder": {
       "attachment-label": "录音",
@@ -1283,7 +1288,7 @@
       "search-emoji": "搜索或粘贴表情…",
       "no-results": "没有匹配项",
       "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
-      "reset": "恢复默认",
+      "reset": "使用默认图标",
       "use-emoji": "使用 {{emoji}}"
     },
     "unavailable": "空间不存在或你没有访问权限。",

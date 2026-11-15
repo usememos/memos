@@ -276,7 +276,7 @@
       "image-upload-failed": "Somme bilete kunne diverre ikkje lastast opp. Prøv att, eller hald på dei opplasta filene som vedlegg.",
       "image-upload-stopped": "Biletopplastinga stogga {{completed}}/{{total}}",
       "insert-image": "Set inn bilete",
-      "drawing": "Teikning",
+      "drawing": "Markering",
       "keep-as-attachments": "Hald på som vedlegg",
       "link-memo": "Knyt til notat",
       "retry-image-upload": "Prøv att",
@@ -284,8 +284,7 @@
       "uploading-inline-image": "Lastar opp til innhaldet"
     },
     "drawing": {
-      "new-title": "Ny teikning",
-      "edit": "Rediger teikning",
+      "edit": "Rediger markering",
       "tools": "Verktøy",
       "tool-select": "Vel",
       "tool-pen": "Penn",
@@ -310,8 +309,8 @@
       "color-violet": "Fiolett",
       "undo": "Angre",
       "redo": "Gjer om",
+      "zoom": "Zoom",
       "zoom-to-fit": "Tilpass til vindauget",
-      "done": "Ferdig",
       "discard-title": "Forkaste denne teikninga?",
       "discard-description": "Ho er ikkje lagd til i notatet enno.",
       "discard-edit-title": "Forkaste endringane?",
@@ -321,7 +320,13 @@
       "open-failed": "Kunne ikkje opne teikninga. Prøv på nytt.",
       "export-failed": "Kunne ikkje lagre teikninga. Prøv på nytt.",
       "image-failed": "Kunne ikkje leggje biletet til i teikninga.",
-      "saved-without-drawing": "Notatet er lagra, men teikninga er ikkje det. Lagre på nytt for å prøve igjen."
+      "saved-without-drawing": "Notatet er lagra, men teikninga er ikkje det. Lagre på nytt for å prøve igjen.",
+      "annotate": "Markering",
+      "save-copy": "Lagre kopi",
+      "unavailable": "Målet er utilgjengeleg.",
+      "saved-needs-update": "Teikninga er lagra. Prøv å oppdatere notatet igjen.",
+      "changed-save-copy": "Originalen er endra. Lagre ein kopi.",
+      "bind-failed": "Teikninga er lasta opp. Prøv å leggje henne til i notatet igjen."
     },
     "new-memo": "Nytt notat",
     "no-changes-detected": "Ingen endringar funne",
@@ -1302,7 +1307,7 @@
       "icons": "Ikon",
       "kind": "Ikontype",
       "no-results": "Ingen treff",
-      "reset": "Still attende til standard",
+      "reset": "Bruk standardikon",
       "search-emoji": "Søk etter eller lim inn emoji…",
       "search-icons": "Søk etter ikon…",
       "use-emoji": "Nytt {{emoji}}"

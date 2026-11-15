@@ -11,6 +11,12 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         timestamps: action.payload.timestamps,
       };
 
+    case "SET_DRAWING_SAVE_ERROR":
+      return { ...state, drawingSaveError: action.payload };
+
+    case "SET_DRAWING_MEMO_UPDATE":
+      return { ...state, drawingNeedsMemoUpdate: action.payload };
+
     case "UPDATE_CONTENT": {
       if (state.content === action.payload.content) {
         return state;

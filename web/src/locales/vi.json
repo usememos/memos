@@ -170,15 +170,14 @@
       "image-upload-failed": "Một số hình ảnh không thể tải lên. Hãy thử lại hoặc giữ các tệp đã tải lên dưới dạng tệp đính kèm.",
       "image-upload-stopped": "Quá trình tải ảnh dừng lại {{completed}}/{{total}}",
       "insert-image": "Chèn ảnh",
-      "drawing": "Bản vẽ",
+      "drawing": "Chú thích",
       "keep-as-attachments": "Giữ nguyên dưới dạng tệp đính kèm",
       "retry-image-upload": "Thử lại",
       "uploading-inline-image": "Đang tải nội dung lên",
       "uploading-images": "Đang tải ảnh {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "Bản vẽ mới",
-      "edit": "Chỉnh sửa bản vẽ",
+      "edit": "Sửa chú thích",
       "tools": "Công cụ",
       "tool-select": "Chọn",
       "tool-pen": "Bút",
@@ -203,8 +202,8 @@
       "color-violet": "Tím",
       "undo": "Hoàn tác",
       "redo": "Làm lại",
+      "zoom": "Thu phóng",
       "zoom-to-fit": "Vừa với cửa sổ",
-      "done": "Xong",
       "discard-title": "Loại bỏ bản vẽ này?",
       "discard-description": "Bản vẽ chưa được thêm vào ghi chú.",
       "discard-edit-title": "Loại bỏ các thay đổi?",
@@ -214,7 +213,13 @@
       "open-failed": "Không thể mở bản vẽ. Hãy thử lại.",
       "export-failed": "Không thể lưu bản vẽ. Hãy thử lại.",
       "image-failed": "Không thể thêm ảnh vào bản vẽ.",
-      "saved-without-drawing": "Đã lưu ghi chú, nhưng chưa lưu bản vẽ. Hãy lưu lần nữa để thử lại."
+      "saved-without-drawing": "Đã lưu ghi chú, nhưng chưa lưu bản vẽ. Hãy lưu lần nữa để thử lại.",
+      "annotate": "Chú thích",
+      "save-copy": "Lưu bản sao",
+      "unavailable": "Đích lưu không khả dụng.",
+      "saved-needs-update": "Đã lưu bản vẽ. Thử cập nhật ghi chú lần nữa.",
+      "changed-save-copy": "Bản gốc đã thay đổi. Hãy lưu bản sao.",
+      "bind-failed": "Đã tải bản vẽ lên. Thử thêm vào ghi chú lần nữa."
     },
     "audio-recorder": {
       "attachment-label": "Ghi âm",
@@ -1297,7 +1302,7 @@
       "search-emoji": "Tìm kiếm hoặc dán biểu tượng cảm xúc…",
       "no-results": "Không tìm thấy kết quả phù hợp",
       "emoji-help": "Chọn một biểu tượng cảm xúc phổ biến hoặc dán biểu tượng cảm xúc của riêng bạn.",
-      "reset": "Đặt lại về mặc định",
+      "reset": "Dùng biểu tượng mặc định",
       "use-emoji": "Sử dụng {{emoji}}"
     },
     "unavailable": "Không gian này không tồn tại hoặc bạn không có quyền truy cập vào nó.",

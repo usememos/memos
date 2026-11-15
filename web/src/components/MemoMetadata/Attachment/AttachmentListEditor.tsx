@@ -6,8 +6,8 @@ import {
   FileTextIcon,
   GripVerticalIcon,
   ImagePlusIcon,
+  PaletteIcon,
   PauseIcon,
-  PencilLineIcon,
   PlayIcon,
   XIcon,
 } from "lucide-react";
@@ -173,7 +173,7 @@ const AttachmentTile: FC<{
   const t = useTranslate();
   const drawing = item.category === "image" && isDrawingFilename(item.filename);
   const keyActions: { icon: ReactElement; action: ItemAction }[] = [
-    ...(actions.drawing ? [{ icon: <PencilLineIcon />, action: actions.drawing }] : []),
+    ...(actions.drawing ? [{ icon: <PaletteIcon />, action: actions.drawing }] : []),
     ...(actions.placement ? [{ icon: <ImagePlusIcon />, action: actions.placement }] : []),
     ...(actions.onRemove ? [{ icon: <XIcon />, action: { label: t("editor.attachments.remove"), onClick: actions.onRemove } }] : []),
   ];
@@ -505,7 +505,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
 
     // A drawing opens from the original file: a saved one is downloaded, so it must live on this server.
     const drawingSource: DrawingSource | undefined =
-      item.category !== "image" || !isDrawingFilename(item.filename)
+      item.category !== "image"
         ? undefined
         : item.isLocal
           ? itemLocalFiles[0] && { kind: "local", localFile: itemLocalFiles[0] }
@@ -515,7 +515,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     const drawing =
       drawingSource && onEditDrawing
         ? {
-            label: t("editor.drawing.edit"),
+            label: t(isDrawingFilename(item.filename) ? "editor.drawing.edit" : "editor.drawing.annotate"),
             onClick: () => onEditDrawing(drawingSource),
             disabled: placementActionsDisabled || Boolean(openingDrawing),
             busy: openingDrawing !== undefined && item.memberIds.includes(openingDrawing),

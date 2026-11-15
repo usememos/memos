@@ -71,6 +71,10 @@ export const editorActions = {
     payload: id,
   }),
 
+  setDrawingSaveError: (value: EditorState["drawingSaveError"]): EditorAction => ({ type: "SET_DRAWING_SAVE_ERROR", payload: value }),
+
+  setDrawingMemoUpdate: (value: boolean): EditorAction => ({ type: "SET_DRAWING_MEMO_UPDATE", payload: value }),
+
   reset: (): EditorAction => ({
     type: "RESET",
   }),

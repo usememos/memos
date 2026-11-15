@@ -253,7 +253,7 @@
       "image-upload-failed": "לא ניתן להעלות חלק מהתמונות. נסו שוב או השאירו את התמונות שהועלו כקבצים מצורפים.",
       "image-upload-stopped": "העלאת התמונה נעצרה {{completed}}/{{total}}",
       "insert-image": "הוסף תמונה",
-      "drawing": "ציור",
+      "drawing": "סימון",
       "keep-as-attachments": "שמור כקבצים מצורפים",
       "link-memo": "קשר פתק",
       "retry-image-upload": "נסה שוב",
@@ -261,8 +261,7 @@
       "uploading-images": "מעלה תמונות {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "ציור חדש",
-      "edit": "עריכת ציור",
+      "edit": "עריכת סימון",
       "tools": "כלים",
       "tool-select": "בחירה",
       "tool-pen": "עט",
@@ -287,8 +286,8 @@
       "color-violet": "סגול",
       "undo": "ביטול פעולה",
       "redo": "ביצוע חוזר",
+      "zoom": "תקריב",
       "zoom-to-fit": "התאמה לחלון",
-      "done": "סיום",
       "discard-title": "למחוק את הציור הזה?",
       "discard-description": "הוא עדיין לא נוסף לפתק.",
       "discard-edit-title": "לבטל את השינויים?",
@@ -298,7 +297,13 @@
       "open-failed": "לא ניתן היה לפתוח את הציור. נסו שוב.",
       "export-failed": "לא ניתן היה לשמור את הציור. נסו שוב.",
       "image-failed": "לא ניתן היה להוסיף את התמונה לציור.",
-      "saved-without-drawing": "הפתק נשמר, אבל הציור לא. שמרו שוב כדי לנסות מחדש."
+      "saved-without-drawing": "הפתק נשמר, אבל הציור לא. שמרו שוב כדי לנסות מחדש.",
+      "annotate": "סימון",
+      "save-copy": "שמירת עותק",
+      "unavailable": "היעד אינו זמין.",
+      "saved-needs-update": "הציור נשמר. נסו שוב לעדכן את ההערה.",
+      "changed-save-copy": "המקור השתנה. שמרו עותק.",
+      "bind-failed": "הציור הועלה. נסו שוב להוסיף אותו להערה."
     },
     "no-changes-detected": "לא זוהו שינויים",
     "save": "שמור",
@@ -1297,7 +1302,7 @@
       "search-emoji": "חיפוש או הדבקת אימוג'י…",
       "no-results": "אין התאמות",
       "emoji-help": "בחר אימוג'י נפוץ או הדבק משלך.",
-      "reset": "איפוס לברירת מחדל",
+      "reset": "שימוש בסמל ברירת המחדל",
       "use-emoji": "שימוש ב-{{emoji}}"
     },
     "unavailable": "מרחב זה אינו קיים או שאין לך גישה אליו.",

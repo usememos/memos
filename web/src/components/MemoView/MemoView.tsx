@@ -199,6 +199,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
             onOpenChange={setPreviewOpen}
             items={previewState.items}
             initialIndex={previewState.index}
+            drawingContext={{ memo: memoData, canEdit: !readonly }}
           />
         </Suspense>
       )}

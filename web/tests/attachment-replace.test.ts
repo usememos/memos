@@ -11,6 +11,7 @@ vi.mock("@/connect", () => ({
 
 import {
   DrawingNotSavedError,
+  DrawingSavedError,
   type MemoSaveOperations,
   memoService,
   mergeUploadedAttachments,
@@ -137,6 +138,30 @@ describe("replacing an attachment's content", () => {
 
       expect(order).toEqual([`upload over ${saved.name}`, "update update_time"]);
       expect(result.hasChanges).toBe(true);
+    });
+
+    it("retries only the memo timestamp after the drawing replacement was acknowledged", async () => {
+      mockReplacementUpload();
+      const uploaded = vi.fn();
+      const failed = operations(async () => {
+        throw new Error("offline");
+      });
+      await expect(memoService.save(draft("hello"), { memoName: memo.name, onFileUploaded: uploaded }, failed)).rejects.toBeInstanceOf(
+        DrawingSavedError,
+      );
+      expect(uploaded).toHaveBeenCalledWith(edit, edited);
+
+      const fresh = create(MemoSchema, { ...memo, attachments: [edited] });
+      const retry = { ...operations(async () => fresh), getMemo: vi.fn(async () => fresh) };
+      const state = draft("hello");
+      const result = await memoService.save(
+        { ...state, localFiles: [], metadata: { ...state.metadata, attachments: [edited] }, drawingNeedsMemoUpdate: true },
+        { memoName: memo.name },
+        retry,
+      );
+      expect(result.hasChanges).toBe(true);
+      expect(order).toEqual([`upload over ${saved.name}`, "update update_time", "update update_time"]);
+      expect(vi.mocked(retry.updateMemo).mock.calls[0][1]).toEqual(["update_time"]);
     });
 
     it("reports a drawing that failed after the rest of the memo saved", async () => {

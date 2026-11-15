@@ -170,15 +170,14 @@
       "image-upload-failed": "일부 이미지를 업로드할 수 없습니다. 다시 시도하거나 업로드된 파일을 첨부 파일로 유지하세요.",
       "image-upload-stopped": "이미지 업로드 중지됨 {{completed}}/{{total}}",
       "insert-image": "이미지 삽입",
-      "drawing": "그리기",
+      "drawing": "마크업",
       "keep-as-attachments": "첨부 파일로 유지",
       "retry-image-upload": "다시 시도",
       "uploading-inline-image": "콘텐츠에 업로드 중",
       "uploading-images": "이미지 업로드 중 {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "새 그림",
-      "edit": "그림 편집",
+      "edit": "마크업 편집",
       "tools": "도구",
       "tool-select": "선택",
       "tool-pen": "펜",
@@ -203,8 +202,8 @@
       "color-violet": "보라색",
       "undo": "실행 취소",
       "redo": "다시 실행",
+      "zoom": "확대/축소",
       "zoom-to-fit": "화면에 맞추기",
-      "done": "완료",
       "discard-title": "이 그림을 삭제할까요?",
       "discard-description": "아직 메모에 추가되지 않았습니다.",
       "discard-edit-title": "변경 사항을 삭제할까요?",
@@ -214,7 +213,13 @@
       "open-failed": "그림을 열 수 없습니다. 다시 시도하세요.",
       "export-failed": "그림을 저장할 수 없습니다. 다시 시도하세요.",
       "image-failed": "이미지를 그림에 추가할 수 없습니다.",
-      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요."
+      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요.",
+      "annotate": "마크업",
+      "save-copy": "사본 저장",
+      "unavailable": "저장 위치를 사용할 수 없습니다.",
+      "saved-needs-update": "그림이 저장되었습니다. 메모 업데이트를 다시 시도하세요.",
+      "changed-save-copy": "원본이 변경되었습니다. 사본을 저장하세요.",
+      "bind-failed": "그림이 업로드되었습니다. 메모에 추가를 다시 시도하세요."
     },
     "audio-recorder": {
       "attachment-label": "오디오 녹음",
@@ -1297,7 +1302,7 @@
       "search-emoji": "이모지 검색 또는 붙여넣기…",
       "no-results": "일치하는 항목 없음",
       "emoji-help": "일반적인 이모지를 선택하거나 직접 붙여넣으세요.",
-      "reset": "기본값으로 재설정",
+      "reset": "기본 아이콘 사용",
       "use-emoji": "{{emoji}} 사용"
     },
     "unavailable": "이 공간이 없거나 접근 권한이 없습니다.",

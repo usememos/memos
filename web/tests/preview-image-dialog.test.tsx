@@ -80,6 +80,34 @@ const mockImageCenter = (image: HTMLElement, x: number, y: number) => {
   } as DOMRect);
 };
 
+describe("Markup entry", () => {
+  it.each([
+    { canEdit: true, external: false, visible: true },
+    { canEdit: false, external: false, visible: false },
+    { canEdit: true, external: true, visible: false },
+  ])("limits annotation to editable instance images: $canEdit/$external", ({ canEdit, external, visible }) => {
+    const attachment = create(AttachmentSchema, {
+      name: "attachments/source",
+      filename: "source.png",
+      type: "image/png",
+      externalLink: external ? "https://example.com/photo.png" : "",
+    });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: attachment.name, kind: "image", sourceUrl: "/source.png", filename: attachment.filename }]}
+        drawingContext={{ memo: { name: "memos/a", attachments: [attachment] }, canEdit }}
+      />,
+    );
+    const action = screen.queryByRole("button", { name: "Markup" });
+    if (visible) {
+      expect(action).toHaveTextContent("Markup");
+      expect(action?.querySelector("svg")).toHaveClass("lucide-palette");
+    } else expect(action).not.toBeInTheDocument();
+  });
+});
+
 describe("<PreviewImageDialog>", () => {
   beforeEach(() => {
     // jsdom ships PointerEvent but not pointer capture: stub the capture methods.

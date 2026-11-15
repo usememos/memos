@@ -171,14 +171,13 @@
       "image-upload-failed": "一部の画像はアップロードできませんでした。再試行するか、アップロード済みのファイルを添付ファイルとして保存してください。",
       "image-upload-stopped": "画像アップロードが停止しました {{completed}}/{{total}}",
       "insert-image": "画像を挿入",
-      "drawing": "描画",
+      "drawing": "マークアップ",
       "keep-as-attachments": "添付ファイルとして保存",
       "uploading-inline-image": "コンテンツにアップロード中",
       "uploading-images": "画像 {{completed}}/{{total}} をアップロード中"
     },
     "drawing": {
-      "new-title": "新しい描画",
-      "edit": "描画を編集",
+      "edit": "マークアップを編集",
       "tools": "ツール",
       "tool-select": "選択",
       "tool-pen": "ペン",
@@ -203,8 +202,8 @@
       "color-violet": "紫",
       "undo": "元に戻す",
       "redo": "やり直す",
+      "zoom": "ズーム",
       "zoom-to-fit": "全体を表示",
-      "done": "完了",
       "discard-title": "この描画を破棄しますか？",
       "discard-description": "まだメモに追加されていません。",
       "discard-edit-title": "変更を破棄しますか？",
@@ -214,7 +213,13 @@
       "open-failed": "描画を開けませんでした。もう一度お試しください。",
       "export-failed": "描画を保存できませんでした。もう一度お試しください。",
       "image-failed": "画像を描画に追加できませんでした。",
-      "saved-without-drawing": "メモは保存されましたが、描画は保存されていません。再試行するには、もう一度保存してください。"
+      "saved-without-drawing": "メモは保存されましたが、描画は保存されていません。再試行するには、もう一度保存してください。",
+      "annotate": "マークアップ",
+      "save-copy": "コピーを保存",
+      "unavailable": "保存先を利用できません。",
+      "saved-needs-update": "描画は保存済みです。メモの更新を再試行してください。",
+      "changed-save-copy": "元の画像が変更されました。コピーを保存してください。",
+      "bind-failed": "描画はアップロード済みです。メモへの追加を再試行してください。"
     },
     "audio-recorder": {
       "attachment-label": "音声録音",
@@ -1297,7 +1302,7 @@
       "search-emoji": "絵文字の検索または貼り付け…",
       "no-results": "一致するアイコンが見つかりません",
       "emoji-help": "よく使われる絵文字を選択するか、独自の絵文字を貼り付けてください。",
-      "reset": "デフォルトに戻す",
+      "reset": "デフォルトのアイコンを使う",
       "use-emoji": "{{emoji}} を使用する"
     },
     "unavailable": "このスペースは存在しないか、アクセス権がありません。",

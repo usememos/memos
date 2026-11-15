@@ -287,7 +287,7 @@
       "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
       "insert-image": "Insert image",
-      "drawing": "Drawing",
+      "drawing": "Markup",
       "keep-as-attachments": "Keep as attachments",
       "link-memo": "Link memo",
       "retry-image-upload": "Retry",
@@ -295,8 +295,7 @@
       "uploading-images": "Uploading images {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "New drawing",
-      "edit": "Edit drawing",
+      "edit": "Edit markup",
       "tools": "Tools",
       "tool-select": "Select",
       "tool-pen": "Pen",
@@ -321,8 +320,8 @@
       "color-violet": "Violet",
       "undo": "Undo",
       "redo": "Redo",
+      "zoom": "Zoom",
       "zoom-to-fit": "Zoom to fit",
-      "done": "Done",
       "discard-title": "Discard this drawing?",
       "discard-description": "It hasn't been added to the memo yet.",
       "discard-edit-title": "Discard your changes?",
@@ -332,7 +331,13 @@
       "open-failed": "Couldn't open the drawing. Try again.",
       "export-failed": "Couldn't save the drawing. Try again.",
       "image-failed": "Couldn't add the image to the drawing.",
-      "saved-without-drawing": "The memo is saved, but the drawing isn't. Save again to retry."
+      "saved-without-drawing": "The memo is saved, but the drawing isn't. Save again to retry.",
+      "annotate": "Markup",
+      "save-copy": "Save copy",
+      "unavailable": "The destination is unavailable.",
+      "saved-needs-update": "Drawing saved. Retry the memo update.",
+      "changed-save-copy": "The original changed. Save a copy to keep your drawing.",
+      "bind-failed": "Drawing uploaded. Retry adding it to the memo."
     },
     "new-memo": "New memo",
     "no-changes-detected": "No changes detected",
@@ -1292,7 +1297,7 @@
       "search-emoji": "Search or paste emoji…",
       "no-results": "No matches",
       "emoji-help": "Choose a common emoji or paste your own.",
-      "reset": "Reset to default",
+      "reset": "Use default icon",
       "use-emoji": "Use {{emoji}}"
     },
     "unavailable": "This space does not exist or you don’t have access to it.",

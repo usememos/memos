@@ -40,6 +40,8 @@ export interface EditorState {
   /** Whether an audio recording is in flight; gates save. The recorder's full
    *  state lives in useAudioRecorder — only this shared bit reaches the store. */
   recorderBusy: boolean;
+  drawingNeedsMemoUpdate?: boolean;
+  drawingSaveError?: "editor.drawing.saved-needs-update" | "editor.drawing.saved-without-drawing";
   /** Draft-local acceptance history, retained across Undo but cleared on reset. */
   acceptedSuggestionIds: string[];
 }
@@ -59,6 +61,8 @@ export type EditorAction =
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
   | { type: "SET_JUST_SAVED"; payload: boolean }
   | { type: "ACCEPT_SUGGESTION"; payload: string }
+  | { type: "SET_DRAWING_SAVE_ERROR"; payload: EditorState["drawingSaveError"] }
+  | { type: "SET_DRAWING_MEMO_UPDATE"; payload: boolean }
   | { type: "RESET" };
 
 // Module-private template for createInitialState.
