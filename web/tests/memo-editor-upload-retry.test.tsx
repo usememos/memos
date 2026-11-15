@@ -38,9 +38,16 @@ vi.mock("@/components/MemoEditor/edit/state", () => ({
       setJustSaved: () => ({ type: "noop" }),
       setMetadata: (metadata: Partial<EditorState["metadata"]>) => ({ type: "set-metadata", metadata }),
       setLocalFiles: (localFiles: LocalFile[]) => ({ type: "set-local-files", localFiles }),
+      setAttachmentOrder: (attachmentOrder: string[]) => ({ type: "set-attachment-order", attachmentOrder }),
       setTimestamps: () => ({ type: "noop" }),
     },
-    dispatch: (action: { type: string; metadata?: Partial<EditorState["metadata"]>; localFiles?: LocalFile[] }) => {
+    dispatch: (action: {
+      type: string;
+      metadata?: Partial<EditorState["metadata"]>;
+      localFiles?: LocalFile[];
+      attachmentOrder?: string[];
+    }) => {
+      if (action.type === "set-attachment-order") mocks.state = { ...mocks.state, attachmentOrder: action.attachmentOrder ?? [] };
       if (action.type === "set-metadata") mocks.state = { ...mocks.state, metadata: { ...mocks.state.metadata, ...action.metadata } };
       if (action.type === "set-local-files") mocks.state = { ...mocks.state, localFiles: action.localFiles ?? [] };
     },

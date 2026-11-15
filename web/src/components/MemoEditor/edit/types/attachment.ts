@@ -194,12 +194,16 @@ export function filterByCategory(items: AttachmentItem[], categories: FileCatego
   return items.filter((item) => categorySet.has(item.category));
 }
 
+/** Pictures and videos, shown in the gallery; everything else is a row. */
+export const isMediaItem = (item: AttachmentItem): boolean =>
+  item.category === "image" || item.category === "video" || item.category === "motion";
+
 export function separateMediaAndDocs(items: AttachmentItem[]): { media: AttachmentItem[]; docs: AttachmentItem[] } {
   const media: AttachmentItem[] = [];
   const docs: AttachmentItem[] = [];
 
   for (const item of items) {
-    if (item.category === "image" || item.category === "video" || item.category === "motion") {
+    if (isMediaItem(item)) {
       media.push(item);
     } else {
       docs.push(item);

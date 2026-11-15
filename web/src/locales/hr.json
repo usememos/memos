@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prijava nije dovršena",
     "create-your-account": "Stvori svoj račun",
+    "hide-password": "Sakrij lozinku",
+    "incorrect-credentials": "Netočno korisničko ime ili lozinka.",
     "new-password": "Nova lozinka",
     "repeat-new-password": "Ponovi novu lozinku",
+    "show-password": "Prikaži lozinku",
     "sign-in-tip": "Račun već postoji?",
     "sign-up-tip": "Još nemaš račun?",
     "admin-sign-in": "Prijava administratora",
-    "admin-sign-in-tip": "Prijava lozinkom ostaje dostupna administratorima.",
     "back-to-sign-in": "Natrag na prijavu",
     "continue-with": "Nastavi s {{provider}}",
     "create-admin-account": "Izradi administratorski račun",
-    "explore-public-memos": "Istraži javne bilješke o ovoj instanci",
-    "first-run": "Prvo pokretanje",
     "setup-description": "Izradi administratorski račun za ovu instancu.",
-    "setup-note": "Ovaj račun posjeduje postavke instance, članove i pružatelje identiteta.",
     "setup-title": "Postavi svoju instancu",
     "signin-unavailable-description": "Prijava lozinkom je isključena i nisu konfigurirani pružatelji identiteta. Zamolite administratora da omogući metodu prijave.",
     "signin-unavailable-title": "Prijava nije dostupna",
-    "signup-unavailable-description": "Računi lozinkom su isključeni i nisu konfigurirani pružatelji identiteta. Zamolite administratora za pristup.",
-    "signup-unavailable-title": "Registracija nije dostupna",
-    "signups-closed-description": "Novi računi su onemogućeni na ovoj instanci. Obratite se administratoru ako vam je potreban pristup.",
-    "signups-closed-title": "Prijave su zatvorene",
-    "sso-signup-tip": "Prijavite se s davateljem usluga u nastavku kako biste stvorili svoj račun.",
-    "welcome-back": "Dobrodošli natrag."
+    "signups-closed-description": "Novi računi su onemogućeni na ovoj instanci. Obratite se administratoru ako vam je potreban pristup."
   },
   "common": {
     "about": "O aplikaciji",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Referencirano od",
     "referencing": "Referencira",
-    "relations": "Odnosi",
     "resources": "Resursi",
     "restore": "Vrati",
     "role": "Uloga",
@@ -316,9 +310,11 @@
       "resize-image": "Promijeni veličinu slike"
     },
     "attachments": {
-      "move-up": "Pomakni privitak gore",
-      "move-down": "Pomakni privitak dolje",
-      "remove": "Ukloni privitak"
+      "edited": "Uređeno",
+      "new": "Novo",
+      "remove": "Ukloni privitak",
+      "reorder": "Promijeni redoslijed: {{name}}",
+      "reorder-hint": "Povucite ili upotrijebite tipke sa strelicama"
     },
     "remove-relation": "Ukloni poveznicu",
     "remove-location": "Ukloni lokaciju",
@@ -446,7 +442,9 @@
     "layout-list-description": "Jedan stupac širine za čitanje",
     "on-this-memo": "Na ovom podsjetniku",
     "parent-memo": "Nadređeni podsjetnik",
-    "view-options": "Opcije prikaza"
+    "view-options": "Opcije prikaza",
+    "add-reaction": "Dodajte reakciju",
+    "remove-reaction": "Ukloni reakciju"
   },
   "message": {
     "archived-successfully": "Uspješno arhivirano",
@@ -573,22 +571,10 @@
       "no-members-found": "Nema pronađenih članova",
       "active": "Aktivan",
       "archived": "Arhivirano",
-      "member-column": "Član",
-      "summary-column": "Sažetak",
       "export-memos": "Izvezi bilješke",
       "username-password-required": "Korisničko ime i lozinka ne smiju biti prazni",
       "create-success": "Korisnik je stvoren",
       "update-success": "Korisnik je ažuriran"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reakcije",
-      "reactions-required": "Popis reakcija ne smije biti prazan",
-      "add-reaction": "Dodajte reakciju",
-      "configured-reactions": "Konfigurirane reakcije",
-      "reaction-placeholder": "npr. 👍",
-      "reactions-description": "Definirajte opcije reakcije koje korisnici mogu primijeniti na dopise.",
-      "remove-reaction": "Ukloni reakciju"
     },
     "my-account": {
       "label": "Moj račun"
@@ -782,7 +768,6 @@
       "basic-settings": "Osnovne postavke",
       "basic-settings-description": "Postavite identitet pružatelja usluga, ime za prikaz i izborna pravila identifikatora prije ispunjavanja pojedinosti OAuth.",
       "client-secret-optional-description": "Ostavite prazno kako bi postojeća klijentska tajna ostala nepromijenjena.",
-      "configuration": "Konfiguracija",
       "configuration-summary-description": "Pokažite bitne elemente koji pomažu u identificiranju i reviziji davatelja bez izlaganja pune konfiguracije.",
       "create-sso-description": "Stvorite novog davatelja identiteta za jedinstvenu prijavu kojom upravlja administrator.",
       "endpoints": "Krajnje točke",
@@ -804,7 +789,6 @@
       "not-linked-description": "Nijedan vanjski identitet još nije povezan. Možete povezati ovog pružatelja usluga da biste se kasnije prijavili s njim.",
       "oauth-configuration": "OAuth konfiguracija",
       "oauth-configuration-description": "Ispunite OAuth vjerodajnice klijenta i krajnje točke pružatelja korištene tijekom prijave.",
-      "provider": "Davatelj",
       "provider-id": "ID davatelja usluga",
       "provider-id-description": "Samo mala slova, brojke i crtice. Ova vrijednost postaje dio naziva resursa pružatelja.",
       "provider-uid": "UID",
@@ -943,7 +927,6 @@
       },
       "no-webhooks-found": "Nema pronađenih webhooks.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

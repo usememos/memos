@@ -13,6 +13,7 @@ import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { DrawingNotSavedError, type MemoSaveOperations, mergeUploadedAttachments } from "../services/memoService";
 import { useEditorContext } from "../state";
+import { renameUploadedKeys } from "../utils/attachmentOrder";
 import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
@@ -48,7 +49,7 @@ export function useMemoSave({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const { mutateAsync: createMemo } = useCreateMemo();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memoName);
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
 
@@ -84,6 +85,7 @@ export function useMemoSave({
         }),
       );
       dispatch(actions.setLocalFiles(current.localFiles.filter((file) => !uploaded.has(file.previewUrl))));
+      dispatch(actions.setAttachmentOrder(renameUploadedKeys(current.attachmentOrder, uploaded)));
     };
 
     const operations: MemoSaveOperations = {

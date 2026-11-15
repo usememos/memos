@@ -18,7 +18,9 @@ interface Props {
  * brand wordmark's weight and spacing in the theme's serif stack; the exact face is not required.
  */
 const IdentityLabel = ({ mark, label, size = "md", collapsed, wrap, className }: Props) => (
-  <span className={cn("flex min-w-0 items-center text-mu-ink", size === "hero" ? "gap-3" : size === "lg" ? "gap-2.5" : "gap-2", className)}>
+  <span
+    className={cn("flex min-w-0 items-center text-mu-text", size === "hero" ? "gap-3" : size === "lg" ? "gap-2.5" : "gap-2", className)}
+  >
     {mark}
     {!collapsed && (
       <span

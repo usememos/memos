@@ -223,7 +223,7 @@ const MemoDetailSidebar = ({
             className={cn(
               SIDEBAR_ROW_CLASSES,
               sidebarRowStateClasses("idle"),
-              "data-popup-open:bg-mu-hover/65 data-popup-open:text-mu-ink",
+              "data-popup-open:bg-mu-hover/65 data-popup-open:text-mu-text",
             )}
           >
             <SidebarRowIconSlot icon={Share2Icon} />

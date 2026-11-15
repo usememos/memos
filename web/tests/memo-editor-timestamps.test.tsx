@@ -50,6 +50,20 @@ describe("memo editor timestamps", () => {
     clients.updateMemo.mockImplementation(async ({ memo }: { memo: Memo }) => memo);
   });
 
+  it("associates the input label and clears its invalid state after a valid edit", () => {
+    renderEditor();
+    const input = screen.getByRole("textbox", { name: "common.created-at" });
+    expect(screen.getByText("common.created-at")).toHaveAttribute("for", input.id);
+
+    fireEvent.change(input, { target: { value: "invalid" } });
+    fireEvent.blur(input);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+
+    fireEvent.change(input, { target: { value: "2024-02-29 12:34:56" } });
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(editor.getState().timestamps.createTime).toEqual(customTime);
+  });
+
   it.each([
     [0, "createTime", "create_time"],
     [1, "updateTime", "update_time"],
@@ -79,7 +93,7 @@ describe("memo editor timestamps", () => {
     const input = screen.getAllByRole("textbox")[0];
     fireEvent.change(input, { target: { value } });
     fireEvent.blur(input);
-    expect(input).toHaveAttribute("data-invalid", "true");
+    expect(input).toHaveAttribute("aria-invalid", "true");
     expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
     await memoService.save(editor.getState(), { memoName: memo.name }, ops);
     expect(clients.updateMemo).not.toHaveBeenCalled();

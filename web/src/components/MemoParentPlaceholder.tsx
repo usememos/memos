@@ -6,7 +6,7 @@ export type MemoParentStatus = "loading" | "unavailable" | "error";
 export default function MemoParentPlaceholder({ status, onRetry }: { status: MemoParentStatus; onRetry?: () => void }) {
   const t = useTranslate();
   return (
-    <div className="px-2 py-1.5 mu-caption text-mu-ink-muted" role="status">
+    <div className="px-2 py-1.5 mu-caption text-mu-text-secondary" role="status">
       <p>{t(status === "loading" ? "memo.parent-loading" : status === "error" ? "memo.parent-load-error" : "memo.parent-unavailable")}</p>
       {status === "unavailable" && <p className="mt-1 leading-5">{t("memo.parent-unavailable-description")}</p>}
       {status === "error" && onRetry && (

@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { Button, Dialog, Field, Fieldset, Input, Radio, RadioGroup } from "@usememos/ui";
+import { Button, Dialog, Field, Input, Select } from "@usememos/ui";
 import { useEffect, useState } from "react";
 import { userServiceClient } from "@/connect";
 import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
@@ -29,6 +29,10 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
   const isCreating = !initialUser;
   // The password is write-only, so configuration never locks it.
   const managed = useManagedResource(initialUser?.name ?? "");
+  const roleOptions = [
+    { value: User_Role.USER, label: t("setting.member.user") },
+    { value: User_Role.ADMIN, label: t("setting.member.admin") },
+  ];
 
   useEffect(() => {
     if (initialUser) {
@@ -127,28 +131,24 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
             {fieldErrors.errors.password && <Field.Error match>{fieldErrors.errors.password}</Field.Error>}
           </Field.Root>
           <Field.Root>
-            <Fieldset.Root
-              render={
-                <RadioGroup
-                  disabled={isFieldManaged(managed, "role")}
-                  value={String(user.role)}
-                  onValueChange={(value) => setPartialUser({ role: Number(value) as User_Role })}
-                  orientation="horizontal"
-                />
-              }
+            <Field.Label>{t("common.role")}</Field.Label>
+            <Select.Root
+              items={roleOptions}
+              disabled={isFieldManaged(managed, "role")}
+              value={user.role}
+              onValueChange={(role) => role !== null && setPartialUser({ role })}
             >
-              <Fieldset.Legend>{t("common.role")}</Fieldset.Legend>
-              <Field.Item>
-                <Field.Label>
-                  <Radio value={String(User_Role.USER)} /> {t("setting.member.user")}
-                </Field.Label>
-              </Field.Item>
-              <Field.Item>
-                <Field.Label>
-                  <Radio value={String(User_Role.ADMIN)} /> {t("setting.member.admin")}
-                </Field.Label>
-              </Field.Item>
-            </Fieldset.Root>
+              <Select.Trigger>
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Popup>
+                {roleOptions.map((option) => (
+                  <Select.Item key={option.value} value={option.value}>
+                    {option.label}
+                  </Select.Item>
+                ))}
+              </Select.Popup>
+            </Select.Root>
           </Field.Root>
         </div>
         <Dialog.Footer>

@@ -156,10 +156,10 @@ const TagsSection = () => {
   return (
     <SettingSection title={t("setting.tags.label")}>
       <SettingGroup title={t("setting.tags.title")} description={t("setting.tags.description")}>
-        <SettingPanel footer={<span className="mu-caption text-mu-ink-muted">{t("setting.tags.tag-pattern-hint")}</span>}>
+        <SettingPanel footer={<span className="mu-caption text-mu-text-secondary">{t("setting.tags.tag-pattern-hint")}</span>}>
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 mu-label text-mu-ink">
+              <div className="flex items-center gap-2 mu-label text-mu-text">
                 <PlusIcon className="mu-icon-sm" />
                 <span>{t("setting.tags.add-rule")}</span>
               </div>
@@ -192,7 +192,7 @@ const TagsSection = () => {
                 {newTagError && <Field.Error match>{newTagError}</Field.Error>}
               </Field.Root>
 
-              <div className="flex h-8 items-center gap-2 rounded-mu-md border border-mu-line bg-mu-canvas px-2 mu-body text-mu-ink-muted">
+              <div className="flex min-h-8 flex-wrap items-center gap-2 rounded-mu-md border border-mu-line bg-mu-canvas px-2 py-1 mu-body text-mu-text-secondary">
                 <PaletteIcon className="mu-icon" />
                 <span>{t("setting.tags.background-color")}</span>
                 <input
@@ -202,7 +202,7 @@ const TagsSection = () => {
                   onChange={(e) => setNewTagColor(e.target.value)}
                   aria-label={t("setting.tags.background-color")}
                 />
-                <Button variant="ghost" size="xs" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
+                <Button variant="ghost" size="md" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
                   {t("common.clear")}
                 </Button>
               </div>
@@ -210,7 +210,7 @@ const TagsSection = () => {
               <Field.Root>
                 <Field.Label>
                   <Checkbox checked={newTagBlur} onCheckedChange={setNewTagBlur} />
-                  <EyeOffIcon className="mu-icon text-mu-ink-muted" />
+                  <EyeOffIcon className="mu-icon text-mu-text-secondary" />
                   {t("setting.tags.blur-content")}
                 </Field.Label>
               </Field.Root>
@@ -219,7 +219,7 @@ const TagsSection = () => {
         </SettingPanel>
 
         <div className="flex items-center justify-between gap-3">
-          <h4 id={configuredRulesId} className="mu-label text-mu-ink-muted">
+          <h4 id={configuredRulesId} className="mu-label text-mu-text-secondary">
             {t("setting.tags.configured-rules")}
           </h4>
           <Badge tone="outline">{configuredEntries.length}</Badge>
@@ -227,8 +227,8 @@ const TagsSection = () => {
 
         {configuredEntries.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 rounded-mu-lg border border-dashed border-mu-line px-4 py-8 text-center">
-            <TagIcon className="mu-icon size-5 text-mu-ink-muted" />
-            <p className="mu-body text-mu-ink-muted">{t("setting.tags.no-tags-configured")}</p>
+            <TagIcon className="mu-icon size-5 text-mu-text-secondary" />
+            <p className="mu-body text-mu-text-secondary">{t("setting.tags.no-tags-configured")}</p>
           </div>
         ) : (
           <SettingList aria-labelledby={configuredRulesId}>
@@ -236,17 +236,17 @@ const TagsSection = () => {
               <List.Item key={row.name} className="grid gap-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
                 <div className="min-w-0">
                   <div className="flex min-w-0 items-center gap-2">
-                    <TagIcon className="mu-icon shrink-0 text-mu-ink-muted" />
-                    <span className="truncate font-mono mu-body text-mu-ink">{row.name}</span>
+                    <TagIcon className="mu-icon shrink-0 text-mu-text-secondary" />
+                    <span className="truncate font-mono mu-body text-mu-text">{row.name}</span>
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 mu-caption text-mu-ink-muted">
+                  <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 mu-caption text-mu-text-secondary">
                     <span>{t("setting.tags.matching-rule")}</span>
                     <span className="text-mu-line">/</span>
                     <span>{t("setting.tags.used-count", { count: row.count })}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mu-body text-mu-ink-muted">
+                <div className="flex items-center gap-2 mu-body text-mu-text-secondary">
                   <span
                     className={cn("size-5 rounded-mu-md border border-mu-line", !localTags[row.name].color && "bg-mu-canvas")}
                     style={{ backgroundColor: localTags[row.name].color ?? DEFAULT_TAG_COLOR }}
@@ -259,7 +259,7 @@ const TagsSection = () => {
                     onChange={(e) => handleColorChange(row.name, e.target.value)}
                     aria-label={t("setting.tags.background-color")}
                   />
-                  <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
+                  <Button variant="ghost" size="md" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
                     {localTags[row.name].color ?? t("setting.tags.default-color")}
                   </Button>
                 </div>
@@ -267,7 +267,7 @@ const TagsSection = () => {
                 <Field.Root>
                   <Field.Label>
                     <Checkbox checked={localTags[row.name].blur} onCheckedChange={(checked) => handleBlurChange(row.name, checked)} />
-                    <EyeOffIcon className="mu-icon text-mu-ink-muted" />
+                    <EyeOffIcon className="mu-icon text-mu-text-secondary" />
                     {t("setting.tags.blur-content")}
                   </Field.Label>
                 </Field.Root>

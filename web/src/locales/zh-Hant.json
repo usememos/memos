@@ -22,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "管理員登入",
-    "admin-sign-in-tip": "管理員仍可使用密碼登入。",
     "back-to-sign-in": "返回登入",
+    "callback-failed-title": "無法完成登入",
     "continue-with": "使用 {{provider}} 繼續",
     "create-admin-account": "建立管理員帳號",
     "create-your-account": "建立您的帳號",
-    "explore-public-memos": "瀏覽此實例的公開備忘錄",
-    "first-run": "初次啟動",
+    "hide-password": "隱藏密碼",
+    "incorrect-credentials": "使用者名稱或密碼錯誤。",
     "new-password": "新密碼",
     "repeat-new-password": "再次輸入新密碼",
     "setup-description": "為此實例建立管理員帳號。",
-    "setup-note": "此帳號擁有實例設定、成員與身分識別提供者的管理權限。",
     "setup-title": "設定您的實例",
+    "show-password": "顯示密碼",
     "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶嗎？",
     "signin-unavailable-description": "已停用密碼登入，且尚未設定任何身分識別提供者。請要求管理員啟用登入方式。",
     "signin-unavailable-title": "無法登入",
-    "signup-unavailable-description": "已停用使用密碼註冊，且尚未設定任何身分識別提供者。請聯絡管理員以取得存取權限。",
-    "signup-unavailable-title": "無法註冊",
-    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。",
-    "signups-closed-title": "已關閉註冊",
-    "sso-signup-tip": "使用下方提供者登入以建立帳號。",
-    "welcome-back": "歡迎回來。"
+    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。"
   },
   "calendar": {
     "new-memo-on-day": "在這一天新增備忘錄",
@@ -186,7 +181,6 @@
     "profile": "個人檔案",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "關聯",
     "resize-sidebar": "調整側邊欄寬度",
     "resources": "檔案",
     "restore": "還原",
@@ -395,9 +389,11 @@
       "resize-image": "調整圖片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已編輯",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "調整 {{name}} 的順序",
+      "reorder-hint": "拖曳，或使用方向鍵"
     },
     "remove-relation": "移除關聯",
     "remove-location": "移除位置",
@@ -524,7 +520,9 @@
     "back-to": "返回 {{source}}",
     "connections": "關聯",
     "on-this-memo": "在此備忘錄中",
-    "parent-memo": "原始備忘錄"
+    "parent-memo": "原始備忘錄",
+    "add-reaction": "新增表情回應",
+    "remove-reaction": "移除表情回應"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -691,25 +689,13 @@
       "delete-warning-description": "此操作無法恢復。",
       "label": "使用者",
       "list-title": "使用者列表",
-      "member-column": "成員",
       "restore-success": "{{username}} 恢復成功",
-      "summary-column": "摘要",
       "user": "使用者",
       "no-members-found": "沒有找到成員",
       "export-memos": "匯出備忘錄",
       "username-password-required": "使用者名稱和密碼不可為空白",
       "create-success": "已建立使用者",
       "update-success": "已更新使用者"
-    },
-    "memo": {
-      "add-reaction": "新增表情回應",
-      "configured-reactions": "已設定的表情回應",
-      "label": "備忘錄",
-      "reaction-placeholder": "例如 👍",
-      "reactions-description": "定義使用者可以對備忘錄套用的表情回應選項。",
-      "remove-reaction": "移除表情回應",
-      "reactions": "表情回應",
-      "reactions-required": "反應列表不能為空"
     },
     "my-account": {
       "label": "我的帳號"
@@ -922,7 +908,6 @@
       "client-id": "用戶端 ID（Client ID）",
       "client-secret": "客戶端金鑰（Client Secret）",
       "client-secret-optional-description": "留空以保留現有的客戶端金鑰不變。",
-      "configuration": "設定",
       "configuration-summary-description": "顯示有助於識別和稽核身分識別提供者的基本資訊，而不會內嵌揭露完整設定。",
       "confirm-delete": "您確定要刪除 `{{name}}` 的單一登入（SSO）設定嗎？此操作無法復原。",
       "create-sso": "新增 SSO",
@@ -951,7 +936,6 @@
       "not-linked-description": "尚未連結外部身分。您可以連接此身分識別提供者，以便日後使用它登入。",
       "oauth-configuration": "OAuth 設定",
       "oauth-configuration-description": "填寫 OAuth 用戶端憑證及登入時使用的身分識別提供者端點。",
-      "provider": "身分識別提供者",
       "provider-id": "提供者 ID",
       "provider-id-description": "僅限小寫字母、數字和連字號。此值將成為身分識別提供者資源名稱的一部分。",
       "provider-uid": "UID",
@@ -1180,7 +1164,6 @@
       },
       "no-webhooks-found": "尚未建立任何 Webhook。",
       "title": "Webhook",
-      "url": "網址",
       "label": "Webhook"
     },
     "tags": {

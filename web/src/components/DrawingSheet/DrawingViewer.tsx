@@ -43,7 +43,7 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
   // Small controls on a desktop; a phone keeps the 32px ones for touch.
   const size = isWide ? "sm" : undefined;
   const { theme, fontFamily } = useCanvasTheme();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memo.name);
   const canvasRef = useRef<CanvasHandle>(null);
   const [attachment, setAttachment] = useState(initialAttachment);
   const [scene, setScene] = useState<Scene>();
@@ -132,7 +132,7 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
                 Not a Dialog.Title, whose heading type is 16px; the popup's aria-label names the dialog. */}
             <FloatingBar className={isWide ? "pr-2" : "pr-3"}>
               <IconAction size={size} label={t("common.close")} icon={<XIcon />} onClick={onClose} />
-              <span className={cn("truncate text-mu-ink", isWide ? "mu-label-sm" : "mu-label")}>{title}</span>
+              <span className={cn("truncate text-mu-text", isWide ? "mu-label-sm" : "mu-label")}>{title}</span>
             </FloatingBar>
             <FloatingBar className={isWide ? undefined : "gap-3"}>
               <IconAction
@@ -142,7 +142,7 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
                 onClick={() => canvasRef.current?.zoomToFit()}
               />
               {canEdit && (
-                // Flat inside the bar: the bar is the one raised surface.
+                // Flat inside the bar: the bar is the one bordered surface.
                 <Button variant="ghost" size={size} icon={<PencilLineIcon />} disabled={!scene} onClick={() => setIsEditing(true)}>
                   {t("common.edit")}
                 </Button>

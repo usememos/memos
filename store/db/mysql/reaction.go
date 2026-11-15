@@ -26,32 +26,27 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store
 		}
 	}
 
-	result, err := tx.ExecContext(ctx, `
+	_, err = tx.ExecContext(ctx, `
 		INSERT INTO reaction (creator_id, memo_id, reaction_type)
 		SELECT ?, memo.id, ?
 		FROM memo
 		WHERE memo.id = ?
 		LOCK IN SHARE MODE
+		ON DUPLICATE KEY UPDATE id = reaction.id
 	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID)
 	if err != nil {
 		return nil, err
 	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return nil, err
-	}
-	if rowsAffected == 0 {
-		return nil, errors.Wrap(store.ErrReactionMemoNotFound, "failed to create reaction")
+	if err := tx.QueryRowContext(ctx, `
+		SELECT id, UNIX_TIMESTAMP(created_ts) FROM reaction
+		WHERE creator_id = ? AND memo_id = ? AND reaction_type = ?
+	`, upsert.CreatorID, upsert.MemoID, upsert.ReactionType).Scan(&upsert.ID, &upsert.CreatedTs); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(store.ErrReactionMemoNotFound, "failed to create reaction")
+		}
+		return nil, errors.Wrap(err, "failed to read reaction")
 	}
 
-	rawID, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-	upsert.ID = int32(rawID)
-	if err := tx.QueryRowContext(ctx, "SELECT UNIX_TIMESTAMP(created_ts) FROM reaction WHERE id = ?", upsert.ID).Scan(&upsert.CreatedTs); err != nil {
-		return nil, errors.Wrap(err, "failed to read created reaction")
-	}
 	if err := tx.Commit(); err != nil {
 		return nil, errors.Wrap(err, "failed to commit reaction upsert transaction")
 	}

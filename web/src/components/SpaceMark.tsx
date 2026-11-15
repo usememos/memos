@@ -22,7 +22,7 @@ const SpaceMark = ({ icon, size = "md", className }: Props) => {
   const scale = MARK_SCALE[size];
 
   return (
-    <span aria-hidden className={cn("flex shrink-0 items-center justify-center bg-mu-hover text-mu-ink", scale.mark, className)}>
+    <span aria-hidden className={cn("flex shrink-0 items-center justify-center bg-mu-hover text-mu-text", scale.mark, className)}>
       <SpaceIcon icon={icon} size={scale.icon} className={cn(icon?.value.case === "emoji" && scale.emoji)} />
     </span>
   );

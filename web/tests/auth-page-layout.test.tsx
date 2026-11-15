@@ -18,39 +18,32 @@ vi.mock("@/utils/i18n", () => ({
 
 vi.mock("@/components/AuthFooter", () => ({ default: () => <div data-testid="auth-footer" /> }));
 
-const renderLayout = (props?: { hideExplore?: boolean }) =>
+const renderLayout = () =>
   render(
     <MemoryRouter>
-      <AuthPageLayout title="Sign in" {...props}>
+      <AuthPageLayout title="Sign in">
         <div />
       </AuthPageLayout>
     </MemoryRouter>,
   );
 
-describe("<AuthPageLayout> explore band", () => {
+describe("<AuthPageLayout>", () => {
   beforeEach(() => {
     instance.accessMode = InstanceAccessMode.PRIVATE;
     settings.customProfile = undefined;
   });
 
-  it("links to Explore on public instances", () => {
+  it("offers no way out to Explore, even on public instances", () => {
     instance.accessMode = InstanceAccessMode.PUBLIC;
     renderLayout();
 
-    expect(screen.getByRole("link", { name: /auth\.explore-public-memos/ })).toHaveAttribute("href", "/explore");
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
-  it("omits the band on private instances even when an instance URL is configured", () => {
+  it("keeps the language and theme row inside the card", () => {
     renderLayout();
 
-    expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();
-  });
-
-  it("omits the band when hideExplore is set (first-run setup)", () => {
-    instance.accessMode = InstanceAccessMode.PUBLIC;
-    renderLayout({ hideExplore: true });
-
-    expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("main")).toContainElement(screen.getByTestId("auth-footer"));
   });
 
   it.each([undefined, "/logo.webp"])("uses a themeable small logo for the default %s", (logoUrl) => {

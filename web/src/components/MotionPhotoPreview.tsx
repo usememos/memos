@@ -53,7 +53,7 @@ const MotionPhotoPreview = ({
         role="button"
         tabIndex={0}
         className={cn(
-          "absolute select-none rounded-full border border-mu-line/45 bg-mu-canvas/65 px-2.5 py-1 mu-label-sm uppercase tracking-wide text-mu-ink backdrop-blur-sm transition-colors hover:bg-mu-canvas/80 mu-focus",
+          "absolute select-none rounded-full border border-mu-line/45 bg-mu-canvas/65 px-2.5 py-1 mu-label-sm uppercase tracking-wide text-mu-text backdrop-blur-sm transition-colors hover:bg-mu-canvas/80 mu-focus focus-visible:border-mu-focus",
           badgeClassName,
         )}
         onMouseEnter={() => setMotionActive(true)}

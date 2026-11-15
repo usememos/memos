@@ -48,6 +48,12 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         localFiles: action.payload,
       };
 
+    case "SET_ATTACHMENT_ORDER":
+      return {
+        ...state,
+        attachmentOrder: action.payload,
+      };
+
     case "TOGGLE_FOCUS_MODE":
       return {
         ...state,

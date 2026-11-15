@@ -105,15 +105,15 @@ const FilterChip = ({ icon: Icon, customIcon, label, onRemove, onEdit }: FilterC
   const t = useTranslate();
   const body = (
     <>
-      {customIcon ?? (Icon && <Icon className="mu-icon-sm text-mu-ink-muted shrink-0" />)}
-      <span className={cn("text-mu-ink/80 truncate", onEdit ? "font-mono mu-caption max-w-64" : "font-medium max-w-32")}>{label}</span>
+      {customIcon ?? (Icon && <Icon className="mu-icon-sm text-mu-text-secondary shrink-0" />)}
+      <span className={cn("text-mu-text/80 truncate", onEdit ? "font-mono mu-caption max-w-64" : "font-medium max-w-32")}>{label}</span>
     </>
   );
   return (
     <div
       className={cn(
         "group inline-flex min-w-0 max-w-full items-center gap-1.5 h-7 px-2.5",
-        "bg-mu-hover/50 hover:bg-mu-hover border border-mu-line/50 rounded-full mu-body transition-all duration-200 hover:shadow-mu-key",
+        "bg-mu-hover/50 hover:bg-mu-hover border border-mu-line/50 rounded-full mu-body transition-all duration-200",
       )}
     >
       {onEdit ? (
@@ -168,7 +168,7 @@ const MemoFilters = ({ className }: { className?: string }) => {
     const view = memoViews.find((item) => getMemoViewId(item.name) === memoView);
     return view?.title
       ? {
-          customIcon: <MemoViewIcon icon={view.icon} className="mu-icon-sm text-sm text-mu-ink-muted" />,
+          customIcon: <MemoViewIcon icon={view.icon} className="mu-icon-sm text-sm text-mu-text-secondary" />,
           label: view.title,
         }
       : null;

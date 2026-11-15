@@ -84,15 +84,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         {isNew && <NewBadge />}
       </div>
 
-      <div
-        data-slot="memo-header-actions"
-        // The same 4px gaps on touch screens, so the actions read as one group. Each square's hit
-        // area keeps its 44px height but narrows to the 28px pitch, so neighbors meet halfway
-        // instead of a later square's area covering the edge of the one before it. The selector only
-        // resizes the package's touch-screen pseudo-element; Tailwind's `after:` would also create
-        // one on desktop, where it sits beside the icon and pushes it off center.
-        className="flex shrink-0 select-none flex-row items-center justify-end gap-1 [&_.mu-hit::after]:w-7"
-      >
+      <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {currentUser && !isArchived && (
           // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
           <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
@@ -145,8 +137,8 @@ export const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
   <>
     <Link
       className={cn(
-        "flex min-w-0 shrink items-center gap-1.5 rounded-mu-sm mu-label-sm text-mu-ink transition-colors hover:text-mu-ink/80",
-        "mu-focus",
+        "flex min-w-0 shrink items-center gap-1.5 rounded-mu-sm mu-label-sm text-mu-text transition-colors hover:text-mu-text/80",
+        "border border-transparent mu-focus focus-visible:border-mu-focus",
       )}
       to={getCreatorHomePath(creator.username)}
       viewTransition
@@ -156,7 +148,7 @@ export const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
-    <span aria-hidden="true" className="shrink-0 text-mu-ink-muted/40">
+    <span aria-hidden="true" className="shrink-0 text-mu-text-secondary/40">
       ·
     </span>
   </>
@@ -190,7 +182,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, memoName, parentPage, isCurrentPage }) => (
   <TimeTooltip content={timeTooltip}>
     {isCurrentPage ? (
-      <span className="shrink-0 whitespace-nowrap mu-caption text-mu-ink-muted select-none">{displayTime}</span>
+      <span className="shrink-0 whitespace-nowrap mu-caption text-mu-text-secondary select-none">{displayTime}</span>
     ) : (
       <Link
         className={cn(MEMO_TIME_CONTROL_CLASSES, "underline-offset-2 hover:underline")}

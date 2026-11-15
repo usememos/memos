@@ -7,7 +7,7 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 
 Memos is a self-hosted note-taking app.
 
-- Backend: Go 1.27.2, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
+- Backend: Go 1.27.4, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
 - Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, `@usememos/ui` on Base UI, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
@@ -43,7 +43,7 @@ go test -v ./store/...             # Store tests, including DB drivers via TestC
 go test -v -race ./server/...      # Server tests with race detector
 go test -v -race ./internal/...    # Internal package tests with race detector
 go test -v -run TestFoo ./core/... # Run matching Go tests in one tree
-go mod tidy -go=1.27.2             # Match CI tidy check
+go mod tidy -go=1.27.4             # Match CI tidy check
 go fix ./...                      # Apply Go modernization fixes
 go fix -diff ./...                 # Match CI modernization check
 golangci-lint run                  # Go lint, config: .golangci.yaml (includes depguard layering rules)
@@ -131,10 +131,13 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
   components). Controls come from the package; build a part it lacks on Base UI as its `custom-components.md` describes.
 - Use a package component when one fits (`Button`, `Link`, `Spinner`, `Badge`). Its class functions (`buttonClasses()`,
   `menuClasses()`, `badgeClasses()`) are for elements it can't render, such as a router link or a Base UI trigger.
-- Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-ink-muted`, `rounded-mu-md`),
+- Action menus use `md`, including custom rows styled with `menuClasses()`. Compact three-dot trigger buttons keep `sm`.
+- Field text follows its component size on every device; do not add touch-specific font sizing.
+- Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-text-secondary`, `rounded-mu-md`),
   text with its type classes (`mu-caption`, `mu-body`, `mu-label`, `mu-title`), and `cn()` for class merging. No Tailwind
   text sizes or old color names (`muted-foreground`, `destructive`, `popover`). The exceptions are the brand wordmark and
-  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`).
+  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`, `ReactionSelector`).
+- Custom controls using `mu-focus` must reserve a real 1px border (transparent for borderless controls).
 - Focus shows through `mu-focus`. Never add `ring-*` or `focus-visible:ring-*`, and never pair `mu-focus` with
   `outline-none`, which overrides it. Visually hidden text uses `mu-visually-hidden`; a control that appears on focus keeps
   Tailwind's `sr-only focus-visible:not-sr-only` pair.
@@ -172,7 +175,7 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 - Workflows install toolchains through `.github/actions/setup-go` (Go version from `go.mod`) and `.github/actions/setup-web`
   (pnpm from `web/package.json`, Node 24, `pnpm install`); change versions there, not per workflow.
-- Backend CI: Go 1.27.2, `go mod tidy`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
+- Backend CI: Go 1.27.4, `go mod tidy`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
   `store`, `server`, `internal`, `other` (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.

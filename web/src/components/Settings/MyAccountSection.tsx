@@ -52,9 +52,9 @@ const MyAccountSection = () => {
           <div className="flex-1 min-w-40 flex flex-col justify-center items-start gap-1">
             <div className="w-full">
               <span className="mu-label">{user?.displayName}</span>
-              <span className="ml-2 mu-body text-mu-ink-muted">@{user?.username}</span>
+              <span className="ml-2 mu-body text-mu-text-secondary">@{user?.username}</span>
             </div>
-            {user?.description && <p className="w-full mu-body text-mu-ink-muted truncate">{user?.description}</p>}
+            {user?.description && <p className="w-full mu-body text-mu-text-secondary truncate">{user?.description}</p>}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="neutral" onClick={accountDialog.open} icon={<PenLineIcon />}>
@@ -77,8 +77,8 @@ const MyAccountSection = () => {
         {/* A plain row: red is kept for the confirm step, not the section that leads to it. */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="mu-label text-mu-ink">{t("setting.account.delete-account")}</p>
-            <p className="mu-caption text-mu-ink-muted">{t("setting.account.delete-account-description")}</p>
+            <p className="mu-label text-mu-text">{t("setting.account.delete-account")}</p>
+            <p className="mu-caption text-mu-text-secondary">{t("setting.account.delete-account-description")}</p>
           </div>
           <Button variant="neutral" className="shrink-0 self-start sm:self-auto" onClick={() => setDeleteOpen(true)}>
             {t("setting.account.delete-account")}

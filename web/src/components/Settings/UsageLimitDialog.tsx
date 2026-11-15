@@ -111,7 +111,7 @@ function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, 
                         <span className="max-w-40 truncate">{label}</span>
                         <button
                           type="button"
-                          className="rounded-full p-0.5 text-mu-ink-muted hover:bg-mu-hover hover:text-mu-ink"
+                          className="rounded-full p-0.5 text-mu-text-secondary hover:bg-mu-hover hover:text-mu-text"
                           aria-label={t("setting.usage-limits.remove-user", { name: label })}
                           onClick={() => setNames((current) => current.filter((item) => item !== name))}
                         >
@@ -161,7 +161,7 @@ function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, 
               {isInvalid(metric) && <Field.Error match>{t("setting.usage-limits.invalid")}</Field.Error>}
             </Field.Root>
           ))}
-          <p className="mu-caption text-mu-ink-muted">
+          <p className="mu-caption text-mu-text-secondary">
             {forAll ? t("setting.usage-limits.default-hint") : t("setting.usage-limits.entry-hint")}
           </p>
         </div>

@@ -105,7 +105,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
 
   return (
     // md controls with mu-compact: 14px labels and 16px icons at 28px, the sidebar's height.
-    // The menus they open are portaled outside, so they stay sm.
+    // The portaled menus use the regular md row.
     <div className="mu-compact flex w-full min-w-0 flex-row items-center justify-between gap-1">
       <div className="flex min-w-0 flex-1 flex-row items-center justify-start gap-1">
         <InsertMenu
@@ -130,6 +130,12 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       </div>
 
       <div className="flex shrink-0 flex-row items-center justify-end gap-1">
+        {/* Markdown mode is said beside the commit button, where it never covers the text. */}
+        {sourceMode.isSourceMode && (
+          <span className="px-1.5 mu-label-xs font-mono text-mu-text-secondary select-none" aria-label={t("editor.markdown-mode")}>
+            Markdown
+          </span>
+        )}
         {onCancel && (
           <Button variant="ghost" onClick={onCancel} disabled={committing}>
             {t("common.cancel")}

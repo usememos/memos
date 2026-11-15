@@ -146,16 +146,24 @@ const CUSTOM_TAG_CLASS = cn(TAG_CLASS, tagStyles.customColor);
 
 /**
  * How a #tag looks wherever a memo is shown, in the composer and the memo view alike:
- * a pill in the theme color, or in the color the user gave the tag, which the element
+ * an inline tint in the theme color, or in the color the user gave the tag, which the element
  * carries as `--tag-color` for tagStyles.customColor to draw from. `getTagsSetting`
  * is read when a block is decorated; call `editor.redecorate()` when it changes.
  */
-export const memoTagOptions = (getTagsSetting: () => UserSetting_TagsSetting | undefined): Pick<TagsOptions, "class" | "attributes"> => ({
-  class: (match) => (tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS),
+export const memoTagOptions = (
+  getTagsSetting: () => UserSetting_TagsSetting | undefined,
+  isInteractive: () => boolean = () => false,
+): Pick<TagsOptions, "class" | "attributes"> => ({
+  class: (match) =>
+    cn(tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS, isInteractive() && tagStyles.interactive),
   attributes: (match): Record<string, string> => {
     const tag = match.slice(1);
     const color = tagColor(tag, getTagsSetting());
-    return color ? { "data-tag": tag, style: `--tag-color: ${color}` } : { "data-tag": tag };
+    return {
+      "data-tag": tag,
+      ...(color ? { style: `--tag-color: ${color}` } : {}),
+      ...(isInteractive() ? { role: "button", tabindex: "0" } : {}),
+    };
   },
 });
 
@@ -177,7 +185,7 @@ export const memoMentionOptions = (isResolved: (username: string) => boolean): P
 });
 
 interface MemoExtensionOptions {
-  /** `tags()` class and attributes, for the memo view's pills and colors. */
+  /** `tags()` class and attributes, for the memo view's inline tags and colors. */
   readonly tags?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
   /** `mentions()` class and attributes, for links to the people who exist. */
   readonly mentions?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
@@ -227,8 +235,8 @@ export const memoResolveUrl =
  */
 export const MEMO_EDITOR_THEME: Theme = (() => {
   const colors = {
-    text: "var(--mu-ink)",
-    muted: "var(--mu-ink-muted)",
+    text: "var(--mu-text)",
+    muted: "var(--mu-text-secondary)",
     background: "transparent",
     accent: "var(--mu-accent)",
     link: "var(--mu-accent)",
@@ -238,6 +246,11 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
     popupBorder: "var(--mu-line)",
     hover: "var(--mu-hover)",
     danger: "var(--mu-danger)",
+    calloutNote: "var(--mu-accent)",
+    calloutTip: "var(--mu-success)",
+    calloutImportant: "var(--mu-accent)",
+    calloutWarning: "var(--mu-warning)",
+    calloutCaution: "var(--mu-danger)",
   };
   return {
     colorScheme: "inherit",
@@ -248,11 +261,13 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       fontSize: 16,
       lineHeight: 24,
       radius: "var(--mu-radius-md)",
-      blockGap: 8,
+      blockGap: 12,
     },
     classes: {
       heading: headingClasses,
       code: markdownStyles.inlineCode,
+      codeBlock: markdownStyles.codeBlock,
+      taskList: markdownStyles.taskList,
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
       image: "rounded-mu-lg",

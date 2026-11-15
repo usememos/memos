@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
  * sit on a card rather than the sidebar surface.
  */
 export const METADATA_ROW_BOX_CLASSES =
-  "group/row relative flex h-7 w-full min-w-0 items-center gap-1 rounded-mu-md px-2 text-start mu-caption text-mu-ink-muted transition-colors hover:bg-mu-hover hover:text-mu-ink";
+  "group/row relative flex h-7 w-full min-w-0 items-center gap-1 rounded-mu-md px-2 text-start mu-caption text-mu-text-secondary transition-colors hover:bg-mu-hover hover:text-mu-text";
 /** A row that is itself the control: the box, the focus outline, and the quiet "on" fill while pressed or holding a popup open. */
 export const METADATA_ROW_CLASSES = cn(
   METADATA_ROW_BOX_CLASSES,
-  "aria-pressed:bg-mu-hover aria-pressed:text-mu-ink data-popup-open:bg-mu-hover data-popup-open:text-mu-ink",
-  "mu-focus",
+  "aria-pressed:bg-mu-hover aria-pressed:text-mu-text data-popup-open:bg-mu-hover data-popup-open:text-mu-text",
+  "border border-transparent mu-focus focus-visible:border-mu-focus",
 );
 /**
  * The compact row: 24px instead of 28px, for a list that previews rather than edits (the
@@ -24,7 +24,8 @@ export const METADATA_ROW_CLASSES = cn(
  */
 export const METADATA_COMPACT_ROW_CLASSES = cn(METADATA_ROW_CLASSES, "h-6");
 /** The focusable body of a split row; its gap must equal the box's `gap-1`. */
-export const METADATA_ROW_LABEL_CLASSES = "flex h-full min-w-0 flex-1 items-center gap-1 text-start mu-focus";
+export const METADATA_ROW_LABEL_CLASSES =
+  "flex h-full min-w-0 flex-1 items-center gap-1 text-start border border-transparent mu-focus focus-visible:border-mu-focus";
 /** The same 20px leading column the sidebar's rows reserve, so glyphs share one rail across both. */
 export const METADATA_ROW_SLOT_CLASSES = SIDEBAR_LEADING_SLOT_CLASSES;
 export const METADATA_ROW_ICON_CLASSES = "mu-icon-sm me-auto shrink-0";
@@ -35,8 +36,8 @@ export const METADATA_ROW_ICON_CLASSES = "mu-icon-sm me-auto shrink-0";
  */
 export const METADATA_ROW_TEXT_CLASSES = "min-w-0 flex-1 truncate";
 /** An attachment is content, not a description, so its row text keeps the memo's ink. */
-export const METADATA_ROW_CONTENT_TEXT_CLASSES = cn(METADATA_ROW_TEXT_CLASSES, "text-mu-ink");
-export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 mu-caption tabular-nums text-mu-ink-muted";
+export const METADATA_ROW_CONTENT_TEXT_CLASSES = cn(METADATA_ROW_TEXT_CLASSES, "text-mu-text");
+export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 mu-caption tabular-nums text-mu-text-secondary";
 /**
  * A slot that is itself a control (play, disclosure): the same box and glyph as any other
  * slot, so it reads like its siblings at rest. The glyph darkens under the pointer and
@@ -44,8 +45,8 @@ export const METADATA_ROW_DETAIL_CLASSES = "shrink-0 mu-caption tabular-nums tex
  */
 export const METADATA_ROW_SLOT_BUTTON_CLASSES = cn(
   METADATA_ROW_SLOT_CLASSES,
-  "relative cursor-pointer rounded transition-colors hover:text-mu-ink aria-pressed:text-mu-primary after:absolute after:-inset-0.5 after:content-['']",
-  "mu-focus",
+  "relative cursor-pointer rounded transition-colors hover:text-mu-text aria-pressed:text-mu-primary after:absolute after:-inset-0.5 after:content-['']",
+  "border border-transparent mu-focus focus-visible:border-mu-focus",
 );
 
 /*
@@ -97,7 +98,7 @@ export const MetadataRowDetail = ({ parts }: { parts: Array<string | undefined> 
     <span className={DETAIL_RAIL_CLASSES}>
       {shown.map((part, index) => (
         <span key={part} className="flex items-center gap-1">
-          {index > 0 && <span className="text-mu-ink-muted/40">·</span>}
+          {index > 0 && <span className="text-mu-text-secondary/40">·</span>}
           <span>{part}</span>
         </span>
       ))}
@@ -132,7 +133,7 @@ interface MetadataSectionProps extends PropsWithChildren {
 const MetadataSection = ({ title, count, action, density = "default", children }: MetadataSectionProps) => (
   <section className="w-full" aria-label={title}>
     <div className={cn("flex min-w-0 items-center justify-between gap-2", density === "compact" ? "h-5" : "mb-0.5 h-6")}>
-      <h3 className="flex min-w-0 items-center gap-1.5 mu-label-sm text-mu-ink-muted select-none">
+      <h3 className="flex min-w-0 items-center gap-1.5 mu-label-sm text-mu-text-secondary select-none">
         <span className="truncate">{title}</span>
         {count != null && <span className="mu-caption tabular-nums">{count}</span>}
       </h3>

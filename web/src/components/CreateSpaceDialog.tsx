@@ -151,7 +151,7 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
               </Field.Root>
             )}
           </div>
-          <p className="mu-caption text-mu-ink-muted">{note ?? t("space.creator-admin-note")}</p>
+          <p className="mu-caption text-mu-text-secondary">{note ?? t("space.creator-admin-note")}</p>
           <Dialog.Footer>
             <Button type="button" variant="ghost" disabled={createSpace.isPending} onClick={() => onOpenChange(false)}>
               {t("common.cancel")}

@@ -47,7 +47,9 @@ export const LinkMemoDialog = ({
           <div className="border-t border-mu-line" />
           <div className="max-h-[320px] overflow-y-auto">
             {filteredMemos.length === 0 ? (
-              <div className="py-8 text-center mu-body text-mu-ink-muted">{isFetching ? "Loading..." : t("reference.no-memos-found")}</div>
+              <div className="py-8 text-center mu-body text-mu-text-secondary">
+                {isFetching ? "Loading..." : t("reference.no-memos-found")}
+              </div>
             ) : (
               filteredMemos.map((memo) => {
                 const alreadyLinked = isAlreadyLinked(memo.name);
@@ -61,7 +63,7 @@ export const LinkMemoDialog = ({
                     onClick={() => !alreadyLinked && onSelectMemo(memo)}
                   >
                     <div className="w-full flex flex-col gap-1">
-                      <div className="flex items-center gap-1.5 mu-body text-mu-ink-muted select-none">
+                      <div className="flex items-center gap-1.5 mu-body text-mu-text-secondary select-none">
                         {alreadyLinked && <LinkIcon className="mu-icon-xs shrink-0" />}
                         <span>{memo.createTime && timestampDate(memo.createTime).toLocaleString()}</span>
                       </div>

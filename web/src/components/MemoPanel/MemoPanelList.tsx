@@ -85,7 +85,7 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
           />
         ))}
       </MentionResolutionProvider>
-      {emptyText && memos.length === 0 && <p className="mu-body text-mu-ink-muted">{emptyText}</p>}
+      {emptyText && memos.length === 0 && <p className="mu-body text-mu-text-secondary">{emptyText}</p>}
       {compose &&
         isUserSettingsInitialized &&
         (composing ? (

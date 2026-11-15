@@ -97,6 +97,74 @@ describe("tags and mentions", () => {
     expect(state.addFilter).toHaveBeenCalledWith({ factor: "tagSearch", value: "work" });
   });
 
+  it.each(["Enter", " "])("activates a focusable tag with %j without scrolling or bubbling", (key) => {
+    const onKeyDown = vi.fn();
+    const onTagClick = vi.fn();
+    render(
+      <div onKeyDown={onKeyDown}>
+        <MemoMarkdown value="Plan #work today" onTagClick={onTagClick} />
+      </div>,
+    );
+    const tag = screen.getByRole("button", { name: "#work" });
+    expect(tag).toHaveAttribute("tabindex", "0");
+    expect(tag).toHaveClass("mu-focus");
+    tag.focus();
+    expect(tag).toHaveFocus();
+    expect(fireEvent.keyDown(tag, { key })).toBe(false);
+    expect(onTagClick).toHaveBeenCalledTimes(key === "Enter" ? 1 : 0);
+    fireEvent.keyDown(tag, { key, repeat: true });
+    fireEvent.keyUp(tag, { key });
+    expect(onTagClick).toHaveBeenCalledExactlyOnceWith("work");
+    expect(onKeyDown).not.toHaveBeenCalled();
+  });
+
+  it("cancels Space activation when focus leaves the tag", () => {
+    const onTagClick = vi.fn();
+    render(<MemoMarkdown value="#work #life" onTagClick={onTagClick} />);
+    const work = screen.getByRole("button", { name: "#work" });
+    const life = screen.getByRole("button", { name: "#life" });
+    work.focus();
+    fireEvent.keyDown(work, { key: " " });
+    life.focus();
+    fireEvent.keyUp(life, { key: " " });
+    expect(onTagClick).not.toHaveBeenCalled();
+  });
+
+  it("keeps tags as text without a click handler and while editing", () => {
+    const onTagClick = vi.fn();
+    const { rerender } = render(<MemoMarkdown value="#work" />);
+    expect(screen.queryByRole("button", { name: "#work" })).not.toBeInTheDocument();
+
+    rerender(<MemoMarkdown value="#work" onTagClick={onTagClick} />);
+    expect(screen.getByRole("button", { name: "#work" })).toHaveAttribute("tabindex", "0");
+
+    rerender(<MemoMarkdown value="#work" editable onTagClick={onTagClick} />);
+    const tag = screen.getByText("#work");
+    expect(tag).not.toHaveAttribute("role");
+    expect(tag).not.toHaveAttribute("tabindex");
+    fireEvent.keyDown(tag, { key: "Enter" });
+    fireEvent.keyUp(tag, { key: " " });
+    expect(onTagClick).not.toHaveBeenCalled();
+
+    rerender(<MemoMarkdown value="#work" onTagClick={onTagClick} />);
+    const button = screen.getByRole("button", { name: "#work" });
+    fireEvent.keyDown(button, { key: "Enter" });
+    expect(onTagClick).toHaveBeenCalledExactlyOnceWith("work");
+
+    rerender(<MemoMarkdown value="#work" />);
+    expect(screen.getByText("#work")).not.toHaveAttribute("tabindex");
+  });
+
+  it("uses the latest tag handler for keyboard activation", () => {
+    const first = vi.fn();
+    const latest = vi.fn();
+    const { rerender } = render(<MemoMarkdown value="#work" onTagClick={first} />);
+    rerender(<MemoMarkdown value="#work" onTagClick={latest} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: "#work" }), { key: "Enter" });
+    expect(first).not.toHaveBeenCalled();
+    expect(latest).toHaveBeenCalledExactlyOnceWith("work");
+  });
+
   it("opens the collection filtered by the tag from a memo detail page", () => {
     renderMemo("Plan #work today", { parentPage: "/?creator=alice" }, "/memos/1");
     fireEvent.click(screen.getByText("#work"));

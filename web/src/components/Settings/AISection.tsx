@@ -226,13 +226,13 @@ const AISection = () => {
         <div className="flex max-w-3xl flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="outline">{t("setting.ai.byok-label")}</Badge>
-            <h4 className="mu-label text-mu-ink">{t("setting.ai.byok-title")}</h4>
+            <h4 className="mu-label text-mu-text">{t("setting.ai.byok-title")}</h4>
           </div>
-          <p className="mu-body text-mu-ink-muted">{t("setting.ai.byok-description")}</p>
-          <ul className="space-y-1 mu-body text-mu-ink-muted">
+          <p className="mu-body text-mu-text-secondary">{t("setting.ai.byok-description")}</p>
+          <ul className="space-y-1 mu-body text-mu-text-secondary">
             {byokNotes.map((note) => (
               <li key={note} className="flex gap-2">
-                <span className="mt-2 size-1 rounded-full bg-mu-ink-muted/60" aria-hidden />
+                <span className="mt-2 size-1 rounded-full bg-mu-text-secondary/60" aria-hidden />
                 <span>{t(note)}</span>
               </li>
             ))}
@@ -252,8 +252,8 @@ const AISection = () => {
               header: t("common.name"),
               render: (_, provider: LocalAIProvider) => (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-mu-ink">{provider.title}</span>
-                  <span className="font-mono mu-caption text-mu-ink-muted">{provider.id}</span>
+                  <span className="text-mu-text">{provider.title}</span>
+                  <span className="font-mono mu-caption text-mu-text-secondary">{provider.id}</span>
                 </div>
               ),
             },
@@ -552,7 +552,7 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
               placeholder={draft.apiKeySet ? t("setting.ai.keep-api-key") : ""}
             />
             {draft.apiKeySet && (
-              <p className="mu-caption text-mu-ink-muted">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
+              <p className="mu-caption text-mu-text-secondary">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
             )}
             {fieldErrors.errors.apiKey && <Field.Error match>{fieldErrors.errors.apiKey}</Field.Error>}
           </Field.Root>

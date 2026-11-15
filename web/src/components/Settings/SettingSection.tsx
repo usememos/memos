@@ -16,8 +16,8 @@ const SettingSection: React.FC<SettingSectionProps> = ({ title, description, chi
         <div className="flex min-w-0 flex-col gap-3 border-b border-mu-line/70 pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0 flex-1">
             {/* The settings page's title: the one heading on the page. */}
-            {title && <div className="mb-1 mu-heading text-mu-ink">{typeof title === "string" ? <h1>{title}</h1> : title}</div>}
-            {description && <p className="w-full mu-body text-mu-ink-muted">{description}</p>}
+            {title && <div className="mb-1 mu-heading text-mu-text">{typeof title === "string" ? <h1>{title}</h1> : title}</div>}
+            {description && <p className="w-full mu-body text-mu-text-secondary">{description}</p>}
           </div>
           {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
         </div>

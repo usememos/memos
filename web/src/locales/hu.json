@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "A bejelentkezést nem sikerült befejezni",
     "create-your-account": "Fiók létrehozása",
+    "hide-password": "Jelszó elrejtése",
+    "incorrect-credentials": "Hibás felhasználónév vagy jelszó.",
     "new-password": "Új jelszó",
     "repeat-new-password": "Jelszó ismét",
+    "show-password": "Jelszó megjelenítése",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?",
     "admin-sign-in": "Rendszergazdai bejelentkezés",
-    "admin-sign-in-tip": "A jelszóval történő bejelentkezés továbbra is elérhető a rendszergazdák számára.",
     "back-to-sign-in": "Vissza a bejelentkezéshez",
     "continue-with": "Folytatás ezzel: {{provider}}",
     "create-admin-account": "Rendszergazdai fiók létrehozása",
-    "explore-public-memos": "Nyilvános feljegyzések megtekintése ezen a példányon",
-    "first-run": "Első futtatás",
     "setup-description": "Rendszergazdai fiók létrehozása ehhez a példányhoz.",
-    "setup-note": "Ez a fiók birtokolja a példánybeállításokat, a tagokat és az identitásszolgáltatókat.",
     "setup-title": "Példány beállítása",
     "signin-unavailable-description": "A jelszóval történő bejelentkezés ki van kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát, hogy engedélyezze a bejelentkezési módszert.",
     "signin-unavailable-title": "Bejelentkezés nem érhető el",
-    "signup-unavailable-description": "A jelszóval védett fiókok ki vannak kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát a hozzáférésért.",
-    "signup-unavailable-title": "A regisztráció nem érhető el",
-    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához.",
-    "signups-closed-title": "A regisztráció lezárult.",
-    "sso-signup-tip": "Jelentkezzen be az alábbi szolgáltatóval a fiók létrehozásához.",
-    "welcome-back": "Üdvözöljük ismét."
+    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához."
   },
   "common": {
     "about": "Névjegy",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
-    "relations": "Kapcsolatok",
     "resources": "Állományok",
     "restore": "Helyreállítás",
     "role": "Jogosultság",
@@ -316,9 +310,11 @@
       "resize-image": "Kép átméretezése"
     },
     "attachments": {
-      "move-up": "Melléklet mozgatása feljebb",
-      "move-down": "Melléklet mozgatása lejjebb",
-      "remove": "Melléklet eltávolítása"
+      "edited": "Szerkesztve",
+      "new": "Új",
+      "remove": "Melléklet eltávolítása",
+      "reorder": "{{name}} áthelyezése",
+      "reorder-hint": "Húzza, vagy használja a nyílbillentyűket"
     },
     "remove-relation": "Kapcsolat eltávolítása",
     "remove-location": "Hely eltávolítása",
@@ -445,7 +441,9 @@
     "layout-list-description": "Egyetlen olvasási szélességű oszlop",
     "on-this-memo": "Ezen a feljegyzésen",
     "parent-memo": "Szülő feljegyzés",
-    "view-options": "Megtekintési beállítások"
+    "view-options": "Megtekintési beállítások",
+    "add-reaction": "Adja hozzá a reakciót",
+    "remove-reaction": "Távolítsa el a reakciót"
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",
@@ -572,22 +570,10 @@
       "no-members-found": "Nem találhatók tagok",
       "active": "Aktív",
       "archived": "Archivált",
-      "member-column": "Tag",
-      "summary-column": "Összegzés",
       "export-memos": "Jegyzetek exportálása",
       "username-password-required": "A felhasználónév és a jelszó nem lehet üres",
       "create-success": "Felhasználó létrehozva",
       "update-success": "Felhasználó frissítve"
-    },
-    "memo": {
-      "label": "Jegyzet",
-      "reactions": "Reakciók",
-      "reactions-required": "A reakciólista nem lehet üres",
-      "add-reaction": "Adja hozzá a reakciót",
-      "configured-reactions": "Konfigurált reakciók",
-      "reaction-placeholder": "például 👍",
-      "reactions-description": "Határozza meg azokat a reakciólehetőségeket, amelyeket a felhasználók a jegyzetekre alkalmazhatnak.",
-      "remove-reaction": "Távolítsa el a reakciót"
     },
     "my-account": {
       "label": "Fiókom"
@@ -781,7 +767,6 @@
       "basic-settings": "Alapbeállítások",
       "basic-settings-description": "Az OAuth adatok kitöltése előtt állítsa be a szolgáltató azonosítóját, a megjelenített nevet és az opcionális azonosító szabályokat.",
       "client-secret-optional-description": "Hagyja üresen, hogy a meglévő ügyfél titkossága változatlan maradjon.",
-      "configuration": "Konfiguráció",
       "configuration-summary-description": "Mutassa meg azokat a lényeges dolgokat, amelyek segítenek azonosítani és ellenőrizni a szolgáltatót anélkül, hogy a teljes konfigurációt soron belül felfedné.",
       "create-sso-description": "Hozzon létre egy új identitásszolgáltatót a rendszergazda által kezelt egyszeri bejelentkezéshez.",
       "endpoints": "Végpontok",
@@ -803,7 +788,6 @@
       "not-linked-description": "Még nincs külső személyazonosság összekapcsolva. Csatlakoztathatja ezt a szolgáltatót, hogy később bejelentkezhessen vele.",
       "oauth-configuration": "OAuth konfiguráció",
       "oauth-configuration-description": "Töltse ki az OAuth ügyfél hitelesítő adatait és a bejelentkezés során használt szolgáltatói végpontokat.",
-      "provider": "Szolgáltató",
       "provider-id": "Szolgáltató azonosítója",
       "provider-id-description": "Csak kisbetűk, számok és kötőjelek. Ez az érték a szolgáltatói erőforrás nevének részévé válik.",
       "provider-uid": "UID",
@@ -942,7 +926,6 @@
       },
       "no-webhooks-found": "Nincs webhook.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

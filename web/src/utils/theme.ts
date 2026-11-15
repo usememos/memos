@@ -149,7 +149,13 @@ export const getThemeWithFallback = (userTheme?: string): Theme => {
  * tokens and the `color-scheme` from it, and popups portaled to <body> inherit them.
  */
 const setThemeAttribute = (appearance: Appearance): void => {
-  document.documentElement.setAttribute("data-theme", appearance);
+  const root = document.documentElement;
+  if (root.getAttribute("data-theme") === appearance) return;
+  root.classList.add("memos-theme-changing");
+  root.setAttribute("data-theme", appearance);
+  // Commit every surface and text color together before restoring interaction transitions.
+  void root.offsetHeight;
+  root.classList.remove("memos-theme-changing");
 };
 
 /**

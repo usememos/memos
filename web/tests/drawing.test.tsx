@@ -237,23 +237,27 @@ describe("drawing attachments", () => {
       ...toLocalFile(new File([fixturePng], "drawing-20261106-130000.canvas.png", { type: "image/png" })),
       replaces: drawingAttachment.name,
     };
-    const onAttachmentsChange = vi.fn();
+    const onOrderChange = vi.fn();
     const photo = create(AttachmentSchema, { name: "attachments/photo", filename: "photo.png", type: "image/png" });
     const map = create(AttachmentSchema, { name: "attachments/map", filename: "map.png", type: "image/png" });
     render(
       <AttachmentListEditor
         attachments={[drawingAttachment, photo, map]}
         localFiles={[edit]}
-        onAttachmentsChange={onAttachmentsChange}
+        onOrderChange={onOrderChange}
         onEditDrawing={vi.fn()}
       />,
     );
 
-    expect(screen.queryByText(drawingAttachment.filename)).not.toBeInTheDocument();
-    expect(screen.getByText("drawing-20261106-130000.canvas.png")).toBeInTheDocument();
-    // Reordering the visible rows keeps the replaced drawing bound to the memo.
-    fireEvent.click(screen.getAllByRole("button", { name: "Move attachment down" })[0]);
-    expect(onAttachmentsChange).toHaveBeenLastCalledWith([drawingAttachment, map, photo]);
+    expect(screen.queryByRole("button", { name: `Preview ${drawingAttachment.filename}` })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Preview drawing-20261106-130000.canvas.png" })).toBeInTheDocument();
+    expect(screen.getByText("Edited")).toBeInTheDocument();
+    // Moving the edit moves the saved drawing it stands in for: its key is the attachment's name.
+    fireEvent.keyDown(screen.getByRole("button", { name: "Preview drawing-20261106-130000.canvas.png" }), {
+      key: "ArrowRight",
+      altKey: true,
+    });
+    expect(onOrderChange).toHaveBeenLastCalledWith([photo.name, drawingAttachment.name, map.name]);
   });
 
   it("does not offer Insert image on a pending edit of a saved drawing", () => {

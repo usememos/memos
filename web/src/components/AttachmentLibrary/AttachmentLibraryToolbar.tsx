@@ -36,7 +36,7 @@ const AttachmentLibraryToolbar = ({ activeTab, onTabChange, stats }: AttachmentL
           return (
             <Toggle key={tab.key} value={tab.key} icon={<Icon />}>
               {t(`attachment-library.tabs.${tab.labelKey}`)}
-              <span className="ms-1 tabular-nums text-mu-ink-muted">{tab.count(stats)}</span>
+              <span className="ms-1 tabular-nums text-mu-text-secondary">{tab.count(stats)}</span>
             </Toggle>
           );
         })}

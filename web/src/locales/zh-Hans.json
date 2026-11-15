@@ -45,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "管理员登录",
-    "admin-sign-in-tip": "管理员始终可以使用密码登录。",
     "back-to-sign-in": "返回登录",
+    "callback-failed-title": "无法完成登录",
     "continue-with": "使用 {{provider}} 继续",
     "create-admin-account": "创建管理员账号",
     "create-your-account": "创建您的账户",
-    "explore-public-memos": "浏览此实例上的公开 Memo",
-    "first-run": "首次运行",
+    "hide-password": "隐藏密码",
+    "incorrect-credentials": "用户名或密码错误。",
     "new-password": "新密码",
     "repeat-new-password": "重复新密码",
     "setup-description": "为此实例创建管理员账号。",
-    "setup-note": "该账号拥有实例设置、成员与身份提供商的管理权限。",
     "setup-title": "初始化实例",
+    "show-password": "显示密码",
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？",
     "signin-unavailable-description": "密码登录已关闭，且未配置身份提供商。请联系管理员启用登录方式。",
     "signin-unavailable-title": "无法登录",
-    "signup-unavailable-description": "密码账号已关闭，且未配置身份提供商。如需访问，请联系管理员。",
-    "signup-unavailable-title": "无法注册",
-    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。",
-    "signups-closed-title": "注册已关闭",
-    "sso-signup-tip": "使用以下登录方式即可创建账号。",
-    "welcome-back": "欢迎回来。"
+    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。"
   },
   "calendar": {
     "new-memo-on-day": "在这一天新建备忘录",
@@ -145,7 +140,6 @@
     "profile": "个人资料",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "关系图",
     "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
@@ -352,9 +346,11 @@
       "resize-image": "调整图片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已编辑",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "调整 {{name}} 的顺序",
+      "reorder-hint": "拖动，或使用方向键"
     },
     "remove-relation": "移除关联",
     "remove-location": "移除位置",
@@ -476,7 +472,9 @@
     "parent-load-error": "无法加载原始备忘录。",
     "parent-unavailable": "原始备忘录不可用",
     "parent-unavailable-description": "它可能已被删除，或者您可能已失去访问权限。",
-    "moved": "备忘录已移动"
+    "moved": "备忘录已移动",
+    "add-reaction": "添加表态",
+    "remove-reaction": "移除表态"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -526,8 +524,6 @@
       "user": "普通用户",
       "label": "成员",
       "list-title": "成员列表",
-      "member-column": "成员",
-      "summary-column": "摘要",
       "no-members-found": "没有找到会员",
       "export-memos": "导出备忘录",
       "username-password-required": "用户名和密码不能为空",
@@ -753,7 +749,6 @@
       "client-id": "客户端ID（Client ID）",
       "client-secret": "客户端密钥（Client Secret）",
       "client-secret-optional-description": "留空则保留现有的客户端密钥，不会覆盖。",
-      "configuration": "配置摘要",
       "configuration-summary-description": "这里只展示便于识别和审查 provider 的关键信息，完整配置仍然通过编辑入口查看。",
       "confirm-delete": "您确定要删除“{{name}}”单点登录配置吗？（此操作不可逆）",
       "create-sso": "创建单点登录",
@@ -774,7 +769,6 @@
       "not-linked": "未绑定",
       "oauth-configuration": "OAuth 配置",
       "oauth-configuration-description": "填写 OAuth 客户端凭据，以及登录流程中使用的 provider 端点。",
-      "provider": "提供程序",
       "provider-id": "供应商 ID",
       "provider-id-description": "仅支持小写字母、数字和连字符。该值会成为 provider 资源名的一部分。",
       "provider-uid": "用户 UID",
@@ -981,16 +975,6 @@
       "allow-public-access-description": "允许未登录的访客浏览公开备忘录。即使禁用此功能，共享备忘录的链接仍然可用。",
       "allow-public-access": "允许公开访问"
     },
-    "memo": {
-      "add-reaction": "添加表态",
-      "configured-reactions": "已配置表态",
-      "reactions": "表态",
-      "reaction-placeholder": "例如 👍",
-      "reactions-description": "定义用户可以添加到备忘录上的表态选项。",
-      "remove-reaction": "移除表态",
-      "label": "备忘录",
-      "reactions-required": "反应列表不能为空"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "请输入一个容易记住的标题",
@@ -1016,7 +1000,6 @@
       },
       "no-webhooks-found": "没有 Webhook。",
       "title": "Webhook",
-      "url": "链接",
       "label": "Webhook"
     },
     "tags": {

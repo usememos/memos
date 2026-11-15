@@ -44,5 +44,5 @@ export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
  * and Space marks share one column; a Popover sets no highlight, so the rows add their own hover.
  * A row whose own menu is open takes the package's highlight.
  */
-export const SCOPE_PANEL_ROW_CLASSES = `${menuClasses().item} transition-colors hover:bg-mu-hover aria-[current=page]:bg-mu-hover mu-focus`;
-export const SCOPE_PANEL_ICON_CLASSES = "mu-icon text-mu-ink-muted";
+export const SCOPE_PANEL_ROW_CLASSES = `${menuClasses().item} transition-colors hover:bg-mu-hover aria-[current=page]:bg-mu-hover border border-transparent mu-focus focus-visible:border-mu-focus`;
+export const SCOPE_PANEL_ICON_CLASSES = "mu-icon text-mu-text-secondary";

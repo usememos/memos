@@ -46,31 +46,45 @@ describe("attachment inline placement actions", () => {
     };
     const { rerender } = render(<AttachmentListEditor {...props} inlineAttachmentUIDs={new Set(["photo"])} />);
 
-    expect(screen.queryByText("Attachments")).not.toBeInTheDocument();
-    expect(screen.queryByText("photo.png")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Preview photo.png" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
 
     rerender(<AttachmentListEditor {...props} inlineAttachmentUIDs={new Set()} />);
 
-    expect(screen.getByText(/Attachments/)).toBeInTheDocument();
-    expect(screen.getByText("photo.png")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Preview photo.png" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Remove attachment" })).toBeInTheDocument();
   });
 
-  it("preserves hidden inline attachments when visible attachments are reordered", () => {
+  it("keeps hidden inline attachments in the order when a visible one moves", () => {
     const second = create(AttachmentSchema, { ...image, name: "attachments/second", filename: "second.png" });
     const third = create(AttachmentSchema, { ...image, name: "attachments/third", filename: "third.png" });
-    const onAttachmentsChange = vi.fn();
+    const onOrderChange = vi.fn();
     render(
       <AttachmentListEditor
         attachments={[image, second, third]}
         inlineAttachmentUIDs={new Set(["photo"])}
-        onAttachmentsChange={onAttachmentsChange}
+        onAttachmentsChange={vi.fn()}
+        onOrderChange={onOrderChange}
       />,
     );
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Move attachment down" })[0]!);
-    expect(onAttachmentsChange).toHaveBeenCalledWith([image, third, second]);
+    // Alt + arrow moves a focused tile, so plain arrows still scroll.
+    fireEvent.keyDown(screen.getByRole("button", { name: "Preview second.png" }), { key: "ArrowRight", altKey: true });
+    expect(onOrderChange).toHaveBeenCalledWith(["attachments/photo", "attachments/third", "attachments/second"]);
+  });
+
+  it("puts a new file before a saved one in one order", () => {
+    const second = create(AttachmentSchema, { ...image, name: "attachments/second", filename: "second.png" });
+    const localImage = {
+      file: new File(["image"], "local.png", { type: "image/png" }),
+      previewUrl: "blob:local",
+      origin: "upload" as const,
+    };
+    const onOrderChange = vi.fn();
+    render(<AttachmentListEditor attachments={[image, second]} localFiles={[localImage]} onOrderChange={onOrderChange} />);
+
+    fireEvent.keyDown(screen.getByRole("button", { name: "Preview local.png" }), { key: "ArrowLeft", altKey: true });
+    expect(onOrderChange).toHaveBeenCalledWith(["attachments/photo", "blob:local", "attachments/second"]);
   });
 
   it("does not offer inline placement for external images", () => {
@@ -101,7 +115,7 @@ describe("attachment inline placement actions", () => {
       />,
     );
 
-    expect(screen.getByText("Uploading to content")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Uploading to content" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Insert image" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
   });

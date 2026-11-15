@@ -32,7 +32,7 @@ export const AttachmentLibraryErrorState = ({ error, onRetry }: AttachmentLibrar
 
   return (
     <div className="p-6 text-center" role="alert">
-      <p className="mu-body text-mu-ink-muted">{error?.message ?? t("attachment-library.errors.load")}</p>
+      <p className="mu-body text-mu-text-secondary">{error?.message ?? t("attachment-library.errors.load")}</p>
       <Button variant="primary" className="mt-4" onClick={onRetry}>
         {t("attachment-library.actions.retry")}
       </Button>

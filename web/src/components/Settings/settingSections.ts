@@ -9,7 +9,6 @@ import {
   HeartHandshakeIcon,
   KeyIcon,
   KeyRoundIcon,
-  LibraryIcon,
   type LucideIcon,
   MailIcon,
   Settings2Icon,
@@ -27,7 +26,6 @@ import EditorSection from "@/components/Settings/EditorSection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoExportSection from "@/components/Settings/MemoExportSection";
-import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
 import NotificationSection from "@/components/Settings/NotificationSection";
 import PreferencesSection from "@/components/Settings/PreferencesSection";
@@ -50,7 +48,6 @@ export type SettingSectionKey =
   | "webhook"
   | "member"
   | "system"
-  | "memo"
   | "storage"
   | "usage-limits"
   | "notification"
@@ -127,13 +124,6 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.system.label",
     icon: Settings2Icon,
     component: InstanceSection,
-  },
-  {
-    key: "memo",
-    scope: "admin",
-    labelKey: "setting.memo.label",
-    icon: LibraryIcon,
-    component: MemoRelatedSettings,
   },
   {
     key: "tags",

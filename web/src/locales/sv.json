@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Inloggningen kunde inte slutföras",
     "create-your-account": "Skapa ditt konto",
+    "hide-password": "Dölj lösenord",
+    "incorrect-credentials": "Fel användarnamn eller lösenord.",
     "new-password": "Nytt lösenord",
     "repeat-new-password": "Upprepa det nya lösenordet",
+    "show-password": "Visa lösenord",
     "sign-in-tip": "Har du redan ett konto?",
     "sign-up-tip": "Har du inget konto än?",
     "admin-sign-in": "Administratörsinloggning",
-    "admin-sign-in-tip": "Lösenordsinloggning förblir tillgänglig för administratörer.",
     "back-to-sign-in": "Tillbaka till inloggning",
     "continue-with": "Fortsätt med {{provider}}",
     "create-admin-account": "Skapa administratörskonto",
-    "explore-public-memos": "Utforska offentliga meddelanden på den här instansen",
-    "first-run": "Första körningen",
     "setup-description": "Skapa administratörskontot för den här instansen.",
-    "setup-note": "Det här kontot äger instansinställningar, medlemmar och identitetsleverantörer.",
     "setup-title": "Konfigurera din instans",
     "signin-unavailable-description": "Lösenordsinloggning är avstängd och inga identitetsleverantörer är konfigurerade. Be administratören att aktivera en inloggningsmetod.",
     "signin-unavailable-title": "Inloggning är inte tillgänglig",
-    "signup-unavailable-description": "Lösenordskonton är avstängda och inga identitetsleverantörer är konfigurerade. Be administratören om åtkomst.",
-    "signup-unavailable-title": "Registrering är inte tillgänglig",
-    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst.",
-    "signups-closed-title": "Registreringar är stängda",
-    "sso-signup-tip": "Logga in med en leverantör nedan för att skapa ditt konto.",
-    "welcome-back": "Välkommen tillbaka."
+    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst."
   },
   "common": {
     "about": "Om",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Refererad av",
     "referencing": "Refererar",
-    "relations": "Relationer",
     "resources": "Resurser",
     "restore": "Återställ",
     "role": "Roll",
@@ -316,9 +310,11 @@
       "resize-image": "Ändra bildstorlek"
     },
     "attachments": {
-      "move-up": "Flytta bilaga uppåt",
-      "move-down": "Flytta bilaga nedåt",
-      "remove": "Ta bort bilaga"
+      "edited": "Redigerad",
+      "new": "Ny",
+      "remove": "Ta bort bilaga",
+      "reorder": "Flytta {{name}}",
+      "reorder-hint": "Dra, eller använd piltangenterna"
     },
     "remove-relation": "Ta bort koppling",
     "remove-location": "Ta bort plats",
@@ -445,7 +441,9 @@
     "layout-list-description": "En enda kolumn med läsbredd",
     "on-this-memo": "På detta PM",
     "parent-memo": "Överordnat PM",
-    "view-options": "Visningsalternativ"
+    "view-options": "Visningsalternativ",
+    "add-reaction": "Lägg till reaktion",
+    "remove-reaction": "Ta bort reaktionen"
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",
@@ -572,22 +570,10 @@
       "no-members-found": "Inga medlemmar hittades",
       "active": "Aktiv",
       "archived": "Arkiverad",
-      "member-column": "Medlem",
-      "summary-column": "Sammanfattning",
       "export-memos": "Exportera anteckningar",
       "username-password-required": "Användarnamn och lösenord får inte vara tomma",
       "create-success": "Användaren har skapats",
       "update-success": "Användaren har uppdaterats"
-    },
-    "memo": {
-      "label": "Anteckning",
-      "reactions": "Reaktioner",
-      "reactions-required": "Reaktionslistan får inte vara tom",
-      "add-reaction": "Lägg till reaktion",
-      "configured-reactions": "Konfigurerade reaktioner",
-      "reaction-placeholder": "till exempel 👍",
-      "reactions-description": "Definiera reaktionsalternativen som användare kan tillämpa på anteckningar.",
-      "remove-reaction": "Ta bort reaktionen"
     },
     "my-account": {
       "label": "Mitt konto"
@@ -781,7 +767,6 @@
       "basic-settings": "Grundinställningar",
       "basic-settings-description": "Ställ in leverantörens identitet, visningsnamn och valfria identifierare innan du fyller i OAuth-informationen.",
       "client-secret-optional-description": "Lämna tomt för att behålla den befintliga klientens hemlighet oförändrad.",
-      "configuration": "Konfiguration",
       "configuration-summary-description": "Visa det väsentliga som hjälper till att identifiera och granska en leverantör utan att exponera hela konfigurationen inline.",
       "create-sso-description": "Skapa en ny identitetsleverantör för administratörshanterad enkel inloggning.",
       "endpoints": "Slutpunkter",
@@ -803,7 +788,6 @@
       "not-linked-description": "Ingen extern identitet är länkad ännu. Du kan ansluta den här leverantören för att logga in med den senare.",
       "oauth-configuration": "OAuth-konfiguration",
       "oauth-configuration-description": "Fyll i OAuth-klientens autentiseringsuppgifter och leverantörens slutpunkter som används under inloggningen.",
-      "provider": "Leverantör",
       "provider-id": "Leverantörs-ID",
       "provider-id-description": "Endast små bokstäver, siffror och bindestreck. Detta värde blir en del av leverantörens resursnamn.",
       "provider-uid": "UID",
@@ -942,7 +926,6 @@
       },
       "no-webhooks-found": "Inga webhooks hittades.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

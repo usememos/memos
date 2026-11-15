@@ -24,7 +24,7 @@ export const VoiceWaveform: FC<VoiceWaveformProps> = ({ levels, className }) => 
         return (
           <span
             key={`bar-${i}`}
-            className="w-[2px] shrink-0 rounded-full bg-mu-ink-muted transition-[height,opacity] duration-75 ease-out"
+            className="w-[2px] shrink-0 rounded-full bg-mu-text-secondary transition-[height,opacity] duration-75 ease-out"
             style={{ height: `${h}px`, opacity }}
           />
         );

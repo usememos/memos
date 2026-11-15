@@ -14,17 +14,17 @@ const CHIP_BASE =
 const INTERACTIVE_CHIP =
   "group-hover/day:brightness-[0.97] group-focus-visible/day:outline-2 group-focus-visible/day:outline-solid group-focus-visible/day:-outline-offset-2 group-focus-visible/day:outline-mu-focus";
 
-const OUTSIDE_MONTH_CHIP = "bg-transparent text-mu-ink-muted/25";
-const EMPTY_CHIP = "bg-transparent text-mu-ink/75 group-hover/day:bg-mu-well/40";
+const OUTSIDE_MONTH_CHIP = "bg-transparent text-mu-text-secondary/25";
+const EMPTY_CHIP = "bg-transparent text-mu-text/75 group-hover/day:bg-mu-well/40";
 /** A picked day is a checked filter like a view or tag row: it takes the accent, not a ring. */
 const SELECTED_CHIP = "z-10 bg-mu-primary text-mu-on-primary";
 
 /** Primary-tinted activity levels; the small chip can carry a stronger wash than a full day cell. */
 const INTENSITY_TINTS: Record<Exclude<ActivityLevel, 0>, string> = {
-  1: "bg-mu-primary/12 text-mu-ink/75",
-  2: "bg-mu-primary/22 text-mu-ink/80",
-  3: "bg-mu-primary/34 text-mu-ink/80",
-  4: "bg-mu-primary/48 text-mu-ink/85",
+  1: "bg-mu-primary/12 text-mu-text/75",
+  2: "bg-mu-primary/22 text-mu-text/80",
+  3: "bg-mu-primary/34 text-mu-text/80",
+  4: "bg-mu-primary/48 text-mu-text/85",
 };
 
 /**

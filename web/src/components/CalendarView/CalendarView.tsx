@@ -163,7 +163,9 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
         </MentionResolutionProvider>
         {error && <MemoListError error={error} onRetry={refetch} />}
         {isEmptyMonth && md && (
-          <p className="mt-2 shrink-0 text-center mu-caption text-mu-ink-muted">{t("calendar.no-memos-in-month", { month: monthLabel })}</p>
+          <p className="mt-2 shrink-0 text-center mu-caption text-mu-text-secondary">
+            {t("calendar.no-memos-in-month", { month: monthLabel })}
+          </p>
         )}
         {activeDate && !md && (
           <section aria-label={dateLabel} className="mt-4 flex w-full flex-col">

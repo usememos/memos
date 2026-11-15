@@ -20,14 +20,14 @@ import { ScopePanelRowIcon } from "./SidebarRow";
 import SidebarSectionHeader from "./SidebarSectionHeader";
 import { SCOPE_PANEL_ROW_CLASSES, SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
 
-/** One half of the Home/Explore segmented control; the current half is raised. */
+/** One half of the Home/Explore segmented control; the current half is filled. */
 const BrowseLink = ({ to, current, icon: Icon, label }: { to: string; current: boolean; icon: LucideIcon; label: string }) => (
   <Link
     to={to}
     aria-current={current ? "page" : undefined}
     className={cn(
-      "flex h-(--mu-row-height) min-w-0 items-center gap-1.5 rounded-mu-sm px-1.5 mu-label hover:bg-mu-canvas/60 mu-focus",
-      current && "bg-mu-canvas shadow-mu-key hover:bg-mu-canvas",
+      "flex h-(--mu-row-height) min-w-0 items-center gap-1.5 rounded-mu-sm px-1.5 mu-label hover:bg-mu-canvas/60 border border-transparent mu-focus focus-visible:border-mu-focus",
+      current && "bg-mu-canvas hover:bg-mu-canvas",
     )}
   >
     <span className={SIDEBAR_LEADING_SLOT_CLASSES}>
@@ -92,7 +92,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
           aria-label={`${t("space.switch")}: ${triggerLabel}`}
           title={triggerLabel}
           className={cn(
-            "memos-brand-trigger text-start transition-colors hover:bg-mu-hover/65 mu-focus",
+            "memos-brand-trigger text-start transition-colors hover:bg-mu-hover/65 border border-transparent mu-focus focus-visible:border-mu-focus",
             sidebarSurfaceVariants({ role: size === "header" ? "headerBrand" : "mobileBrand" }),
             className,
           )}
@@ -111,7 +111,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                     <svg
                       aria-hidden="true"
                       viewBox="0 0 10 20"
-                      className="h-5 w-2.5 shrink-0 text-mu-ink-muted/35"
+                      className="h-5 w-2.5 shrink-0 text-mu-text-secondary/35"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={1.25}
@@ -131,7 +131,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
           )}
           <ChevronsUpDownIcon
             aria-hidden="true"
-            className={cn(size === "header" ? "mu-icon-xs" : "mu-icon-sm", "shrink-0 text-mu-ink-muted/70")}
+            className={cn(size === "header" ? "mu-icon-xs" : "mu-icon-sm", "shrink-0 text-mu-text-secondary/70")}
           />
         </Popover.Trigger>
         {/* A list of rows beside the sidebar, at its 28px row height. */}

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Kunne ikke fullføre innloggingen",
     "create-your-account": "Opprett konto",
+    "hide-password": "Skjul passord",
+    "incorrect-credentials": "Feil brukernavn eller passord.",
     "new-password": "Nytt passord",
     "repeat-new-password": "Gjenta det nye passordet",
+    "show-password": "Vis passord",
     "sign-in-tip": "Har du allerede en konto?",
     "sign-up-tip": "Har du ikke en konto enda?",
     "admin-sign-in": "Administratorpålogging",
-    "admin-sign-in-tip": "Passordpålogging forblir tilgjengelig for administratorer.",
     "back-to-sign-in": "Tilbake til pålogging",
     "continue-with": "Fortsett med {{provider}}",
     "create-admin-account": "Opprett administratorkonto",
-    "explore-public-memos": "Utforsk offentlige notater på denne instansen",
-    "first-run": "Første kjøring",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
-    "setup-note": "Denne kontoen eier instansinnstillinger, medlemmer og identitetsleverandører.",
     "setup-title": "Konfigurer instansen din",
     "signin-unavailable-description": "Passordpålogging er slått av, og ingen identitetsleverandører er konfigurert. Be administratoren din om å aktivere en påloggingsmetode.",
     "signin-unavailable-title": "Pålogging er ikke tilgjengelig",
-    "signup-unavailable-description": "Passordkontoer er slått av, og ingen identitetsleverandører er konfigurert. Be administratoren din om tilgang.",
-    "signup-unavailable-title": "Registrering er ikke tilgjengelig",
-    "signups-closed-description": "Nye kontoer er deaktivert på denne instansen. Kontakt administratoren din hvis du trenger tilgang.",
-    "signups-closed-title": "Registreringer er stengt",
-    "sso-signup-tip": "Logg inn med en leverandør nedenfor for å opprette kontoen din.",
-    "welcome-back": "Velkommen tilbake."
+    "signups-closed-description": "Nye kontoer er deaktivert på denne instansen. Kontakt administratoren din hvis du trenger tilgang."
   },
   "common": {
     "about": "Om",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Referert til av",
     "referencing": "Refererer til",
-    "relations": "Relasjon",
     "resources": "Ressurser",
     "restore": "Gjenopprett",
     "role": "Rolle",
@@ -316,9 +310,11 @@
       "resize-image": "Endre bildestørrelse"
     },
     "attachments": {
-      "move-up": "Flytt vedlegg opp",
-      "move-down": "Flytt vedlegg ned",
-      "remove": "Fjern vedlegg"
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegg",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastene"
     },
     "remove-relation": "Fjern kobling",
     "remove-location": "Fjern plassering",
@@ -445,7 +441,9 @@
     "layout-list-description": "En enkelt kolonne med lesebredde",
     "on-this-memo": "På dette notatet",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsalternativer"
+    "view-options": "Visningsalternativer",
+    "add-reaction": "Legg til reaksjon",
+    "remove-reaction": "Fjern reaksjonen"
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",
@@ -572,22 +570,10 @@
       "no-members-found": "Ingen medlemmer funnet",
       "active": "Aktiv",
       "archived": "Arkivert",
-      "member-column": "Medlem",
-      "summary-column": "Sammendrag",
       "export-memos": "Eksporter notater",
       "username-password-required": "Brukernavn og passord kan ikke være tomme",
       "create-success": "Bruker opprettet",
       "update-success": "Bruker oppdatert"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reaksjoner",
-      "reactions-required": "Reaksjonslisten må ikke være tom",
-      "add-reaction": "Legg til reaksjon",
-      "configured-reactions": "Konfigurerte reaksjoner",
-      "reaction-placeholder": "f.eks. 👍",
-      "reactions-description": "Definer reaksjonsalternativene brukere kan bruke på notater.",
-      "remove-reaction": "Fjern reaksjonen"
     },
     "my-account": {
       "label": "Min konto"
@@ -781,7 +767,6 @@
       "basic-settings": "Grunnleggende innstillinger",
       "basic-settings-description": "Angi leverandørens identitet, visningsnavn og valgfrie identifikatorregler før du fyller ut OAuth-detaljene.",
       "client-secret-optional-description": "La stå tomt for å beholde den eksisterende klienthemmeligheten uendret.",
-      "configuration": "Konfigurasjon",
       "configuration-summary-description": "Vis det essensielle som hjelper til med å identifisere og revidere en leverandør uten å avsløre hele konfigurasjonen inline.",
       "create-sso-description": "Opprett en ny identitetsleverandør for administratoradministrert enkel pålogging.",
       "endpoints": "Endepunkter",
@@ -803,7 +788,6 @@
       "not-linked-description": "Ingen ekstern identitet er knyttet ennå. Du kan koble til denne leverandøren for å logge på med den senere.",
       "oauth-configuration": "OAuth-konfigurasjon",
       "oauth-configuration-description": "Fyll inn OAuth-klientlegitimasjonen og leverandørendepunktene som ble brukt under pålogging.",
-      "provider": "Leverandør",
       "provider-id": "Leverandør-ID",
       "provider-id-description": "Bare små bokstaver, tall og bindestreker. Denne verdien blir en del av leverandørressursnavnet.",
       "provider-uid": "UID",
@@ -942,7 +926,6 @@
       },
       "no-webhooks-found": "Ingen webhooks funnet.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {

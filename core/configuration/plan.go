@@ -585,6 +585,14 @@ func (p *planner) planUndeclared() error {
 		if _, declared := p.desired.Sources[name]; declared {
 			continue
 		}
+		if name == "instance/settings/MEMO_RELATED" {
+			change := &apipb.ResourceChange{
+				Resource: name, Action: apipb.ResourceChange_RELEASE,
+				Message: "reaction configuration is retired; reactions use the full emoji picker",
+			}
+			p.changes = append(p.changes, rankedChange{rank: rankInstanceSetting, change: change, op: &operation{change: change}})
+			continue
+		}
 		removed := p.removed[name]
 		kind, id, err := ParseResourceName(name)
 		if err != nil {

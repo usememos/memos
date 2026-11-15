@@ -42,7 +42,7 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
   ];
 
   return (
-    <Menu.Root modal={false} size="sm">
+    <Menu.Root modal={false} size="md">
       {/* The trigger starts with an icon (a space mark or the lock) inside a span, so it takes the
           package's icon-side padding itself; its gaps are the md icon gap, like a Button's. */}
       <Menu.Trigger
@@ -97,14 +97,14 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
                   ) : (
                     <span
                       aria-hidden
-                      className="flex size-5 shrink-0 items-center justify-center rounded-[5px] border border-dashed border-mu-ink-muted/45"
+                      className="flex size-5 shrink-0 items-center justify-center rounded-[5px] border border-dashed border-mu-text-secondary/45"
                     >
                       <PlusIcon className="mu-icon-xs" />
                     </span>
                   )
                 }
               >
-                {space ? destination : <span className="text-mu-ink-muted">{t("space.add-to")}</span>}
+                {space ? destination : <span className="text-mu-text-secondary">{t("space.add-to")}</span>}
               </Menu.SubmenuTrigger>
               <Menu.Popup className="w-56">
                 {spaceChoices.map((item) => {

@@ -47,7 +47,7 @@ func TestFreshInstall(t *testing.T) {
 	// Verify migration completed successfully
 	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
-	require.Equal(t, "26.10.1", currentSchemaVersion, "fresh install should record the latest migration")
+	require.Equal(t, "26.11.1", currentSchemaVersion, "fresh install should record the latest migration")
 
 	// Verify we can read instance settings (basic sanity check)
 	instanceSetting, err := ts.GetInstanceBasicSetting(ctx)
@@ -82,12 +82,14 @@ func TestFreshInstall(t *testing.T) {
 
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
-	requireCreatorIndexes(ctx, t, ts, driver)
+	requireLookupIndexes(ctx, t, ts, driver)
 }
 
-// requireCreatorIndexes checks the indexes that usage limit checks rely on to
-// count a user's memos and sum a user's attachment sizes.
-func requireCreatorIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
+// requireLookupIndexes checks the indexes that usage limit checks rely on to
+// count a user's memos and sum a user's attachment sizes, and the index that
+// memo lists and the has_attachments and has_image filters use to find a
+// memo's attachments without scanning the attachment table.
+func requireLookupIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
 	t.Helper()
 	for _, indexName := range []string{"idx_memo_creator_id", "idx_attachment_creator_id"} {
 		var query string
@@ -105,6 +107,43 @@ func requireCreatorIndexes(ctx context.Context, t *testing.T, ts *store.Store, d
 		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx, query, indexName).Scan(&count))
 		require.Equal(t, 1, count, "index %s must exist", indexName)
 	}
+
+	index := attachmentLookupIndex(driver)
+	var query string
+	columns := []string{"memo_id", "type"}
+	switch driver {
+	case "sqlite":
+		query = `SELECT info.name FROM pragma_index_list('attachment') AS list
+			JOIN pragma_index_info(list.name) AS info
+			WHERE list.name = ? AND list."unique" = 0 AND list.partial = 0 ORDER BY info.seqno`
+	case "mysql":
+		query = `SELECT COLUMN_NAME FROM information_schema.STATISTICS
+			WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'attachment' AND INDEX_NAME = ?
+			AND NON_UNIQUE = 1 AND SUB_PART IS NULL AND INDEX_TYPE = 'BTREE' AND IS_VISIBLE = 'YES'
+			ORDER BY SEQ_IN_INDEX`
+	case "postgres":
+		columns = []string{"memo_id"}
+		query = `SELECT pg_get_indexdef(i.indexrelid, k, true)
+			FROM pg_index i JOIN pg_class c ON c.oid = i.indexrelid
+			JOIN pg_am am ON am.oid = c.relam
+			CROSS JOIN LATERAL generate_series(1, i.indnatts) AS k
+			WHERE i.indexrelid = to_regclass($1) AND i.indrelid = 'attachment'::regclass
+			AND i.indisvalid AND i.indisready AND NOT i.indisunique
+			AND i.indpred IS NULL AND i.indexprs IS NULL AND am.amname = 'btree' ORDER BY k`
+	default:
+		t.Fatalf("unsupported driver: %s", driver)
+	}
+	rows, err := ts.GetDriver().GetDB().QueryContext(ctx, query, index)
+	require.NoError(t, err)
+	defer rows.Close()
+	var actual []string
+	for rows.Next() {
+		var column string
+		require.NoError(t, rows.Scan(&column))
+		actual = append(actual, column)
+	}
+	require.NoError(t, rows.Err())
+	require.Equal(t, columns, actual, "index %s must have the expected ordered attachment columns", index)
 }
 
 // TestMigrationReRun verifies that re-running the migration on an already

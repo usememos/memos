@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Пријава није могла да се заврши",
     "create-your-account": "Креирајте свој налог",
+    "hide-password": "Сакриј лозинку",
+    "incorrect-credentials": "Погрешно корисничко име или лозинка.",
     "new-password": "Нова лозинка",
     "repeat-new-password": "Поновите нову лозинку",
+    "show-password": "Прикажи лозинку",
     "sign-in-tip": "Већ имате налог?",
     "sign-up-tip": "Још увек немате налог?",
     "admin-sign-in": "Пријава администратора",
-    "admin-sign-in-tip": "Пријава лозинком остаје доступна администраторима.",
     "back-to-sign-in": "Назад на пријаву",
     "continue-with": "Наставите са {{provider}}",
     "create-admin-account": "Креирајте администраторски налог",
-    "explore-public-memos": "Истражите јавне белешке о овој инстанци",
-    "first-run": "Прво покретање",
     "setup-description": "Креирајте администраторски налог за ову инстанцу.",
-    "setup-note": "Овај налог поседује подешавања инстанце, чланове и добављаче идентитета.",
     "setup-title": "Подесите своју инстанцу",
     "signin-unavailable-description": "Пријављивање лозинком је искључено и ниједан добављач идентитета није конфигурисан. Замолите администратора да омогући метод пријављивања.",
     "signin-unavailable-title": "Пријављивање није доступно",
-    "signup-unavailable-description": "Налози лозинком су искључени и ниједан добављач идентитета није конфигурисан. Замолите администратора за приступ.",
-    "signup-unavailable-title": "Регистрација није доступна",
-    "signups-closed-description": "Нови налози су онемогућени на овој инстанци. Контактирајте администратора ако вам је потребан приступ.",
-    "signups-closed-title": "Пријаве су затворене",
-    "sso-signup-tip": "Пријавите се са добављачем испод да бисте креирали свој налог.",
-    "welcome-back": "Добродошли назад."
+    "signups-closed-description": "Нови налози су онемогућени на овој инстанци. Контактирајте администратора ако вам је потребан приступ."
   },
   "demo": {
     "banner-description": "Промене су привремене и могу се ресетовати.",
@@ -141,7 +136,6 @@
     "profile": "Профиле",
     "referenced-by": "Референца од",
     "referencing": "Референца",
-    "relations": "Односи",
     "resources": "Ресурси",
     "restore": "Ресторе",
     "role": "Улога",
@@ -354,9 +348,11 @@
       "resize-image": "Промени величину слике"
     },
     "attachments": {
-      "move-up": "Помери прилог нагоре",
-      "move-down": "Помери прилог надоле",
-      "remove": "Уклони прилог"
+      "edited": "Измењено",
+      "new": "Ново",
+      "remove": "Уклони прилог",
+      "reorder": "Промени редослед: {{name}}",
+      "reorder-hint": "Превуците или користите тастере са стрелицама"
     },
     "remove-relation": "Уклони везу",
     "remove-location": "Уклони локацију",
@@ -484,7 +480,9 @@
     "layout-list-description": "Једна колона ширине читања",
     "on-this-memo": "На овој поруци",
     "parent-memo": "Надређена порука",
-    "view-options": "Опције приказа"
+    "view-options": "Опције приказа",
+    "add-reaction": "Додајте реакцију",
+    "remove-reaction": "Уклоните реакцију"
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",
@@ -651,25 +649,13 @@
       "delete-warning-description": "ОВА АКЦИЈА ЈЕ НЕПОВРАТНА",
       "label": "Члан",
       "list-title": "Списак чланова",
-      "member-column": "Члан",
       "restore-success": "{{username}} је успешно враћен",
-      "summary-column": "Резиме",
       "user": "Корисник",
       "no-members-found": "Није пронађен ниједан члан",
       "export-memos": "Извези белешке",
       "username-password-required": "Корисничко име и лозинка не могу бити празни",
       "create-success": "Корисник је направљен",
       "update-success": "Корисник је ажуриран"
-    },
-    "memo": {
-      "add-reaction": "Додајте реакцију",
-      "configured-reactions": "Конфигурисане реакције",
-      "label": "Мемо",
-      "reaction-placeholder": "нпр. 👍",
-      "reactions-description": "Дефинишите опције реакције које корисници могу применити на белешке.",
-      "remove-reaction": "Уклоните реакцију",
-      "reactions": "Reactионс",
-      "reactions-required": "Листа Reactионс не сме бити празна"
     },
     "my-account": {
       "label": "Мој налог"
@@ -882,7 +868,6 @@
       "client-id": "ИД клијента",
       "client-secret": "Тајна клијента",
       "client-secret-optional-description": "Оставите празно да би постојећа тајна клијента остала непромењена.",
-      "configuration": "Конфигурација",
       "configuration-summary-description": "Прикажите основне ствари које помажу у идентификацији и ревизији добављача без излагања потпуне конфигурације на линији.",
       "confirm-delete": "Да ли сте сигурни да желите да избришете `{{name}}` SSO конфигурацију? ОВА АКЦИЈА ЈЕ НЕПОВРАТНА",
       "create-sso": "Креирајте SSO",
@@ -911,7 +896,6 @@
       "not-linked-description": "Ниједан спољни идентитет још увек није повезан. Можете да повежете овог провајдера да бисте се касније пријавили са њим.",
       "oauth-configuration": "OAuth конфигурација",
       "oauth-configuration-description": "Попуните акредитиве клијента OAuth и крајње тачке добављача које се користе током пријављивања.",
-      "provider": "Провајдер",
       "provider-id": "ИД провајдера",
       "provider-id-description": "Само мала слова, бројеви и цртице. Ова вредност постаје део имена ресурса добављача.",
       "provider-uid": "UID",
@@ -1059,7 +1043,6 @@
       },
       "no-webhooks-found": "Није пронађен ниједан веб-хук.",
       "title": "КСК0Кс",
-      "url": "URL",
       "label": "КСК0Кс"
     },
     "tags": {

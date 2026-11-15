@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -248,6 +250,30 @@ func BenchmarkListMemos(b *testing.B) {
 			}
 		}
 	})
+
+	// The attachment filters check attachment.memo_id once per candidate memo.
+	for _, filter := range []string{"has_attachments", "has_image"} {
+		b.Run("authenticated_"+filter, func(b *testing.B) {
+			req := &apipb.ListMemosRequest{PageSize: benchmarkPageSize, Filter: filter}
+			resp, err := bench.Service.ListMemos(bench.authenticatedCtx, req)
+			require.NoError(b, err)
+			require.Len(b, resp.Memos, benchmarkPageSize)
+			for i, memo := range resp.Memos {
+				require.Equal(b, fmt.Sprintf("memos/memo-%06d", (benchmarkTopLevelMemoCount-1)/3*3-i*3), memo.Name)
+			}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				resp, err := bench.Service.ListMemos(bench.authenticatedCtx, req)
+				if err != nil {
+					b.Fatalf("ListMemos failed: %v", err)
+				}
+				if len(resp.Memos) == 0 {
+					b.Fatalf("expected memos in %s benchmark response", filter)
+				}
+			}
+		})
+	}
 }
 
 func BenchmarkListMemoCommentsPreview(b *testing.B) {
@@ -271,5 +297,50 @@ func BenchmarkListMemoCommentsPreview(b *testing.B) {
 		if len(resp.Comments) == 0 {
 			b.Fatal("expected comments in benchmark response")
 		}
+	}
+}
+
+// BenchmarkListMemosLargeAttachments exercises SQLite overflow pages with real
+// database blobs while only the attachment lookup index is needed by filters.
+func BenchmarkListMemosLargeAttachments(b *testing.B) {
+	ctx := context.Background()
+	ts := newTestingServiceForTB(b)
+	owner, err := ts.CreateHostUser(ctx, "blob-bench")
+	require.NoError(b, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	blob := make([]byte, 256<<10)
+	const memoCount = 2000
+	for i := range memoCount {
+		memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+			UID: fmt.Sprintf("blob-%06d", i), CreatorID: owner.ID,
+			Content: "attachment benchmark", Visibility: store.Private,
+		})
+		require.NoError(b, err)
+		if i%5 == 0 {
+			_, err = ts.Store.CreateAttachment(ctx, &store.Attachment{
+				UID: fmt.Sprintf("blob-att-%06d", i), CreatorID: owner.ID, MemoID: &memo.ID,
+				Type: "image/png", Blob: blob, Size: int64(len(blob)),
+			})
+			require.NoError(b, err)
+		}
+	}
+	for _, filter := range []string{"has_attachments", "has_image"} {
+		b.Run(filter, func(b *testing.B) {
+			req := &apipb.ListMemosRequest{PageSize: benchmarkPageSize, Filter: filter}
+			resp, err := ts.Service.ListMemos(ownerCtx, req)
+			require.NoError(b, err)
+			require.Len(b, resp.Memos, benchmarkPageSize)
+			for i, memo := range resp.Memos {
+				require.Equal(b, fmt.Sprintf("memos/blob-%06d", (memoCount-1)/5*5-i*5), memo.Name)
+			}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for b.Loop() {
+				_, err := ts.Service.ListMemos(ownerCtx, req)
+				if err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
 	}
 }

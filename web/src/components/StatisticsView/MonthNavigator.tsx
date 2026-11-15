@@ -15,7 +15,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
 
   return (
     <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-2 justify-between")}>
-      <h2 className="min-w-0 truncate mu-label text-mu-ink select-none">{monthLabel}</h2>
+      <h2 className="min-w-0 truncate mu-label text-mu-text select-none">{monthLabel}</h2>
 
       <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
         <Tooltip.Root>

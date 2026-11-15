@@ -241,37 +241,6 @@ func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
 	require.Equal(t, winner, settings[0].Value, "a later insert attempt must not overwrite the persisted value")
 }
 
-func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
-
-	// Get default memo related setting (should have defaults)
-	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
-	require.NoError(t, err)
-	require.NotNil(t, memoSetting)
-	require.NotEmpty(t, memoSetting.Reactions)
-
-	// Set custom memo related setting
-	customReactions := []string{"👍", "👎", "🚀"}
-	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{
-			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				Reactions: customReactions,
-			},
-		},
-	})
-	require.NoError(t, err)
-
-	// Verify
-	memoSetting, err = ts.GetInstanceMemoRelatedSetting(ctx)
-	require.NoError(t, err)
-	require.Equal(t, customReactions, memoSetting.Reactions)
-
-	ts.Close()
-}
-
 func TestInstanceSettingStorageSetting(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -618,22 +587,6 @@ func TestInstanceSettingEdgeCases(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, specialScript, generalSetting.AdditionalScript)
 	require.Equal(t, specialStyle, generalSetting.AdditionalStyle)
-
-	// Case 2: Memo Related Setting with Unicode reactions
-	unicodeReactions := []string{"🐱", "🐶", "🦊", "🦄"}
-	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{
-			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				Reactions: unicodeReactions,
-			},
-		},
-	})
-	require.NoError(t, err)
-
-	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
-	require.NoError(t, err)
-	require.Equal(t, unicodeReactions, memoSetting.Reactions)
 
 	ts.Close()
 }

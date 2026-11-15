@@ -337,10 +337,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
             )}
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 text-mu-ink" data-theme="dark">
+              <div className="min-w-0 text-mu-text" data-theme="dark">
                 <div className="truncate mu-label">{currentItem.filename || t("attachment-preview.title")}</div>
                 {hasMultiple && (
-                  <div className="mt-1 mu-caption text-mu-ink-muted">
+                  <div className="mt-1 mu-caption text-mu-text-secondary">
                     {safeIndex + 1} / {itemCount}
                   </div>
                 )}
@@ -437,10 +437,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
           {isImagePreview && (
             <div className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 pt-6", showDetails && "hidden lg:block lg:pr-[22rem]")}>
               {/* The bar keeps its glass so the counter and zoom readout stay legible over the photo. */}
-              <div
-                data-theme="dark"
-                className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 shadow-mu-pop backdrop-blur-sm"
-              >
+              <div data-theme="dark" className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 backdrop-blur-sm">
                 {hasMultiple && !sm && (
                   <>
                     <Button
@@ -449,7 +446,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                       disabled={!canGoPrevious}
                       icon={<ChevronLeft />}
                     />
-                    <div className="min-w-9 px-1 text-center mu-label-sm tabular-nums text-mu-ink-muted">
+                    <div className="min-w-9 px-1 text-center mu-label-sm tabular-nums text-mu-text-secondary">
                       {safeIndex + 1}/{itemCount}
                     </div>
                     <Button aria-label={t("attachment-preview.next")} onClick={handleNext} disabled={!canGoNext} icon={<ChevronRight />} />
@@ -457,7 +454,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                   </>
                 )}
                 <Button aria-label={t("map.zoom-out")} onClick={handleZoomOut} disabled={zoomScale === MIN_ZOOM} icon={<ZoomOut />} />
-                <div className="min-w-12 px-2 text-center mu-label-sm tabular-nums text-mu-ink-muted">{zoomPercent}%</div>
+                <div className="min-w-12 px-2 text-center mu-label-sm tabular-nums text-mu-text-secondary">{zoomPercent}%</div>
                 <Button aria-label={t("map.zoom-in")} onClick={handleZoomIn} disabled={zoomScale === MAX_ZOOM} icon={<ZoomIn />} />
                 <div className="mx-1 h-5 w-px bg-mu-line" />
                 <Button aria-label={t("attachment-preview.reset-zoom")} onClick={resetZoom} disabled={!isZoomed} icon={<RotateCcw />} />
@@ -494,7 +491,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 <Button size="sm" onClick={handlePrevious} disabled={!canGoPrevious}>
                   {t("common.previous")}
                 </Button>
-                <div className="px-3 mu-caption text-mu-ink-muted">
+                <div className="px-3 mu-caption text-mu-text-secondary">
                   {safeIndex + 1} / {itemCount}
                 </div>
                 <Button size="sm" onClick={handleNext} disabled={!canGoNext}>

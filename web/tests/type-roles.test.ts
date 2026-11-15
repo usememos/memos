@@ -59,9 +59,8 @@ describe("type roles", () => {
         // Sizes relative to memo text (inline code, tag pills, the welcome guide's memo specimen).
         "lib/markdownStyles.ts",
         "components/WelcomeGuide/headers.tsx",
-        // Drawn into images: the share card, and the type labels printed on small thumbnails.
+        // Drawn into images: the share card.
         "components/MemoActionMenu/MemoShareImagePreview.tsx",
-        "components/MemoMetadata/Attachment/AttachmentListEditor.tsx",
         "components/MemoPreview/MemoPreview.tsx",
         // The decorative status numeral on the error pages.
         "pages/NotFound.tsx",

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prijave ni bilo mogoče dokončati",
     "create-your-account": "Ustvari nov račun",
+    "hide-password": "Skrij geslo",
+    "incorrect-credentials": "Napačno uporabniško ime ali geslo.",
     "new-password": "Novo geslo",
     "repeat-new-password": "Ponovi novo geslo",
+    "show-password": "Pokaži geslo",
     "sign-in-tip": "Že imaš račun?",
     "sign-up-tip": "Še nimaš računa?",
     "admin-sign-in": "Prijava skrbnika",
-    "admin-sign-in-tip": "Prijava z geslom ostane na voljo skrbnikom.",
     "back-to-sign-in": "Nazaj na prijavo",
     "continue-with": "Nadaljuj z {{provider}}",
     "create-admin-account": "Ustvari skrbniški račun",
-    "explore-public-memos": "Razišči javne zapiske v tem primerku",
-    "first-run": "Prvi zagon",
     "setup-description": "Ustvari skrbniški račun za ta primerek.",
-    "setup-note": "Ta račun je lastnik nastavitev primerka, članov in ponudnikov identitete.",
     "setup-title": "Nastavi svoj primerek",
     "signin-unavailable-description": "Prijava z geslom je izklopljena in noben ponudnik identitete ni konfiguriran. Prosite skrbnika, da omogoči način prijave.",
     "signin-unavailable-title": "Prijava ni na voljo",
-    "signup-unavailable-description": "Računi z geslom so izklopljeni in noben ponudnik identitete ni konfiguriran. Prosite skrbnika za dostop.",
-    "signup-unavailable-title": "Registracija ni na voljo",
-    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika.",
-    "signups-closed-title": "Prijave so zaprte",
-    "sso-signup-tip": "Prijavite se s spodnjim ponudnikom, da ustvarite svoj račun.",
-    "welcome-back": "Dobrodošli nazaj."
+    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika."
   },
   "common": {
     "about": "O programu",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Nanaša se na",
     "referencing": "Nanašanje",
-    "relations": "Relacije",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
@@ -316,9 +310,11 @@
       "resize-image": "Spremeni velikost slike"
     },
     "attachments": {
-      "move-up": "Premakni prilogo gor",
-      "move-down": "Premakni prilogo dol",
-      "remove": "Odstrani prilogo"
+      "edited": "Urejeno",
+      "new": "Novo",
+      "remove": "Odstrani prilogo",
+      "reorder": "Prerazporedi {{name}}",
+      "reorder-hint": "Povlecite ali uporabite smerne tipke"
     },
     "remove-relation": "Odstrani povezavo",
     "remove-location": "Odstrani lokacijo",
@@ -447,7 +443,9 @@
     "layout-list-description": "En sam stolpec za branje",
     "on-this-memo": "V tem zapisku",
     "parent-memo": "Nadrejeni zapisek",
-    "view-options": "Možnosti pogleda"
+    "view-options": "Možnosti pogleda",
+    "add-reaction": "Dodajte reakcijo",
+    "remove-reaction": "Odstrani reakcijo"
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",
@@ -574,22 +572,10 @@
       "no-members-found": "Ni članov",
       "active": "Aktiven",
       "archived": "Arhivirano",
-      "member-column": "član",
-      "summary-column": "Povzetek",
       "export-memos": "Izvozi zapiske",
       "username-password-required": "Uporabniško ime in geslo ne smeta biti prazna",
       "create-success": "Uporabnik ustvarjen",
       "update-success": "Uporabnik posodobljen"
-    },
-    "memo": {
-      "label": "Beležka",
-      "reactions": "Odzivi",
-      "reactions-required": "Seznam reakcij ne sme biti prazen",
-      "add-reaction": "Dodajte reakcijo",
-      "configured-reactions": "Konfigurirane reakcije",
-      "reaction-placeholder": "npr. 👍",
-      "reactions-description": "Določite možnosti odziva, ki jih lahko uporabniki uporabijo za beležke.",
-      "remove-reaction": "Odstrani reakcijo"
     },
     "my-account": {
       "label": "Moj račun"
@@ -783,7 +769,6 @@
       "basic-settings": "Osnovne nastavitve",
       "basic-settings-description": "Nastavite identiteto ponudnika, prikazno ime in pravila izbirnega identifikatorja, preden izpolnite podrobnosti OAuth.",
       "client-secret-optional-description": "Pustite prazno, da obstoječa skrivnost odjemalca ostane nespremenjena.",
-      "configuration": "Konfiguracija",
       "configuration-summary-description": "Prikažite bistvene elemente, ki pomagajo identificirati in revidirati ponudnika, ne da bi pri tem izpostavili celotno konfiguracijo.",
       "create-sso-description": "Ustvarite novega ponudnika identitete za enotno prijavo, ki jo upravlja skrbnik.",
       "endpoints": "Končne točke",
@@ -805,7 +790,6 @@
       "not-linked-description": "Nobena zunanja identiteta še ni povezana. Tega ponudnika lahko povežete, da se pozneje prijavite z njim.",
       "oauth-configuration": "konfiguracija OAuth",
       "oauth-configuration-description": "Izpolnite poverilnice odjemalca OAuth in končne točke ponudnika, uporabljene med prijavo.",
-      "provider": "Ponudnik",
       "provider-id": "ID ponudnika",
       "provider-id-description": "Samo male črke, številke in vezaji. Ta vrednost postane del imena vira ponudnika.",
       "provider-uid": "UID",
@@ -944,7 +928,6 @@
       },
       "no-webhooks-found": "Ne najdem nobenega webhooka.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {
