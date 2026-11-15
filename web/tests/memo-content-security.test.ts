@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { isTrustedIframeSrc } from "@/lib/html-sanitize-schema";
 import { memoResolveUrl } from "@/lib/memo-markdown";
 import { sanitizeMemoHtml } from "@/lib/sanitized-html";
-import { isCustomSchemeUri } from "@/lib/url-policy";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 // As the editor hands raw HTML to `sanitizeHtml`: parsed by the browser into a fragment that is not in the page.
@@ -150,10 +149,25 @@ describe("link URL policy", () => {
     expect(resolve("data:text/html,<script>alert(1)</script>", "link")).toBeNull();
   });
 
-  it("refuses a paste of a blocked scheme whatever its case and spacing", () => {
-    expect(isCustomSchemeUri("JaVaScRiPt:alert(1)")).toBe(false);
-    expect(isCustomSchemeUri("DaTa:text/html,x")).toBe(false);
-    expect(isCustomSchemeUri("java\tscript:alert(1)")).toBe(false);
+  it.each([
+    "javascript:alert(1)",
+    "JaVaScRiPt:alert(1)",
+    "java\tscript:alert(1)",
+    "java\nscript:alert(1)",
+    "\u0001javascript:alert(1)",
+    "data:text/html,x",
+    "vbscript:msgbox(1)",
+    "livescript:alert(1)",
+    "mocha:alert(1)",
+  ])("strips unsafe raw HTML link targets: %s", (url) => {
+    const element = document.createElement("a");
+    element.setAttribute("href", url);
+    element.textContent = "unsafe";
+    const tree = document.createDocumentFragment();
+    tree.append(element);
+    const sanitized = sanitizeMemoHtml(tree);
+    expect(sanitized.querySelector("a")?.hasAttribute("href")).toBe(false);
+    expect(resolve(url, "link")).toBeNull();
   });
 
   it("keeps a custom-scheme anchor's href in raw HTML", () => {
@@ -170,6 +184,8 @@ describe("image URL policy", () => {
     expect(resolve("https://img.example/a.png", "image")).toBe("https://img.example/a.png");
     expect(resolve("http://tracker.example/a.png", "image")).toBeNull();
     expect(resolve("javascript:alert(1)", "image")).toBeNull();
+    expect(resolve("obsidian://open?vault=notes", "image")).toBeNull();
+    expect(renderHtml('<img src="obsidian://open?vault=notes">')).not.toContain("obsidian:");
   });
 
   it("resolves a managed attachment image to the instance's own URL, even over plain http", () => {
