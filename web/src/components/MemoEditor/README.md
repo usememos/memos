@@ -61,7 +61,28 @@ The draft's attachments take the saved memo's shape: images, videos and drawings
 
 ### Drawings
 
-A drawing is a PNG attachment made with [`@usememos/canvas`](https://github.com/usememos/canvas) (pinned to an exact version: it uses CalVer, so a version number does not signal breaking changes). The editable scene sits inside the file in a `zTXt` chunk named `memos-canvas`, and the name ends in `.canvas.png`. Everywhere outside the editor it is a plain image. The ＋ menu's "Drawing" and the attachment row's "Edit drawing" open `components/DrawingSheet`, loaded on first use. It is a dialog that sits 24px inside the window from `md` up and fills the screen below that, with its controls floating on the paper (`DrawingFrame`). The package draws and edits the scene; the controls, strings, paper (`DRAWING_PAPER`, the same in every theme) and discard prompt are memos'. In a memo, a drawing opens in `DrawingViewer`, the same dialog with the canvas read-only, whose Edit saves in place. `useDrawing` owns the session: Done joins the draft through the same `LocalFile` path as a picked image, so the memo's save uploads it. "Edit drawing" reads the original file, never the thumbnail. Done on a file still in the draft swaps it in place. Done on a saved drawing keeps the attachment in the draft and queues the edit as a `LocalFile` with `replaces` set: the row shows the edit, and the save uploads it with `UploadAttachmentSpec.replace_attachment`, so the attachment keeps its name and place (`mergeUploadedAttachments`) while the server swaps the file and drops its thumbnail. Removing the pending row drops the edit. A saved drawing someone else uploaded stays, since only they or an admin may replace or remove it; its edit joins the draft as a new attachment. A file with the suffix but no readable scene opens as the background of a new drawing. The server must store `image/png` uploads unchanged, which `server/fileserver/drawing_png_test.go` checks.
+The contract and acceptance cases are in
+[`docs/design/drawing-annotation-and-recovery.md`](../../../../docs/design/drawing-annotation-and-recovery.md).
+Canvas is pinned to `26.11.3`; its editable PNG remains an ordinary image outside the drawing UI.
+
+The insert menu starts a drawing. Ordinary local and instance-hosted images offer **Markup**; editable PNGs offer
+**Edit markup**. Annotation loads the original bytes, opens a locked background with a clean undo baseline, and starts with red
+ink. Applying it keeps the original and inserts a new `.canvas.png` beside it. Saved image previews provide the same annotation
+flow, with **Save copy** binding directly to that memo. External images and motion-photo groups are excluded.
+
+The sheet has one short commit action: **Add** for new work, **Save** for edits, and **Save copy** for direct annotation or a copy
+required by ownership. The editor's own save uploads pending files. An owned saved drawing uses `LocalFile.replaces`, preserving
+its attachment name and links. Input is frozen before export until the host accepts or rejects it. Retries retain acknowledged
+uploads in memory and finish the remaining bind or timestamp update; partial failures show an exception icon and tooltip.
+
+This first release has no Memos markup-draft UI or persistence. **Close** confirms discarding unsaved changes; it does not retain a
+recoverable markup. There is no Continue entry, no markup-dependent memo-save blocker, and no permanent More/Download/Discard menu.
+Normal states add no copy or badges to the canvas. Viewing and editing share one dialog and Canvas instance, retaining the visible content, pan and zoom across mode changes. Both modes keep a ghost X at the top left and the current action at the top right, without bordered action containers or a visible mode heading. A live zoom percentage opens the same four-action zoom menu in both modes (zoom in, zoom out, fit, reset to 100%). The trigger stays at the bottom left, above the phone tools bar and clear of the safe area. Editing adds the tools bar at the top center on desktop and at the bottom on phones. Available phone Undo/Redo actions follow X as quiet ghost icons; unavailable history actions are omitted. Returning to view focuses Edit; discarding restores the accepted scene.
+
+Canvas `26.11.3` provides checkpoints for a future recovery integration. The current editor's text-only localStorage draft behavior
+is unchanged and excludes local file bytes. The server preserves editable PNGs unchanged (`server/fileserver/drawing_png_test.go`).
+Browser regressions live in `tests/browser/`: run `pnpm test:drawings` after `pnpm exec playwright install chromium`. They verify
+image preparation, original bytes/order, active Chinese text at export, desktop/360px controls, and view/edit content, viewport, focus and discard behavior.
 
 ### Suggestions
 

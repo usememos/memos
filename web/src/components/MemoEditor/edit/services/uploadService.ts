@@ -75,7 +75,9 @@ export const uploadService = {
         onUploaded?.(localFiles[index], attachments[index]);
       }
     };
-    await Promise.all(Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, localFiles.length) }, worker));
+    const results = await Promise.allSettled(Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, localFiles.length) }, worker));
+    const failed = results.find((entry) => entry.status === "rejected");
+    if (failed?.status === "rejected") throw failed.reason;
     return attachments;
   },
 };

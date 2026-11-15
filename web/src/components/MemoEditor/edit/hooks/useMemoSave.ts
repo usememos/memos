@@ -11,7 +11,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
-import { DrawingNotSavedError, type MemoSaveOperations, mergeUploadedAttachments } from "../services/memoService";
+import { DrawingNotSavedError, DrawingSavedError, type MemoSaveOperations, mergeUploadedAttachments } from "../services/memoService";
 import { useEditorContext } from "../state";
 import { renameUploadedKeys } from "../utils/attachmentOrder";
 import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
@@ -115,7 +115,11 @@ export function useMemoSave({
           memoName,
           parentMemoName,
           space: defaultSpace,
-          onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
+          onFileUploaded: (file, attachment) => {
+            uploaded.set(file.previewUrl, attachment);
+            if (file.replaces) dispatch(actions.setDrawingMemoUpdate(true));
+            keepUploadedFiles();
+          },
         },
         operations,
       );
@@ -165,7 +169,13 @@ export function useMemoSave({
         void queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
         void queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       }
+      if (error instanceof DrawingSavedError) {
+        dispatch(actions.setDrawingSaveError("editor.drawing.saved-needs-update"));
+        showErrorToast(t("editor.drawing.saved-needs-update"));
+        return;
+      }
       if (error instanceof DrawingNotSavedError) {
+        dispatch(actions.setDrawingSaveError("editor.drawing.saved-without-drawing"));
         // The rest of the memo is saved; only the drawing waits for another save.
         console.error(error);
         showErrorToast(t("editor.drawing.saved-without-drawing"));

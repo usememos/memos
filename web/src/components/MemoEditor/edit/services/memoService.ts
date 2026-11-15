@@ -93,6 +93,7 @@ function buildUpdateMask(
     }
   }
 
+  if (state.drawingNeedsMemoUpdate) mask.add("update_time");
   return { mask, patch };
 }
 
@@ -104,6 +105,13 @@ export class DrawingNotSavedError extends Error {
   constructor(cause: unknown) {
     super("The memo was saved, but an edited drawing was not", { cause });
     this.name = "DrawingNotSavedError";
+  }
+}
+
+/** The file replacement landed; only the memo update needs another attempt. */
+export class DrawingSavedError extends Error {
+  constructor(cause: unknown) {
+    super("Drawing saved; memo update needs retry", { cause });
   }
 }
 
@@ -162,7 +170,11 @@ export const memoService = {
         // A new drawing is an edit of the memo: stamp it, keeping a custom time the draft sets.
         // The update returns the memo with its replaced files, which refreshes every cached copy;
         // it sends no attachment list, so one added elsewhere meanwhile stays.
-        memo = await operations.updateMemo({ name: memo.name, updateTime: patch.updateTime }, ["update_time"]);
+        try {
+          memo = await operations.updateMemo({ name: memo.name, updateTime: patch.updateTime }, ["update_time"]);
+        } catch (error) {
+          throw new DrawingSavedError(error);
+        }
       }
       return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }

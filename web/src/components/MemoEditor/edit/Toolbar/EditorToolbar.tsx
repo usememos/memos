@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@usememos/ui";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, CircleAlertIcon } from "lucide-react";
 import { type FC, useId } from "react";
 import { type Location, Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -32,6 +32,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   const blockedReason = useEditorSelector((s) => validationService.canSave(s).reason);
   const blockedReasonDetail = useEditorSelector((s) => validationService.canSave(s).detail);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
+  const drawingSaveError = useEditorSelector((s) => s.drawingSaveError);
   const justSaved = useEditorSelector((s) => s.ui.justSaved);
   const isUploading = useEditorSelector((s) => s.ui.isLoading.uploading);
   const location = useEditorSelector((s) => s.metadata.location);
@@ -87,6 +88,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
         render={
           <Button
             variant="primary"
+            iconEnd={drawingSaveError ? <CircleAlertIcon /> : undefined}
             onClick={onSave}
             loading={isSaving}
             loadingLabel={commitLabel}
@@ -98,7 +100,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       </Tooltip.Trigger>
       {/* The save shortcut shows in the tooltip, so the primary action reads as a plain verb. */}
       <Tooltip.Popup side="top" shortcut={`${primaryModifierGlyph()} Enter`}>
-        {commitLabel}
+        {drawingSaveError ? t(drawingSaveError) : commitLabel}
       </Tooltip.Popup>
     </Tooltip.Root>
   );

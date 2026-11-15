@@ -6,16 +6,22 @@ import DrawingSheet from "@/components/DrawingSheet/DrawingSheet";
 const calls: string[] = [];
 const handle = {
   setTool: vi.fn(),
+  setReadOnly: vi.fn((value: boolean) => {
+    if (value) calls.push("freeze");
+  }),
+  getScene: vi.fn(() => ({ type: "memos-canvas", version: 1, elements: [], files: {}, appState: {} })),
+  setScene: vi.fn(),
   setStyle: vi.fn(),
   undo: vi.fn(),
   redo: vi.fn(),
   canUndo: vi.fn(() => false),
   canRedo: vi.fn(() => false),
   zoomToFit: vi.fn(),
+  zoomTo: vi.fn(),
+  getViewport: vi.fn(() => ({ zoom: 1, scrollX: 0, scrollY: 0 })),
   insertImage: vi.fn(async () => "image1"),
   markSaved: vi.fn(),
   isDirty: vi.fn(() => false),
-  commitText: vi.fn(() => calls.push("commitText")),
   exportPng: vi.fn(async () => {
     calls.push("exportPng");
     return new Blob(["png"], { type: "image/png" });
@@ -72,7 +78,6 @@ beforeEach(() => {
     calls.push("exportPng");
     return new Blob(["png"], { type: "image/png" });
   });
-  handle.commitText.mockImplementation(() => calls.push("commitText"));
 });
 
 describe("DrawingSheet", () => {
@@ -80,24 +85,25 @@ describe("DrawingSheet", () => {
     render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={vi.fn()} />);
 
     expect(screen.getByRole("dialog")).toHaveClass("w-[calc(100vw-48px)]", "h-[calc(100dvh-48px)]");
-    for (const name of ["common.cancel", "editor.drawing.tool-pen", "editor.drawing.undo", "editor.drawing.done"]) {
+    for (const name of ["common.close", "editor.drawing.tool-pen", "editor.drawing.undo", "common.add"]) {
       expect(screen.getByRole("button", { name }).closest("[data-theme]")).toHaveAttribute("data-theme", "light");
     }
-    // One bordered surface per group: the tools share a bar, while Cancel and Done stand alone.
+    // One bordered surface per group: the tools share a bar, while Close and Add stand alone.
     expect(screen.getByRole("button", { name: "editor.drawing.tool-pen" }).closest(".border-mu-edge")).not.toBeNull();
-    for (const name of ["common.cancel", "editor.drawing.done"]) {
+    for (const name of ["common.close", "common.add", "editor.drawing.zoom 100%"]) {
       expect(screen.getByRole("button", { name }).closest(".border-mu-edge")).toBeNull();
     }
+    expect(screen.getByRole("button", { name: "editor.drawing.zoom 100%" })).toHaveTextContent("100%");
   });
 
-  it("keeps typed text, exports and hands back a named PNG on Done", async () => {
+  it("keeps typed text, exports and hands back a named PNG on Add", async () => {
     const onDone = vi.fn();
     render(<DrawingSheet mode="new" onDone={onDone} onClose={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "editor.drawing.done" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
 
     await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
-    expect(calls).toEqual(["commitText", "exportPng"]);
+    expect(calls).toEqual(["freeze", "exportPng"]);
     const file = onDone.mock.calls[0][0] as File;
     expect(file.type).toBe("image/png");
     expect(file.name).toMatch(/^drawing-\d{8}-\d{6}\.canvas\.png$/);
@@ -106,19 +112,19 @@ describe("DrawingSheet", () => {
   it("closes at once when nothing changed, and asks first when the drawing has changes", async () => {
     const onClose = vi.fn();
     const { unmount } = render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={onClose} />);
-    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
     expect(onClose).toHaveBeenCalledTimes(1);
     unmount();
 
     onClose.mockClear();
     handle.isDirty.mockReturnValue(true);
     render(<DrawingSheet mode="edit" onDone={vi.fn()} onClose={onClose} />);
-    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
     expect(await screen.findByText("editor.drawing.discard-edit-title")).toBeInTheDocument();
     expect(onClose).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "editor.drawing.discard" }));
-    expect(onClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
   });
 
   it("drives the canvas from the toolbar", () => {
@@ -128,9 +134,34 @@ describe("DrawingSheet", () => {
     expect(handle.setTool).toHaveBeenLastCalledWith("rectangle");
     expect(screen.getByRole("button", { name: "editor.drawing.tool-rectangle" })).toHaveAttribute("aria-pressed", "true");
 
-    fireEvent.click(screen.getByRole("button", { name: "editor.drawing.zoom-to-fit" }));
-    expect(handle.zoomToFit).toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "editor.drawing.undo" })).toBeDisabled();
+  });
+
+  it("uses the zoom percentage to open zoom actions and updates the readout", async () => {
+    let zoom = 1;
+    handle.getViewport.mockImplementation(() => ({ zoom, scrollX: 0, scrollY: 0 }));
+    handle.zoomTo.mockImplementation((value: number) => {
+      zoom = value;
+    });
+    handle.zoomToFit.mockImplementation(() => {
+      zoom = 0.5;
+    });
+    render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={vi.fn()} />);
+    const trigger = () => screen.getByRole("button", { name: /^editor\.drawing\.zoom \d+%$/ });
+    const choose = async (name: string) => {
+      fireEvent.click(trigger());
+      fireEvent.click(await screen.findByRole("menuitem", { name }));
+      await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    };
+    await choose("map.zoom-in");
+    expect(trigger()).toHaveTextContent("120%");
+    await choose("map.zoom-out");
+    expect(trigger()).toHaveTextContent("100%");
+    await choose("editor.drawing.zoom-to-fit");
+    expect(trigger()).toHaveTextContent("50%");
+    await choose("attachment-preview.reset-zoom");
+    expect(trigger()).toHaveTextContent("100%");
+    expect(handle.markSaved).not.toHaveBeenCalled();
   });
 
   it("enables Undo as soon as a stroke ends, without waiting for the debounced change", () => {
@@ -138,7 +169,7 @@ describe("DrawingSheet", () => {
     expect(screen.getByRole("button", { name: "editor.drawing.undo" })).toBeDisabled();
 
     handle.canUndo.mockReturnValue(true);
-    fireEvent.pointerUp(screen.getByRole("img", { name: "editor.drawing.new-title" }));
+    fireEvent.pointerUp(screen.getByRole("img", { name: "editor.insert-menu.drawing" }));
 
     expect(screen.getByRole("button", { name: "editor.drawing.undo" })).toBeEnabled();
   });
@@ -164,30 +195,30 @@ describe("DrawingSheet", () => {
     expect(canvasProps.initialScene).toBe(scene);
   });
 
-  it("holds drawing and Done until the background picture is in", async () => {
+  it("holds drawing and Add until the background picture is in", async () => {
     let finishInsert: (id: string) => void = () => undefined;
     handle.insertImage.mockImplementation(() => new Promise((resolve) => (finishInsert = resolve)));
     const onDone = vi.fn();
     render(<DrawingSheet mode="new" background={new Blob(["png"], { type: "image/png" })} onDone={onDone} onClose={vi.fn()} />);
 
-    const done = screen.getByRole("button", { name: "editor.drawing.done" });
+    const done = screen.getByRole("button", { name: "editor.blocks.loading" });
     await waitFor(() => expect(handle.insertImage).toHaveBeenCalled());
-    expect(done).toBeDisabled();
+    expect(done).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("img").parentElement).toHaveAttribute("aria-busy", "true");
 
     finishInsert("image1");
-    await waitFor(() => expect(done).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "common.add" })).not.toHaveAttribute("aria-disabled"));
     expect(screen.getByRole("img").parentElement).not.toHaveAttribute("aria-busy");
   });
 
-  it("stays dirty when saving fails, so Cancel still asks before discarding", async () => {
+  it("stays dirty when saving fails, so Close still asks before discarding", async () => {
     handle.exportPng.mockResolvedValue(new Blob(["png"], { type: "image/png" }));
     const onDone = vi.fn().mockRejectedValue(new Error("offline"));
     render(<DrawingSheet mode="new" onDone={onDone} onClose={vi.fn()} />);
 
-    fireEvent.click(await screen.findByRole("button", { name: "editor.drawing.done" }));
+    fireEvent.click(await screen.findByRole("button", { name: "common.add" }));
     await waitFor(() => expect(onDone).toHaveBeenCalled());
-    await waitFor(() => expect(screen.getByRole("button", { name: "editor.drawing.done" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "common.add" })).toBeEnabled());
     expect(handle.markSaved).not.toHaveBeenCalled();
   });
 
@@ -196,6 +227,44 @@ describe("DrawingSheet", () => {
     render(<DrawingSheet mode="new" background={picture} onDone={vi.fn()} onClose={vi.fn()} />);
 
     await waitFor(() => expect(handle.insertImage).toHaveBeenCalledWith(picture, { background: true }));
-    await waitFor(() => expect(handle.markSaved).toHaveBeenCalled());
+    await waitFor(() => expect(handle.setScene).toHaveBeenCalledWith(handle.getScene()));
+    expect(handle.markSaved).not.toHaveBeenCalled();
+  });
+});
+
+describe("drawing save boundaries", () => {
+  it("freezes input before export and keeps it frozen while the host save is pending", async () => {
+    let complete: () => void = () => undefined;
+    const onDone = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          complete = resolve;
+        }),
+    );
+    render(<DrawingSheet mode="edit" commitLabel="common.save" onDone={onDone} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    await waitFor(() => expect(onDone).toHaveBeenCalledOnce());
+    expect(handle.setReadOnly).toHaveBeenLastCalledWith(true);
+    expect(handle.markSaved).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "editor.drawing.tool-pen" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "common.close" })).toBeDisabled();
+    complete();
+    await waitFor(() => expect(handle.markSaved).toHaveBeenCalledOnce());
+  });
+
+  it("does not turn a failed background import into a blank editable drawing", async () => {
+    handle.insertImage.mockResolvedValue(null as never);
+    render(<DrawingSheet mode="new" background={new Blob(["bad"], { type: "image/png" })} onDone={vi.fn()} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "editor.drawing.image-failed" })).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "common.add" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "editor.drawing.tool-pen" })).toBeDisabled();
+    expect(handle.setScene).not.toHaveBeenCalled();
+  });
+
+  it("shows only the main action in the normal state", () => {
+    render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={vi.fn()} />);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "common.more" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "common.add" })).toBeInTheDocument();
   });
 });

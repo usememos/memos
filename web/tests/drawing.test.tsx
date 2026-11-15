@@ -143,7 +143,7 @@ describe("drawing attachments", () => {
     expect(isDrawingFilename("photo.png")).toBe(false);
   });
 
-  it("offers Edit drawing only on drawings this server stores", () => {
+  it("offers Edit markup only on drawings this server stores", () => {
     const onEditDrawing = vi.fn();
     const photo = create(AttachmentSchema, { name: "attachments/photo", filename: "photo.png", type: "image/png" });
     const linked = create(AttachmentSchema, {
@@ -155,7 +155,11 @@ describe("drawing attachments", () => {
     const local = toLocalFile(new File([fixturePng], "drawing-20261106-120000.canvas.png", { type: "image/png" }));
     render(<AttachmentListEditor attachments={[drawingAttachment, photo, linked]} localFiles={[local]} onEditDrawing={onEditDrawing} />);
 
-    const actions = screen.getAllByRole("button", { name: "Edit drawing" });
+    const markup = screen.getByRole("button", { name: "Markup" });
+    expect(markup.querySelector("svg")).toHaveClass("lucide-palette");
+    fireEvent.click(markup);
+    expect(onEditDrawing).toHaveBeenLastCalledWith({ kind: "attachment", attachment: photo });
+    const actions = screen.getAllByRole("button", { name: "Edit markup" });
     expect(actions).toHaveLength(2);
     fireEvent.click(actions[0]);
     expect(onEditDrawing).toHaveBeenLastCalledWith({ kind: "attachment", attachment: drawingAttachment });
@@ -163,14 +167,14 @@ describe("drawing attachments", () => {
     expect(onEditDrawing).toHaveBeenLastCalledWith({ kind: "local", localFile: local });
   });
 
-  it("keeps only the glyph of Edit drawing on narrow rows", () => {
+  it("keeps only the glyph of Edit markup on narrow rows", () => {
     const wide = window.matchMedia;
     window.matchMedia = (() => ({ matches: false, addEventListener: () => undefined, removeEventListener: () => undefined })) as never;
     try {
       const onEditDrawing = vi.fn();
       render(<AttachmentListEditor attachments={[drawingAttachment]} onEditDrawing={onEditDrawing} />);
-      const action = screen.getByRole("button", { name: "Edit drawing" });
-      expect(action).not.toHaveTextContent("Edit drawing");
+      const action = screen.getByRole("button", { name: "Edit markup" });
+      expect(action).not.toHaveTextContent("Edit markup");
       fireEvent.click(action);
       expect(onEditDrawing).toHaveBeenCalledWith({ kind: "attachment", attachment: drawingAttachment });
     } finally {
@@ -178,7 +182,7 @@ describe("drawing attachments", () => {
     }
   });
 
-  it("Edit drawing downloads the original file, not the thumbnail", async () => {
+  it("Edit markup downloads the original file, not the thumbnail", async () => {
     const fetchMock = vi.fn(async () => new Response(fixturePng));
     vi.stubGlobal("fetch", fetchMock);
     const { result } = renderDrawing();
@@ -214,7 +218,7 @@ describe("drawing attachments", () => {
     expect(reopened?.elements).toEqual(scene.elements.map((element) => expect.objectContaining(element)));
 
     const edited = new File([exported], "drawing-20261106-130000.canvas.png", { type: "image/png" });
-    act(() => result.current.drawing.done(edited));
+    await act(() => result.current.drawing.done(edited));
 
     // The saved drawing keeps its place; the edit waits to upload over it on save.
     const state = result.current.editor.getState();
@@ -226,7 +230,7 @@ describe("drawing attachments", () => {
 
     // Editing the pending edit again keeps it a replacement of the same attachment.
     await act(() => result.current.drawing.openExisting({ kind: "local", localFile: state.localFiles[0] }));
-    act(() => result.current.drawing.done(new File([exported], "drawing-20261106-140000.canvas.png", { type: "image/png" })));
+    await act(() => result.current.drawing.done(new File([exported], "drawing-20261106-140000.canvas.png", { type: "image/png" })));
     expect(result.current.editor.getState().localFiles.map((item) => [item.file.name, item.replaces])).toEqual([
       ["drawing-20261106-140000.canvas.png", drawingAttachment.name],
     ]);
@@ -306,7 +310,7 @@ describe("drawing attachments", () => {
     act(() => result.current.editor.dispatch(result.current.editor.actions.setMetadata({ attachments: [drawingAttachment] })));
 
     await act(() => result.current.drawing.openExisting({ kind: "attachment", attachment: drawingAttachment }));
-    act(() => result.current.drawing.done(new File([fixturePng], "drawing-2.canvas.png", { type: "image/png" })));
+    await act(() => result.current.drawing.done(new File([fixturePng], "drawing-2.canvas.png", { type: "image/png" })));
 
     // Only its uploader or an admin may remove it from the memo.
     const state = result.current.editor.getState();
@@ -321,7 +325,7 @@ describe("drawing attachments", () => {
     act(() => result.current.editor.dispatch(result.current.editor.actions.setLocalFiles([first, plain])));
 
     await act(() => result.current.drawing.openExisting({ kind: "local", localFile: first }));
-    act(() => result.current.drawing.done(new File([fixturePng], "drawing-3.canvas.png", { type: "image/png" })));
+    await act(() => result.current.drawing.done(new File([fixturePng], "drawing-3.canvas.png", { type: "image/png" })));
     expect(result.current.editor.getState().localFiles.map((item) => item.file.name)).toEqual([
       "drawing-3.canvas.png",
       "drawing-2.canvas.png",
