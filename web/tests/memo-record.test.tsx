@@ -316,6 +316,81 @@ describe("useUpdateMemo", () => {
     return { client, server, result: rendered.result };
   };
 
+  it.each(["succeeds", "fails"])("defers a Space refresh until the last queued update %s", async (outcome) => {
+    const before = create(MemoSchema, { name: "memos/x", content: "before", space: "spaces/a" });
+    const moved = create(MemoSchema, { ...before, space: "spaces/b" });
+    const edited = create(MemoSchema, { ...moved, content: "edited" });
+    const { client, server, result } = await onScreen(before);
+    const commentsKey = memoKeys.comments(before.name);
+    client.setQueryData(commentsKey, create(ListMemoCommentsResponseSchema, { comments: [] }));
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    const replies: Array<{ resolve: (memo: Memo) => void; reject: (error: Error) => void }> = [];
+    api.updateMemo.mockImplementation(() => new Promise<Memo>((resolve, reject) => replies.push({ resolve, reject })));
+
+    act(() => {
+      result.current.update.mutate({ update: { name: before.name, space: moved.space }, updateMask: ["space"] });
+      result.current.update.mutate({ update: { name: before.name, content: edited.content }, updateMask: ["content"] });
+      result.current.update.mutate({ update: { name: before.name, pinned: true }, updateMask: ["pinned"] });
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(result.current.detail.data).toMatchObject({ content: edited.content, pinned: true }));
+
+    await act(async () => {
+      server.memo = moved;
+      replies[0].resolve(moved);
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(client.isFetching()).toBe(0));
+    expect(result.current.detail.data).toMatchObject({ content: edited.content, pinned: true });
+    expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).not.toContainEqual(memoKeys.all);
+
+    await act(async () => {
+      server.memo = edited;
+      replies[1].resolve(edited);
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(3));
+    expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).not.toContainEqual(memoKeys.all);
+    expect(client.getQueryState(commentsKey)?.isInvalidated).toBe(false);
+
+    await act(async () => {
+      if (outcome === "succeeds") {
+        server.memo = create(MemoSchema, { ...edited, pinned: true });
+        replies[2].resolve(server.memo);
+      } else {
+        replies[2].reject(new Error("pin failed"));
+      }
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    await waitFor(() => expect(client.isFetching()).toBe(0));
+    expect(result.current.detail.data).toMatchObject({ space: moved.space, content: edited.content, pinned: outcome === "succeeds" });
+    expect(result.current.list.data?.memos[0]).toMatchObject({ content: edited.content, pinned: outcome === "succeeds" });
+    expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).toContainEqual(memoKeys.all);
+    expect(client.getQueryState(commentsKey)?.isInvalidated).toBe(true);
+  });
+
+  it("refreshes a Space change without waiting for an unrelated memo's update", async () => {
+    const before = create(MemoSchema, { name: "memos/x", space: "spaces/a" });
+    const { client, server, result } = await onScreen(before);
+    // Both hooks must use the same client, as they do on a page with multiple memos.
+    const { result: other } = renderHook(() => useUpdateMemo("memos/other"), {
+      wrapper: ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    });
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    api.updateMemo.mockImplementation(({ memo: update }: { memo: Memo }) => {
+      if (update.name !== before.name) return new Promise<Memo>(() => {});
+      server.memo = create(MemoSchema, { ...before, space: "spaces/b" });
+      return Promise.resolve(server.memo);
+    });
+    act(() => {
+      other.current.mutate({ update: { name: "memos/other", pinned: true }, updateMask: ["pinned"] });
+      result.current.update.mutate({ update: { name: before.name, space: "spaces/b" }, updateMask: ["space"] });
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.update.isPending).toBe(false));
+    expect(client.isMutating()).toBe(1);
+    expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).toContainEqual(memoKeys.all);
+  });
+
   it("ends on the server's state when the queued update fails after the older one saved", async () => {
     const before = create(MemoSchema, { name: "memos/x", content: "- [ ] a", snippet: "[ ] a", property: { hasIncompleteTasks: true } });
     // The server derives the snippet and the property from the content, so only its replies carry them.

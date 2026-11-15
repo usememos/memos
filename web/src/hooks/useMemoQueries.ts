@@ -444,15 +444,25 @@ export function useUpdateMemo(name: string | undefined) {
       invalidateAround(previousMemo);
     },
     onSuccess: (updatedMemo, { updateMask }) => {
+      const queued = queuedUpdates();
       if (updateMask.includes("space")) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+        if (queued.length === 0) {
+          queryClient.invalidateQueries({ queryKey: memoKeys.all });
+        } else {
+          // Awaiting the queue here would keep this mutation pending and prevent the next update from starting.
+          const cache = queryClient.getMutationCache();
+          const unsubscribe = cache.subscribe(() => {
+            if (cache.findAll({ mutationKey, exact: true, status: "pending" }).length > 0) return;
+            unsubscribe();
+            queryClient.invalidateQueries({ queryKey: memoKeys.all });
+          });
+        }
       }
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // Placement changes move linked attachments between scoped libraries.
       queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
       // Update cache with server response, under the patches of the updates queued behind this one
-      const queued = queuedUpdates();
       const memo = rebaseQueued(updatedMemo, queued);
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), memo);
       patchMemoInCollectionQueries(queryClient, memo);
