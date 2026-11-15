@@ -1,5 +1,5 @@
 import { Button, Dialog, Field, Input } from "@usememos/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFieldErrors } from "@/hooks/useFieldErrors";
 import { useUpdateUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
@@ -20,6 +20,14 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
   const { mutateAsync: updateUser } = useUpdateUser();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setNewPassword("");
+    setNewPasswordAgain("");
+    fieldErrors.clear("newPassword");
+    fieldErrors.clear("newPasswordAgain");
+  }, [open, user?.name]);
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
