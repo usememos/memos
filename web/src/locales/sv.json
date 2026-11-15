@@ -1302,7 +1302,7 @@
       "search-emoji": "Sök eller klistra in emoji…",
       "no-results": "Inga träffar",
       "emoji-help": "Välj en vanlig emoji eller klistra in din egen.",
-      "reset": "Återställ till standard",
+      "reset": "Använd standardikon",
       "use-emoji": "Använd {{emoji}}"
     },
     "unavailable": "Detta utrymme finns inte eller så har du inte åtkomst till det.",

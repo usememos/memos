@@ -1280,7 +1280,7 @@
       "search-emoji": "搜尋或貼上表情符號…",
       "no-results": "沒有符合項",
       "emoji-help": "選擇一個常用表情符號或貼上您自己的表情符號。",
-      "reset": "重設為預設值",
+      "reset": "使用預設圖示",
       "use-emoji": "使用 {{emoji}}"
     }
   },

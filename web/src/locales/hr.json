@@ -1303,7 +1303,7 @@
       "search-emoji": "Pretraži ili zalijepi emoji…",
       "no-results": "Nema podudaranja",
       "emoji-help": "Odaberite uobičajeni emoji ili zalijepite svoj.",
-      "reset": "Vrati na zadano",
+      "reset": "Koristi zadanu ikonu",
       "use-emoji": "Koristi {{emoji}}"
     },
     "unavailable": "Ovaj prostor ne postoji ili mu nemate pristup.",

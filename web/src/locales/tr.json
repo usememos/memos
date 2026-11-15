@@ -1226,7 +1226,7 @@
       "search-emoji": "Emoji arayın ya da yapıştırın…",
       "no-results": "Eşleşme yok",
       "emoji-help": "Yaygın bir emoji seçin ya da kendinizinkini yapıştırın.",
-      "reset": "Varsayılana sıfırla",
+      "reset": "Varsayılan simgeyi kullan",
       "use-emoji": "{{emoji}} kullan"
     },
     "unavailable": "Bu alan mevcut değil ya da erişiminiz yok.",

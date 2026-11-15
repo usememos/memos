@@ -1302,7 +1302,7 @@
       "search-emoji": "Buscar ou pegar emoji…",
       "no-results": "Sen coincidencias",
       "emoji-help": "Escolle un emoji común ou pega o teu propio.",
-      "reset": "Restablecer aos valores predeterminados",
+      "reset": "Usar a icona predeterminada",
       "use-emoji": "Usar {{emoji}}"
     },
     "unavailable": "Este espazo non existe ou non tes acceso a el.",

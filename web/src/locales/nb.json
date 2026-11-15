@@ -1302,7 +1302,7 @@
       "search-emoji": "Søk eller lim inn emoji…",
       "no-results": "Ingen treff",
       "emoji-help": "Velg en vanlig emoji eller lim inn din egen.",
-      "reset": "Tilbakestill til standard",
+      "reset": "Bruk standardikon",
       "use-emoji": "Bruk {{emoji}}"
     },
     "unavailable": "Dette rommet finnes ikke, eller du har ikke tilgang til det.",

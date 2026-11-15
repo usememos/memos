@@ -51,7 +51,7 @@ describe("SpaceIconPicker", () => {
     const onChange = vi.fn();
     render(<Harness onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    fireEvent.click(await screen.findByRole("button", { name: "space.icon.emoji" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "space.icon.emoji" }));
     const search = screen.getByRole("combobox", { name: "space.icon.search-emoji" });
     search.focus();
     type(search, "👩🏽‍🌾", "insertFromPaste");
@@ -59,9 +59,14 @@ describe("SpaceIconPicker", () => {
     fireEvent.keyDown(search, { key: "Enter" });
     expect(onChange).toHaveBeenLastCalledWith(icon("👩🏽‍🌾", "emoji"));
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    expect(await screen.findByRole("button", { name: "space.icon.emoji" })).toHaveAttribute("aria-pressed", "true");
+    expect(await screen.findByRole("tab", { name: "space.icon.emoji" })).toHaveAttribute("aria-selected", "true");
     fireEvent.click(screen.getByRole("button", { name: "space.icon.reset" }));
     expect(onChange).toHaveBeenLastCalledWith(undefined);
+    await waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "space.icon.change" })).toHaveFocus();
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
   });
 
   it("keeps the selection unchanged when dismissed or when Enter completes IME composition", async () => {
@@ -82,7 +87,7 @@ describe("SpaceIconPicker", () => {
     const onChange = vi.fn();
     render(<Harness onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    fireEvent.click(await screen.findByRole("button", { name: "space.icon.emoji" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "space.icon.emoji" }));
     const search = screen.getByRole("combobox", { name: "space.icon.search-emoji" });
     type(search, "🌱🌱");
     expect(screen.getByRole("status")).toHaveTextContent("space.icon.no-results");
@@ -94,6 +99,39 @@ describe("SpaceIconPicker", () => {
   it("disables editing while a form is saving", () => {
     render(<SpaceIconPicker disabled onChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: "space.icon.change" })).toBeDisabled();
+  });
+
+  it("shows the default action only while a custom icon is set, on either tab", async () => {
+    const onChange = vi.fn();
+    const view = render(<SpaceIconPicker onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
+
+    view.rerender(<SpaceIconPicker value={icon("leaf")} onChange={onChange} />);
+    expect(screen.getByRole("button", { name: "space.icon.reset" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("tab", { name: "space.icon.emoji" }));
+    expect(screen.getByRole("button", { name: "space.icon.reset" })).toBeEnabled();
+
+    view.rerender(<SpaceIconPicker onChange={onChange} />);
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("switches named content panels without selecting an icon", async () => {
+    const onChange = vi.fn();
+    render(<Harness onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    const icons = await screen.findByRole("tab", { name: "space.icon.icons" });
+    const emoji = screen.getByRole("tab", { name: "space.icon.emoji" });
+    expect(screen.getByRole("tabpanel", { name: "space.icon.icons" })).toBeInTheDocument();
+    icons.focus();
+    fireEvent.keyDown(icons, { key: "ArrowRight" });
+    await waitFor(() => expect(emoji).toHaveAttribute("aria-selected", "true"));
+    expect(screen.getByRole("tabpanel", { name: "space.icon.emoji" })).toBeInTheDocument();
+    expect(screen.queryByRole("tabpanel", { name: "space.icon.icons" })).not.toBeInTheDocument();
+    expect(emoji).toHaveFocus();
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("offers only emoji accepted by the shared Unicode catalog", () => {

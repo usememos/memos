@@ -1303,7 +1303,7 @@
       "search-emoji": "Caută sau lipește emoji…",
       "no-results": "Nicio potrivire",
       "emoji-help": "Alege un emoji comun sau lipește-ți propriul.",
-      "reset": "Resetează la valorile implicite",
+      "reset": "Folosește pictograma implicită",
       "use-emoji": "Folosește {{emoji}}"
     },
     "unavailable": "Acest spațiu nu există sau nu ai acces la el.",

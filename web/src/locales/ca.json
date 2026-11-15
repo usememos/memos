@@ -1303,7 +1303,7 @@
       "search-emoji": "Cerca o enganxa emoji…",
       "no-results": "No hi ha coincidències",
       "emoji-help": "Tria un emoji comú o enganxa'n un.",
-      "reset": "Restableix els valors per defecte",
+      "reset": "Utilitza la icona per defecte",
       "use-emoji": "Utilitza {{emoji}}"
     },
     "unavailable": "Aquest espai no existeix o no hi tens accés.",

@@ -75,7 +75,8 @@ describe("CreateSpaceDialog", () => {
     view.rerender(<CreateSpaceDialog open={false} onOpenChange={mocks.onOpenChange} />);
     view.rerender(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    expect(await screen.findByRole("button", { name: "space.icon.reset" })).toBeDisabled();
+    await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
   });
 
   it("allows a valid custom Space UID and explains invalid values", async () => {

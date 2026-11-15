@@ -1307,7 +1307,7 @@
       "icons": "Ikon",
       "kind": "Ikontype",
       "no-results": "Ingen treff",
-      "reset": "Still attende til standard",
+      "reset": "Bruk standardikon",
       "search-emoji": "Søk etter eller lim inn emoji…",
       "search-icons": "Søk etter ikon…",
       "use-emoji": "Nytt {{emoji}}"

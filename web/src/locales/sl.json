@@ -1304,7 +1304,7 @@
       "search-emoji": "Išči ali prilepi emoji…",
       "no-results": "Ni zadetkov",
       "emoji-help": "Izberite pogost emoji ali prilepite svojega.",
-      "reset": "Ponastavi na privzeto",
+      "reset": "Uporabi privzeto ikono",
       "use-emoji": "Uporabi {{emoji}}"
     },
     "unavailable": "Ta prostor ne obstaja ali pa do njega nimate dostopa.",

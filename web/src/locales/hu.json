@@ -1302,7 +1302,7 @@
       "search-emoji": "Emoji keresése vagy beillesztése…",
       "no-results": "Nincs találat",
       "emoji-help": "Válassz egy gyakori emojit, vagy illeszd be a sajátodat.",
-      "reset": "Alapértelmezett visszaállítás",
+      "reset": "Alapértelmezett ikon használata",
       "use-emoji": "{{emoji}} használata"
     },
     "unavailable": "Ez a tér nem létezik, vagy nincs hozzáférésed hozzá.",

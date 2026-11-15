@@ -1302,7 +1302,7 @@
       "search-emoji": "Emoji suchen oder einfügen…",
       "no-results": "Keine Treffer",
       "emoji-help": "Wählen Sie ein gängiges Emoji oder fügen Sie Ihr eigenes ein.",
-      "reset": "Auf Standard zurücksetzen",
+      "reset": "Standardsymbol verwenden",
       "use-emoji": "{{emoji}} verwenden"
     },
     "unavailable": "Dieser Bereich existiert nicht oder Sie haben keinen Zugriff darauf.",

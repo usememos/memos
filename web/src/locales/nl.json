@@ -1302,7 +1302,7 @@
       "search-emoji": "Emoji zoeken of plakken…",
       "no-results": "Geen overeenkomsten",
       "emoji-help": "Kies een veelgebruikte emoji of plak je eigen emoji.",
-      "reset": "Terugzetten naar standaardinstellingen",
+      "reset": "Standaardpictogram gebruiken",
       "use-emoji": "Gebruik {{emoji}}"
     },
     "unavailable": "Deze ruimte bestaat niet of je hebt er geen toegang toe.",

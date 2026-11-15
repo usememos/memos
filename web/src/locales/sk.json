@@ -1304,7 +1304,7 @@
       "search-emoji": "Vyhľadávanie alebo vkladanie emoji…",
       "no-results": "Žiadne zhody",
       "emoji-help": "Vyberte bežný emoji alebo vložte svoj vlastný.",
-      "reset": "Obnoviť na predvolené hodnoty",
+      "reset": "Použiť predvolenú ikonu",
       "use-emoji": "Použiť {{emoji}}"
     },
     "unavailable": "Tento priestor neexistuje alebo k nemu nemáte prístup.",

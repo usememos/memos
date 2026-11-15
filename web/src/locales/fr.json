@@ -1303,7 +1303,7 @@
       "search-emoji": "Rechercher ou coller des émojis…",
       "no-results": "Aucun résultat",
       "emoji-help": "Choisissez un émoji courant ou collez le vôtre.",
-      "reset": "Réinitialiser par défaut",
+      "reset": "Utiliser l’icône par défaut",
       "use-emoji": "Utiliser {{emoji}}"
     },
     "unavailable": "Cet espace n'existe pas ou vous n'y avez pas accès.",

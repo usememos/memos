@@ -1302,7 +1302,7 @@
       "search-emoji": "Tìm kiếm hoặc dán biểu tượng cảm xúc…",
       "no-results": "Không tìm thấy kết quả phù hợp",
       "emoji-help": "Chọn một biểu tượng cảm xúc phổ biến hoặc dán biểu tượng cảm xúc của riêng bạn.",
-      "reset": "Đặt lại về mặc định",
+      "reset": "Dùng biểu tượng mặc định",
       "use-emoji": "Sử dụng {{emoji}}"
     },
     "unavailable": "Không gian này không tồn tại hoặc bạn không có quyền truy cập vào nó.",
