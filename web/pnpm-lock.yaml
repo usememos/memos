@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  nanoid: 5.1.16
+
 patchedDependencies:
   '@bufbuild/protobuf@2.12.0': 9d60cec35402ba36bc21a72fefc68ccef8db0acb883504cc47c05a00a0029f8c
 
@@ -1372,9 +1375,9 @@ packages:
   murmurhash-js@1.0.0:
     resolution: {integrity: sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==}
 
-  nanoid@3.3.11:
-    resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+  nanoid@5.1.16:
+    resolution: {integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   node-releases@2.0.38:
@@ -2731,7 +2734,7 @@ snapshots:
 
   murmurhash-js@1.0.0: {}
 
-  nanoid@3.3.11: {}
+  nanoid@5.1.16: {}
 
   node-releases@2.0.38: {}
 
@@ -2755,7 +2758,7 @@ snapshots:
 
   postcss@8.5.14:
     dependencies:
-      nanoid: 3.3.11
+      nanoid: 5.1.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
