@@ -98,6 +98,24 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Item 1 Item 2 Item 3",
 		},
 		{
+			name:      "hard line break with trailing spaces",
+			content:   "first line  \nsecond line",
+			maxLength: 100,
+			expected:  "first line second line",
+		},
+		{
+			name:      "hard line break with backslash",
+			content:   "first line\\\nsecond line",
+			maxLength: 100,
+			expected:  "first line second line",
+		},
+		{
+			name:      "truncate multi-byte text across paragraphs",
+			content:   strings.Repeat("日", 50) + "\n\n" + strings.Repeat("本", 20),
+			maxLength: 64,
+			expected:  strings.Repeat("日", 50) + " ...",
+		},
+		{
 			name:      "inline code preserved",
 			content:   "`console.log('hello')`",
 			maxLength: 100,

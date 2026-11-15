@@ -217,8 +217,8 @@ function FormSection({ title, description, children }: { title: string; descript
   return (
     <section className="space-y-4 rounded-mu-lg border bg-mu-well/20 p-4">
       <div className="space-y-1">
-        <h3 className="mu-label text-mu-ink">{title}</h3>
-        {description ? <p className="mu-caption text-mu-ink-muted">{description}</p> : null}
+        <h3 className="mu-label text-mu-text">{title}</h3>
+        {description ? <p className="mu-caption text-mu-text-secondary">{description}</p> : null}
       </div>
       <div className="space-y-4">{children}</div>
     </section>
@@ -501,9 +501,9 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
             <>
               <FormSection title={t("setting.sso.oauth-configuration")} description={t("setting.sso.oauth-configuration-description")}>
                 <div className="rounded-mu-md border bg-mu-canvas px-3 py-3">
-                  <p className="mu-label-sm uppercase tracking-wide text-mu-ink-muted">{t("setting.sso.redirect-url")}</p>
-                  <p className="mt-2 break-all font-mono mu-caption text-mu-ink">{absolutifyLink("/auth/callback")}</p>
-                  <p className="mt-2 mu-caption text-mu-ink-muted">{t("setting.sso.redirect-url-description")}</p>
+                  <p className="mu-label-sm uppercase tracking-wide text-mu-text-secondary">{t("setting.sso.redirect-url")}</p>
+                  <p className="mt-2 break-all font-mono mu-caption text-mu-text">{absolutifyLink("/auth/callback")}</p>
+                  <p className="mt-2 mu-caption text-mu-text-secondary">{t("setting.sso.redirect-url-description")}</p>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">

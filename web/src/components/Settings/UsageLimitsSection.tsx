@@ -121,7 +121,7 @@ const UsageLimitsSection = () => {
   const renderLimit = (metric: UsageMetric) => (_: unknown, row: LimitRow) => {
     const value = row.entry[metric];
     return (
-      <span className={isLimited(value) ? "text-mu-ink" : "text-mu-ink-muted/70"}>
+      <span className={isLimited(value) ? "text-mu-text" : "text-mu-text-secondary/70"}>
         {isLimited(value) ? formatLimitValue(metric, value) : t("setting.usage-limits.unlimited")}
       </span>
     );
@@ -145,14 +145,14 @@ const UsageLimitsSection = () => {
         </>
       }
     >
-      <p className="mu-body text-mu-ink-muted">{t("setting.usage-limits.order-note")}</p>
+      <p className="mu-body text-mu-text-secondary">{t("setting.usage-limits.order-note")}</p>
       <SettingTable
         columns={[
           {
             key: "position",
             header: t("setting.usage-limits.position"),
-            className: "w-px font-mono text-mu-ink-muted",
-            render: (_, row: LimitRow) => <span className="font-mono text-mu-ink-muted">{row.index + 1}</span>,
+            className: "w-px font-mono text-mu-text-secondary",
+            render: (_, row: LimitRow) => <span className="font-mono text-mu-text-secondary">{row.index + 1}</span>,
           },
           {
             key: "users",
@@ -161,11 +161,11 @@ const UsageLimitsSection = () => {
               row.entry.allUsers ? (
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mu-well">
-                    <UsersIcon className="mu-icon text-mu-ink-muted" />
+                    <UsersIcon className="mu-icon text-mu-text-secondary" />
                   </div>
                   <div className="flex min-w-0 flex-col">
-                    <span className="mu-label text-mu-ink">{t("setting.usage-limits.all-users")}</span>
-                    <span className="mu-caption text-mu-ink-muted">{t("setting.usage-limits.all-users-description")}</span>
+                    <span className="mu-label text-mu-text">{t("setting.usage-limits.all-users")}</span>
+                    <span className="mu-caption text-mu-text-secondary">{t("setting.usage-limits.all-users-description")}</span>
                   </div>
                 </div>
               ) : (

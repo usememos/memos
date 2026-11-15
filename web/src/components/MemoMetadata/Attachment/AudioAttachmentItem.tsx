@@ -55,7 +55,7 @@ const AudioProgressBar = ({ filename, currentTime, duration, onSeek }: AudioProg
           [&::-webkit-slider-runnable-track]:bg-transparent
           [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none
           [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-mu-line
- [&::-webkit-slider-thumb]:bg-mu-canvas [&::-webkit-slider-thumb]:shadow-mu-key
+          [&::-webkit-slider-thumb]:bg-mu-canvas
           [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent
           [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border
           [&::-moz-range-thumb]:border-mu-line [&::-moz-range-thumb]:bg-mu-canvas"
@@ -183,7 +183,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size }: AudioAttac
 
           <div className="flex flex-col gap-1">
             <AudioProgressBar filename={filename} currentTime={currentTime} duration={duration} onSeek={handleSeek} />
-            <div className="flex items-center justify-between mu-caption tabular-nums text-mu-ink-muted/60">
+            <div className="flex items-center justify-between mu-caption tabular-nums text-mu-text-secondary/60">
               <span>{formatAudioTime(currentTime)}</span>
               <span>{getDurationLabel(duration)}</span>
             </div>

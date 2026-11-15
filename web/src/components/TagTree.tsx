@@ -42,7 +42,7 @@ interface TagTreeExpansion {
 const EMPTY_EXPANSION: TagTreeExpansion = { expanded: [] };
 
 // A structural row toggles like any other, so it hovers like one too — just quieter at rest.
-const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-mu-ink-muted/65");
+const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-mu-text-secondary/65");
 
 /** One announcement for a tag row in either layout, so tree and flat mode never drift apart. */
 export const tagRowAriaLabel = (t: ReturnType<typeof useTranslate>, tag: string, amount: number) =>
@@ -97,7 +97,7 @@ const Chevron = ({ open, className }: { open: boolean; className?: string }) => 
     aria-hidden="true"
     className={cn(
       "mu-icon-sm",
-      "me-auto shrink-0 text-mu-ink-muted/70 transition-transform",
+      "me-auto shrink-0 text-mu-text-secondary/70 transition-transform",
       open ? "rotate-90" : "rtl:rotate-180",
       className,
     )}
@@ -135,7 +135,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
         className={cn(
           SIDEBAR_ROW_BOX_CLASSES,
           isTag ? sidebarRowStateClasses(state) : STRUCTURAL_ROW_CLASSES,
-          isAncestorOfActiveTag && !isActive && "text-mu-ink/75",
+          isAncestorOfActiveTag && !isActive && "text-mu-text/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.
         // Same 12px step the memo outline indents by.

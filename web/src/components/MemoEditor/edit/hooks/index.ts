@@ -5,6 +5,7 @@ export { useAudioRecorder } from "./useAudioRecorder";
 export { useAudioWaveform } from "./useAudioWaveform";
 export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
+export { type DrawingSession, useDrawing } from "./useDrawing";
 export { pairAppleLivePhotoFiles, toLocalFiles, useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";
 export { splitInlineLocalFiles, useInlineImageUpload } from "./useInlineImageUpload";

@@ -41,11 +41,11 @@ interface MediaMetadataDetailsProps {
 
 const DetailRow = ({ icon: Icon, label, value, secondary, action }: DetailRowProps) => (
   <div className="grid grid-cols-[1rem_minmax(0,1fr)_auto] gap-x-2.5 py-2.5">
-    <Icon className="mu-icon-sm mt-0.5 text-mu-ink-muted" aria-hidden="true" />
+    <Icon className="mu-icon-sm mt-0.5 text-mu-text-secondary" aria-hidden="true" />
     <div className="min-w-0">
-      <div className="mu-label-sm text-mu-ink-muted">{label}</div>
-      <div className="mt-0.5 break-words mu-caption text-mu-ink tabular-nums">{value}</div>
-      {secondary && <div className="mt-0.5 mu-caption text-mu-ink-muted">{secondary}</div>}
+      <div className="mu-label-sm text-mu-text-secondary">{label}</div>
+      <div className="mt-0.5 break-words mu-caption text-mu-text tabular-nums">{value}</div>
+      {secondary && <div className="mt-0.5 mu-caption text-mu-text-secondary">{secondary}</div>}
     </div>
     {action && <div className="self-center">{action}</div>}
   </div>
@@ -53,7 +53,7 @@ const DetailRow = ({ icon: Icon, label, value, secondary, action }: DetailRowPro
 
 const DetailSection = ({ title, children }: { title: string; children: ReactNode }) => (
   <section>
-    <h3 className="mb-0.5 mu-label-sm text-mu-ink-muted">{title}</h3>
+    <h3 className="mb-0.5 mu-label-sm text-mu-text-secondary">{title}</h3>
     <div className="divide-y divide-mu-line">{children}</div>
   </section>
 );
@@ -110,15 +110,15 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
       aria-label={t("attachment-details.title")}
       data-theme="dark"
       className={cn(
-        "absolute inset-x-0 bottom-0 z-40 flex max-h-[72vh] flex-col overflow-hidden rounded-t-mu-2xl border-t border-mu-line bg-mu-surface/96 text-mu-ink shadow-mu-pop backdrop-blur-xl lg:inset-y-0 lg:left-auto lg:w-[22rem] lg:max-h-none lg:rounded-none lg:border-l lg:border-t-0 lg:bg-mu-surface/85",
+        "absolute inset-x-0 bottom-0 z-40 flex max-h-[72vh] flex-col overflow-hidden rounded-t-mu-2xl border-t border-mu-line bg-mu-surface/96 text-mu-text backdrop-blur-xl lg:inset-y-0 lg:left-auto lg:w-[22rem] lg:max-h-none lg:rounded-none lg:border-l lg:border-t-0 lg:bg-mu-surface/85",
         className,
       )}
     >
-      <div className="mx-auto mt-2 h-1 w-8 rounded-full bg-mu-ink-muted/40 lg:hidden" aria-hidden="true" />
+      <div className="mx-auto mt-2 h-1 w-8 rounded-full bg-mu-text-secondary/40 lg:hidden" aria-hidden="true" />
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-mu-line px-4 pb-3 pt-3 lg:pt-20">
         <div>
-          <h2 className="mu-label text-mu-ink">{t("attachment-details.title")}</h2>
-          <p className="mt-0.5 max-w-[16rem] truncate mu-caption text-mu-ink-muted">{item.filename}</p>
+          <h2 className="mu-label text-mu-text">{t("attachment-details.title")}</h2>
+          <p className="mt-0.5 max-w-[16rem] truncate mu-caption text-mu-text-secondary">{item.filename}</p>
         </div>
         <Button
           variant="ghost"
@@ -205,12 +205,14 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
           )}
 
           {!details.hasSavedMetadata && (
-            <p className="rounded-mu-xl border border-mu-line px-3 py-2.5 mu-caption text-mu-ink-muted">{t("attachment-details.empty")}</p>
+            <p className="rounded-mu-xl border border-mu-line px-3 py-2.5 mu-caption text-mu-text-secondary">
+              {t("attachment-details.empty")}
+            </p>
           )}
 
           {details.sourceExifOrientation !== undefined && (
             <details className="group border-t border-mu-line pt-3">
-              <summary className="cursor-pointer select-none mu-label-sm text-mu-ink-muted hover:text-mu-ink">
+              <summary className="cursor-pointer select-none mu-label-sm text-mu-text-secondary hover:text-mu-text">
                 {t("attachment-details.sections.technical")}
               </summary>
               <div className="mt-2">

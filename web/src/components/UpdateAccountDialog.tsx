@@ -193,7 +193,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <Field.Root invalid={!!fieldErrors.errors.username}>
             <Field.Label>
               {t("common.username")}
-              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.username-note")})</span>
+              <span className="mu-body text-mu-text-secondary ml-1">({t("setting.account.username-note")})</span>
             </Field.Label>
             <Input
               id="username"
@@ -206,7 +206,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <Field.Root>
             <Field.Label>
               {t("common.nickname")}
-              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.nickname-note")})</span>
+              <span className="mu-body text-mu-text-secondary ml-1">({t("setting.account.nickname-note")})</span>
             </Field.Label>
             <Input
               id="displayName"
@@ -218,7 +218,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <Field.Root invalid={!!emailError}>
             <Field.Label>
               {t("common.email")}
-              <span className="mu-body text-mu-ink-muted ml-1">({t("setting.account.email-note")})</span>
+              <span className="mu-body text-mu-text-secondary ml-1">({t("setting.account.email-note")})</span>
             </Field.Label>
             <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} />
             {emailError && <Field.Error match>{emailError}</Field.Error>}

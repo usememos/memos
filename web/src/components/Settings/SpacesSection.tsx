@@ -1,6 +1,6 @@
 import { Badge, Button, Field, Input, List, Select, Skeleton, Tabs, Textarea } from "@usememos/ui";
 import { ArrowLeftIcon, ChevronRightIcon, Clock3Icon, PlusIcon, ShieldCheckIcon, UserPlusIcon } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
@@ -61,7 +61,7 @@ const SkeletonList = ({ label }: { label: string }) => (
 
 /** Shown in place of a list that has nothing to show: empty, or failed to load. */
 const ListMessage = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <div className={cn("rounded-mu-lg border border-dashed border-mu-line px-3 text-center mu-body text-mu-ink-muted", className)}>
+  <div className={cn("rounded-mu-lg border border-dashed border-mu-line px-3 text-center mu-body text-mu-text-secondary", className)}>
     {children}
   </div>
 );
@@ -77,9 +77,9 @@ const MemberIdentity = ({ member, user, isCurrentUser }: { member: SpaceMember; 
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
           <p className="truncate mu-label">{displayName}</p>
-          {isCurrentUser ? <span className="mu-caption text-mu-ink-muted">{t("setting.spaces.you")}</span> : null}
+          {isCurrentUser ? <span className="mu-caption text-mu-text-secondary">{t("setting.spaces.you")}</span> : null}
         </div>
-        <p className="mt-0.5 truncate mu-caption text-mu-ink-muted">@{username}</p>
+        <p className="mt-0.5 truncate mu-caption text-mu-text-secondary">@{username}</p>
       </div>
     </div>
   );
@@ -94,7 +94,7 @@ const InvitationIdentity = ({ invitation, user }: { invitation: SpaceInvitation;
       <UserAvatar className="size-10" avatarUrl={user?.avatarUrl} name={displayName} />
       <div className="min-w-0">
         <p className="truncate mu-label">{displayName}</p>
-        <p className="mt-0.5 truncate mu-caption text-mu-ink-muted">@{username}</p>
+        <p className="mt-0.5 truncate mu-caption text-mu-text-secondary">@{username}</p>
       </div>
     </div>
   );
@@ -182,7 +182,7 @@ const SpacesSection = () => {
                 <h4 id="space-invitations-heading" className="mu-label">
                   {t("setting.spaces.invitations")}
                 </h4>
-                <span className="mu-caption text-mu-ink-muted">
+                <span className="mu-caption text-mu-text-secondary">
                   {t("setting.spaces.pending-count", { count: receivedInvitations.length })}
                 </span>
               </div>
@@ -201,14 +201,14 @@ const SpacesSection = () => {
                             <SpaceRoleBadge role={invitation.role} />
                           </div>
                           {uid ? (
-                            <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
+                            <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-text-secondary">
                               <span className="shrink-0">{t("space.custom-id-label")}:</span>
                               <span title={uid} className="min-w-0 break-all font-mono">
                                 {uid}
                               </span>
                             </p>
                           ) : null}
-                          <p className="mt-1 truncate mu-caption text-mu-ink-muted">
+                          <p className="mt-1 truncate mu-caption text-mu-text-secondary">
                             {invitation.space?.description || t("setting.spaces.invited-to-join")}
                           </p>
                         </div>
@@ -246,7 +246,7 @@ const SpacesSection = () => {
                 {t("setting.spaces.your-spaces")}
               </h4>
               {spaces.length > 0 ? (
-                <span className="mu-caption text-mu-ink-muted">
+                <span className="mu-caption text-mu-text-secondary">
                   {spaces.length === 1
                     ? t("setting.spaces.space-count", { count: spaces.length })
                     : t("setting.spaces.spaces-count", { count: spaces.length })}
@@ -260,7 +260,7 @@ const SpacesSection = () => {
             ) : spaces.length === 0 ? (
               <div className="rounded-mu-lg border border-dashed border-mu-line px-4 py-9 text-center">
                 <p className="mu-label">{t("setting.spaces.no-spaces")}</p>
-                <p className="mx-auto mt-1 max-w-md mu-caption text-mu-ink-muted">{t("setting.spaces.no-spaces-description")}</p>
+                <p className="mx-auto mt-1 max-w-md mu-caption text-mu-text-secondary">{t("setting.spaces.no-spaces-description")}</p>
                 <Button variant="neutral" className="mt-4" onClick={() => setCreateOpen(true)} icon={<PlusIcon />}>
                   {t("setting.spaces.create-space")}
                 </Button>
@@ -285,22 +285,22 @@ const SpacesSection = () => {
                             <p className="truncate mu-label">{space.title}</p>
                             <SpaceRoleBadge role={space.currentUserRole} />
                           </div>
-                          <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
+                          <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-text-secondary">
                             <span className="shrink-0">{t("space.custom-id-label")}:</span>
                             <span title={uid} className="min-w-0 break-all font-mono">
                               {uid}
                             </span>
                           </p>
-                          <p className="mt-1 truncate mu-caption text-mu-ink-muted">
+                          <p className="mt-1 truncate mu-caption text-mu-text-secondary">
                             {space.description || t("setting.spaces.no-description")}
                           </p>
                         </div>
-                        <span className="hidden shrink-0 mu-caption text-mu-ink-muted sm:inline">
+                        <span className="hidden shrink-0 mu-caption text-mu-text-secondary sm:inline">
                           {space.memberCount === 1
                             ? t("setting.spaces.member-count", { count: space.memberCount })
                             : t("setting.spaces.members-count", { count: space.memberCount })}
                         </span>
-                        <ChevronRightIcon className="mu-icon shrink-0 text-mu-ink-muted/65 transition-transform group-hover:translate-x-0.5" />
+                        <ChevronRightIcon className="mu-icon shrink-0 text-mu-text-secondary/65 transition-transform group-hover:translate-x-0.5" />
                       </List.ItemButton>
                     </List.Item>
                   );
@@ -352,6 +352,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
   const [description, setDescription] = useState(space.description);
   const [icon, setIcon] = useState(space.icon);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const inviteButtonRef = useRef<HTMLElement>(null);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<SpaceMember>();
@@ -453,7 +454,11 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
 
   return (
     <section className="min-w-0">
-      <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 mu-body text-mu-ink-muted hover:text-mu-ink">
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-4 inline-flex items-center gap-1.5 mu-body text-mu-text-secondary hover:text-mu-text"
+      >
         <ArrowLeftIcon className="mu-icon" />
         {t("setting.spaces.label")}
       </button>
@@ -465,13 +470,13 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
             <h1 className="truncate mu-heading">{space.title}</h1>
             <SpaceRoleBadge role={currentRole} />
           </div>
-          <p className="mt-1 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
+          <p className="mt-1 flex min-w-0 items-baseline gap-1 mu-caption text-mu-text-secondary">
             <span className="shrink-0">{t("space.custom-id-label")}:</span>
             <span title={spaceUid} className="min-w-0 break-all font-mono">
               {spaceUid}
             </span>
           </p>
-          <p className="mt-1 truncate mu-body text-mu-ink-muted">{space.description || t("setting.spaces.no-description")}</p>
+          <p className="mt-1 truncate mu-body text-mu-text-secondary">{space.description || t("setting.spaces.no-description")}</p>
         </div>
       </header>
 
@@ -480,7 +485,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
           <Tabs.Tab value="general">{t("setting.spaces.general")}</Tabs.Tab>
           <Tabs.Tab value="members">
             {t("setting.spaces.members")}
-            <span className="text-mu-ink-muted">{members.length || space.memberCount}</span>
+            <span className="text-mu-text-secondary">{members.length || space.memberCount}</span>
           </Tabs.Tab>
         </Tabs.List>
       </Tabs.Root>
@@ -492,12 +497,12 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
               <h4 id="space-details-heading" className="mu-label">
                 {t("setting.spaces.space-details")}
               </h4>
-              <p className="mt-1 mu-caption text-mu-ink-muted">{t("setting.spaces.space-details-description")}</p>
+              <p className="mt-1 mu-caption text-mu-text-secondary">{t("setting.spaces.space-details-description")}</p>
             </div>
             <List.Root aria-labelledby="space-details-heading">
               <List.Item className="grid gap-2 sm:grid-cols-[170px_1fr] sm:items-center">
                 <span className="mu-label">{t("space.custom-id-label")}</span>
-                <code className="min-w-0 break-all rounded-mu-md bg-mu-well/35 px-3 py-2 font-mono mu-caption text-mu-ink/85">
+                <code className="min-w-0 break-all rounded-mu-md bg-mu-well/35 px-3 py-2 font-mono mu-caption text-mu-text/85">
                   {spaceUid}
                 </code>
               </List.Item>
@@ -550,10 +555,10 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
             <List.Root aria-labelledby="space-access-heading">
               <List.Item className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-2">
-                  <ShieldCheckIcon className="mu-icon mt-0.5 shrink-0 text-mu-ink-muted" />
+                  <ShieldCheckIcon className="mu-icon mt-0.5 shrink-0 text-mu-text-secondary" />
                   <div>
                     <p className="mu-label">{t("setting.spaces.role-in-space")}</p>
-                    <p className="mt-1 mu-caption text-mu-ink-muted">
+                    <p className="mt-1 mu-caption text-mu-text-secondary">
                       {isAdmin ? t("setting.spaces.admin-role-description") : t("setting.spaces.user-role-description")}
                     </p>
                   </div>
@@ -568,7 +573,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <h4 className="mu-label">{t("setting.spaces.leave-space")}</h4>
-                <p className="mu-caption text-mu-ink-muted">
+                <p className="mu-caption text-mu-text-secondary">
                   {isLastAdmin ? t("setting.spaces.last-admin-leave-description") : t("setting.spaces.leave-description")}
                 </p>
               </div>
@@ -585,7 +590,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <h4 className="mu-label">{t("setting.spaces.delete-space")}</h4>
-                  <p className="mu-caption text-mu-ink-muted">{t("setting.spaces.delete-description")}</p>
+                  <p className="mu-caption text-mu-text-secondary">{t("setting.spaces.delete-description")}</p>
                 </div>
                 <Button variant="neutral" className="shrink-0 self-start sm:self-auto" onClick={() => setDeleteOpen(true)}>
                   {t("setting.spaces.delete-space")}
@@ -602,10 +607,10 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
                 <h4 id="space-members-heading" className="mu-label">
                   {t("setting.spaces.members")}
                 </h4>
-                <p className="mt-1 mu-caption text-mu-ink-muted">{t("setting.spaces.members-description")}</p>
+                <p className="mt-1 mu-caption text-mu-text-secondary">{t("setting.spaces.members-description")}</p>
               </div>
               {isAdmin ? (
-                <Button variant="neutral" onClick={() => setInviteOpen(true)} icon={<UserPlusIcon />}>
+                <Button ref={inviteButtonRef} variant="neutral" onClick={() => setInviteOpen(true)} icon={<UserPlusIcon />}>
                   {t("setting.spaces.invite-member")}
                 </Button>
               ) : null}
@@ -668,7 +673,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
                 <h4 id="space-pending-invitations-heading" className="mu-label">
                   {t("setting.spaces.pending-invitations")}
                 </h4>
-                <span className="mu-caption text-mu-ink-muted">{invitations.length}</span>
+                <span className="mu-caption text-mu-text-secondary">{invitations.length}</span>
               </div>
               {invitationsQuery.isLoading ? (
                 <SkeletonList label={t("setting.spaces.loading-invitations")} />
@@ -700,6 +705,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
       <InviteSpaceMemberDialog
         open={inviteOpen}
         onOpenChange={setInviteOpen}
+        finalFocus={inviteButtonRef}
         space={space}
         viewerName={viewerName}
         memberUserNames={memberUserNames}

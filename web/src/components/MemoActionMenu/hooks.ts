@@ -29,7 +29,7 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memo.name);
   const { mutateAsync: deleteMemo } = useDeleteMemo();
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memo.name);
 

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "تعذّر إكمال تسجيل الدخول",
     "create-your-account": "أنشئ حسابك",
+    "hide-password": "إخفاء كلمة المرور",
+    "incorrect-credentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
     "new-password": "كلمة المرور الجديدة",
     "repeat-new-password": "أعد كلمة المرور الجديدة",
+    "show-password": "إظهار كلمة المرور",
     "sign-in-tip": "هل لديك حساب بالفعل؟",
     "sign-up-tip": "ليس لديك حساب بعد؟",
     "admin-sign-in": "تسجيل دخول المسؤول",
-    "admin-sign-in-tip": "يبقى تسجيل الدخول بكلمة المرور متاحًا للمسؤولين.",
     "back-to-sign-in": "العودة إلى صفحة تسجيل الدخول",
     "continue-with": "المتابعة مع {{provider}}",
     "create-admin-account": "إنشاء حساب مدير",
-    "explore-public-memos": "استعراض المذكرات العامة على هذه النسخة",
-    "first-run": "التشغيل الأول",
     "setup-description": "إنشاء حساب المدير لهذه النسخة.",
-    "setup-note": "يمتلك هذا الحساب إعدادات النسخة، والأعضاء، وموفري الهوية.",
     "setup-title": "إعداد النسخة",
     "signin-unavailable-description": "تم تعطيل تسجيل الدخول بكلمة المرور، ولم يتم تكوين أي موفر هوية. اطلب من مدير النظام تفعيل طريقة تسجيل الدخول.",
     "signin-unavailable-title": "تسجيل الدخول غير متاح",
-    "signup-unavailable-description": "تم تعطيل حسابات كلمة المرور، ولم يتم تكوين أي موفر هوية. اطلب من مدير النظام الوصول.",
-    "signup-unavailable-title": "التسجيل غير متاح",
-    "signups-closed-description": "تم تعطيل الحسابات الجديدة على هذه النسخة. تواصل مع مدير النظام إذا كنت بحاجة إلى الوصول.",
-    "signups-closed-title": "تم إغلاق التسجيل",
-    "sso-signup-tip": "سجّل الدخول باستخدام أحد مزودي الخدمة أدناه لإنشاء حسابك.",
-    "welcome-back": "أهلاً بعودتك."
+    "signups-closed-description": "تم تعطيل الحسابات الجديدة على هذه النسخة. تواصل مع مدير النظام إذا كنت بحاجة إلى الوصول."
   },
   "common": {
     "about": "حول",
@@ -102,7 +97,6 @@
     "profile": "الملف الشخصي",
     "referenced-by": "مشار إليه بواسطة",
     "referencing": "يشير إلى",
-    "relations": "العلاقات",
     "resources": "المصادر",
     "restore": "استعادة",
     "role": "الدور",
@@ -174,12 +168,53 @@
       "link-memo": "مذكرة الارتباط",
       "image-upload-stopped": "توقف تحميل الصورة {{completed}}/{{total}}",
       "insert-image": "إدراج الصورة",
+      "drawing": "رسم",
       "keep-as-attachments": "الاحتفاظ بها كمرفقات",
       "retry-image-upload": "إعادة المحاولة",
       "uploading-inline-image": "جارٍ التحميل إلى المحتوى",
       "uploading-images": "جارٍ تحميل الصور {{completed}}/{{total}}",
       "add-attachment": "إضافة مرفق",
       "image-upload-failed": "تعذر رفع بعض الصور. أعد المحاولة أو احتفظ بالملفات المرفوعة كمرفقات."
+    },
+    "drawing": {
+      "new-title": "رسم جديد",
+      "edit": "تعديل الرسم",
+      "tools": "الأدوات",
+      "tool-select": "تحديد",
+      "tool-pen": "قلم",
+      "tool-eraser": "ممحاة",
+      "tool-rectangle": "مستطيل",
+      "tool-ellipse": "قطع ناقص",
+      "tool-arrow": "سهم",
+      "tool-text": "نص",
+      "style": "اللون والسُمك",
+      "color": "اللون",
+      "width": "السُمك",
+      "width-thin": "رفيع",
+      "width-medium": "متوسط",
+      "width-thick": "سميك",
+      "color-ink": "حبر",
+      "color-gray": "رمادي",
+      "color-red": "أحمر",
+      "color-orange": "برتقالي",
+      "color-green": "أخضر",
+      "color-teal": "أزرق مخضر",
+      "color-blue": "أزرق",
+      "color-violet": "بنفسجي",
+      "undo": "تراجع",
+      "redo": "إعادة",
+      "zoom-to-fit": "ملاءمة للنافذة",
+      "done": "تم",
+      "discard-title": "تجاهل هذا الرسم؟",
+      "discard-description": "لم تتم إضافته إلى المذكرة بعد.",
+      "discard-edit-title": "تجاهل التغييرات؟",
+      "discard-edit-description": "سيبقى الرسم كما كان قبل فتحه.",
+      "keep-drawing": "متابعة الرسم",
+      "discard": "تجاهل",
+      "open-failed": "تعذر فتح الرسم. حاول مرة أخرى.",
+      "export-failed": "تعذر حفظ الرسم. حاول مرة أخرى.",
+      "image-failed": "تعذرت إضافة الصورة إلى الرسم.",
+      "saved-without-drawing": "تم حفظ المذكرة، لكن لم يتم حفظ الرسم. احفظ مرة أخرى لإعادة المحاولة."
     },
     "audio-recorder": {
       "attachment-label": "تسجيل صوتي",
@@ -275,9 +310,11 @@
       "resize-image": "تغيير حجم الصورة"
     },
     "attachments": {
-      "move-up": "نقل المرفق لأعلى",
-      "move-down": "نقل المرفق لأسفل",
-      "remove": "إزالة المرفق"
+      "edited": "معدَّل",
+      "new": "جديد",
+      "remove": "إزالة المرفق",
+      "reorder": "إعادة ترتيب {{name}}",
+      "reorder-hint": "اسحب، أو استخدم مفاتيح الأسهم"
     },
     "remove-relation": "إزالة العلاقة",
     "remove-location": "إزالة الموقع",
@@ -403,7 +440,9 @@
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },
-    "view-options": "خيارات العرض"
+    "view-options": "خيارات العرض",
+    "add-reaction": "إضافة رد فعل",
+    "remove-reaction": "إزالة التفاعل"
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",
@@ -453,9 +492,7 @@
       "list-title": "قائمة الأعضاء",
       "no-members-found": "لم يتم العثور على أعضاء",
       "archived": "المؤرشفة",
-      "member-column": "عضو",
       "active": "نشط",
-      "summary-column": "ملخص",
       "export-memos": "تصدير الملاحظات",
       "username-password-required": "لا يمكن ترك اسم المستخدم وكلمة المرور فارغين",
       "create-success": "تم إنشاء المستخدم",
@@ -654,7 +691,6 @@
       "basic-settings": "الإعدادات الأساسية",
       "basic-settings-description": "حدد هوية الموفر، واسم العرض، وقواعد المعرف الاختيارية قبل إدخال تفاصيل OAuth.",
       "client-secret-optional-description": "اترك هذا الحقل فارغًا للحفاظ على سر العميل الحالي دون تغيير.",
-      "configuration": "التكوين",
       "configuration-summary-description": "اعرض المعلومات الأساسية التي تساعد في تحديد الموفر ومراجعته دون عرض التكوين الكامل.",
       "create-sso-description": "أنشئ موفر هوية جديدًا لتسجيل الدخول الموحد المُدار من قِبل المسؤول.",
       "endpoints": "نقاط النهاية",
@@ -676,7 +712,6 @@
       "not-linked-description": "لم يتم ربط أي هوية خارجية حتى الآن. يُمكنك ربط هذا المزوّد لتسجيل الدخول به لاحقًا.",
       "oauth-configuration": "إعدادات OAuth",
       "oauth-configuration-description": "أدخل بيانات اعتماد العميل OAuth ونقاط نهاية الموفر المستخدمة أثناء تسجيل الدخول.",
-      "provider": "الموفر",
       "provider-id": "معرّف الموفر",
       "provider-id-description": "الأحرف الصغيرة والأرقام والواصلات فقط. تصبح هذه القيمة جزءًا من اسم مورد الموفر.",
       "redirect-url-description": "سجّل عنوان URL لإعادة التوجيه هذا مع موفر الهوية الخاص بك حتى يكتمل تدفق رمز التفويض.",
@@ -865,16 +900,6 @@
       "disallow-user-registration-description": "منع المستخدمين الجدد من إنشاء حسابات من صفحة التسجيل.",
       "week-start-day-description": "التحكم في اليوم الأول المعروض في العروض التي تشبه التقويم."
     },
-    "memo": {
-      "reactions": "تفاعلات",
-      "label": "مذكرة",
-      "reactions-required": "يجب ألا تكون قائمة التفاعلات فارغة",
-      "add-reaction": "إضافة رد فعل",
-      "configured-reactions": "ردود الفعل المُهيأة",
-      "reaction-placeholder": "مثال: 👍",
-      "reactions-description": "حدد خيارات التفاعل التي يمكن للمستخدمين تطبيقها على المذكرات.",
-      "remove-reaction": "إزالة التفاعل"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "اسم سهل التذكر",
@@ -900,7 +925,6 @@
       },
       "no-webhooks-found": "لم يتم العثور على Webhooks.",
       "title": "Webhooks",
-      "url": "الرابط",
       "label": "Webhooks"
     },
     "tags": {

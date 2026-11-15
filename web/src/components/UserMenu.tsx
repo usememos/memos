@@ -40,22 +40,23 @@ interface PreferenceSubmenuProps {
 
 /** A row that opens its choices beside the panel, like a submenu, and applies one on select. */
 const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, className }: PreferenceSubmenuProps) => (
-  <Menu.Root modal={false} size="sm">
+  <Menu.Root modal={false}>
     <Menu.Trigger openOnHover className={SCOPE_PANEL_ROW_CLASSES}>
       <ScopePanelRowIcon icon={Icon} />
       <span className="shrink-0">{label}</span>
-      <span className="min-w-0 flex-1 truncate text-end text-mu-ink-muted">
+      <span className="min-w-0 flex-1 truncate text-end text-mu-text-secondary">
         {options.find((option) => option.value === value)?.label ?? value}
       </span>
       <ChevronRightIcon aria-hidden="true" className={cn(SCOPE_PANEL_ICON_CLASSES, "rtl:rotate-180")} />
     </Menu.Trigger>
-    {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}
+    {/* Like a nested submenu: its first row lines up with this one, and its rows match the panel's (`mu-compact`).
+        When neither side has room (narrow screens), it drops below the row instead of overflowing. */}
     <Menu.Popup
       side="inline-end"
       align="start"
       collisionAvoidance={{ fallbackAxisSide: "end" }}
       positionMethod="fixed"
-      className={className}
+      className={cn("mu-compact", className)}
     >
       <Menu.RadioGroup value={value} onValueChange={onChange}>
         {options.map((option) => (
@@ -190,7 +191,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
                     aria-label={t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}
                     className={cn(
                       "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-mu-surface",
-                      sseStatus === "connecting" ? "animate-pulse bg-mu-ink-muted" : "bg-mu-danger-key",
+                      sseStatus === "connecting" ? "animate-pulse bg-mu-text-secondary" : "bg-mu-danger-key",
                     )}
                   />
                 )}
@@ -202,7 +203,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
                 viewTransition
                 aria-label={inboxLabel}
                 aria-current={inboxActive ? "page" : undefined}
-                className={cn(badgeClasses({ tone: "neutral" }), "mu-focus")}
+                className={cn(badgeClasses({ tone: "neutral" }), "border border-transparent mu-focus focus-visible:border-mu-focus")}
                 onClick={closePanel}
               >
                 <BellIcon aria-hidden="true" className="mu-icon-xs" />
@@ -224,7 +225,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
         {/* Guests sign in from the sidebar footer, which is always in view. */}
         {currentUser && (
           // Leaving is secondary to the pages above it, so it reads quieter.
-          <button type="button" className={cn(SCOPE_PANEL_ROW_CLASSES, "text-mu-ink-muted")} onClick={() => void handleSignOut()}>
+          <button type="button" className={cn(SCOPE_PANEL_ROW_CLASSES, "text-mu-text-secondary")} onClick={() => void handleSignOut()}>
             <ScopePanelRowIcon icon={LogOutIcon} />
             <span className="min-w-0 flex-1 truncate">{t("common.sign-out")}</span>
           </button>

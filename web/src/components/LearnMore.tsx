@@ -15,7 +15,7 @@ const LearnMore: React.FC<Props> = (props: Props) => {
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
-        <Tooltip.Trigger render={<a className={`text-mu-ink-muted hover:text-mu-accent ${className}`} href={url} target="_blank" />}>
+        <Tooltip.Trigger render={<a className={`text-mu-text-secondary hover:text-mu-accent ${className}`} href={url} target="_blank" />}>
           <ExternalLinkIcon className="mu-icon" />
         </Tooltip.Trigger>
         <Tooltip.Popup>

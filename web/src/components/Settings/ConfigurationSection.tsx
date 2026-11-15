@@ -33,12 +33,12 @@ const ConfigurationSection = () => {
           {
             key: "resource",
             header: t("setting.configuration.resource"),
-            render: (_, row: ManagedResourceRow) => <span className="font-mono mu-caption text-mu-ink">{row.resource.resource}</span>,
+            render: (_, row: ManagedResourceRow) => <span className="font-mono mu-caption text-mu-text">{row.resource.resource}</span>,
           },
           {
             key: "source",
             header: t("setting.configuration.source"),
-            render: (_, row: ManagedResourceRow) => <span className="mu-body text-mu-ink-muted">{row.resource.source}</span>,
+            render: (_, row: ManagedResourceRow) => <span className="mu-body text-mu-text-secondary">{row.resource.source}</span>,
           },
           {
             key: "fields",

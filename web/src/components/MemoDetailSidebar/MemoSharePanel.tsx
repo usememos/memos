@@ -54,7 +54,7 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
   return (
     <div className="flex flex-col gap-1 rounded-mu-md border border-mu-line p-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="truncate font-mono mu-caption text-mu-ink-muted">{url}</span>
+        <span className="truncate font-mono mu-caption text-mu-text-secondary">{url}</span>
         <div className="flex shrink-0 items-center gap-1">
           <Tooltip.Root>
             <Tooltip.Trigger
@@ -87,7 +87,7 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
           </Tooltip.Root>
         </div>
       </div>
-      <p className="mu-caption text-mu-ink-muted">{formatExpiry(share, t)}</p>
+      <p className="mu-caption text-mu-text-secondary">{formatExpiry(share, t)}</p>
     </div>
   );
 }
@@ -133,13 +133,13 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
         <div className="flex flex-col gap-4 py-2">
           {/* Active links */}
           <div className="flex flex-col gap-2">
-            <p className="mu-label text-mu-ink-muted">{t("memo.share.active-links")}</p>
+            <p className="mu-label text-mu-text-secondary">{t("memo.share.active-links")}</p>
             {isLoading ? (
               <div className="flex flex-col gap-2" aria-busy="true" aria-label={t("editor.blocks.loading")}>
                 <Skeleton height={32} />
               </div>
             ) : shares.length === 0 ? (
-              <p className="mu-body text-mu-ink-muted">{t("memo.share.no-links")}</p>
+              <p className="mu-body text-mu-text-secondary">{t("memo.share.no-links")}</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {shares.map((share) => (

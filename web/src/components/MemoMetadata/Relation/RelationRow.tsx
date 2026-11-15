@@ -15,23 +15,26 @@ interface RelationRowProps {
    * of a row whose box is a wrapper carrying other controls (the editor's remove button).
    */
   variant?: "row" | "label";
-  /** Detail on the trailing rail, such as the relation's direction. */
+  /** Detail on the trailing rail, such as the memo's date. */
   trailing?: ReactNode;
+  /** Says what the glyph means, such as "Referenced by", for a pointer that rests on the row. */
+  title?: string;
 }
 
 /** One related memo as a metadata row: a glyph in the leading slot and the snippet. */
-const RelationRow = ({ memo, parentPage, icon = LinkIcon, variant = "row", trailing }: RelationRowProps) => {
+const RelationRow = ({ memo, parentPage, icon = LinkIcon, variant = "row", trailing, title }: RelationRowProps) => {
   const t = useTranslate();
   return (
     <Link
       className={variant === "row" ? METADATA_ROW_CLASSES : METADATA_ROW_LABEL_CLASSES}
       to={`/${memo.name}`}
+      title={title}
       state={parentPage ? createMemoNavigationState(parentPage) : undefined}
       viewTransition
     >
       <MetadataRowIconSlot icon={icon} />
       <span className={METADATA_ROW_TEXT_CLASSES}>
-        {memo.snippet || <span className="italic text-mu-ink-muted/60">{t("common.no-content")}</span>}
+        {memo.snippet || <span className="italic text-mu-text-secondary/60">{t("common.no-content")}</span>}
       </span>
       {trailing}
     </Link>

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DrawingSheet } from "@/components/DrawingSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -20,6 +21,7 @@ import {
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
+  useDrawing,
   useFocusMode,
   useInlineImageUpload,
   useMemoInit,
@@ -80,6 +82,11 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const { createBlobUrl } = useBlobUrls();
   const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
+  const toDrawingFile = useCallback(
+    (file: File) => toLocalFiles([file], { createBlobUrl, saveMediaMetadata })[0],
+    [createBlobUrl, saveMediaMetadata],
+  );
+  const drawing = useDrawing(toDrawingFile);
 
   const memoName = memo?.name;
   const showTimestamp = Boolean(memoName || (!memo && hasTimestamp));
@@ -340,8 +347,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
         ref={editorContainerRef}
         className={cn(
           "group w-full flex flex-col justify-between items-start gap-2",
-          // A card that is the frame already supplies the background, border and padding, and
-          // positions the Markdown tag in its own corner; a session floating over the page in
+          // A card that is the frame already supplies the background, border and padding; a session floating over the page in
           // focus mode always brings its own. The bottom is 16px like the sides: the toolbar's
           // hard edge needs more room than the text's soft top.
           (!frameless || isFocusMode) && "relative bg-mu-surface px-4 pt-3 pb-4 rounded-mu-lg border border-mu-line/70",
@@ -349,17 +355,6 @@ export const EditSession: React.FC<EditSessionProps> = ({
           !isFocusMode && className,
         )}
       >
-        {isSourceMode && (
-          <span
-            className={cn(
-              "pointer-events-none absolute end-0 top-0 rounded-es-mu-lg rounded-se-mu-lg border-s border-b border-mu-line/70 bg-mu-well/40 flex h-5 items-center px-1.5 select-none mu-label-xs font-mono text-mu-ink-muted",
-              isFocusMode && "border-mu-line",
-            )}
-            aria-label={t("editor.markdown-mode")}
-          >
-            Markdown
-          </span>
-        )}
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
             Focus mode always shows the memo's time ("Now" before it has one) and adds
@@ -407,6 +402,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             onTranscribeAttachment={canTranscribe ? transcribeAttachment : undefined}
             transcribingAttachment={transcribingAttachment}
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
+            onEditDrawing={drawing.openExisting}
+            openingDrawing={drawing.opening}
           />
           {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
             <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
@@ -422,9 +419,23 @@ export const EditSession: React.FC<EditSessionProps> = ({
             viewToggles={viewToggles}
             sourceMode={sourceMode}
             onInsertImages={handleInsertImages}
+            onDrawingClick={drawing.openNew}
           />
         </div>
       </div>
+
+      {drawing.session && (
+        <Suspense fallback={null}>
+          <DrawingSheet
+            key={drawing.session.id}
+            mode={drawing.session.mode}
+            initialScene={drawing.session.scene}
+            background={drawing.session.background}
+            onDone={drawing.done}
+            onClose={drawing.close}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

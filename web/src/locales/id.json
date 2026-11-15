@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Tidak dapat menyelesaikan proses masuk",
     "create-your-account": "Buat akun Anda",
+    "hide-password": "Sembunyikan kata sandi",
+    "incorrect-credentials": "Nama pengguna atau kata sandi salah.",
     "new-password": "Kata sandi baru",
     "repeat-new-password": "Ulangi kata sandi baru",
+    "show-password": "Tampilkan kata sandi",
     "sign-in-tip": "Sudah memiliki akun?",
     "sign-up-tip": "Belum memiliki akun?",
     "admin-sign-in": "Masuk administrator",
-    "admin-sign-in-tip": "Masuk dengan kata sandi tetap tersedia untuk administrator.",
     "back-to-sign-in": "Kembali ke halaman masuk",
     "continue-with": "Lanjutkan dengan {{provider}}",
     "create-admin-account": "Buat akun admin",
-    "explore-public-memos": "Jelajahi memo publik pada instance ini",
-    "first-run": "Jalankan pertama kali",
     "setup-description": "Buat akun administrator untuk instance ini.",
-    "setup-note": "Akun ini memiliki pengaturan instance, anggota, dan penyedia identitas.",
     "setup-title": "Siapkan instance Anda",
     "signin-unavailable-description": "Masuk dengan kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk mengaktifkan metode masuk.",
     "signin-unavailable-title": "Masuk tidak tersedia",
-    "signup-unavailable-description": "Akun kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk akses.",
-    "signup-unavailable-title": "Pendaftaran tidak tersedia",
-    "signups-closed-description": "Akun baru dinonaktifkan pada instance ini. Hubungi administrator Anda jika Anda memerlukan akses.",
-    "signups-closed-title": "Pendaftaran ditutup",
-    "sso-signup-tip": "Masuk dengan penyedia di bawah ini untuk membuat akun Anda.",
-    "welcome-back": "Selamat datang kembali."
+    "signups-closed-description": "Akun baru dinonaktifkan pada instance ini. Hubungi administrator Anda jika Anda memerlukan akses."
   },
   "common": {
     "about": "Tentang",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
-    "relations": "Relasi",
     "resources": "Sumber Daya",
     "restore": "Pulihkan",
     "role": "Peran",
@@ -176,10 +170,51 @@
       "image-upload-failed": "Beberapa gambar tidak dapat diunggah. Coba lagi atau simpan file yang diunggah sebagai lampiran.",
       "image-upload-stopped": "Unggahan gambar dihentikan {{completed}}/{{total}}",
       "insert-image": "Sisipkan gambar",
+      "drawing": "Sketsa",
       "keep-as-attachments": "Simpan sebagai lampiran",
       "retry-image-upload": "Coba lagi",
       "uploading-inline-image": "Mengunggah ke konten",
       "uploading-images": "Mengunggah gambar {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Sketsa baru",
+      "edit": "Edit sketsa",
+      "tools": "Alat",
+      "tool-select": "Pilih",
+      "tool-pen": "Pena",
+      "tool-eraser": "Penghapus",
+      "tool-rectangle": "Persegi panjang",
+      "tool-ellipse": "Elips",
+      "tool-arrow": "Panah",
+      "tool-text": "Teks",
+      "style": "Warna dan ketebalan",
+      "color": "Warna",
+      "width": "Ketebalan",
+      "width-thin": "Tipis",
+      "width-medium": "Sedang",
+      "width-thick": "Tebal",
+      "color-ink": "Tinta",
+      "color-gray": "Abu-abu",
+      "color-red": "Merah",
+      "color-orange": "Oranye",
+      "color-green": "Hijau",
+      "color-teal": "Hijau kebiruan",
+      "color-blue": "Biru",
+      "color-violet": "Ungu",
+      "undo": "Urungkan",
+      "redo": "Ulangi",
+      "zoom-to-fit": "Paskan ke jendela",
+      "done": "Selesai",
+      "discard-title": "Buang sketsa ini?",
+      "discard-description": "Sketsa belum ditambahkan ke memo.",
+      "discard-edit-title": "Buang perubahan Anda?",
+      "discard-edit-description": "Sketsa akan tetap seperti sebelum Anda membukanya.",
+      "keep-drawing": "Lanjutkan menggambar",
+      "discard": "Buang",
+      "open-failed": "Tidak dapat membuka sketsa. Coba lagi.",
+      "export-failed": "Tidak dapat menyimpan sketsa. Coba lagi.",
+      "image-failed": "Tidak dapat menambahkan gambar ke sketsa.",
+      "saved-without-drawing": "Memo tersimpan, tetapi sketsa belum. Simpan lagi untuk mencoba ulang."
     },
     "audio-recorder": {
       "attachment-label": "Rekaman audio",
@@ -275,9 +310,11 @@
       "resize-image": "Ubah ukuran gambar"
     },
     "attachments": {
-      "move-up": "Pindahkan lampiran ke atas",
-      "move-down": "Pindahkan lampiran ke bawah",
-      "remove": "Hapus lampiran"
+      "edited": "Diedit",
+      "new": "Baru",
+      "remove": "Hapus lampiran",
+      "reorder": "Ubah urutan {{name}}",
+      "reorder-hint": "Seret, atau gunakan tombol panah"
     },
     "remove-relation": "Hapus relasi",
     "remove-location": "Hapus lokasi",
@@ -399,7 +436,9 @@
       "uncheck-all": "Hapus centang semua tugas",
       "updated": "Tugas diperbarui"
     },
-    "view-options": "Opsi tampilan"
+    "view-options": "Opsi tampilan",
+    "add-reaction": "Tambahkan reaksi",
+    "remove-reaction": "Hapus reaksi"
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
@@ -449,9 +488,7 @@
       "list-title": "Daftar Anggota",
       "no-members-found": "Tidak ada anggota yang ditemukan",
       "archived": "Diarsipkan",
-      "member-column": "Anggota",
       "active": "Aktif",
-      "summary-column": "Ringkasan",
       "export-memos": "Ekspor memo",
       "username-password-required": "Nama pengguna dan kata sandi tidak boleh kosong",
       "create-success": "Pengguna dibuat",
@@ -650,7 +687,6 @@
       "basic-settings": "Pengaturan dasar",
       "basic-settings-description": "Tetapkan identitas penyedia, nama tampilan, dan aturan pengidentifikasi opsional sebelum mengisi detail OAuth.",
       "client-secret-optional-description": "Biarkan kosong untuk menjaga agar rahasia klien yang ada tetap tidak berubah.",
-      "configuration": "Konfigurasi",
       "configuration-summary-description": "Tampilkan hal-hal penting yang membantu mengidentifikasi dan mengaudit penyedia tanpa mengekspos konfigurasi lengkap secara langsung.",
       "create-sso-description": "Buat penyedia identitas baru untuk single sign-on yang dikelola administrator.",
       "endpoints": "Endpoint",
@@ -672,7 +708,6 @@
       "not-linked-description": "Belum ada identitas eksternal yang tertaut. Anda dapat menghubungkan penyedia ini untuk masuk dengannya nanti.",
       "oauth-configuration": "Konfigurasi OAuth",
       "oauth-configuration-description": "Isi kredensial klien OAuth dan titik akhir penyedia yang digunakan selama masuk.",
-      "provider": "Penyedia",
       "provider-id": "ID Penyedia",
       "provider-id-description": "Hanya huruf kecil, angka, dan tanda hubung. Nilai ini menjadi bagian dari nama sumber daya penyedia.",
       "redirect-url-description": "Daftarkan URL callback ini dengan penyedia identitas Anda agar alur kode otorisasi dapat diselesaikan.",
@@ -861,16 +896,6 @@
       "disallow-user-registration-description": "Cegah pengguna baru membuat akun dari halaman pendaftaran.",
       "week-start-day-description": "Mengontrol hari pertama yang ditampilkan dalam tampilan bergaya kalender."
     },
-    "memo": {
-      "reactions": "Reaksi",
-      "label": "Memo",
-      "reactions-required": "Daftar reaksi wajib diisi",
-      "add-reaction": "Tambahkan reaksi",
-      "configured-reactions": "Reaksi yang dikonfigurasi",
-      "reaction-placeholder": "contoh: 👍",
-      "reactions-description": "Tentukan opsi reaksi yang dapat diterapkan pengguna pada memo.",
-      "remove-reaction": "Hapus reaksi"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Nama yang mudah diingat",
@@ -896,7 +921,6 @@
       },
       "no-webhooks-found": "Tidak ada webhook yang ditemukan.",
       "title": "Webhook",
-      "url": "URL",
       "label": "Webhook"
     },
     "tags": {

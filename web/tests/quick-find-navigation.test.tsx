@@ -100,6 +100,16 @@ describe("Quick Find navigation", () => {
   };
   const openQuickFind = () => fireEvent.click(screen.getByRole("button", { name: "Open Quick Find" }));
 
+  it("submits a text query from the input's search action", async () => {
+    renderSearch();
+    openQuickFind();
+    fireEvent.change(await screen.findByRole("textbox"), { target: { value: "roadmap" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.search" }));
+
+    expect(state.setFilters).toHaveBeenCalledWith([{ factor: "contentSearch", value: "roadmap" }]);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
   it("preserves the draft when changing modes and submits CEL with Enter", async () => {
     renderSearch();
     openQuickFind();

@@ -72,7 +72,7 @@ const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) =>
         </div>
       ))}
       {others.map((item) => (
-        <div key={item.id} className="flex items-center gap-1 mu-caption text-mu-ink-muted">
+        <div key={item.id} className="flex items-center gap-1 mu-caption text-mu-text-secondary">
           <FileIcon className="mu-icon-xs shrink-0" />
           <span className="truncate max-w-[80px]">{item.filename}</span>
         </div>
@@ -100,8 +100,8 @@ const PreviewMeta = ({
   }
 
   return (
-    <div className="flex min-w-0 shrink-0 items-center gap-1.5 mu-caption text-mu-ink-muted">
-      {showMemoId && memoId && <span className="shrink-0 font-mono mu-caption text-mu-ink-muted/60">{memoId}</span>}
+    <div className="flex min-w-0 shrink-0 items-center gap-1.5 mu-caption text-mu-text-secondary">
+      {showMemoId && memoId && <span className="shrink-0 font-mono mu-caption text-mu-text-secondary/60">{memoId}</span>}
       {showCreator && creatorName && <span className="max-w-32 truncate">{creatorName}</span>}
     </div>
   );
@@ -131,9 +131,9 @@ const MemoPreview = ({
   const meta = <PreviewMeta creator={creator} showCreator={showCreator} memoName={name} showMemoId={showMemoId} />;
   const contentNode = truncate ? (
     hasContent ? (
-      <div className="min-w-0 truncate mu-caption text-mu-ink-muted">{content}</div>
+      <div className="min-w-0 truncate mu-caption text-mu-text-secondary">{content}</div>
     ) : hasAttachments ? null : (
-      <div className="min-w-0 truncate mu-caption text-mu-ink-muted">{t("common.no-content")}</div>
+      <div className="min-w-0 truncate mu-caption text-mu-text-secondary">{t("common.no-content")}</div>
     )
   ) : (
     // Previews are inert (pointer-events-none), so a static CSS bound replaces the
@@ -154,7 +154,7 @@ const MemoPreview = ({
         {contentNode}
         {hasAttachments &&
           (truncate ? (
-            <div className="inline-flex shrink-0 items-center justify-center gap-0.5 text-mu-ink-muted/60">
+            <div className="inline-flex shrink-0 items-center justify-center gap-0.5 text-mu-text-secondary/60">
               <FileIcon className="mu-icon-xs inline-block" />
               <span className="mu-caption tabular-nums">{countLogicalAttachmentItems(attachmentOnlyItems)}</span>
             </div>

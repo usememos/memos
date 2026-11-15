@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Không thể hoàn tất đăng nhập",
     "create-your-account": "Tạo tài khoản của bạn",
+    "hide-password": "Ẩn mật khẩu",
+    "incorrect-credentials": "Tên người dùng hoặc mật khẩu không đúng.",
     "new-password": "Mật khẩu mới",
     "repeat-new-password": "Nhập lại mật khẩu mới",
+    "show-password": "Hiện mật khẩu",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?",
     "admin-sign-in": "Đăng nhập quản trị viên",
-    "admin-sign-in-tip": "Đăng nhập bằng mật khẩu vẫn khả dụng cho quản trị viên.",
     "back-to-sign-in": "Quay lại trang đăng nhập",
     "continue-with": "Tiếp tục với {{provider}}",
     "create-admin-account": "Tạo tài khoản quản trị viên",
-    "explore-public-memos": "Khám phá các ghi chú công khai trên phiên bản này",
-    "first-run": "Lần chạy đầu tiên",
     "setup-description": "Tạo tài khoản quản trị viên cho phiên bản này.",
-    "setup-note": "Tài khoản này sở hữu cài đặt phiên bản, thành viên và nhà cung cấp danh tính.",
     "setup-title": "Thiết lập phiên bản của bạn",
     "signin-unavailable-description": "Đăng nhập bằng mật khẩu đã bị tắt và không có nhà cung cấp danh tính nào được cấu hình. Hãy yêu cầu quản trị viên của bạn bật phương thức đăng nhập.",
     "signin-unavailable-title": "Đăng nhập không khả dụng",
-    "signup-unavailable-description": "Tài khoản mật khẩu đã bị tắt và không có nhà cung cấp danh tính nào được cấu hình. Hãy yêu cầu quản trị viên của bạn cấp quyền truy cập.",
-    "signup-unavailable-title": "Đăng ký không khả dụng",
-    "signups-closed-description": "Tài khoản mới bị vô hiệu hóa trên phiên bản này. Liên hệ với quản trị viên của bạn nếu bạn cần quyền truy cập.",
-    "signups-closed-title": "Đăng ký đã đóng",
-    "sso-signup-tip": "Đăng nhập bằng nhà cung cấp bên dưới để tạo tài khoản của bạn.",
-    "welcome-back": "Chào mừng bạn trở lại."
+    "signups-closed-description": "Tài khoản mới bị vô hiệu hóa trên phiên bản này. Liên hệ với quản trị viên của bạn nếu bạn cần quyền truy cập."
   },
   "common": {
     "about": "Giới thiệu",
@@ -102,7 +97,6 @@
     "profile": "Hồ sơ",
     "referenced-by": "Được tham chiếu bởi",
     "referencing": "Đang tham chiếu",
-    "relations": "Liên kết",
     "resources": "Tài nguyên",
     "restore": "Khôi phục",
     "role": "Vai trò",
@@ -176,10 +170,51 @@
       "image-upload-failed": "Một số hình ảnh không thể tải lên. Hãy thử lại hoặc giữ các tệp đã tải lên dưới dạng tệp đính kèm.",
       "image-upload-stopped": "Quá trình tải ảnh dừng lại {{completed}}/{{total}}",
       "insert-image": "Chèn ảnh",
+      "drawing": "Bản vẽ",
       "keep-as-attachments": "Giữ nguyên dưới dạng tệp đính kèm",
       "retry-image-upload": "Thử lại",
       "uploading-inline-image": "Đang tải nội dung lên",
       "uploading-images": "Đang tải ảnh {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Bản vẽ mới",
+      "edit": "Chỉnh sửa bản vẽ",
+      "tools": "Công cụ",
+      "tool-select": "Chọn",
+      "tool-pen": "Bút",
+      "tool-eraser": "Tẩy",
+      "tool-rectangle": "Hình chữ nhật",
+      "tool-ellipse": "Hình elip",
+      "tool-arrow": "Mũi tên",
+      "tool-text": "Văn bản",
+      "style": "Màu và độ dày",
+      "color": "Màu",
+      "width": "Độ dày",
+      "width-thin": "Mảnh",
+      "width-medium": "Vừa",
+      "width-thick": "Dày",
+      "color-ink": "Mực",
+      "color-gray": "Xám",
+      "color-red": "Đỏ",
+      "color-orange": "Cam",
+      "color-green": "Lục",
+      "color-teal": "Xanh mòng két",
+      "color-blue": "Lam",
+      "color-violet": "Tím",
+      "undo": "Hoàn tác",
+      "redo": "Làm lại",
+      "zoom-to-fit": "Vừa với cửa sổ",
+      "done": "Xong",
+      "discard-title": "Loại bỏ bản vẽ này?",
+      "discard-description": "Bản vẽ chưa được thêm vào ghi chú.",
+      "discard-edit-title": "Loại bỏ các thay đổi?",
+      "discard-edit-description": "Bản vẽ sẽ giữ nguyên như trước khi bạn mở.",
+      "keep-drawing": "Tiếp tục vẽ",
+      "discard": "Loại bỏ",
+      "open-failed": "Không thể mở bản vẽ. Hãy thử lại.",
+      "export-failed": "Không thể lưu bản vẽ. Hãy thử lại.",
+      "image-failed": "Không thể thêm ảnh vào bản vẽ.",
+      "saved-without-drawing": "Đã lưu ghi chú, nhưng chưa lưu bản vẽ. Hãy lưu lần nữa để thử lại."
     },
     "audio-recorder": {
       "attachment-label": "Ghi âm",
@@ -275,9 +310,11 @@
       "resize-image": "Đổi kích thước hình ảnh"
     },
     "attachments": {
-      "move-up": "Di chuyển tệp đính kèm lên",
-      "move-down": "Di chuyển tệp đính kèm xuống",
-      "remove": "Xóa tệp đính kèm"
+      "edited": "Đã sửa",
+      "new": "Mới",
+      "remove": "Xóa tệp đính kèm",
+      "reorder": "Sắp xếp lại {{name}}",
+      "reorder-hint": "Kéo, hoặc dùng các phím mũi tên"
     },
     "remove-relation": "Xóa liên kết",
     "remove-location": "Xóa vị trí",
@@ -399,7 +436,9 @@
       "uncheck-all": "Bỏ chọn tất cả nhiệm vụ",
       "updated": "Nhiệm vụ đã được cập nhật"
     },
-    "view-options": "Tùy chọn xem"
+    "view-options": "Tùy chọn xem",
+    "add-reaction": "Thêm biểu tượng cảm xúc",
+    "remove-reaction": "Xóa phản ứng"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -449,9 +488,7 @@
       "list-title": "Danh sách thành viên",
       "no-members-found": "Không tìm thấy thành viên nào",
       "archived": "Đã lưu trữ",
-      "member-column": "Thành viên",
       "active": "Đang hoạt động",
-      "summary-column": "Tóm tắt",
       "export-memos": "Xuất ghi chú",
       "username-password-required": "Tên người dùng và mật khẩu không được để trống",
       "create-success": "Đã tạo người dùng",
@@ -650,7 +687,6 @@
       "basic-settings": "Cài đặt cơ bản",
       "basic-settings-description": "Đặt danh tính nhà cung cấp, tên hiển thị và các quy tắc định danh tùy chọn trước khi điền thông tin chi tiết OAuth.",
       "client-secret-optional-description": "Để trống để giữ nguyên mã bí mật máy khách hiện có.",
-      "configuration": "Cấu hình",
       "configuration-summary-description": "Hiển thị các thông tin cần thiết giúp xác định và kiểm toán nhà cung cấp mà không hiển thị toàn bộ cấu hình trực tiếp.",
       "create-sso-description": "Tạo nhà cung cấp danh tính mới cho đăng nhập một lần do quản trị viên quản lý.",
       "endpoints": "Điểm cuối",
@@ -672,7 +708,6 @@
       "not-linked-description": "Chưa có định danh bên ngoài nào được liên kết. Bạn có thể kết nối nhà cung cấp này để đăng nhập sau.",
       "oauth-configuration": "Cấu hình OAuth",
       "oauth-configuration-description": "Điền thông tin đăng nhập máy khách OAuth và các điểm cuối của nhà cung cấp được sử dụng trong quá trình đăng nhập.",
-      "provider": "Nhà cung cấp",
       "provider-id": "ID nhà cung cấp",
       "provider-id-description": "Chỉ chữ cái viết thường, số và dấu gạch ngang. Giá trị này trở thành một phần của tên tài nguyên nhà cung cấp.",
       "redirect-url-description": "Đăng ký URL gọi lại này với nhà cung cấp danh tính của bạn để luồng mã ủy quyền có thể hoàn tất.",
@@ -861,16 +896,6 @@
       "disallow-user-registration-description": "Ngăn người dùng mới tạo tài khoản từ trang đăng ký.",
       "week-start-day-description": "Kiểm soát ngày đầu tiên được hiển thị trong chế độ xem kiểu lịch."
     },
-    "memo": {
-      "reactions": "Phản ứng",
-      "label": "Ghi chú",
-      "reactions-required": "Danh sách phản ứng không được trống",
-      "add-reaction": "Thêm biểu tượng cảm xúc",
-      "configured-reactions": "Biểu tượng cảm xúc đã cấu hình",
-      "reaction-placeholder": "ví dụ: 👍",
-      "reactions-description": "Xác định các tùy chọn biểu tượng cảm xúc mà người dùng có thể áp dụng cho ghi chú.",
-      "remove-reaction": "Xóa phản ứng"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Tên dễ nhớ",
@@ -896,7 +921,6 @@
       },
       "no-webhooks-found": "Không tìm thấy webhook nào.",
       "title": "Webhook",
-      "url": "Url",
       "label": "Webhook"
     },
     "tags": {

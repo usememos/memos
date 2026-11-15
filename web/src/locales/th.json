@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "ไม่สามารถลงชื่อเข้าใช้ให้เสร็จสมบูรณ์ได้",
     "create-your-account": "สร้างบัญชีใหม่",
+    "hide-password": "ซ่อนรหัสผ่าน",
+    "incorrect-credentials": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
     "new-password": "รหัสผ่านใหม่",
     "repeat-new-password": "รหัสผ่านใหม่อีกครั้ง",
+    "show-password": "แสดงรหัสผ่าน",
     "sign-in-tip": "มีบัญชีอยู่แล้ว?",
     "sign-up-tip": "ยังไม่มีบัญชี?",
     "admin-sign-in": "เข้าสู่ระบบผู้ดูแลระบบ",
-    "admin-sign-in-tip": "การเข้าสู่ระบบด้วยรหัสผ่านยังคงใช้งานได้สำหรับผู้ดูแลระบบ",
     "back-to-sign-in": "กลับไปที่หน้าเข้าสู่ระบบ",
     "continue-with": "ดำเนินการต่อด้วย {{provider}}",
     "create-admin-account": "สร้างบัญชีผู้ดูแลระบบ",
-    "explore-public-memos": "สำรวจบันทึกสาธารณะในอินสแตนซ์นี้",
-    "first-run": "เรียกใช้งานครั้งแรก",
     "setup-description": "สร้างบัญชีผู้ดูแลระบบสำหรับอินสแตนซ์นี้",
-    "setup-note": "บัญชีนี้เป็นเจ้าของการตั้งค่าอินสแตนซ์ สมาชิก และผู้ให้บริการข้อมูลประจำตัว",
     "setup-title": "ตั้งค่าอินสแตนซ์ของคุณ",
     "signin-unavailable-description": "การเข้าสู่ระบบด้วยรหัสผ่านถูกปิดใช้งานและไม่มีการกำหนดค่าผู้ให้บริการข้อมูลประจำตัว โปรดขอให้ผู้ดูแลระบบของคุณเปิดใช้งานวิธีการเข้าสู่ระบบ",
     "signin-unavailable-title": "ไม่สามารถเข้าสู่ระบบได้",
-    "signup-unavailable-description": "บัญชีรหัสผ่านถูกปิดใช้งานและไม่มีการกำหนดค่าผู้ให้บริการข้อมูลประจำตัว โปรดขอสิทธิ์การเข้าถึงจากผู้ดูแลระบบของคุณ",
-    "signup-unavailable-title": "ไม่สามารถลงทะเบียนได้",
-    "signups-closed-description": "บัญชีใหม่ถูกปิดใช้งานในอินสแตนซ์นี้ โปรดติดต่อผู้ดูแลระบบของคุณหากคุณต้องการสิทธิ์การเข้าถึง",
-    "signups-closed-title": "ปิดการลงทะเบียนแล้ว",
-    "sso-signup-tip": "เข้าสู่ระบบด้วยผู้ให้บริการด้านล่างเพื่อสร้างบัญชีของคุณ",
-    "welcome-back": "ยินดีต้อนรับกลับ"
+    "signups-closed-description": "บัญชีใหม่ถูกปิดใช้งานในอินสแตนซ์นี้ โปรดติดต่อผู้ดูแลระบบของคุณหากคุณต้องการสิทธิ์การเข้าถึง"
   },
   "common": {
     "about": "เกี่ยวกับ",
@@ -102,7 +97,6 @@
     "profile": "ข้อมูลส่วนตัว",
     "referenced-by": "อ้างอิงโดย",
     "referencing": "กำลังอ้างอิง",
-    "relations": "ความสัมพันธ์",
     "resources": "แหล่งข้อมูล",
     "restore": "คืนค่า",
     "role": "บทบาท",
@@ -176,10 +170,51 @@
       "image-upload-failed": "ไม่สามารถอัปโหลดรูปภาพบางรูปได้ ลองใหม่อีกครั้งหรือเก็บไฟล์ที่อัปโหลดไว้เป็นไฟล์แนบ",
       "image-upload-stopped": "การอัปโหลดรูปภาพหยุดลง {{completed}}/{{total}}",
       "insert-image": "แทรกรูปภาพ",
+      "drawing": "ภาพวาด",
       "keep-as-attachments": "เก็บเป็นไฟล์แนบ",
       "retry-image-upload": "ลองใหม่",
       "uploading-inline-image": "กำลังอัปโหลดไปยังเนื้อหา",
       "uploading-images": "กำลังอัปโหลดรูปภาพ {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "ภาพวาดใหม่",
+      "edit": "แก้ไขภาพวาด",
+      "tools": "เครื่องมือ",
+      "tool-select": "เลือก",
+      "tool-pen": "ปากกา",
+      "tool-eraser": "ยางลบ",
+      "tool-rectangle": "สี่เหลี่ยมผืนผ้า",
+      "tool-ellipse": "วงรี",
+      "tool-arrow": "ลูกศร",
+      "tool-text": "ข้อความ",
+      "style": "สีและความหนา",
+      "color": "สี",
+      "width": "ความหนา",
+      "width-thin": "บาง",
+      "width-medium": "ปานกลาง",
+      "width-thick": "หนา",
+      "color-ink": "หมึก",
+      "color-gray": "เทา",
+      "color-red": "แดง",
+      "color-orange": "ส้ม",
+      "color-green": "เขียว",
+      "color-teal": "เขียวอมฟ้า",
+      "color-blue": "น้ำเงิน",
+      "color-violet": "ม่วง",
+      "undo": "เลิกทำ",
+      "redo": "ทำซ้ำ",
+      "zoom-to-fit": "ปรับให้พอดีหน้าต่าง",
+      "done": "เสร็จสิ้น",
+      "discard-title": "ทิ้งภาพวาดนี้หรือไม่?",
+      "discard-description": "ยังไม่ได้เพิ่มลงในบันทึก",
+      "discard-edit-title": "ทิ้งการเปลี่ยนแปลงหรือไม่?",
+      "discard-edit-description": "ภาพวาดจะยังคงเหมือนก่อนที่คุณเปิด",
+      "keep-drawing": "วาดต่อ",
+      "discard": "ทิ้ง",
+      "open-failed": "ไม่สามารถเปิดภาพวาดได้ ลองอีกครั้ง",
+      "export-failed": "ไม่สามารถบันทึกภาพวาดได้ ลองอีกครั้ง",
+      "image-failed": "ไม่สามารถเพิ่มรูปภาพลงในภาพวาดได้",
+      "saved-without-drawing": "บันทึกช่วยจำถูกบันทึกแล้ว แต่ภาพวาดยังไม่ได้บันทึก บันทึกอีกครั้งเพื่อลองใหม่"
     },
     "audio-recorder": {
       "attachment-label": "การบันทึกเสียง",
@@ -275,9 +310,11 @@
       "resize-image": "ปรับขนาดรูปภาพ"
     },
     "attachments": {
-      "move-up": "ย้ายไฟล์แนบขึ้น",
-      "move-down": "ย้ายไฟล์แนบลง",
-      "remove": "ลบไฟล์แนบ"
+      "edited": "แก้ไขแล้ว",
+      "new": "ใหม่",
+      "remove": "ลบไฟล์แนบ",
+      "reorder": "จัดลำดับ {{name}} ใหม่",
+      "reorder-hint": "ลาก หรือใช้ปุ่มลูกศร"
     },
     "remove-relation": "ลบความสัมพันธ์",
     "remove-location": "ลบตำแหน่ง",
@@ -399,7 +436,9 @@
       "uncheck-all": "ยกเลิกการเลือกงานทั้งหมด",
       "updated": "อัปเดตงานแล้ว"
     },
-    "view-options": "ตัวเลือกการดู"
+    "view-options": "ตัวเลือกการดู",
+    "add-reaction": "เพิ่มปฏิกิริยา",
+    "remove-reaction": "ลบการตอบสนอง"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",
@@ -449,9 +488,7 @@
       "list-title": "รายชื่อสมาชิก",
       "no-members-found": "ไม่พบสมาชิก",
       "archived": "เก็บถาวรแล้ว",
-      "member-column": "สมาชิก",
       "active": "ใช้งานอยู่",
-      "summary-column": "สรุป",
       "export-memos": "ส่งออกบันทึก",
       "username-password-required": "ชื่อผู้ใช้และรหัสผ่านต้องไม่ว่างเปล่า",
       "create-success": "สร้างผู้ใช้แล้ว",
@@ -650,7 +687,6 @@
       "basic-settings": "การตั้งค่าพื้นฐาน",
       "basic-settings-description": "ตั้งค่าข้อมูลประจำตัวผู้ให้บริการ ชื่อที่แสดง และกฎตัวระบุเพิ่มเติมก่อนกรอกรายละเอียด OAuth",
       "client-secret-optional-description": "เว้นว่างไว้เพื่อคงรหัสลับไคลเอ็นต์ที่มีอยู่ไว้",
-      "configuration": "การกำหนดค่า",
       "configuration-summary-description": "แสดงข้อมูลสำคัญที่ช่วยระบุและตรวจสอบผู้ให้บริการโดยไม่ต้องแสดงการกำหนดค่าทั้งหมดแบบอินไลน์",
       "create-sso-description": "สร้างผู้ให้บริการข้อมูลประจำตัวใหม่สำหรับการลงชื่อเข้าใช้ครั้งเดียวที่จัดการโดยผู้ดูแลระบบ",
       "endpoints": "จุดเชื่อมต่อ",
@@ -672,7 +708,6 @@
       "not-linked-description": "ยังไม่มีการเชื่อมโยงข้อมูลประจำตัวภายนอก คุณสามารถเชื่อมต่อผู้ให้บริการนี้เพื่อเข้าสู่ระบบในภายหลังได้",
       "oauth-configuration": "การกำหนดค่า OAuth",
       "oauth-configuration-description": "กรอกข้อมูลประจำตัวไคลเอ็นต์ OAuth และปลายทางของผู้ให้บริการที่ใช้ระหว่างการลงชื่อเข้าใช้",
-      "provider": "ผู้ให้บริการ",
       "provider-id": "รหัสผู้ให้บริการ",
       "provider-id-description": "ใช้เฉพาะตัวอักษรพิมพ์เล็ก ตัวเลข และเครื่องหมายขีดกลางเท่านั้น ค่านี้จะกลายเป็นส่วนหนึ่งของชื่อทรัพยากรผู้ให้บริการ",
       "redirect-url-description": "ลงทะเบียน URL การเรียกกลับนี้กับผู้ให้บริการข้อมูลประจำตัวของคุณ เพื่อให้กระบวนการรหัสการอนุญาตเสร็จสมบูรณ์",
@@ -861,16 +896,6 @@
       "disallow-user-registration-description": "ป้องกันไม่ให้ผู้ใช้ใหม่สร้างบัญชีจากหน้าลงทะเบียน",
       "week-start-day-description": "ควบคุมวันแรกที่แสดงในมุมมองแบบปฏิทิน"
     },
-    "memo": {
-      "reactions": "ปฏิกิริยา",
-      "label": "บันทึก",
-      "reactions-required": "รายการความรู้สึกต้องไม่ว่��งเปล่า",
-      "add-reaction": "เพิ่มปฏิกิริยา",
-      "configured-reactions": "ปฏิกิริยาที่กำหนดค่าไว้",
-      "reaction-placeholder": "เช่น 👍",
-      "reactions-description": "กำหนดตัวเลือกการตอบสนองที่ผู้ใช้สามารถใช้กับบันทึกช่วยจำ",
-      "remove-reaction": "ลบการตอบสนอง"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "ชื่อที่จำง่าย",
@@ -896,7 +921,6 @@
       },
       "no-webhooks-found": "ไม่พบ webhook",
       "title": "Webhook",
-      "url": "URL",
       "label": "Webhook"
     },
     "tags": {

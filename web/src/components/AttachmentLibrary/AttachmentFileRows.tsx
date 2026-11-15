@@ -31,7 +31,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
     return (
       <div className={cn("relative overflow-hidden rounded-mu-xl bg-mu-well/35", className)}>
         <VideoPoster sourceUrl={item.sourceUrl} alt={item.attachment.filename} className="h-full w-full object-cover" />
-        <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-mu-canvas/85 text-mu-ink">
+        <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-mu-canvas/85 text-mu-text">
           <PlayIcon className="mu-icon-sm fill-current" />
         </span>
       </div>
@@ -39,7 +39,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
   }
 
   return (
-    <div className={cn("flex items-center justify-center rounded-mu-xl bg-mu-well/45 text-mu-ink-muted", className)}>
+    <div className={cn("flex items-center justify-center rounded-mu-xl bg-mu-well/45 text-mu-text-secondary", className)}>
       {type === "audio/*" ? <FileAudioIcon className="mu-icon h-5 w-5" /> : <FileIcon className="mu-icon h-5 w-5" />}
     </div>
   );
@@ -53,12 +53,12 @@ export const AttachmentDocumentRows = ({ items, creators }: { items: AttachmentL
           key={item.attachment.name}
           className="flex items-center gap-2.5 rounded-[18px] border border-mu-line/60 bg-mu-canvas/90 p-3"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-mu-lg bg-mu-well/45 text-mu-ink-muted">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-mu-lg bg-mu-well/45 text-mu-text-secondary">
             <FileIcon className="mu-icon h-4.5 w-4.5" />
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="truncate mu-label text-mu-ink" title={item.attachment.filename}>
+            <div className="truncate mu-label text-mu-text" title={item.attachment.filename}>
               {item.attachment.filename}
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
@@ -111,7 +111,7 @@ export const AttachmentUnusedRows = ({ items, creators }: { items: AttachmentLib
           <AttachmentThumb item={item} className="h-10 w-10 shrink-0" />
 
           <div className="min-w-0 flex-1">
-            <div className="truncate mu-label text-mu-ink" title={item.attachment.filename}>
+            <div className="truncate mu-label text-mu-text" title={item.attachment.filename}>
               {item.attachment.filename}
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">

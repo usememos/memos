@@ -55,10 +55,6 @@ func ValidateUpdate(setting, existing *storepb.InstanceSetting) error {
 			return errors.New("storage setting is required")
 		}
 		return validateStorageSetting(setting.GetStorageSetting(), existing.GetStorageSetting())
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		if setting.GetMemoRelatedSetting() == nil {
-			return errors.New("memo related setting is required")
-		}
 	case storepb.InstanceSettingKey_TAGS:
 		if setting.GetTagsSetting() == nil {
 			return errors.New("tags setting is required")

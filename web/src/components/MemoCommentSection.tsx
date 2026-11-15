@@ -88,10 +88,10 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
           ) : (
             <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
               <div className="flex flex-row justify-start items-center">
-                <MessageCircleIcon className="mu-icon w-5 h-auto text-mu-ink-muted mr-1" />
-                <span className="text-mu-ink-muted mu-body">{t("memo.comment.self")}</span>
+                <MessageCircleIcon className="mu-icon w-5 h-auto text-mu-text-secondary mr-1" />
+                <span className="text-mu-text-secondary mu-body">{t("memo.comment.self")}</span>
                 {/* The count sits beside the label as a plain number, as it does on a card's comment strip and in the sidebar. */}
-                <span className="text-mu-ink-muted mu-caption tabular-nums ml-1.5">{commentCount}</span>
+                <span className="text-mu-text-secondary mu-caption tabular-nums ml-1.5">{commentCount}</span>
               </div>
               {showCreateButton && (
                 <Button variant="ghost" onPointerEnter={preloadEditor} onFocus={preloadEditor} onClick={openEditor}>

@@ -177,6 +177,32 @@ func CheckUpload(ctx context.Context, s Store, userID int32, size int64) error {
 	return nil
 }
 
+// CheckReplace returns a *Refusal when replacing a stored file of replacedSize
+// bytes with one of size bytes would break the per-file limit or the storage
+// limit of userID. Only the difference counts toward storage, so a replacement
+// no larger than the file it replaces is never refused for storage.
+func CheckReplace(ctx context.Context, s Store, userID int32, size, replacedSize int64) error {
+	effective, err := EffectiveFor(ctx, s, userID)
+	if err != nil {
+		return err
+	}
+	if err := effective.checkFileSize(size); err != nil {
+		return err
+	}
+	limit := effective.Entry.GetStorageBytes()
+	if limit <= 0 || size <= replacedSize {
+		return nil
+	}
+	used, err := s.GetAttachmentStorageUsage(ctx, userID)
+	if err != nil {
+		return errors.Wrap(err, "failed to sum storage usage")
+	}
+	if used-replacedSize+size > limit {
+		return effective.refuse(MetricStorageBytes, limit, used)
+	}
+	return nil
+}
+
 // Usage is a user's usage and the limit set in effect for the user.
 type Usage struct {
 	MemoCount    int64

@@ -35,7 +35,7 @@ const AttachmentMediaCard = ({ item, creator, onPreview }: { item: AttachmentLib
               <div className="absolute inset-0 bg-linear-to-t from-black/35 via-black/5 to-transparent" />
               <span
                 className={cn(
-                  "absolute bottom-2.5 right-2.5 inline-flex h-8 items-center justify-center rounded-full bg-mu-canvas/85 text-mu-ink backdrop-blur-sm",
+                  "absolute bottom-2.5 right-2.5 inline-flex h-8 items-center justify-center rounded-full bg-mu-canvas/85 text-mu-text backdrop-blur-sm",
                   videoDuration === undefined ? "w-8" : "gap-1.5 px-2.5 mu-label-sm tabular-nums",
                 )}
               >
@@ -61,7 +61,7 @@ const AttachmentMediaCard = ({ item, creator, onPreview }: { item: AttachmentLib
 
       <div className="flex flex-col gap-2 p-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 truncate mu-label text-mu-ink" title={item.filename}>
+          <div className="min-w-0 truncate mu-label text-mu-text" title={item.filename}>
             {item.filename}
           </div>
 
@@ -88,7 +88,7 @@ const AttachmentMediaGrid = ({ groups, creators, onPreview }: AttachmentMediaGri
       {groups.map((group) => (
         <section key={group.key} className="space-y-2.5 sm:space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="mu-label-sm uppercase tracking-[0.24em] text-mu-ink-muted">{group.label}</div>
+            <div className="mu-label-sm uppercase tracking-[0.24em] text-mu-text-secondary">{group.label}</div>
             <div className="h-px flex-1 bg-mu-line/70" />
           </div>
 

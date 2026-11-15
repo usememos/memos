@@ -136,16 +136,16 @@ const WelcomeGuideDialog = ({ open, onOpenChange }: Props) => {
                     {active ? (
                       <Dialog.Description className="mt-1.5">{page.sub}</Dialog.Description>
                     ) : (
-                      <p className="mt-1.5 mu-body text-mu-ink-muted">{page.sub}</p>
+                      <p className="mt-1.5 mu-body text-mu-text-secondary">{page.sub}</p>
                     )}
                     <ul className="mt-5 flex flex-col gap-3.5">
                       {page.rows.map((row) => (
                         <li key={row.label} className="grid grid-cols-[104px_1fr] items-start gap-4 mu-body">
                           <span className="flex items-center gap-1.5">
-                            <row.icon className="mu-icon shrink-0 text-mu-ink-muted" />
-                            <span className="font-medium text-mu-ink">{row.label}</span>
+                            <row.icon className="mu-icon shrink-0 text-mu-text-secondary" />
+                            <span className="font-medium text-mu-text">{row.label}</span>
                           </span>
-                          <p className="min-w-0 text-mu-ink">{row.text}</p>
+                          <p className="min-w-0 text-mu-text">{row.text}</p>
                         </li>
                       ))}
                     </ul>
@@ -177,7 +177,7 @@ const WelcomeGuideDialog = ({ open, onOpenChange }: Props) => {
                   aria-current={pageIndex === index ? "step" : undefined}
                   className={cn(
                     "size-1.5 rounded-full transition-colors",
-                    pageIndex === index ? "bg-mu-ink" : "bg-mu-line hover:bg-mu-ink-muted/50",
+                    pageIndex === index ? "bg-mu-text" : "bg-mu-line hover:bg-mu-text-secondary/50",
                   )}
                   onClick={() => go(pageIndex)}
                 />

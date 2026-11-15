@@ -45,11 +45,11 @@ const AttachmentLibraryEmptyState = ({ className, tab }: AttachmentLibraryEmptyS
         className,
       )}
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-mu-well/45 text-mu-ink-muted">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-mu-well/45 text-mu-text-secondary">
         <Icon className="mu-icon size-7" />
       </div>
-      <div className="mt-5 mu-label text-mu-ink">{t(titleKey)}</div>
-      <p className="mt-2 max-w-sm mu-body text-mu-ink-muted">{t(descriptionKey)}</p>
+      <div className="mt-5 mu-label text-mu-text">{t(titleKey)}</div>
+      <p className="mt-2 max-w-sm mu-body text-mu-text-secondary">{t(descriptionKey)}</p>
     </div>
   );
 };

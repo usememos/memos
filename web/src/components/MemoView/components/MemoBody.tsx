@@ -6,9 +6,11 @@ import { MemoEditor } from "@/components/MemoEditor/MemoEditor";
 import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
+import { canManageMemo } from "@/utils/user";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { useMemoHandlers } from "../hooks";
 import { useMemoViewContext } from "../MemoViewContext";
@@ -45,6 +47,8 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
+  const hasText = memo.content.trim() !== "";
+  const currentUser = useCurrentUser();
   // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
   const attachmentOnlyItems = useMemo(
     () => filterInlineManagedAttachments(memo.content, memo.attachments),
@@ -85,14 +89,21 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
           {/* Compact bounds the whole body — attachments included — behind one Show more.
               Reactions stay outside so they never hide under the fade. */}
           <ClampedSection enabled={Boolean(compact)}>
-            <MemoEditor
-              name={memo.name}
-              parentPage={parentPage}
-              compact={Boolean(compact)}
-              onClick={handleMemoContentClick}
-              onDoubleClick={handleMemoContentDoubleClick}
+            {/* A memo of attachments alone has no text: an empty editor would still take a line and a gap. */}
+            {hasText && (
+              <MemoEditor
+                name={memo.name}
+                parentPage={parentPage}
+                compact={Boolean(compact)}
+                onClick={handleMemoContentClick}
+                onDoubleClick={handleMemoContentDoubleClick}
+              />
+            )}
+            <AttachmentGallery
+              visual={visual}
+              onImagePreview={openPreview}
+              drawings={{ memo, canEdit: !readonly && canManageMemo(memo, currentUser) }}
             />
-            <AttachmentGallery visual={visual} onImagePreview={openPreview} />
             <MemoMetadataRows
               audio={audio}
               docs={docs}

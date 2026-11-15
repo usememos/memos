@@ -8,6 +8,16 @@ export const getAttachmentUrl = (attachment: Attachment) => {
   return `${window.location.origin}/file/${attachment.name}/${encodeURIComponent(attachment.filename)}`;
 };
 
+/**
+ * Downloads an attachment's original file (never the thumbnail) with the session's
+ * credentials. Rejects when the server refuses it.
+ */
+export const fetchAttachmentFile = async (attachment: Attachment, signal?: AbortSignal): Promise<Response> => {
+  const response = await fetch(getAttachmentUrl(attachment), { signal, credentials: "same-origin" });
+  if (!response.ok) throw new Error(`Failed to download ${attachment.filename} (${response.status})`);
+  return response;
+};
+
 // Appends a thumbnail or motion selector only to share-mode links; other external links fall back to the server-managed attachment URL.
 const withShareTokenParam = (externalLink: string | undefined, key: string): string | undefined => {
   if (!externalLink) {

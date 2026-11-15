@@ -113,7 +113,7 @@ const MemoContentViewImpl = (props: MemoContentViewProps) => {
   };
 
   return (
-    <div className={`w-full flex flex-col justify-start items-start text-mu-ink ${className || ""}`}>
+    <div className={`w-full flex flex-col justify-start items-start text-mu-text ${className || ""}`}>
       <div
         ref={contentRef}
         data-memo-content

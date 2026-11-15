@@ -1,4 +1,4 @@
-import { Button, Dialog, Field, Fieldset, Input, Radio, RadioGroup, Textarea } from "@usememos/ui";
+import { Button, Dialog, Field, Input, Select, Textarea } from "@usememos/ui";
 import copy from "copy-to-clipboard";
 import React, { useEffect, useState } from "react";
 import { userServiceClient } from "@/connect";
@@ -59,12 +59,6 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
     fieldErrors.clear("description");
     setPartialState({
       description: e.target.value,
-    });
-  };
-
-  const handleRoleInputChange = (value: string) => {
-    setPartialState({
-      expiration: Number(value),
     });
   };
 
@@ -139,20 +133,25 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
               {fieldErrors.errors.description && <Field.Error match>{fieldErrors.errors.description}</Field.Error>}
             </Field.Root>
             <Field.Root>
-              <Fieldset.Root
-                render={<RadioGroup value={state.expiration.toString()} onValueChange={handleRoleInputChange} orientation="horizontal" />}
+              <Field.Label>
+                {t("setting.access-token.create-dialog.expiration")} <span className="text-mu-danger">*</span>
+              </Field.Label>
+              <Select.Root
+                items={expirationOptions}
+                value={state.expiration}
+                onValueChange={(expiration) => expiration !== null && setPartialState({ expiration })}
               >
-                <Fieldset.Legend>
-                  {t("setting.access-token.create-dialog.expiration")} <span className="text-mu-danger">*</span>
-                </Fieldset.Legend>
-                {expirationOptions.map((option) => (
-                  <Field.Item key={option.value}>
-                    <Field.Label>
-                      <Radio value={option.value.toString()} /> {option.label}
-                    </Field.Label>
-                  </Field.Item>
-                ))}
-              </Fieldset.Root>
+                <Select.Trigger>
+                  <Select.Value />
+                </Select.Trigger>
+                <Select.Popup>
+                  {expirationOptions.map((option) => (
+                    <Select.Item key={option.value} value={option.value}>
+                      {option.label}
+                    </Select.Item>
+                  ))}
+                </Select.Popup>
+              </Select.Root>
             </Field.Root>
           </div>
         )}

@@ -29,8 +29,8 @@ const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
     <span ref={ref} className="min-w-0 flex-1 truncate text-start">
       {segments.map((segment, index) => (
         <span key={`${segment}-${index}`}>
-          {index > 0 && <span className="px-0.5 text-mu-ink-muted/40">/</span>}
-          <span className={index === segments.length - 1 ? "text-current" : "text-mu-ink-muted/75"}>{segment}</span>
+          {index > 0 && <span className="px-0.5 text-mu-text-secondary/40">/</span>}
+          <span className={index === segments.length - 1 ? "text-current" : "text-mu-text-secondary/75"}>{segment}</span>
         </span>
       ))}
     </span>
@@ -96,7 +96,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
     <SidebarSection
       label={t("common.tags")}
       action={
-        <Menu.Root modal={false} size="sm">
+        <Menu.Root modal={false} size="md">
           <Tooltip.Root>
             <Tooltip.Trigger
               render={
@@ -108,7 +108,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
             />
             <Tooltip.Popup side="top">{t("common.more")}</Tooltip.Popup>
           </Tooltip.Root>
-          <Menu.Popup align="end" className="w-44">
+          <Menu.Popup align="end">
             <Menu.Group>
               <Menu.GroupLabel>{t("common.tags")}</Menu.GroupLabel>
               <Menu.CheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick icon={<ListTreeIcon />}>
