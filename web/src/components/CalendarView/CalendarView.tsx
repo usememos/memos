@@ -147,7 +147,14 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
         className="flex w-full min-w-0 flex-col gap-1 xl:h-[calc(100dvh-3.5rem)]"
         style={{ paddingInlineEnd: xl && panelOpen ? `calc(${MEMO_PANEL_WIDTH_CSS} + ${MEMO_PANEL_INSET}px)` : undefined }}
       >
-        <CalendarHeader month={month} monthLabel={monthLabel} today={today} activeDate={activeDate} closable={md} />
+        <CalendarHeader
+          month={month}
+          monthLabel={monthLabel}
+          today={today}
+          activeDate={activeDate}
+          closable={md}
+          activityStats={statistics.activityStats}
+        />
         <MentionResolutionProvider contents={NO_CONTENTS} userNames={authorNames}>
           <CalendarGrid
             month={month}

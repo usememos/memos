@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCalendarPath, parseCalendarParams } from "@/components/CalendarView";
+import { buildCalendarPath, getCalendarActivityMonths, parseCalendarParams } from "@/components/CalendarView";
 
 describe("calendar route params", () => {
   it("resolves a month and pads single-digit segments", () => {
@@ -31,5 +31,18 @@ describe("calendar route params", () => {
   it("round-trips through the router params", () => {
     const [, , year, month, day] = buildCalendarPath("2026-08", "2026-08-17").split("/");
     expect(parseCalendarParams({ year, month, day })).toEqual({ month: "2026-08", date: "2026-08-17" });
+  });
+});
+
+describe("calendar activity months", () => {
+  it("groups active dates by year and month", () => {
+    expect(getCalendarActivityMonths({ "2025-12-31": 1, "2026-01-01": 2, "2026-03-14": 1, "2026-04-01": 0 })).toEqual({
+      2025: [12],
+      2026: [1, 3],
+    });
+  });
+
+  it("ignores invalid dates and empty counts", () => {
+    expect(getCalendarActivityMonths({ "2026-00-01": 3, "2026-13-01": 2, "2026-01-01": 0, invalid: 1 })).toEqual({});
   });
 });
