@@ -94,6 +94,8 @@ func TestUserIdentityUniqueConflict(t *testing.T) {
 	for _, tc := range []struct{ provider, subject string }{
 		{provider: "idp-A", subject: "sub-1"},
 		{provider: "idp-key-marker", subject: "x for key 'username"},
+		{provider: "idp-sqlite-marker", subject: "UNIQUE constraint failed: user.email"},
+		{provider: "idp-postgres-marker", subject: `violates unique constraint "idx_user_email"`},
 	} {
 		t.Run(tc.provider, func(t *testing.T) {
 			_, err := ts.CreateUserIdentity(ctx, &store.UserIdentity{

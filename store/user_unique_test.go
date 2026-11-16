@@ -24,6 +24,8 @@ func TestClassifyUserUniqueViolation(t *testing.T) {
 		{name: "mariadb email", message: "Error 1062 (23000): Duplicate entry 'a@b.c' for key 'idx_user_email'", want: ErrEmailTaken},
 		{name: "mariadb identity subject", message: "Error 1062 (23000): Duplicate entry 'idp-x' for key 'provider'", want: ErrUserIdentityTaken},
 		{name: "mariadb identity value contains key marker", message: "Error 1062 (23000): Duplicate entry 'idp-x for key 'username' for key 'provider'", want: ErrUserIdentityTaken},
+		{name: "mariadb identity value contains sqlite marker", message: "Error 1062 (23000): Duplicate entry 'idp-UNIQUE constraint failed: user.email' for key 'provider'", want: ErrUserIdentityTaken},
+		{name: "mariadb identity value contains postgres marker", message: `Error 1062 (23000): Duplicate entry 'idp-violates unique constraint "idx_user_email"' for key 'provider'`, want: ErrUserIdentityTaken},
 		{name: "mariadb identity user", message: "Error 1062 (23000): Duplicate entry '1-idp' for key 'user_id'", want: ErrUserIdentityTaken},
 		{name: "identity key spelled as username", message: "Error 1062 (23000): Duplicate entry 'provider' for key 'username'", want: ErrUsernameTaken},
 		{name: "unrelated qualified key", message: "Error 1062 (23000): Duplicate entry 'x' for key 'other.provider'", want: nil},
