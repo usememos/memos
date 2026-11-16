@@ -9,6 +9,7 @@ on:
       - "go.mod"
       - "go.sum"
       - "**.go"
+      - "store/migration/**"
       - ".golangci.yaml"
       - ".github/actions/setup-go/**"
       - ".github/workflows/backend-tests.yml"
@@ -60,7 +61,7 @@ jobs:
         run: |
           case "${{ matrix.test-group }}" in
             store)
-              # Run store tests for all drivers (sqlite, mysql, postgres)
+              # Run all database targets (SQLite, MySQL, MariaDB, PostgreSQL).
               DRIVER= go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)

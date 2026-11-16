@@ -673,7 +673,7 @@ func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
 
 	predicates := map[DialectName]string{
 		DialectSQLite:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
-		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
+		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), JSON_EXTRACT('false', '$')) = JSON_EXTRACT('true', '$')",
 		DialectPostgres: "(memo.payload->'property'->>'hasLink')::boolean IS TRUE",
 	}
 	for dialect, predicate := range predicates {
@@ -770,7 +770,7 @@ func TestRenderExistsComparisonsPerDialect(t *testing.T) {
 		"has_image": {
 			DialectSQLite: "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage') IS TRUE OR " +
 				"EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id` AND LOWER(`attachment`.`type`) LIKE 'image/%'))",
-			DialectMySQL: "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage'), CAST('false' AS JSON)) = CAST('true' AS JSON) OR " +
+			DialectMySQL: "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage'), JSON_EXTRACT('false', '$')) = JSON_EXTRACT('true', '$') OR " +
 				"EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id` AND LOWER(`attachment`.`type`) LIKE 'image/%'))",
 			DialectPostgres: "((memo.payload->'property'->>'hasInlineImage')::boolean IS TRUE OR " +
 				"EXISTS (SELECT 1 FROM attachment WHERE attachment.memo_id = memo.id AND LOWER(attachment.type) LIKE 'image/%'))",

@@ -48,8 +48,11 @@ func classifyUserUniqueViolation(err error) error {
 			continue
 		}
 		target := after
+		if marker == " for key '" {
+			target, _, _ = strings.Cut(target, "'")
+		}
 		switch {
-		case strings.Contains(target, "user_identity"):
+		case strings.Contains(target, "user_identity") || (marker == " for key '" && (target == "provider" || target == "user_id")):
 			return errors.Wrap(ErrUserIdentityTaken, message)
 		case strings.Contains(target, "email"):
 			return errors.Wrap(ErrEmailTaken, message)

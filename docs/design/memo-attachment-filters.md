@@ -265,3 +265,13 @@ all instances and other writers, migrating once, then restarting, as described i
 [the migration procedure](../../store/migration/README.md#coordinating-an-upgrade).
 The migrations reject conflicting index definitions; MySQL also accepts a
 completed index when retrying after an implicit DDL commit.
+
+### 2026-11-16: Simplify index migration scripts
+
+The attachment lookup index migration adds a performance index without auditing
+existing definitions. MySQL uses ordinary `CREATE INDEX`, matching its 26.10
+migrations; SQLite and PostgreSQL use `CREATE INDEX IF NOT EXISTS`. Migration
+versions handle restarts after a completed upgrade. Recovery after a partially
+committed MySQL migration remains an execution-wide concern, with no special
+recovery SQL in this script. Tests verify fresh installs, ordinary upgrades,
+data preservation, and restarts after successful upgrades.

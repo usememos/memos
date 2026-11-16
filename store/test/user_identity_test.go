@@ -104,7 +104,7 @@ func TestUserIdentityUniqueConflict(t *testing.T) {
 		Provider:  "idp-A",
 		ExternUID: "sub-1",
 	})
-	require.Error(t, err)
+	require.ErrorIs(t, err, store.ErrUserIdentityTaken)
 }
 
 func TestUserIdentitySameExternUIDDifferentProviders(t *testing.T) {
@@ -158,7 +158,7 @@ func TestUserIdentitySameUserSameProviderConflicts(t *testing.T) {
 		Provider:  "idp-A",
 		ExternUID: "sub-2",
 	})
-	require.Error(t, err)
+	require.ErrorIs(t, err, store.ErrUserIdentityTaken)
 }
 
 func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
@@ -203,7 +203,7 @@ func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
 			Provider:  "conflict-provider",
 			ExternUID: "conflict-subject",
 		})
-		require.Error(t, err)
+		require.ErrorIs(t, err, store.ErrUserIdentityTaken)
 
 		username := "rolled-back-user"
 		user, err := ts.GetUser(ctx, &store.FindUser{Username: &username})
@@ -222,7 +222,7 @@ func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
 			Provider:  "unused-provider",
 			ExternUID: "unused-subject",
 		})
-		require.Error(t, err)
+		require.ErrorIs(t, err, store.ErrUsernameTaken)
 
 		provider := "unused-provider"
 		externUID := "unused-subject"

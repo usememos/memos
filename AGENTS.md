@@ -9,7 +9,7 @@ Memos is a self-hosted note-taking app.
 
 - Backend: Go 1.27.4, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
 - Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, `@usememos/ui` on Base UI, React Query v5.
-- Storage: SQLite, MySQL, PostgreSQL.
+- Storage: SQLite, MySQL, PostgreSQL; MariaDB 11.4.13 compatibility is tested through the MySQL driver.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
 
 ## Working Rules
@@ -40,6 +40,7 @@ go run -buildvcs=true ./cmd/memos --port 8081 # Start backend with commit-derive
 go run -buildvcs=true ./cmd/memos config plan --data DIR --config-dir DIR # Declarative configuration: also validate, apply, state
 go test ./...                      # Run all Go tests
 go test -v ./store/...             # Store tests, including DB drivers via TestContainers
+DRIVER=mysql MYSQL_VARIANT=mariadb go test -v ./store/test/... # MariaDB compatibility tests
 go test -v -race ./server/...      # Server tests with race detector
 go test -v -race ./internal/...    # Internal package tests with race detector
 go test -v -run TestFoo ./core/... # Run matching Go tests in one tree
@@ -150,6 +151,8 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## Database And Proto Rules
 
+- Prefer MySQL SQL and metadata checks shared with MariaDB when correctness, performance, and maintainability are preserved.
+  Keep MariaDB on the MySQL driver and dialect; verify shared SQL changes against both database targets.
 - Schema changes require SQLite, MySQL, and PostgreSQL migrations plus `LATEST.sql` updates.
 - Fresh-install SQL and incremental migrations must stay equivalent.
 - Proto field changes must preserve compatibility unless the task explicitly allows a breaking API change. Record every

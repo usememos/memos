@@ -40,7 +40,8 @@ time on large attachment tables and block concurrent writes; SQLite also allows
 only one writer. The attachment lookup index in schema 26.11.1 uses this
 maintenance window rather than an online build. PostgreSQL builds it inside the
 migration transaction, so failure rolls back both the index and schema marker.
-MySQL commits DDL implicitly; this migration accepts an already completed index
-on retry, but rejects a conflicting index definition. If a migration reports a
-conflict, inspect the named index before retrying; do not advance the schema
-marker manually.
+MySQL commits DDL implicitly, so an interrupted migration can leave schema
+changes behind an old version marker. MySQL migrations use ordinary DDL; they
+do not provide automatic recovery for that partial state. Inspect and reconcile
+the database before retrying an interrupted migration. A completed migration
+is skipped on restart because its schema version is already recorded.

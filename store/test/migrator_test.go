@@ -108,9 +108,9 @@ func requireLookupIndexes(ctx context.Context, t *testing.T, ts *store.Store, dr
 		require.Equal(t, 1, count, "index %s must exist", indexName)
 	}
 
+	columns := []string{"memo_id", "type"}
 	index := attachmentLookupIndex(driver)
 	var query string
-	columns := []string{"memo_id", "type"}
 	switch driver {
 	case "sqlite":
 		query = `SELECT info.name FROM pragma_index_list('attachment') AS list
@@ -119,7 +119,7 @@ func requireLookupIndexes(ctx context.Context, t *testing.T, ts *store.Store, dr
 	case "mysql":
 		query = `SELECT COLUMN_NAME FROM information_schema.STATISTICS
 			WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'attachment' AND INDEX_NAME = ?
-			AND NON_UNIQUE = 1 AND SUB_PART IS NULL AND INDEX_TYPE = 'BTREE' AND IS_VISIBLE = 'YES'
+			AND NON_UNIQUE = 1 AND SUB_PART IS NULL AND INDEX_TYPE = 'BTREE'
 			ORDER BY SEQ_IN_INDEX`
 	case "postgres":
 		columns = []string{"memo_id"}
