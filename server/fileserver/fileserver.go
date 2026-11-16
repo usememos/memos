@@ -265,7 +265,7 @@ func (s *FileServerService) serveUserAvatar(w http.ResponseWriter, r *http.Reque
 // other schemes.
 func serveExternalAttachment(w http.ResponseWriter, r *http.Request, attachment *store.Attachment) error {
 	target, err := url.Parse(attachment.Reference)
-	if err != nil || target.Host == "" || (target.Scheme != "http" && target.Scheme != "https") {
+	if err != nil || target.Hostname() == "" || (target.Scheme != "http" && target.Scheme != "https") {
 		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "attachment has no servable external URL"}
 	}
 	setSecurityHeaders(w)

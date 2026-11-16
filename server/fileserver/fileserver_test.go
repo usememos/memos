@@ -243,22 +243,25 @@ func TestServeAttachmentFile_ExternalAttachmentRedirectsToReference(t *testing.T
 		require.Equal(t, attachment.Reference, rec.Header().Get("Location"))
 	}
 
-	// A stored reference that is not an http(s) URL cannot be redirected to;
-	// the request fails instead of serving another scheme or an empty body.
-	badAttachment, err := stores.CreateAttachment(ctx, &store.Attachment{
-		UID:         random.UUID(),
-		CreatorID:   creator.ID,
-		MemoID:      &storedMemo.ID,
-		Filename:    "not-a-url.png",
-		Type:        "image/png",
-		StorageType: storepb.AttachmentStorageType_EXTERNAL,
-		Reference:   "javascript:alert(1)",
-	})
-	require.NoError(t, err)
-	rec := httptest.NewRecorder()
-	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/attachments/%s/%s", badAttachment.UID, badAttachment.Filename), nil))
-	require.Equal(t, http.StatusInternalServerError, rec.Code)
-	require.Empty(t, rec.Header().Get("Location"))
+	// A stored reference that is not a servable http(s) URL cannot be
+	// redirected to; the request fails instead of serving another scheme,
+	// a hostless URL, or an empty body.
+	for _, reference := range []string{"javascript:alert(1)", "https://:443/file"} {
+		badAttachment, err := stores.CreateAttachment(ctx, &store.Attachment{
+			UID:         random.UUID(),
+			CreatorID:   creator.ID,
+			MemoID:      &storedMemo.ID,
+			Filename:    "not-a-url.png",
+			Type:        "image/png",
+			StorageType: storepb.AttachmentStorageType_EXTERNAL,
+			Reference:   reference,
+		})
+		require.NoError(t, err)
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/attachments/%s/%s", badAttachment.UID, badAttachment.Filename), nil))
+		require.Equal(t, http.StatusInternalServerError, rec.Code, "reference %q", reference)
+		require.Empty(t, rec.Header().Get("Location"), "reference %q", reference)
+	}
 }
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
