@@ -17,6 +17,7 @@ behavior; a design document does not have to.
 Implemented, awaiting release:
 
 - [Markup: image annotation and saving](drawing-annotation-and-recovery.md)
+- [MariaDB compatibility testing](mariadb-compatibility-testing.md)
 
 Implemented and frozen:
 

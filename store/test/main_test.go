@@ -10,6 +10,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	if _, err := getMySQLVariant(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	// If DRIVER is set, run tests for that driver only
 	if os.Getenv("DRIVER") != "" {
 		defer TerminateContainers()
@@ -17,7 +21,7 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	// No DRIVER set - run tests for all drivers sequentially
+	// No DRIVER set - run tests for all database targets sequentially
 	runAllDrivers()
 }
 
@@ -27,9 +31,10 @@ func runAllDrivers() {
 		label string
 		env   []string
 	}{
-		{"sqlite", []string{"DRIVER=sqlite"}},
-		{"mysql", []string{"DRIVER=mysql"}},
-		{"postgres", []string{"DRIVER=postgres"}},
+		{"sqlite", []string{"DRIVER=sqlite", "MYSQL_VARIANT="}},
+		{"mysql", []string{"DRIVER=mysql", "MYSQL_VARIANT=mysql"}},
+		{"mariadb", []string{"DRIVER=mysql", "MYSQL_VARIANT=mariadb"}},
+		{"postgres", []string{"DRIVER=postgres", "MYSQL_VARIANT="}},
 	}
 	_, currentFile, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(currentFile)))

@@ -91,20 +91,28 @@ func TestUserIdentityUniqueConflict(t *testing.T) {
 	userB, err := createTestingUserWithRole(ctx, ts, "conflict_user", store.RoleUser)
 	require.NoError(t, err)
 
-	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
-		UserID:    userA.ID,
-		Provider:  "idp-A",
-		ExternUID: "sub-1",
-	})
-	require.NoError(t, err)
+	for _, tc := range []struct{ provider, subject string }{
+		{provider: "idp-A", subject: "sub-1"},
+		{provider: "idp-key-marker", subject: "x for key 'username"},
+		{provider: "idp-sqlite-marker", subject: "UNIQUE constraint failed: user.email"},
+		{provider: "idp-postgres-marker", subject: `violates unique constraint "idx_user_email"`},
+	} {
+		t.Run(tc.provider, func(t *testing.T) {
+			_, err := ts.CreateUserIdentity(ctx, &store.UserIdentity{
+				UserID:    userA.ID,
+				Provider:  tc.provider,
+				ExternUID: tc.subject,
+			})
+			require.NoError(t, err)
 
-	// Second insert with the same (provider, extern_uid) must fail regardless of user_id.
-	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
-		UserID:    userB.ID,
-		Provider:  "idp-A",
-		ExternUID: "sub-1",
-	})
-	require.Error(t, err)
+			_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+				UserID:    userB.ID,
+				Provider:  tc.provider,
+				ExternUID: tc.subject,
+			})
+			require.ErrorIs(t, err, store.ErrUserIdentityTaken)
+		})
+	}
 }
 
 func TestUserIdentitySameExternUIDDifferentProviders(t *testing.T) {
@@ -158,7 +166,7 @@ func TestUserIdentitySameUserSameProviderConflicts(t *testing.T) {
 		Provider:  "idp-A",
 		ExternUID: "sub-2",
 	})
-	require.Error(t, err)
+	require.ErrorIs(t, err, store.ErrUserIdentityTaken)
 }
 
 func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
@@ -203,7 +211,7 @@ func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
 			Provider:  "conflict-provider",
 			ExternUID: "conflict-subject",
 		})
-		require.Error(t, err)
+		require.ErrorIs(t, err, store.ErrUserIdentityTaken)
 
 		username := "rolled-back-user"
 		user, err := ts.GetUser(ctx, &store.FindUser{Username: &username})
@@ -222,7 +230,7 @@ func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
 			Provider:  "unused-provider",
 			ExternUID: "unused-subject",
 		})
-		require.Error(t, err)
+		require.ErrorIs(t, err, store.ErrUsernameTaken)
 
 		provider := "unused-provider"
 		externUID := "unused-subject"

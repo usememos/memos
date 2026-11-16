@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -1210,11 +1211,24 @@ func TestMemoFilterNullPayload(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-null-payload", tc.User.ID).Content("Null payload"))
-
-	// Test: has_link should not crash and return no results
-	memos := tc.ListWithFilter(`has_link`)
-	require.Len(t, memos, 0)
+	query := "UPDATE memo SET payload = ? WHERE id = ?"
+	if getDriverFromEnv() == "postgres" {
+		query = "UPDATE memo SET payload = $1 WHERE id = $2"
+	}
+	for i, payload := range []string{
+		`{}`,
+		`{"property":{}}`,
+		`{"property":{"hasLink":false}}`,
+		`{"property":{"hasLink":null}}`,
+	} {
+		memo := tc.CreateMemo(NewMemoBuilder(fmt.Sprintf("memo-null-payload-%d", i), tc.User.ID).Content("Missing or false flag"))
+		_, err := tc.Store.GetDriver().GetDB().ExecContext(tc.Ctx, query, payload, memo.ID)
+		require.NoError(t, err)
+	}
+	require.Empty(t, tc.ListWithFilter(`has_link`))
+	for _, expression := range []string{`!has_link`, `has_link == false`, `has_link != true`} {
+		require.Len(t, tc.ListWithFilter(expression), 4, expression)
+	}
 }
 
 func TestMemoFilterNoMatches(t *testing.T) {

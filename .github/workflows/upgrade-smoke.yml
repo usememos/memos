@@ -15,11 +15,15 @@ on:
     branches: [main]
     paths:
       # Anything that can change how an existing database is opened or upgraded.
+      - "go.mod"
+      - "go.sum"
+      - "filter/**"
       - "store/migration/**"
       - "store/migrator.go"
       - "store/schema_version*.go"
       - "store/db/**"
       - "store/test/containers.go"
+      - "store/test/main_test.go"
       - "store/test/migrator*_test.go"
       - "store/test/store.go"
       - "server/server.go"
@@ -41,12 +45,24 @@ concurrency:
 
 jobs:
   migration-upgrade:
-    name: Upgrade from previous stable (${{ matrix.driver }})
+    name: Upgrade from previous stable (${{ matrix.target }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        driver: [sqlite, mysql, postgres]
+        include:
+          - target: sqlite
+            driver: sqlite
+            mysql-variant: ""
+          - target: mysql
+            driver: mysql
+            mysql-variant: mysql
+          - target: mariadb
+            driver: mysql
+            mysql-variant: mariadb
+          - target: postgres
+            driver: postgres
+            mysql-variant: ""
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -64,6 +80,7 @@ jobs:
           go test -v -timeout 30m -run 'TestMigration|TestUpgrade|TestFreshInstall' ./store/test/...
         env:
           DRIVER: ${{ matrix.driver }}
+          MYSQL_VARIANT: ${{ matrix.mysql-variant }}
 
   release-smoke:
     name: Fresh install and upgrade through the release image

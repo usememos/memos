@@ -42,21 +42,27 @@ func classifyUserUniqueViolation(err error) error {
 		return nil
 	}
 	message := err.Error()
-	for _, marker := range uniqueViolationMarkers {
-		_, after, ok := strings.Cut(message, marker)
-		if !ok {
-			continue
+	marker, markerIndex := "", -1
+	// Duplicate values can contain markers from any database's error format.
+	for _, candidate := range uniqueViolationMarkers {
+		if index := strings.LastIndex(message, candidate); index > markerIndex {
+			marker, markerIndex = candidate, index
 		}
-		target := after
-		switch {
-		case strings.Contains(target, "user_identity"):
-			return errors.Wrap(ErrUserIdentityTaken, message)
-		case strings.Contains(target, "email"):
-			return errors.Wrap(ErrEmailTaken, message)
-		case strings.Contains(target, "username"):
-			return errors.Wrap(ErrUsernameTaken, message)
-		}
+	}
+	if markerIndex < 0 {
 		return nil
+	}
+	target := message[markerIndex+len(marker):]
+	if marker == " for key '" {
+		target, _, _ = strings.Cut(target, "'")
+	}
+	switch {
+	case strings.Contains(target, "user_identity") || (marker == " for key '" && (target == "provider" || target == "user_id")):
+		return errors.Wrap(ErrUserIdentityTaken, message)
+	case strings.Contains(target, "email"):
+		return errors.Wrap(ErrEmailTaken, message)
+	case strings.Contains(target, "username"):
+		return errors.Wrap(ErrUsernameTaken, message)
 	}
 	return nil
 }

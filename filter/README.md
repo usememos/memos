@@ -60,7 +60,7 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   string operands are literal. Hierarchy works through implied ancestors already
   present in the memo tag set, not through prefix matching.
 - **Boolean Flags** — Fields such as `has_task_list` render as an `IS TRUE` check
-  (a comparison against `CAST('true' AS JSON)` on MySQL). Memo payloads omit false
+  (a comparison against `JSON_EXTRACT('true', '$')` on MySQL). Memo payloads omit false
   flags, so a missing key counts as false: `flag == false` and `flag != true`
   render as the negated check and match the same memos as `!flag`.
 - **Presence Flags** — `has_location` renders as a JSON key-existence check on

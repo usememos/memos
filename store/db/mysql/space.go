@@ -90,7 +90,7 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 			JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'`
 		where = append(where, "viewer_member.user_id = ?", "viewer_member.status = 'ACTIVE'", "viewer_member.role IN ('ADMIN', 'USER')", "viewer_user.row_status = 'NORMAL'")
 		args = append(args, *find.MemberUserID)
-		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, viewer_member.role"
+		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, space.payload, viewer_member.role"
 	}
 	query := "SELECT " + selectFields + " FROM space" + joins + " WHERE " + strings.Join(where, " AND ") + groupBy + " ORDER BY space.id DESC"
 	query = appendMySQLLimit(query, find.Limit, find.Offset)

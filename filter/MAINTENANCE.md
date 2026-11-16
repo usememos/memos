@@ -49,5 +49,6 @@ extending or debugging the package.
 
 - `go test ./store/...` ensures all dialect tests consume the engine correctly.
 - Add targeted unit tests whenever new IR nodes or renderer paths are introduced.
-- When changing boolean or JSON handling, verify all three dialect test suites
-  (SQLite, MySQL, Postgres) to avoid regression.
+- When changing boolean or JSON handling, verify SQLite, MySQL, MariaDB, and
+  PostgreSQL execution through the store tests. MariaDB uses the MySQL dialect;
+  see `store/test/README.md` for the test selector.

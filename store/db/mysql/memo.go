@@ -364,7 +364,7 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return err
 	}
 	if _, err := d.db.ExecContext(ctx,
-		"UPDATE `memo` SET `payload` = JSON_SET(COALESCE(`payload`, JSON_OBJECT()), '$.tags', CAST(? AS JSON), '$.property', CAST(? AS JSON)) WHERE `id` = ? AND CAST(`content` AS BINARY) = CAST(? AS BINARY)",
+		"UPDATE `memo` SET `payload` = JSON_SET(COALESCE(`payload`, JSON_OBJECT()), '$.tags', JSON_EXTRACT(?, '$'), '$.property', JSON_EXTRACT(?, '$')) WHERE `id` = ? AND CAST(`content` AS BINARY) = CAST(? AS BINARY)",
 		tags, property, refresh.ID, refresh.Content,
 	); err != nil {
 		return errors.Wrap(err, "failed to refresh memo payload")

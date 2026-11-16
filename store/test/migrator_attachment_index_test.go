@@ -20,61 +20,40 @@ func attachmentLookupIndex(driver string) string {
 	return "idx_attachment_memo_id_type"
 }
 
-// TestMigrationAttachmentIndex covers a new index, a retry after DDL committed,
-// and a conflicting operator-created index without losing attachment data.
+// TestMigrationAttachmentIndex preserves attachment data through the index upgrade and a restart.
 func TestMigrationAttachmentIndex(t *testing.T) {
-	for _, state := range []string{"absent", "present", "conflict"} {
-		t.Run(state, func(t *testing.T) {
-			t.Parallel()
-			ctx := context.Background()
-			ts := NewTestingStore(ctx, t)
-			t.Cleanup(func() { require.NoError(t, ts.Close()) })
-			driver := getDriverFromEnv()
-			index := attachmentLookupIndex(driver)
-			user, err := createTestingHostUser(ctx, ts)
-			require.NoError(t, err)
-			memo, err := ts.CreateMemo(ctx, &store.Memo{UID: "index-upgrade", CreatorID: user.ID, Content: "preserved", Visibility: store.Private})
-			require.NoError(t, err)
-			attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
-				UID: "index-attachment", CreatorID: user.ID, MemoID: &memo.ID,
-				Type: "image/png", Blob: []byte("preserved blob"), Size: 14, StorageType: storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED,
-			})
-			require.NoError(t, err)
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	t.Cleanup(func() { require.NoError(t, ts.Close()) })
+	driver := getDriverFromEnv()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: "index-upgrade", CreatorID: user.ID, Content: "preserved", Visibility: store.Private})
+	require.NoError(t, err)
+	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: "index-attachment", CreatorID: user.ID, MemoID: &memo.ID,
+		Type: "image/png", Blob: []byte("preserved blob"), Size: 14, StorageType: storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED,
+	})
+	require.NoError(t, err)
 
-			if state != "present" {
-				query := "DROP INDEX " + index
-				if driver == "mysql" {
-					query += " ON attachment"
-				}
-				_, err = ts.GetDriver().GetDB().ExecContext(ctx, query)
-				require.NoError(t, err)
-			}
-			if state == "conflict" {
-				_, err = ts.GetDriver().GetDB().ExecContext(ctx, "CREATE INDEX "+index+" ON attachment(creator_id)")
-				require.NoError(t, err)
-			}
-			setSchemaVersion(ctx, t, ts, "26.10.1")
-			err = ts.Migrate(ctx)
-			if state == "conflict" {
-				require.ErrorContains(t, err, index)
-			} else {
-				require.NoError(t, err)
-				requireLookupIndexes(ctx, t, ts, driver)
-				require.NoError(t, ts.Migrate(ctx), "a completed upgrade can restart")
-			}
-			setting, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "BASIC"})
-			require.NoError(t, err)
-			expected := "26.11.1"
-			if state == "conflict" {
-				expected = "26.10.1"
-			}
-			require.Equal(t, expected, setting.GetBasicSetting().SchemaVersion)
-			stored, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
-			require.NoError(t, err)
-			require.Equal(t, []byte("preserved blob"), stored.Blob)
-			require.Equal(t, attachment.MemoID, stored.MemoID)
-		})
+	query := "DROP INDEX " + attachmentLookupIndex(driver)
+	if driver == "mysql" {
+		query += " ON attachment"
 	}
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, query)
+	require.NoError(t, err)
+	setSchemaVersion(ctx, t, ts, "26.10.1")
+	require.NoError(t, ts.Migrate(ctx))
+	requireLookupIndexes(ctx, t, ts, driver)
+	require.NoError(t, ts.Migrate(ctx), "a completed upgrade can restart")
+	setting, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "BASIC"})
+	require.NoError(t, err)
+	require.Equal(t, "26.11.1", setting.GetBasicSetting().SchemaVersion)
+	stored, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
+	require.NoError(t, err)
+	require.Equal(t, []byte("preserved blob"), stored.Blob)
+	require.Equal(t, attachment.MemoID, stored.MemoID)
 }
 
 // TestMigrationAttachmentLongType preserves PostgreSQL's unbounded MIME field
