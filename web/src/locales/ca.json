@@ -33,6 +33,8 @@
     "admin-sign-in": "Inici de sessió d'administrador",
     "back-to-sign-in": "Torna a iniciar la sessió",
     "continue-with": "Continua amb {{provider}}",
+    "redirecting-to-provider": "S’està redirigint a {{provider}}…",
+    "signing-in": "S’està iniciant la sessió…",
     "create-admin-account": "Crea un compte d'administrador",
     "setup-description": "Crea el compte d'administrador per a aquesta instància.",
     "setup-title": "Configura la teva instància",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
+    "saving": "S’està desant…",
+    "updating": "S’està actualitzant…",
+    "commenting": "S’està enviant el comentari…",
     "audio-recorder": {
       "attachment-label": "Gravació d'àudio",
       "attachment-label-with-time": "Gravació d'àudio {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Notes al peu",
     "back-to-reference": "Torna a la referència",
     "new-memo": "Nova nota",
-    "saved": "Desada",
     "validation": {
       "cannot-save": "No es pot desar",
       "content-required": "Cal contingut, fitxer adjunt o fitxer",

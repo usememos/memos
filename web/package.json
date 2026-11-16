@@ -29,7 +29,7 @@
     "@tanstack/react-query-devtools": "^5.100.9",
     "@usememos/canvas": "26.11.3",
     "@usememos/editor": "26.11.5",
-    "@usememos/ui": "26.11.21",
+    "@usememos/ui": "26.11.22",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^4.0.2",

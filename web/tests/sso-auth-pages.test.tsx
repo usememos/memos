@@ -86,6 +86,7 @@ describe("automatic SSO auth pages", () => {
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button).toHaveAccessibleDescription("auth.redirecting-to-provider: Company SSO");
     await waitFor(() => expect(button.querySelector(".mu-spinner")).toBeInTheDocument());
     expect(screen.queryByText("auth.redirecting-to-provider: Company SSO")).not.toBeInTheDocument();
   });
@@ -177,25 +178,35 @@ describe("automatic SSO auth pages", () => {
     expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toHaveAttribute("aria-busy", "true");
   });
-  it("shows loading only on the selected provider while preventing duplicate attempts", () => {
+  it("keeps provider names visible while loading only the selected provider and preventing duplicate attempts", async () => {
     const otherProvider = create(IdentityProviderSchema, { ...provider, name: "identityProviders/other", title: "Other SSO" });
     renderPage("/auth", <IdentityProviderButtons identityProviderList={[provider, otherProvider]} />);
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
     const otherButton = screen.getByRole("button", { name: "auth.continue-with: Other SSO" });
+    const slot = button.querySelector(".mu-button-loading-slot");
+    expect(slot).not.toBeNull();
+    act(() => button.focus());
+    fireEvent.click(button);
     fireEvent.click(button);
     expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button).toHaveAccessibleName("auth.continue-with: Company SSO");
+    expect(button).toHaveAccessibleDescription("auth.redirecting-to-provider: Company SSO");
     expect(otherButton).not.toHaveAttribute("aria-busy");
     expect(otherButton.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(otherButton).toBeDisabled();
     fireEvent.click(otherButton);
     expect(signInWithSSO).toHaveBeenCalledOnce();
+    await waitFor(() => expect(button.querySelector(".mu-spinner")).toBe(slot));
+    expect(button).toHaveTextContent("auth.continue-with: Company SSO");
+    expect(button).toHaveFocus();
   });
   it("returns to manual controls after initiation fails without automatically retrying", async () => {
     vi.mocked(signInWithSSO).mockRejectedValueOnce(new Error("Storage unavailable"));
     renderPage();
     const button = await screen.findByRole("button", { name: "auth.continue-with: Company SSO" });
-    await waitFor(() => expect(button).toBeEnabled());
-    expect(button).not.toHaveAttribute("aria-busy");
+    await waitFor(() => expect(button).not.toHaveAttribute("aria-busy"));
+    expect(button).toBeEnabled();
+    expect(button).not.toHaveAttribute("aria-description");
     expect(button.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(signInWithSSO).toHaveBeenCalledOnce();
     fireEvent.click(button);
@@ -209,6 +220,7 @@ describe("automatic SSO auth pages", () => {
     });
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).not.toHaveAttribute("aria-busy");
+    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).not.toHaveAttribute("aria-description");
     expect(signInWithSSO).toHaveBeenCalledOnce();
   });
 });

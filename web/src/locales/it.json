@@ -33,6 +33,8 @@
     "admin-sign-in": "Accesso amministratore",
     "back-to-sign-in": "Torna alla pagina di accesso",
     "continue-with": "Continua con {{provider}}",
+    "redirecting-to-provider": "Reindirizzamento a {{provider}}…",
+    "signing-in": "Accesso in corso…",
     "create-admin-account": "Crea un account amministratore",
     "setup-description": "Crea l'account amministratore per questa istanza.",
     "setup-title": "Configura la tua istanza",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Nessuna modifica rilevata",
     "save": "Salva",
+    "saving": "Salvataggio…",
+    "updating": "Aggiornamento…",
+    "commenting": "Invio del commento…",
     "audio-recorder": {
       "attachment-label": "Registrazione audio",
       "attachment-label-with-time": "Registrazione audio {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Note a piè di pagina",
     "back-to-reference": "Torna al riferimento",
     "new-memo": "Nuovo memo",
-    "saved": "Salvato",
     "validation": {
       "cannot-save": "Impossibile salvare",
       "content-required": "Contenuto, allegato o file richiesti",

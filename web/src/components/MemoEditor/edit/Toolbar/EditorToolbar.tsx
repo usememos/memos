@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@usememos/ui";
-import { CheckIcon, CircleAlertIcon } from "lucide-react";
+import { CircleAlertIcon } from "lucide-react";
 import { type FC, useId } from "react";
 import { type Location, Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -33,15 +33,11 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   const blockedReasonDetail = useEditorSelector((s) => validationService.canSave(s).detail);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const drawingSaveError = useEditorSelector((s) => s.drawingSaveError);
-  const justSaved = useEditorSelector((s) => s.ui.justSaved);
   const isUploading = useEditorSelector((s) => s.ui.isLoading.uploading);
   const location = useEditorSelector((s) => s.metadata.location);
   const visibility = useEditorSelector((s) => s.metadata.visibility);
-  // The save transaction is in flight or its confirmation is holding the
-  // editor open; either way the toolbar is frozen.
-  const committing = isSaving || justSaved;
   const blockedMessage =
-    valid || committing
+    valid || isSaving
       ? undefined
       : blockedReason
         ? t(blockedReason, blockedReasonDetail ? { url: blockedReasonDetail } : undefined)
@@ -50,6 +46,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   // updated, a reply becomes a comment, and a new memo is simply saved. A memo
   // is stored with a visibility, not posted, so messaging verbs stay out.
   const commitLabel = memoName ? t("common.update") : parentMemoName ? t("editor.comment") : t("editor.save");
+  const loadingLabel = memoName ? t("editor.updating") : parentMemoName ? t("editor.commenting") : t("editor.saving");
 
   const handleLocationChange = (next?: Location) => {
     dispatch(actions.setMetadata({ location: next }));
@@ -64,34 +61,19 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   };
 
   const blockedReasonId = useId();
-  const commitButton = justSaved ? (
-    <Button variant="primary" iconEnd={<CheckIcon />} disabled>
-      {t("editor.saved")}
-    </Button>
-  ) : blockedMessage ? (
-    // The disabled button stays focusable; its tooltip and its description say why it can't save.
-    <Tooltip.Root>
-      <Tooltip.Trigger render={<Button variant="primary" disabled focusableWhenDisabled aria-describedby={blockedReasonId} />}>
-        {commitLabel}
-      </Tooltip.Trigger>
-      <Tooltip.Popup side="top">{blockedMessage}</Tooltip.Popup>
-      <span id={blockedReasonId} className="mu-visually-hidden">
-        {blockedMessage}
-      </span>
-    </Tooltip.Root>
-  ) : (
-    // The same trigger stays mounted through the save so the button keeps focus;
-    // only its tooltip is switched off. Both modifiers save (see
-    // buildEditorExtensions), so both are announced.
+  const commitButton = (
     <Tooltip.Root disabled={isSaving}>
       <Tooltip.Trigger
         render={
           <Button
             variant="primary"
-            iconEnd={drawingSaveError ? <CircleAlertIcon /> : undefined}
+            icon={drawingSaveError ? <CircleAlertIcon /> : undefined}
             onClick={onSave}
+            disabled={Boolean(blockedMessage)}
+            focusableWhenDisabled
             loading={isSaving}
-            loadingLabel={commitLabel}
+            loadingLabel={loadingLabel}
+            aria-describedby={blockedMessage ? blockedReasonId : undefined}
             aria-keyshortcuts="Meta+Enter Control+Enter"
           />
         }
@@ -99,9 +81,14 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
         {commitLabel}
       </Tooltip.Trigger>
       {/* The save shortcut shows in the tooltip, so the primary action reads as a plain verb. */}
-      <Tooltip.Popup side="top" shortcut={`${primaryModifierGlyph()} Enter`}>
-        {drawingSaveError ? t(drawingSaveError) : commitLabel}
+      <Tooltip.Popup side="top" shortcut={blockedMessage ? undefined : `${primaryModifierGlyph()} Enter`}>
+        {blockedMessage ?? (drawingSaveError ? t(drawingSaveError) : commitLabel)}
       </Tooltip.Popup>
+      {blockedMessage && (
+        <span id={blockedReasonId} className="mu-visually-hidden">
+          {blockedMessage}
+        </span>
+      )}
     </Tooltip.Root>
   );
 
@@ -112,7 +99,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       <div className="flex min-w-0 flex-1 flex-row items-center justify-start gap-1">
         <InsertMenu
           isUploading={isUploading}
-          isSaving={committing}
+          isSaving={isSaving}
           location={location}
           onLocationChange={handleLocationChange}
           memoName={memoName}
@@ -127,13 +114,13 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           space={space}
           onChange={handleVisibilityChange}
           onSpaceChange={canChooseSpace ? handleSpaceChange : undefined}
-          disabled={committing}
+          disabled={isSaving}
         />
       </div>
 
       <div className="flex shrink-0 flex-row items-center justify-end gap-1">
         {onCancel && (
-          <Button variant="ghost" onClick={onCancel} disabled={committing}>
+          <Button variant="ghost" onClick={onCancel} disabled={isSaving}>
             {t("common.cancel")}
           </Button>
         )}

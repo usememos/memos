@@ -33,6 +33,8 @@
     "admin-sign-in": "Administrator sign-in",
     "back-to-sign-in": "Back to sign in",
     "continue-with": "Continue with {{provider}}",
+    "redirecting-to-provider": "Redirecting to {{provider}}…",
+    "signing-in": "Signing in…",
     "create-admin-account": "Create admin account",
     "setup-description": "Create the administrator account for this instance.",
     "setup-title": "Set up your instance",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",
+    "saving": "Saving…",
+    "updating": "Updating…",
+    "commenting": "Sending comment…",
     "audio-recorder": {
       "attachment-label": "Audio recording",
       "attachment-label-with-time": "Audio recording {{time}}",
@@ -256,7 +261,6 @@
       "link": "Link"
     },
     "new-memo": "New memo",
-    "saved": "Saved",
     "validation": {
       "cannot-save": "Cannot save",
       "content-required": "Content, attachment, or file required",

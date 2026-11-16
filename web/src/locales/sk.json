@@ -33,6 +33,8 @@
     "admin-sign-in": "Prihlásenie správcu",
     "back-to-sign-in": "Späť na prihlásenie",
     "continue-with": "Pokračovať s {{provider}}",
+    "redirecting-to-provider": "Presmerovanie na {{provider}}…",
+    "signing-in": "Prihlasovanie…",
     "create-admin-account": "Vytvoriť administrátorský účet",
     "setup-description": "Vytvoriť administrátorský účet pre túto inštanciu.",
     "setup-title": "Nastavte si inštanciu",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Nezistili sa žiadne zmeny",
     "save": "Uložiť",
+    "saving": "Ukladanie…",
+    "updating": "Aktualizácia…",
+    "commenting": "Odosielanie komentára…",
     "audio-recorder": {
       "attachment-label": "Zvukový záznam",
       "attachment-label-with-time": "Záznam zvuku {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Poznámky pod čiarou",
     "back-to-reference": "Späť na odkaz",
     "new-memo": "Nová poznámka",
-    "saved": "Uložené",
     "validation": {
       "cannot-save": "Nedá sa uložiť",
       "content-required": "Vyžaduje sa obsah, príloha alebo súbor",

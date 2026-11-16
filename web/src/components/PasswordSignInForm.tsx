@@ -103,7 +103,7 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
       />
       <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />
       {error && <AuthNotice tone="error">{error.message}</AuthNotice>}
-      <Button variant="primary" type="submit" loading={actionBtnLoadingState.isLoading} loadingLabel={t("common.sign-in")}>
+      <Button variant="primary" type="submit" loading={actionBtnLoadingState.isLoading} loadingLabel={t("auth.signing-in")}>
         {t("common.sign-in")}
       </Button>
     </form>

@@ -33,6 +33,8 @@
     "admin-sign-in": "관리자 로그인",
     "back-to-sign-in": "로그인으로 돌아가기",
     "continue-with": "{{provider}}으로 계속 진행",
+    "redirecting-to-provider": "{{provider}} 로그인 페이지로 이동 중…",
+    "signing-in": "로그인 중…",
     "create-admin-account": "관리자 계정 생성",
     "setup-description": "이 인스턴스의 관리자 계정을 생성합니다.",
     "setup-title": "인스턴스 설정",
@@ -163,6 +165,9 @@
     "markdown-mode": "Markdown 모드",
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
+    "saving": "저장 중…",
+    "updating": "업데이트 중…",
+    "commenting": "댓글 전송 중…",
     "insert-menu": {
       "add-location": "위치 추가",
       "link-memo": "링크 메모",
@@ -256,7 +261,6 @@
     "footnotes": "각주",
     "back-to-reference": "참조로 돌아가기",
     "new-memo": "새 메모",
-    "saved": "저장됨",
     "validation": {
       "cannot-save": "저장할 수 없음",
       "content-required": "콘텐츠, 첨부 파일 또는 파일이 필요합니다",

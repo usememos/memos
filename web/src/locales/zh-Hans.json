@@ -48,6 +48,8 @@
     "back-to-sign-in": "返回登录",
     "callback-failed-title": "无法完成登录",
     "continue-with": "使用 {{provider}} 继续",
+    "redirecting-to-provider": "正在跳转至 {{provider}}…",
+    "signing-in": "正在登录…",
     "create-admin-account": "创建管理员账号",
     "create-your-account": "创建您的账户",
     "hide-password": "隐藏密码",
@@ -215,6 +217,9 @@
     "new-memo": "新建备忘录",
     "no-changes-detected": "未检测到更改",
     "save": "保存",
+    "saving": "正在保存…",
+    "updating": "正在更新…",
+    "commenting": "正在发送评论…",
     "validation": {
       "cannot-save": "无法保存",
       "content-required": "需要填写正文或添加附件",
@@ -302,7 +307,6 @@
     "comment": "评论",
     "footnotes": "脚注",
     "back-to-reference": "返回引用处",
-    "saved": "已保存",
     "blocks": {
       "task": "任务",
       "quote": "引用",

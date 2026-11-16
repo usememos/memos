@@ -201,13 +201,16 @@ describe("DrawingSheet", () => {
     const onDone = vi.fn();
     render(<DrawingSheet mode="new" background={new Blob(["png"], { type: "image/png" })} onDone={onDone} onClose={vi.fn()} />);
 
-    const done = screen.getByRole("button", { name: "editor.blocks.loading" });
+    const done = screen.getByRole("button", { name: "common.add" });
+    expect(done).toHaveAccessibleDescription("editor.blocks.loading");
+    expect(done).toHaveTextContent("common.add");
     await waitFor(() => expect(handle.insertImage).toHaveBeenCalled());
     expect(done).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("img").parentElement).toHaveAttribute("aria-busy", "true");
 
     finishInsert("image1");
     await waitFor(() => expect(screen.getByRole("button", { name: "common.add" })).not.toHaveAttribute("aria-disabled"));
+    expect(done).not.toHaveAttribute("aria-description");
     expect(screen.getByRole("img").parentElement).not.toHaveAttribute("aria-busy");
   });
 

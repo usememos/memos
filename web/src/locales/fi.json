@@ -33,6 +33,8 @@
     "admin-sign-in": "Järjestelmänvalvojan kirjautuminen",
     "back-to-sign-in": "Takaisin sisäänkirjautumiseen",
     "continue-with": "Jatka kohdasta {{provider}}",
+    "redirecting-to-provider": "Siirrytään palveluun {{provider}}…",
+    "signing-in": "Kirjaudutaan sisään…",
     "create-admin-account": "Luo järjestelmänvalvojan tili",
     "setup-description": "Luo järjestelmänvalvojan tili tälle instanssille.",
     "setup-title": "Määritä instanssisi",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Muutoksia ei havaittu",
     "save": "Tallentaa",
+    "saving": "Tallennetaan…",
+    "updating": "Päivitetään…",
+    "commenting": "Lähetetään kommenttia…",
     "audio-recorder": {
       "attachment-label": "Äänen tallennus",
       "attachment-label-with-time": "Äänen tallennus {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Alaviitteet",
     "back-to-reference": "Takaisin viitteeseen",
     "new-memo": "Uusi muistio",
-    "saved": "Tallennettu",
     "validation": {
       "cannot-save": "Ei voida tallentaa",
       "content-required": "Sisältö, liite tai tiedosto vaaditaan",

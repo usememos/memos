@@ -25,6 +25,8 @@
     "back-to-sign-in": "חזרה להתחברות",
     "callback-failed-title": "לא ניתן היה להשלים את הכניסה",
     "continue-with": "המשיכו עם {{provider}}",
+    "redirecting-to-provider": "מתבצעת הפניה אל {{provider}}…",
+    "signing-in": "מתבצעת התחברות…",
     "create-admin-account": "צור חשבון מנהל",
     "create-your-account": "צרו את החשבון שלכם",
     "hide-password": "הסתרת הסיסמה",
@@ -307,6 +309,9 @@
     },
     "no-changes-detected": "לא זוהו שינויים",
     "save": "שמור",
+    "saving": "מתבצעת שמירה…",
+    "updating": "מתבצע עדכון…",
+    "commenting": "מתבצעת שליחת תגובה…",
     "validation": {
       "cannot-save": "לא ניתן לשמור",
       "content-required": "נדרש תוכן, קובץ מצורף או קובץ",
@@ -337,7 +342,6 @@
     "footnotes": "הערות שוליים",
     "back-to-reference": "חזרה להפניה",
     "new-memo": "תזכיר חדש",
-    "saved": "נשמר",
     "blocks": {
       "task": "משימה",
       "quote": "ציטוט",

@@ -25,6 +25,8 @@
     "back-to-sign-in": "サインインに戻る",
     "callback-failed-title": "サインインを完了できませんでした",
     "continue-with": "{{provider}}で続行",
+    "redirecting-to-provider": "{{provider}} に移動しています…",
+    "signing-in": "ログインしています…",
     "create-admin-account": "管理者アカウントを作成",
     "create-your-account": "アカウントを作成",
     "hide-password": "パスワードを隠す",
@@ -163,6 +165,9 @@
     "markdown-mode": "Markdown モード",
     "no-changes-detected": "変更はありません",
     "save": "保存",
+    "saving": "保存しています…",
+    "updating": "更新しています…",
+    "commenting": "コメントを送信しています…",
     "insert-menu": {
       "add-location": "場所を追加",
       "link-memo": "リンクメモ",
@@ -256,7 +261,6 @@
     "footnotes": "脚注",
     "back-to-reference": "参照箇所に戻る",
     "new-memo": "新しいメモ",
-    "saved": "保存済み",
     "validation": {
       "cannot-save": "保存できません",
       "content-required": "コンテンツ、添付ファイル、またはファイルが必要です",

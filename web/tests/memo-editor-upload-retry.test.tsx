@@ -35,7 +35,6 @@ vi.mock("@/components/MemoEditor/edit/state", () => ({
     actions: {
       reset: () => ({ type: "reset" }),
       setLoading: () => ({ type: "noop" }),
-      setJustSaved: () => ({ type: "noop" }),
       setMetadata: (metadata: Partial<EditorState["metadata"]>) => ({ type: "set-metadata", metadata }),
       setLocalFiles: (localFiles: LocalFile[]) => ({ type: "set-local-files", localFiles }),
       setAttachmentOrder: (attachmentOrder: string[]) => ({ type: "set-attachment-order", attachmentOrder }),

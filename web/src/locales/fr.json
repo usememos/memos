@@ -33,6 +33,8 @@
     "admin-sign-in": "Connexion administrateur",
     "back-to-sign-in": "Retour à la connexion",
     "continue-with": "Continuer avec {{provider}}",
+    "redirecting-to-provider": "Redirection vers {{provider}}…",
+    "signing-in": "Connexion en cours…",
     "create-admin-account": "Créer un compte administrateur",
     "setup-description": "Créer le compte administrateur de cette instance.",
     "setup-title": "Configurer votre instance",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",
+    "saving": "Enregistrement en cours…",
+    "updating": "Mise à jour en cours…",
+    "commenting": "Envoi du commentaire…",
     "audio-recorder": {
       "attachment-label": "Enregistrement audio",
       "attachment-label-with-time": "Enregistrement audio {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Notes de bas de page",
     "back-to-reference": "Retour à la référence",
     "new-memo": "Nouvelle note",
-    "saved": "Enregistrée",
     "validation": {
       "cannot-save": "Impossible d'enregistrer",
       "content-required": "Contenu, pièce jointe ou fichier requis",

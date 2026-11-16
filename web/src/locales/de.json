@@ -33,6 +33,8 @@
     "admin-sign-in": "Administrator-Anmeldung",
     "back-to-sign-in": "Zurück zur Anmeldung",
     "continue-with": "Weiter mit {{provider}}",
+    "redirecting-to-provider": "Weiterleitung zu {{provider}}…",
+    "signing-in": "Anmeldung läuft…",
     "create-admin-account": "Administratorkonto erstellen",
     "setup-description": "Administratorkonto für diese Instanz erstellen.",
     "setup-title": "Instanz einrichten",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Keine Änderungen erkannt",
     "save": "Speichern",
+    "saving": "Wird gespeichert…",
+    "updating": "Wird aktualisiert…",
+    "commenting": "Kommentar wird gesendet…",
     "audio-recorder": {
       "attachment-label": "Audioaufnahme",
       "attachment-label-with-time": "Audioaufnahme {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Fußnoten",
     "back-to-reference": "Zurück zur Referenz",
     "new-memo": "Neues Memo",
-    "saved": "Gespeichert",
     "validation": {
       "cannot-save": "Speichern nicht möglich",
       "content-required": "Inhalt, Anhang oder Datei erforderlich",

@@ -25,6 +25,8 @@
     "back-to-sign-in": "返回登入",
     "callback-failed-title": "無法完成登入",
     "continue-with": "使用 {{provider}} 繼續",
+    "redirecting-to-provider": "正在跳轉至 {{provider}}…",
+    "signing-in": "正在登入…",
     "create-admin-account": "建立管理員帳號",
     "create-your-account": "建立您的帳號",
     "hide-password": "隱藏密碼",
@@ -316,6 +318,9 @@
     "new-memo": "新增備忘錄",
     "no-changes-detected": "未發現變更",
     "save": "儲存",
+    "saving": "正在儲存…",
+    "updating": "正在更新…",
+    "commenting": "正在傳送評論…",
     "validation": {
       "cannot-save": "無法儲存",
       "content-required": "需要填寫正文或新增附件",
@@ -345,7 +350,6 @@
     "comment": "評論",
     "footnotes": "腳註",
     "back-to-reference": "返回引用處",
-    "saved": "已儲存",
     "blocks": {
       "task": "任務",
       "quote": "引用",

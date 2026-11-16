@@ -33,6 +33,8 @@
     "admin-sign-in": "Administratoriaus prisijungimas",
     "back-to-sign-in": "Grįžti prie prisijungimo",
     "continue-with": "Tęsti su {{provider}}",
+    "redirecting-to-provider": "Nukreipiama į {{provider}}…",
+    "signing-in": "Prisijungiama…",
     "create-admin-account": "Sukurti administratoriaus paskyrą",
     "setup-description": "Sukurti administratoriaus paskyrą šiai instancijai.",
     "setup-title": "Nustatyti savo instanciją",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Pakeitimų neaptikta",
     "save": "Išsaugoti",
+    "saving": "Išsaugoma…",
+    "updating": "Atnaujinama…",
+    "commenting": "Siunčiamas komentaras…",
     "audio-recorder": {
       "attachment-label": "Garso įrašymas",
       "attachment-label-with-time": "Garso įrašymas {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Išnašos",
     "back-to-reference": "Grįžti į nuorodą",
     "new-memo": "Naujas priminimas",
-    "saved": "Išsaugota",
     "validation": {
       "cannot-save": "Nepavyksta išsaugoti",
       "content-required": "Reikalingas turinys, priedas arba failas",

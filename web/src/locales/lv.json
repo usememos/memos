@@ -33,6 +33,8 @@
     "admin-sign-in": "Administratora pieteikšanās",
     "back-to-sign-in": "Atpakaļ, lai pierakstītos",
     "continue-with": "Turpināt ar {{provider}}",
+    "redirecting-to-provider": "Notiek novirzīšana uz {{provider}}…",
+    "signing-in": "Notiek pierakstīšanās…",
     "create-admin-account": "Izveidot administratora kontu",
     "setup-description": "Izveidojiet administratora kontu šai instancei.",
     "setup-title": "Iestatiet savu instanci",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Izmaiņas nav konstatētas",
     "save": "Saglabāt",
+    "saving": "Notiek saglabāšana…",
+    "updating": "Notiek atjaunināšana…",
+    "commenting": "Notiek komentāra sūtīšana…",
     "audio-recorder": {
       "attachment-label": "Audio ieraksts",
       "attachment-label-with-time": "Audio ieraksts {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Vēres",
     "back-to-reference": "Atpakaļ pie atsauces",
     "new-memo": "Jauna piezīme",
-    "saved": "Saglabāts",
     "validation": {
       "cannot-save": "Nevar saglabāt",
       "content-required": "Nepieciešams saturs, pielikums vai fails",

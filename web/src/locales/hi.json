@@ -33,6 +33,8 @@
     "admin-sign-in": "एडमिनिस्ट्रेटर साइन-इन",
     "back-to-sign-in": "साइन इन पर वापस जाएं",
     "continue-with": "{{provider}} के साथ जारी रखें",
+    "redirecting-to-provider": "{{provider}} पर ले जाया जा रहा है…",
+    "signing-in": "साइन इन हो रहा है…",
     "create-admin-account": "एडमिन अकाउंट बनाएं",
     "setup-description": "इस इंस्टेंस के लिए एडमिनिस्ट्रेटर अकाउंट बनाएं।",
     "setup-title": "अपना इंस्टेंस सेट अप करें",
@@ -163,6 +165,9 @@
     "markdown-mode": "Markdown मोड",
     "no-changes-detected": "कोई बदलाव नहीं पाया गया",
     "save": "सहेजें",
+    "saving": "सहेजा जा रहा है…",
+    "updating": "अपडेट हो रहा है…",
+    "commenting": "टिप्पणी भेजी जा रही है…",
     "insert-menu": {
       "add-location": "स्थान जोड़ें",
       "link-memo": "लिंक मेमो",
@@ -256,7 +261,6 @@
     "footnotes": "पादटिप्पणियाँ",
     "back-to-reference": "संदर्भ पर वापस जाएँ",
     "new-memo": "नया मेमो",
-    "saved": "सेव किया गया",
     "validation": {
       "cannot-save": "सेव नहीं किया जा सकता",
       "content-required": "कंटेंट, अटैचमेंट, या फ़ाइल ज़रूरी है",

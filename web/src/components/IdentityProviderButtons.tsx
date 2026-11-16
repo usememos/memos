@@ -85,7 +85,7 @@ const IdentityProviderButtons = ({ identityProviderList, redirectTarget, autoSig
           variant="neutral"
           disabled={Boolean(pendingProvider)}
           loading={pendingProvider?.name === identityProvider.name}
-          loadingLabel={t("auth.continue-with", { provider: identityProvider.title })}
+          loadingLabel={t("auth.redirecting-to-provider", { provider: identityProvider.title })}
           onClick={() => void handleSignInWithIdentityProvider(identityProvider)}
         >
           {t("auth.continue-with", { provider: identityProvider.title })}

@@ -33,6 +33,8 @@
     "admin-sign-in": "Σύνδεση διαχειριστή",
     "back-to-sign-in": "Επιστροφή στη σύνδεση",
     "continue-with": "Συνέχεια με {{provider}}",
+    "redirecting-to-provider": "Ανακατεύθυνση στο {{provider}}…",
+    "signing-in": "Σύνδεση…",
     "create-admin-account": "Δημιουργία λογαριασμού διαχειριστή",
     "setup-description": "Δημιουργία λογαριασμού διαχειριστή για αυτήν την παρουσία.",
     "setup-title": "Ρύθμιση της παρουσίας σας",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Δεν εντοπίστηκαν αλλαγές",
     "save": "Εκτός",
+    "saving": "Αποθήκευση…",
+    "updating": "Ενημέρωση…",
+    "commenting": "Αποστολή σχολίου…",
     "audio-recorder": {
       "attachment-label": "Ηχογράφηση",
       "attachment-label-with-time": "Εγγραφή ήχου {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Υποσημειώσεις",
     "back-to-reference": "Επιστροφή στην αναφορά",
     "new-memo": "Νέο σημείωμα",
-    "saved": "Αποθηκεύτηκε",
     "validation": {
       "cannot-save": "Δεν είναι δυνατή η αποθήκευση",
       "content-required": "Απαιτείται περιεχόμενο, συνημμένο ή αρχείο",

@@ -33,6 +33,8 @@
     "admin-sign-in": "Inicio de sesión de administrador",
     "back-to-sign-in": "Volver al inicio de sesión",
     "continue-with": "Continuar con {{provider}}",
+    "redirecting-to-provider": "Redirigiendo a {{provider}}…",
+    "signing-in": "Iniciando sesión…",
     "create-admin-account": "Crear cuenta de administrador",
     "setup-description": "Crear la cuenta de administrador para esta instancia.",
     "setup-title": "Configurar la instancia",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "No se detectaron cambios",
     "save": "Guardar",
+    "saving": "Guardando…",
+    "updating": "Actualizando…",
+    "commenting": "Enviando comentario…",
     "audio-recorder": {
       "attachment-label": "Grabación de audio",
       "attachment-label-with-time": "Grabación de audio {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Notas al pie",
     "back-to-reference": "Volver a la referencia",
     "new-memo": "Nuevo memo",
-    "saved": "Guardado",
     "validation": {
       "cannot-save": "No se puede guardar",
       "content-required": "Se requiere contenido, adjunto o archivo",

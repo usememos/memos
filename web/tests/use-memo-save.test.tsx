@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   createMemoComment: vi.fn(),
   newMemoName: null as string | null,
   timestamps: {} as { createTime?: Date; updateTime?: Date },
+  saving: false,
 }));
 
 vi.mock("@/connect", () => ({
@@ -29,12 +30,11 @@ vi.mock("@/components/MemoEditor/edit/state", () => ({
     actions: {
       reset: () => ({ type: "reset" }),
       setLoading: (key: string, value: boolean) => ({ type: "set-loading", key, value }),
-      setJustSaved: (value: boolean) => ({ type: "set-just-saved", value }),
       setMetadata: () => ({ type: "set-metadata" }),
       setTimestamps: () => ({ type: "set-timestamps" }),
     },
     dispatch: mocks.dispatch,
-    getState: () => ({ ui: { justSaved: false }, timestamps: mocks.timestamps }),
+    getState: () => ({ ui: { isLoading: { saving: mocks.saving } }, timestamps: mocks.timestamps }),
   }),
 }));
 
@@ -53,6 +53,11 @@ describe("useMemoSave", () => {
     mocks.memoSave.mockReset();
     mocks.newMemoName = null;
     mocks.timestamps = {};
+    mocks.saving = false;
+    mocks.dispatch.mockImplementation((action) => {
+      if (action.type === "set-loading" && action.key === "saving") mocks.saving = action.value;
+      if (action.type === "reset") mocks.saving = false;
+    });
     mocks.markNewMemo.mockImplementation((value: string | null | ((current: string | null) => string | null)) => {
       mocks.newMemoName = typeof value === "function" ? value(mocks.newMemoName) : value;
     });
@@ -95,21 +100,61 @@ describe("useMemoSave", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "detail", "memos/parent"] });
   });
 
-  it("holds a saved confirmation before a closing host resets", async () => {
-    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/existing" });
+  it.each([
+    { memoName: "memos/existing" },
+    { parentMemoName: "memos/parent" },
+  ])("resets and confirms a successful closing save without advancing timers: %o", async (options) => {
+    vi.useFakeTimers();
+    try {
+      mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/saved" });
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+      const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+      const onConfirm = vi.fn();
+      const discardDraft = vi.fn();
+      const { result } = renderHook(() => useMemoSave({ ...options, discardDraft, onConfirm }), { wrapper });
+
+      await act(async () => result.current());
+
+      expect(discardDraft).toHaveBeenCalledOnce();
+      expect(mocks.dispatch).toHaveBeenCalledWith({ type: "reset" });
+      expect(onConfirm).toHaveBeenCalledWith("memos/saved");
+      expect(mocks.saving).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("blocks another save while pending and preserves the draft for a failed save's retry", async () => {
+    let failSave!: (error: Error) => void;
+    mocks.memoSave.mockReturnValueOnce(new Promise((_resolve, reject) => (failSave = reject)));
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
     const onConfirm = vi.fn();
-    const { result } = renderHook(() => useMemoSave({ memoName: "memos/existing", discardDraft: vi.fn(), onConfirm }), { wrapper });
-
+    const discardDraft = vi.fn();
+    const { result } = renderHook(() => useMemoSave({ discardDraft, onConfirm }), { wrapper });
+    let pending!: Promise<void>;
+    act(() => {
+      pending = result.current();
+    });
     await act(async () => result.current());
+    expect(mocks.memoSave).toHaveBeenCalledOnce();
+    expect(mocks.saving).toBe(true);
 
-    const types = mocks.dispatch.mock.calls.map(([action]) => action);
-    const savedOn = types.findIndex((a) => a.type === "set-just-saved" && a.value === true);
-    const reset = types.findIndex((a) => a.type === "reset");
-    expect(savedOn).toBeGreaterThan(-1);
-    expect(reset).toBeGreaterThan(savedOn);
-    expect(onConfirm).toHaveBeenCalledWith("memos/existing");
+    await act(async () => {
+      failSave(new Error("offline"));
+      await pending;
+    });
+    expect(mocks.saving).toBe(false);
+    expect(discardDraft).not.toHaveBeenCalled();
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(mocks.dispatch).not.toHaveBeenCalledWith({ type: "reset" });
+
+    mocks.memoSave.mockResolvedValueOnce({ hasChanges: true, memoName: "memos/retried" });
+    await act(async () => result.current());
+    expect(mocks.memoSave).toHaveBeenCalledTimes(2);
+    expect(onConfirm).toHaveBeenCalledWith("memos/retried");
+    expect(discardDraft).toHaveBeenCalledOnce();
   });
 
   it("clears the new memo hoist after editing that memo", async () => {
@@ -212,11 +257,12 @@ describe("useMemoSave", () => {
     mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-    const { result } = renderHook(() => useMemoSave({ discardDraft: vi.fn() }), { wrapper });
+    const onConfirm = vi.fn();
+    const { result } = renderHook(() => useMemoSave({ discardDraft: vi.fn(), onConfirm }), { wrapper });
 
     await act(async () => result.current());
 
-    const savedOn = mocks.dispatch.mock.calls.some(([action]) => action.type === "set-just-saved" && action.value === true);
-    expect(savedOn).toBe(false);
+    expect(mocks.dispatch).toHaveBeenCalledWith({ type: "reset" });
+    expect(onConfirm).toHaveBeenCalledWith("memos/new");
   });
 });

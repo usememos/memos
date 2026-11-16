@@ -33,6 +33,8 @@
     "admin-sign-in": "Administratorlogin",
     "back-to-sign-in": "Tilbage til login",
     "continue-with": "Fortsæt med {{provider}}",
+    "redirecting-to-provider": "Omdirigerer til {{provider}}…",
+    "signing-in": "Logger ind…",
     "create-admin-account": "Opret administratorkonto",
     "setup-description": "Opret administratorkontoen for denne instans.",
     "setup-title": "Konfigurer din instans",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Ingen ændringer registreret",
     "save": "Spare",
+    "saving": "Gemmer…",
+    "updating": "Opdaterer…",
+    "commenting": "Sender kommentar…",
     "audio-recorder": {
       "attachment-label": "Lydoptagelse",
       "attachment-label-with-time": "Lydoptagelse {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Fodnoter",
     "back-to-reference": "Tilbage til referencen",
     "new-memo": "Nyt notat",
-    "saved": "Gemt",
     "validation": {
       "cannot-save": "Kan ikke gemmes",
       "content-required": "Indhold, vedhæftet fil eller fil kræves",

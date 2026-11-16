@@ -53,7 +53,7 @@ Formatting is the editor's own: its toolbar appears over selected text, the slas
 
 ### Saving
 
-`useMemoSave` validates the draft, uploads local files, and hands the save to `memoService.save` with the operations it runs: the server's current copy (fetched into the detail cache to diff against), `useUpdateMemo` and `useCreateMemo`. Hosts that close after saving (edit, comment) hold a brief "Saved" confirmation before the session resets; the in-place composer resets at once. Uploads that landed before a failed save stay on the draft as attachments so a retry does not upload them again. The save keeps the draft's attachment order (`edit/utils/attachmentOrder.ts`): new files land where they were dragged among the saved ones, not after them.
+`useMemoSave` validates the draft, uploads local files, and hands the save to `memoService.save` with the operations it runs: the server's current copy (fetched into the detail cache to diff against), `useUpdateMemo` and `useCreateMemo`. A successful save resets the session and notifies the host immediately; editing and comment hosts close without a timed confirmation, and the in-place composer is ready for the next memo. The commit button stays mounted with its original label through validation and saving; its spinner and any drawing-save error use the same leading slot. Uploads that landed before a failed save stay on the draft as attachments so a retry does not upload them again. The save keeps the draft's attachment order (`edit/utils/attachmentOrder.ts`): new files land where they were dragged among the saved ones, not after them.
 
 ### Attachments, links and place
 

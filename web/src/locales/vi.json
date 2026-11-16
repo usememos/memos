@@ -33,6 +33,8 @@
     "admin-sign-in": "Đăng nhập quản trị viên",
     "back-to-sign-in": "Quay lại trang đăng nhập",
     "continue-with": "Tiếp tục với {{provider}}",
+    "redirecting-to-provider": "Đang chuyển hướng đến {{provider}}…",
+    "signing-in": "Đang đăng nhập…",
     "create-admin-account": "Tạo tài khoản quản trị viên",
     "setup-description": "Tạo tài khoản quản trị viên cho phiên bản này.",
     "setup-title": "Thiết lập phiên bản của bạn",
@@ -163,6 +165,9 @@
     "markdown-mode": "Chế độ Markdown",
     "no-changes-detected": "Không phát hiện thay đổi",
     "save": "Lưu",
+    "saving": "Đang lưu…",
+    "updating": "Đang cập nhật…",
+    "commenting": "Đang gửi bình luận…",
     "insert-menu": {
       "add-location": "Thêm vị trí",
       "link-memo": "Liên kết bản ghi nhớ",
@@ -256,7 +261,6 @@
     "footnotes": "Chú thích",
     "back-to-reference": "Quay lại tham chiếu",
     "new-memo": "Ghi chú mới",
-    "saved": "Đã lưu",
     "validation": {
       "cannot-save": "Không thể lưu",
       "content-required": "Cần nội dung, tệp đính kèm hoặc tệp tin",

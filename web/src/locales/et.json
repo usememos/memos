@@ -33,6 +33,8 @@
     "admin-sign-in": "Administraatori sisselogimine",
     "back-to-sign-in": "Tagasi sisselogimiseks",
     "continue-with": "Jätka {{provider}}-ga",
+    "redirecting-to-provider": "Suunamine teenusesse {{provider}}…",
+    "signing-in": "Sisselogimine…",
     "create-admin-account": "Loo administraatori konto",
     "setup-description": "Loo selle eksemplari jaoks administraatori konto.",
     "setup-title": "Seadistage oma eksemplar",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
+    "saving": "Salvestamine…",
+    "updating": "Uuendamine…",
+    "commenting": "Kommentaari saatmine…",
     "audio-recorder": {
       "attachment-label": "Helisalvestus",
       "attachment-label-with-time": "Helisalvestus {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Allmärkused",
     "back-to-reference": "Tagasi viite juurde",
     "new-memo": "Uus memo",
-    "saved": "Salvestatud",
     "validation": {
       "cannot-save": "Ei saa salvestada",
       "content-required": "Vaja on sisu, manust või faili",

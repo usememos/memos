@@ -33,6 +33,8 @@
     "admin-sign-in": "Prijava skrbnika",
     "back-to-sign-in": "Nazaj na prijavo",
     "continue-with": "Nadaljuj z {{provider}}",
+    "redirecting-to-provider": "Preusmerjanje na {{provider}}…",
+    "signing-in": "Prijavljanje…",
     "create-admin-account": "Ustvari skrbniški račun",
     "setup-description": "Ustvari skrbniški račun za ta primerek.",
     "setup-title": "Nastavi svoj primerek",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Ni zaznanih sprememb",
     "save": "Shrani",
+    "saving": "Shranjevanje…",
+    "updating": "Posodabljanje…",
+    "commenting": "Pošiljanje komentarja…",
     "audio-recorder": {
       "attachment-label": "Zvočni posnetek",
       "attachment-label-with-time": "Zvočni posnetek {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Opombe",
     "back-to-reference": "Nazaj na sklic",
     "new-memo": "Nov zapisek",
-    "saved": "Shranjeno",
     "validation": {
       "cannot-save": "Shranjevanje ni mogoče",
       "content-required": "Zahtevana je vsebina, priloga ali datoteka",

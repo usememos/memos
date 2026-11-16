@@ -33,6 +33,8 @@
     "admin-sign-in": "Rendszergazdai bejelentkezés",
     "back-to-sign-in": "Vissza a bejelentkezéshez",
     "continue-with": "Folytatás ezzel: {{provider}}",
+    "redirecting-to-provider": "Átirányítás ide: {{provider}}…",
+    "signing-in": "Bejelentkezés…",
     "create-admin-account": "Rendszergazdai fiók létrehozása",
     "setup-description": "Rendszergazdai fiók létrehozása ehhez a példányhoz.",
     "setup-title": "Példány beállítása",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
+    "saving": "Mentés…",
+    "updating": "Frissítés…",
+    "commenting": "Hozzászólás küldése…",
     "audio-recorder": {
       "attachment-label": "Hangfelvétel",
       "attachment-label-with-time": "Hangfelvétel {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Lábjegyzetek",
     "back-to-reference": "Vissza a hivatkozáshoz",
     "new-memo": "Új feljegyzés",
-    "saved": "Mentve",
     "validation": {
       "cannot-save": "Nem lehet menteni",
       "content-required": "Tartalom, melléklet vagy fájl szükséges",

@@ -33,6 +33,8 @@
     "admin-sign-in": "Conectare administrator",
     "back-to-sign-in": "Înapoi la conectare",
     "continue-with": "Continuați cu {{provider}}",
+    "redirecting-to-provider": "Redirecționare către {{provider}}…",
+    "signing-in": "Autentificare…",
     "create-admin-account": "Creați cont de administrator",
     "setup-description": "Creați contul de administrator pentru această instanță.",
     "setup-title": "Configurați instanța",
@@ -259,6 +261,9 @@
     },
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",
+    "saving": "Se salvează…",
+    "updating": "Se actualizează…",
+    "commenting": "Se trimite comentariul…",
     "audio-recorder": {
       "attachment-label": "Înregistrare audio",
       "attachment-label-with-time": "Înregistrare audio {{time}}",
@@ -294,7 +299,6 @@
     "footnotes": "Note de subsol",
     "back-to-reference": "Înapoi la referință",
     "new-memo": "Memo nou",
-    "saved": "Salvat",
     "validation": {
       "cannot-save": "Nu se poate salva",
       "content-required": "Este necesar conținut, atașament sau fișier",

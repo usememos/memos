@@ -33,6 +33,8 @@
     "admin-sign-in": "प्रशासक साइन-इन",
     "back-to-sign-in": "साइन इन वर परत जा",
     "continue-with": "{{provider}} सह सुरू ठेवा",
+    "redirecting-to-provider": "{{provider}} कडे पाठवत आहे…",
+    "signing-in": "साइन इन करत आहे…",
     "create-admin-account": "प्रशासक खाते तयार करा",
     "setup-description": "या इन्स्टन्ससाठी प्रशासक खाते तयार करा.",
     "setup-title": "तुमचा इन्स्टन्स सेट अप करा",
@@ -163,6 +165,9 @@
     "markdown-mode": "Markdown मोड",
     "no-changes-detected": "कोणतेही बदल आढळले नाहीत",
     "save": "जतन",
+    "saving": "जतन करत आहे…",
+    "updating": "अद्ययावत करत आहे…",
+    "commenting": "टिप्पणी पाठवत आहे…",
     "insert-menu": {
       "add-location": "स्थान जोडा",
       "link-memo": "लिंक मेमो",
@@ -256,7 +261,6 @@
     "footnotes": "तळटीपा",
     "back-to-reference": "संदर्भाकडे परत जा",
     "new-memo": "नवीन मेमो",
-    "saved": "जतन केले",
     "validation": {
       "cannot-save": "जतन करू शकत नाही",
       "content-required": "सामग्री, संलग्नक किंवा फाईल आवश्यक आहे",

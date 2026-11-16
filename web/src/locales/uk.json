@@ -33,6 +33,8 @@
     "admin-sign-in": "Вхід адміністратора",
     "back-to-sign-in": "Повернутися до входу",
     "continue-with": "Продовжити з {{provider}}",
+    "redirecting-to-provider": "Перенаправлення до {{provider}}…",
+    "signing-in": "Вхід…",
     "create-admin-account": "Створити обліковий запис адміністратора",
     "setup-description": "Створити обліковий запис адміністратора для цього екземпляра.",
     "setup-title": "Налаштувати екземпляр",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Змін не виявлено",
     "save": "Зберегти",
+    "saving": "Збереження…",
+    "updating": "Оновлення…",
+    "commenting": "Надсилання коментаря…",
     "audio-recorder": {
       "attachment-label": "Аудіозапис",
       "attachment-label-with-time": "Аудіозапис {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Примітки",
     "back-to-reference": "Назад до посилання",
     "new-memo": "Нова нотатка",
-    "saved": "Збережено",
     "validation": {
       "cannot-save": "Не вдається зберегти",
       "content-required": "Потрібен контент, вкладення або файл",

@@ -33,6 +33,8 @@
     "admin-sign-in": "Masuk administrator",
     "back-to-sign-in": "Kembali ke halaman masuk",
     "continue-with": "Lanjutkan dengan {{provider}}",
+    "redirecting-to-provider": "Mengalihkan ke {{provider}}…",
+    "signing-in": "Sedang masuk…",
     "create-admin-account": "Buat akun admin",
     "setup-description": "Buat akun administrator untuk instance ini.",
     "setup-title": "Siapkan instance Anda",
@@ -163,6 +165,9 @@
     "markdown-mode": "Mode Markdown",
     "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
+    "saving": "Menyimpan…",
+    "updating": "Memperbarui…",
+    "commenting": "Mengirim komentar…",
     "insert-menu": {
       "add-location": "Tambahkan lokasi",
       "link-memo": "Tautan memo",
@@ -256,7 +261,6 @@
     "footnotes": "Catatan kaki",
     "back-to-reference": "Kembali ke referensi",
     "new-memo": "Memo baru",
-    "saved": "Tersimpan",
     "validation": {
       "cannot-save": "Tidak dapat menyimpan",
       "content-required": "Konten, lampiran, atau file diperlukan",

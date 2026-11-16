@@ -33,6 +33,8 @@
     "admin-sign-in": "تسجيل دخول المسؤول",
     "back-to-sign-in": "العودة إلى صفحة تسجيل الدخول",
     "continue-with": "المتابعة مع {{provider}}",
+    "redirecting-to-provider": "جارٍ الانتقال إلى {{provider}}…",
+    "signing-in": "جارٍ تسجيل الدخول…",
     "create-admin-account": "إنشاء حساب مدير",
     "setup-description": "إنشاء حساب المدير لهذه النسخة.",
     "setup-title": "إعداد النسخة",
@@ -163,6 +165,9 @@
     "markdown-mode": "وضع Markdown",
     "no-changes-detected": "لم يتم الكشف عن تغييرات",
     "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "updating": "جارٍ التحديث…",
+    "commenting": "جارٍ إرسال التعليق…",
     "insert-menu": {
       "add-location": "أضف الموقع",
       "link-memo": "مذكرة الارتباط",
@@ -256,7 +261,6 @@
     "footnotes": "الحواشي",
     "back-to-reference": "الرجوع إلى المرجع",
     "new-memo": "مذكرة جديدة",
-    "saved": "تم الحفظ",
     "validation": {
       "cannot-save": "تعذر الحفظ",
       "content-required": "المحتوى أو المرفق أو الملف مطلوب",

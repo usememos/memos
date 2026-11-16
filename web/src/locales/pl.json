@@ -33,6 +33,8 @@
     "admin-sign-in": "Logowanie administratora",
     "back-to-sign-in": "Powrót do logowania",
     "continue-with": "Kontynuuj z {{provider}}",
+    "redirecting-to-provider": "Przekierowywanie do {{provider}}…",
+    "signing-in": "Logowanie…",
     "create-admin-account": "Utwórz konto administratora",
     "setup-description": "Utwórz konto administratora dla tej instancji.",
     "setup-title": "Skonfiguruj swoją instancję",
@@ -236,6 +238,9 @@
     },
     "no-changes-detected": "Brak wykrytych zmian",
     "save": "Zapisz",
+    "saving": "Zapisywanie…",
+    "updating": "Aktualizowanie…",
+    "commenting": "Wysyłanie komentarza…",
     "audio-recorder": {
       "attachment-label": "Nagrywanie dźwięku",
       "attachment-label-with-time": "Nagranie dźwięku {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Przypisy",
     "back-to-reference": "Wróć do odniesienia",
     "new-memo": "Nowa notatka",
-    "saved": "Zapisano",
     "validation": {
       "cannot-save": "Nie można zapisać",
       "content-required": "Wymagana treść, załącznik lub plik",

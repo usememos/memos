@@ -33,6 +33,8 @@
     "admin-sign-in": "Login de administrador",
     "back-to-sign-in": "Voltar para fazer login",
     "continue-with": "Continuar com {{provider}}",
+    "redirecting-to-provider": "Redirecionando para {{provider}}…",
+    "signing-in": "Entrando…",
     "create-admin-account": "Criar conta de administrador",
     "setup-description": "Criar a conta de administrador para esta instância.",
     "setup-title": "Configurar sua instância",
@@ -163,6 +165,9 @@
     "markdown-mode": "Modo Markdown",
     "no-changes-detected": "Nenhuma alteração detectada",
     "save": "Salvar",
+    "saving": "Salvando…",
+    "updating": "Atualizando…",
+    "commenting": "Enviando comentário…",
     "insert-menu": {
       "add-location": "Adicionar local",
       "link-memo": "Vincular memorando",
@@ -256,7 +261,6 @@
     "footnotes": "Notas de rodapé",
     "back-to-reference": "Voltar à referência",
     "new-memo": "Novo memorando",
-    "saved": "Salvo",
     "validation": {
       "cannot-save": "Não é possível salvar",
       "content-required": "Conteúdo, anexo ou arquivo necessário",

@@ -33,6 +33,8 @@
     "admin-sign-in": "Administratörsinloggning",
     "back-to-sign-in": "Tillbaka till inloggning",
     "continue-with": "Fortsätt med {{provider}}",
+    "redirecting-to-provider": "Omdirigerar till {{provider}}…",
+    "signing-in": "Loggar in…",
     "create-admin-account": "Skapa administratörskonto",
     "setup-description": "Skapa administratörskontot för den här instansen.",
     "setup-title": "Konfigurera din instans",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Inga ändringar upptäckta",
     "save": "Spara",
+    "saving": "Sparar…",
+    "updating": "Uppdaterar…",
+    "commenting": "Skickar kommentar…",
     "audio-recorder": {
       "attachment-label": "Ljudinspelning",
       "attachment-label-with-time": "Ljudinspelning {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Fotnoter",
     "back-to-reference": "Tillbaka till referensen",
     "new-memo": "Nytt memo",
-    "saved": "Sparat",
     "validation": {
       "cannot-save": "Kan inte spara",
       "content-required": "Innehåll, bilaga eller fil krävs",

@@ -33,6 +33,8 @@
     "admin-sign-in": "Přihlášení správce",
     "back-to-sign-in": "Zpět k přihlášení",
     "continue-with": "Pokračovat s {{provider}}",
+    "redirecting-to-provider": "Přesměrování na {{provider}}…",
+    "signing-in": "Přihlašování…",
     "create-admin-account": "Vytvořit administrátorský účet",
     "setup-description": "Vytvořit administrátorský účet pro tuto instanci.",
     "setup-title": "Nastavení instance",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Nebyly zjištěny žádné změny",
     "save": "Uložit",
+    "saving": "Ukládání…",
+    "updating": "Aktualizace…",
+    "commenting": "Odesílání komentáře…",
     "audio-recorder": {
       "attachment-label": "Záznam zvuku",
       "attachment-label-with-time": "Záznam zvuku {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Poznámky pod čarou",
     "back-to-reference": "Zpět na odkaz",
     "new-memo": "Nová poznámka",
-    "saved": "Uloženo",
     "validation": {
       "cannot-save": "Nelze uložit",
       "content-required": "Je vyžadován obsah, příloha nebo soubor",

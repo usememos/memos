@@ -33,6 +33,8 @@
     "admin-sign-in": "Administratorpålogging",
     "back-to-sign-in": "Tilbake til pålogging",
     "continue-with": "Fortsett med {{provider}}",
+    "redirecting-to-provider": "Videresender til {{provider}}…",
+    "signing-in": "Logger inn…",
     "create-admin-account": "Opprett administratorkonto",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
     "setup-title": "Konfigurer instansen din",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
+    "saving": "Lagrer…",
+    "updating": "Oppdaterer…",
+    "commenting": "Sender kommentar…",
     "audio-recorder": {
       "attachment-label": "Lydopptak",
       "attachment-label-with-time": "Lydopptak {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Fotnoter",
     "back-to-reference": "Tilbake til referansen",
     "new-memo": "Nytt notat",
-    "saved": "Lagret",
     "validation": {
       "cannot-save": "Kan ikke lagre",
       "content-required": "Innhold, vedlegg eller fil kreves",

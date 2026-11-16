@@ -33,6 +33,8 @@
     "admin-sign-in": "Aanmelden als beheerder",
     "back-to-sign-in": "Terug naar aanmelden",
     "continue-with": "Doorgaan met {{provider}}",
+    "redirecting-to-provider": "Doorsturen naar {{provider}}…",
+    "signing-in": "Bezig met aanmelden…",
     "create-admin-account": "Beheerdersaccount aanmaken",
     "setup-description": "Maak het beheerdersaccount voor deze instantie aan.",
     "setup-title": "Stel uw instantie in",
@@ -221,6 +223,9 @@
     },
     "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
+    "saving": "Bezig met opslaan…",
+    "updating": "Bezig met bijwerken…",
+    "commenting": "Reactie wordt verzonden…",
     "audio-recorder": {
       "attachment-label": "Audio-opname",
       "attachment-label-with-time": "Audio-opname {{time}}",
@@ -256,7 +261,6 @@
     "footnotes": "Voetnoten",
     "back-to-reference": "Terug naar de verwijzing",
     "new-memo": "Nieuwe memo",
-    "saved": "Opgeslagen",
     "validation": {
       "cannot-save": "Kan niet opslaan",
       "content-required": "Inhoud, bijlage of bestand vereist",
