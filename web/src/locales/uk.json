@@ -438,7 +438,7 @@
     "moved": "Нотатку переміщено",
     "back-to": "Назад до {{source}}",
     "connections": "З'єднання",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Згортати довгі нотатки. Завжди ввімкнено в сіткових макетах.",
     "layout": "Макет",
     "layout-auto": "Авто",
     "layout-auto-description": "Стільки стовпців, скільки поміщається на екран",
@@ -451,8 +451,8 @@
     "view-options": "Параметри перегляду",
     "add-reaction": "Додайте реакцію",
     "remove-reaction": "Видалити реакцію",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "На всю ширину",
+    "full-width-hint": "Використовувати всю ширину хронології нотаток."
   },
   "message": {
     "archived-successfully": "Архівовано успішно",

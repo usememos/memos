@@ -436,7 +436,7 @@
     "moved": "Feljegyzés áthelyezve.",
     "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Hosszabb jegyzetek összecsukása. Rácsos elrendezésben mindig bekapcsolva.",
     "layout": "Elrendezés",
     "layout-auto": "Automatikus",
     "layout-auto-description": "Annyi oszlop, amennyi elfér a képernyőn",
@@ -449,8 +449,8 @@
     "view-options": "Megtekintési beállítások",
     "add-reaction": "Adja hozzá a reakciót",
     "remove-reaction": "Távolítsa el a reakciót",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Teljes szélesség",
+    "full-width-hint": "A jegyzetek idővonalának teljes szélességét használja."
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",

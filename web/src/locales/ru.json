@@ -430,7 +430,7 @@
       "uncheck-all": "Снимите галочки со всех задач",
       "updated": "Задачи обновлены"
     },
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Сворачивать длинные заметки. Всегда включено при отображении сеткой.",
     "layout": "Макет",
     "layout-auto": "Автоматически",
     "layout-auto-description": "Столько столбцов, сколько помещается на экране",
@@ -451,8 +451,8 @@
     "parent-memo": "Родительская заметка",
     "add-reaction": "Добавить реакцию",
     "remove-reaction": "Удалить реакцию",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Во всю ширину",
+    "full-width-hint": "Использовать всю ширину хронологии заметок."
   },
   "message": {
     "archived-successfully": "Перемещено в архив",

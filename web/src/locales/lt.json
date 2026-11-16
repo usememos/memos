@@ -476,7 +476,7 @@
     "moved": "Priminimas perkeltas",
     "back-to": "Atgal į {{source}}",
     "connections": "Ryšiai",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Sutraukti ilgesnes atmintines. Tinklelio išdėstymuose visada įjungta.",
     "layout": "Išdėstymas",
     "layout-auto": "Automatinis",
     "layout-auto-description": "Tiek stulpelių, kiek telpa ekrane",
@@ -489,8 +489,8 @@
     "view-options": "Peržiūros parinktys",
     "add-reaction": "Pridėti reakciją",
     "remove-reaction": "Pašalinti reakciją",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Visas plotis",
+    "full-width-hint": "Naudoti visą atmintinių laiko juostos plotį."
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",

@@ -424,7 +424,7 @@
     "back-to": "{{source}}으로 돌아가기",
     "count-memos-updated-in-date": "{{count}} {{memos}}이 {{date}}에 업데이트되었습니다.",
     "connections": "연결",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "긴 메모를 접습니다. 그리드 레이아웃에서는 항상 활성화됩니다.",
     "layout": "레이아웃",
     "layout-auto": "자동",
     "layout-auto-description": "화면에 맞는 열 개수",
@@ -444,8 +444,8 @@
     "view-options": "보기 옵션",
     "add-reaction": "반응 추가",
     "remove-reaction": "반응 제거",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "전체 너비",
+    "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다."
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",

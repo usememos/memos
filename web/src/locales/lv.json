@@ -475,7 +475,7 @@
     "moved": "Piezīme pārvietota",
     "back-to": "Atpakaļ uz {{source}}",
     "connections": "Savienojumi",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Sakļaut garākas piezīmes. Režģa izkārtojumos vienmēr ieslēgts.",
     "layout": "Izkārtojums",
     "layout-auto": "Automātiski",
     "layout-auto-description": "Tik daudz kolonnu, cik ietilpst ekrānā",
@@ -488,8 +488,8 @@
     "view-options": "Skata opcijas",
     "add-reaction": "Pievienojiet reakciju",
     "remove-reaction": "Noņemiet reakciju",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Pilns platums",
+    "full-width-hint": "Izmantot visu piezīmju laika skalas platumu."
   },
   "message": {
     "archived-successfully": "Veiksmīgi arhivēts",

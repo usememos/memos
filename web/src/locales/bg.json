@@ -474,7 +474,7 @@
     "moved": "Бележката е преместена",
     "back-to": "Обратно към {{source}}",
     "connections": "Връзки",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Свиване на по-дългите бележки. Винаги е включено при мрежови оформления.",
     "layout": "Оформление",
     "layout-auto": "Автоматично",
     "layout-auto-description": "Толкова колони, колкото се побират на екрана",
@@ -487,8 +487,8 @@
     "view-options": "Опции за преглед",
     "add-reaction": "Добавете реакция",
     "remove-reaction": "Премахнете реакцията",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Пълна ширина",
+    "full-width-hint": "Използване на цялата ширина на хронологията на бележките."
   },
   "message": {
     "archived-successfully": "Архивиран успешно",

@@ -475,7 +475,7 @@
     "moved": "Белешка је премештена",
     "back-to": "Назад на {{source}}",
     "connections": "Везе",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Скупи дуже мемое. Увек омогућено у мрежним распоредима.",
     "layout": "Распоред",
     "layout-auto": "Аутоматски",
     "layout-auto-description": "Колико год колона стане на екран",
@@ -488,8 +488,8 @@
     "view-options": "Опције приказа",
     "add-reaction": "Додајте реакцију",
     "remove-reaction": "Уклоните реакцију",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Пуна ширина",
+    "full-width-hint": "Користи целу ширину временске линије мемоа."
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

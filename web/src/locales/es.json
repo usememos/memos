@@ -437,7 +437,7 @@
     "moved": "Memorándum movido.",
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Contraer los memos largos. Siempre activado en los diseños de cuadrícula.",
     "layout": "Diseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como quepan en la pantalla",
@@ -450,8 +450,8 @@
     "view-options": "Opciones de vista",
     "add-reaction": "Añadir reacción",
     "remove-reaction": "Eliminar reacción",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Ancho completo",
+    "full-width-hint": "Usar todo el ancho de la cronología de memos."
   },
   "message": {
     "archived-successfully": "Archivado correctamente",

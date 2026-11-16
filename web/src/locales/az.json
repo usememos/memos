@@ -488,7 +488,7 @@
     },
     "compact-mode": "Yığcam rejim",
     "connections": "Bağlantılar",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Uzun qeydləri yığ. Şəbəkə düzülüşlərində həmişə aktivdir.",
     "layout": "Düzülüş",
     "layout-auto": "Avtomatik",
     "layout-auto-description": "Ekrana sığdığı qədər sütun",
@@ -551,8 +551,8 @@
     },
     "add-reaction": "Reaksiya əlavə et",
     "remove-reaction": "Reaksiyanı çıxar",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Tam en",
+    "full-width-hint": "Qeydlərin zaman xəttinin bütün enindən istifadə et."
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",

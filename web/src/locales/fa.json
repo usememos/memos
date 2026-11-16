@@ -424,7 +424,7 @@
     "back-to": "بازگشت به {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} به‌روزرسانی شده در {{date}}",
     "connections": "اتصالات",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "یادداشت‌های طولانی را جمع کنید. در طرح‌بندی‌های شبکه‌ای همیشه فعال است.",
     "layout": "طرح‌بندی",
     "layout-auto": "خودکار",
     "layout-auto-description": "به تعداد ستون‌هایی که صفحه نمایش را پر می‌کنند",
@@ -444,8 +444,8 @@
     "view-options": "گزینه‌های مشاهده",
     "add-reaction": "افزودن واکنش",
     "remove-reaction": "حذف واکنش",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "تمام عرض",
+    "full-width-hint": "از تمام عرض خط زمانی یادداشت‌ها استفاده کنید."
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",

@@ -474,7 +474,7 @@
     "moved": "Muistio siirretty",
     "back-to": "Takaisin kohtaan {{source}}",
     "connections": "Yhteydet",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Kutista pidemmät muistiot. Aina käytössä ruudukkoasetteluissa.",
     "layout": "Asettelu",
     "layout-auto": "Automaattinen",
     "layout-auto-description": "Niin monta saraketta kuin näytölle mahtuu",
@@ -487,8 +487,8 @@
     "view-options": "Näytä asetukset",
     "add-reaction": "Lisää reaktio",
     "remove-reaction": "Poista reaktio",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Täysi leveys",
+    "full-width-hint": "Käytä muistioiden aikajanan koko leveyttä."
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",

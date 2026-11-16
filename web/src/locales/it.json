@@ -437,7 +437,7 @@
     "moved": "Memo spostato",
     "back-to": "Torna a {{source}}",
     "connections": "Connessioni",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Comprimi i memo lunghi. Sempre attivo nei layout a griglia.",
     "layout": "Layout",
     "layout-auto": "Automatico",
     "layout-auto-description": "Tante colonne quante ne possono entrare nello schermo",
@@ -450,8 +450,8 @@
     "view-options": "Opzioni di visualizzazione",
     "add-reaction": "Aggiungi reazione",
     "remove-reaction": "Rimuovi la reazione",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Larghezza intera",
+    "full-width-hint": "Usa tutta la larghezza della cronologia dei memo."
   },
   "message": {
     "archived-successfully": "Archiviato con successo",

@@ -436,7 +436,7 @@
     "moved": "Notat flyttet",
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Fold sammen lange memoer. Alltid aktivert i rutenettoppsett.",
     "layout": "Oppsett",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som får plass på skjermen",
@@ -449,8 +449,8 @@
     "view-options": "Visningsalternativer",
     "add-reaction": "Legg til reaksjon",
     "remove-reaction": "Fjern reaksjonen",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Full bredde",
+    "full-width-hint": "Bruk hele bredden på memoenes tidslinje."
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",

@@ -424,7 +424,7 @@
     "back-to": "Quay lại {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Thu gọn các ghi chú dài. Luôn bật trong bố cục dạng lưới.",
     "layout": "Bố cục",
     "layout-auto": "Tự động",
     "layout-auto-description": "Số cột tùy ý cho vừa màn hình",
@@ -444,8 +444,8 @@
     "view-options": "Tùy chọn xem",
     "add-reaction": "Thêm biểu tượng cảm xúc",
     "remove-reaction": "Xóa phản ứng",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Toàn bộ chiều rộng",
+    "full-width-hint": "Sử dụng toàn bộ chiều rộng của dòng thời gian ghi chú."
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",

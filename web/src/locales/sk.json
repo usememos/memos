@@ -476,7 +476,7 @@
     "moved": "Poznámka presunutá",
     "back-to": "Späť na {{source}}",
     "connections": "Pripojenia",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Zbaliť dlhšie poznámky. Pri rozložení do mriežky je vždy zapnuté.",
     "layout": "Rozloženie",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Toľko stĺpcov, koľko sa zmestí na obrazovku",
@@ -489,8 +489,8 @@
     "view-options": "Možnosti zobrazenia",
     "add-reaction": "Pridajte reakciu",
     "remove-reaction": "Odstráňte reakciu",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Plná šírka",
+    "full-width-hint": "Využiť celú šírku časovej osi poznámok."
   },
   "message": {
     "archived-successfully": "Úspešne archivované",

@@ -482,7 +482,7 @@
       "has-task-list": "Har gjeremålsliste",
       "remove": "Fjern filteret"
     },
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Fald saman lange notat. Alltid aktivert i rutenettoppsett.",
     "layout": "Oppsett",
     "layout-auto": "Automatisk",
     "layout-auto-description": "Så mange kolonnar som skjermen har plass til",
@@ -551,8 +551,8 @@
     },
     "add-reaction": "Legg til reaksjon",
     "remove-reaction": "Fjern reaksjon",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Full breidd",
+    "full-width-hint": "Bruk heile breidda på tidslina for notata."
   },
   "message": {
     "archived-successfully": "Arkivert",

@@ -437,7 +437,7 @@
     "moved": "Nota moguda",
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Redueix els memos llargs. Sempre activat en dissenys de quadrícula.",
     "layout": "Disseny",
     "layout-auto": "Automàtic",
     "layout-auto-description": "Tantes columnes com càpiguen a la pantalla",
@@ -450,8 +450,8 @@
     "view-options": "Opcions de visualització",
     "add-reaction": "Afegeix reacció",
     "remove-reaction": "Elimina la reacció",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Amplada completa",
+    "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos."
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

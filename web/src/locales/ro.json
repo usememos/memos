@@ -475,7 +475,7 @@
     "moved": "Nota mutată",
     "back-to": "Înapoi la {{source}}",
     "connections": "Conexiuni",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "Restrânge notele lungi. Mereu activat în aspectele de tip grilă.",
     "layout": "Aspect",
     "layout-auto": "Automat",
     "layout-auto-description": "Atâtea coloane câte se potrivesc pe ecran",
@@ -488,8 +488,8 @@
     "view-options": "Opțiuni de vizualizare",
     "add-reaction": "Adăugați reacția",
     "remove-reaction": "Îndepărtați reacția",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "Lățime completă",
+    "full-width-hint": "Folosește întreaga lățime a cronologiei notelor."
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

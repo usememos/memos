@@ -450,8 +450,8 @@
     "view-options": "Options d'affichage",
     "add-reaction": "Ajouter une réaction",
     "remove-reaction": "Supprimer la réaction",
-    "full-width": "Agrandir la page",
-    "full-width-hint": "Utilisez toute la largeur de la chronologie Mémo."
+    "full-width": "Pleine largeur",
+    "full-width-hint": "Utiliser toute la largeur de la chronologie des mémos."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",

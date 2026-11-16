@@ -450,7 +450,7 @@
     "add-reaction": "Reaktion hinzufügen",
     "remove-reaction": "Reaktion entfernen",
     "full-width": "Volle Breite",
-    "full-width-hint": "Nutzen die gesamte Breite der Memo-Zeitleiste."
+    "full-width-hint": "Die gesamte Breite der Notiz-Zeitleiste nutzen."
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",

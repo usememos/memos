@@ -450,7 +450,7 @@
       "remove": "הסרת מסנן"
     },
     "compact-mode": "מצב קומפקטי",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "כיווץ פתקים ארוכים. תמיד מופעל בפריסות רשת.",
     "layout": "פריסה",
     "layout-auto": "אוטומטי",
     "layout-auto-description": "מספר העמודות המרבי שמתאים למסך",
@@ -520,8 +520,8 @@
     "parent-memo": "תזכיר אב",
     "add-reaction": "הוסף תגובה",
     "remove-reaction": "הסר תגובה",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "רוחב מלא",
+    "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים."
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

@@ -411,7 +411,7 @@
     },
     "compact-mode": "紧凑模式",
     "connections": "关联",
-    "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
+    "grid-compact-hint": "收起较长的备忘录。网格布局始终启用此选项。",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
@@ -480,8 +480,8 @@
     "moved": "备忘录已移动",
     "add-reaction": "添加表态",
     "remove-reaction": "移除表态",
-    "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width": "全宽显示",
+    "full-width-hint": "使用备忘录时间线的全部宽度。"
   },
   "message": {
     "archived-successfully": "归档成功",
