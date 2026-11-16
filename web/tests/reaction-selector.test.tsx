@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { Button, Tooltip } from "@usememos/ui";
 import { SmilePlusIcon } from "lucide-react";
@@ -7,29 +7,41 @@ import type { ReactElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoReactionListView from "@/components/MemoReactionListView/MemoReactionListView";
 import ReactionSelector from "@/components/MemoReactionListView/ReactionSelector";
-import { memoDetailQueryOptions, memoKeys } from "@/hooks/useMemoQueries";
+import { memoKeys, useMemoRecord } from "@/hooks/useMemoQueries";
 import { State } from "@/types/proto/api/common_pb";
-import { MemoSchema, ReactionSchema } from "@/types/proto/api/memo_service_pb";
+import { type Memo, MemoSchema, type Reaction, ReactionSchema } from "@/types/proto/api/memo_service_pb";
+import { SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import { UserSchema } from "@/types/proto/api/user_service_pb";
 
 const state = vi.hoisted(() => ({
   currentUser: { name: "users/me", username: "me" } as { name: string; username: string } | undefined,
-  api: { getMemo: vi.fn(), upsertMemoReaction: vi.fn(), deleteMemoReaction: vi.fn() },
+  resolveUsers: true,
+  role: 0,
+  api: { getMemo: vi.fn(), upsertMemoReaction: vi.fn(), deleteMemoReaction: vi.fn(), showErrorToast: vi.fn() },
 }));
-
 vi.mock("@/connect", () => ({ memoServiceClient: state.api }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => state.currentUser }));
+vi.mock("@/hooks/useSpaceQueries", () => ({ useSpaces: () => ({ data: [{ name: "spaces/a", currentUserRole: state.role }] }) }));
+vi.mock("@/lib/toast", () => ({ showErrorToast: state.api.showErrorToast }));
 vi.mock("@/contexts/MentionResolutionContext", () => ({
   useResolvedUsersByNames: () =>
-    new Map([
-      ["users/me", create(UserSchema, { name: "users/me", username: "me" })],
-      ["users/other", create(UserSchema, { name: "users/other", username: "other" })],
-    ]),
+    state.resolveUsers
+      ? new Map([
+          ["users/me", create(UserSchema, { name: "users/me", username: "me" })],
+          ["users/other", create(UserSchema, { name: "users/other", username: "other" })],
+        ])
+      : new Map(),
 }));
-vi.mock("@/contexts/InstanceContext", () => ({
-  useInstance: () => ({ memoRelatedSetting: { reactions: ["👍", "🎉", "❤️"] } }),
+vi.mock("@/lib/emoji-data", () => ({
+  EMOJI: [
+    ["👍", "thumbs up"],
+    ["🎉", "party popper"],
+    ["❤️", "red heart"],
+    ["🦊", "fox"],
+    ["👍🏽", "thumbs up: medium skin tone"],
+  ],
 }));
-vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key, translate: (key: string) => key }));
 
 const reactionMemo = () =>
   create(MemoSchema, {
@@ -44,10 +56,8 @@ const reactionMemo = () =>
 const setup = (memo = reactionMemo(), trigger?: ReactElement) => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   client.setQueryData(memoKeys.detail(memo.name), memo);
-  state.api.getMemo.mockResolvedValue(memo);
   const Surface = () => {
-    const { data } = useQuery({ ...memoDetailQueryOptions(memo.name), staleTime: Infinity });
-    if (!data) return null;
+    const data = useMemoRecord(memo.name) as Memo;
     return trigger ? <ReactionSelector memo={data} trigger={trigger} /> : <MemoReactionListView memo={data} reactions={data.reactions} />;
   };
   return render(
@@ -59,138 +69,133 @@ const setup = (memo = reactionMemo(), trigger?: ReactElement) => {
     </QueryClientProvider>,
   );
 };
-
 const openPicker = async () => {
-  fireEvent.click(screen.getByRole("button", { name: "setting.memo.add-reaction" }));
-  return within(await screen.findByRole("dialog", { name: "setting.memo.add-reaction" }));
-};
-
-const openPickerWithMouse = () => {
-  const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
-  fireEvent.pointerDown(trigger, { pointerType: "mouse", button: 0 });
-  fireEvent.mouseDown(trigger, { button: 0 });
-  trigger.focus();
-  fireEvent.pointerUp(trigger, { pointerType: "mouse", button: 0 });
-  fireEvent.mouseUp(trigger, { button: 0 });
-  fireEvent.click(trigger, { detail: 1 });
+  fireEvent.click(screen.getByRole("button", { name: "memo.add-reaction" }));
+  return within(await screen.findByRole("dialog", { name: "memo.add-reaction" }));
 };
 
 describe("ReactionSelector", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     state.currentUser = { name: "users/me", username: "me" };
+    state.resolveUsers = true;
+    state.role = 0;
   });
 
-  it("focuses the panel when opened with a mouse, leaving emoji choices unfocused", async () => {
+  it("focuses search, filters by name or pasted emoji, and shows a no-results state", async () => {
     setup();
-    openPickerWithMouse();
-    const popup = await screen.findByRole("dialog", { name: "setting.memo.add-reaction" });
-    await waitFor(() => expect(popup).toHaveFocus());
-  });
-
-  it("focuses the first choice for keyboard opening and the panel when subsequently reopened with a mouse", async () => {
-    setup();
-    const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
-    trigger.focus();
-    fireEvent.keyDown(trigger, { key: "Enter" });
-    fireEvent.click(trigger, { detail: 0 });
-    fireEvent.keyUp(trigger, { key: "Enter" });
-    const popup = await screen.findByRole("dialog", { name: "setting.memo.add-reaction" });
-    await waitFor(() => expect(within(popup).getByRole("button", { name: "👍" })).toHaveFocus());
-
-    fireEvent.keyDown(popup, { key: "Escape" });
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(trigger).toHaveFocus();
-
-    openPickerWithMouse();
-    await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus());
-  });
-
-  it("shows configured choices and shares the current user's pressed state with the strip", async () => {
-    setup();
-    expect(screen.getByRole("button", { name: /🎉\s*1/ })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: /👍\s*1/ })).toHaveAttribute("aria-pressed", "false");
-
     const picker = await openPicker();
-    expect(picker.getAllByRole("button")).toHaveLength(3);
-    expect(picker.getByRole("button", { name: "🎉" })).toHaveAttribute("aria-pressed", "true");
-    expect(picker.getByRole("button", { name: "👍" })).toHaveAttribute("aria-pressed", "false");
-    expect(picker.getByRole("button", { name: "❤️" })).toBeInTheDocument();
+    const search = picker.getByRole("combobox");
+    await waitFor(() => expect(search).toHaveFocus());
+    expect(picker.getByRole("gridcell", { name: "party popper" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.change(search, { target: { value: "fox" } });
+    expect(picker.getAllByRole("gridcell")).toHaveLength(1);
+    expect(picker.getByRole("gridcell", { name: "fox" })).toBeInTheDocument();
+    fireEvent.change(search, { target: { value: "👍🏽" } });
+    expect(picker.getByRole("gridcell", { name: "thumbs up: medium skin tone" })).toBeInTheDocument();
+    fireEvent.change(search, { target: { value: "no such emoji" } });
+    expect(picker.queryByRole("gridcell")).not.toBeInTheDocument();
+    expect(picker.getByText("space.icon.no-results")).toBeVisible();
   });
 
-  it("updates the strip after a successful request, closes, and shows the saved choice when reopened", async () => {
-    const memo = reactionMemo();
-    setup(memo);
-    state.api.getMemo.mockResolvedValue(
-      create(MemoSchema, { ...memo, reactions: [...memo.reactions, create(ReactionSchema, { reactionType: "👍", creator: "users/me" })] }),
+  it("keeps accessible emoji names and actions without native tooltips or a preview footer", async () => {
+    setup();
+    const picker = await openPicker();
+    const search = picker.getByRole("combobox");
+    for (const cell of picker.getAllByRole("gridcell")) expect(cell).not.toHaveAttribute("title");
+
+    const heart = picker.getByRole("gridcell", { name: "red heart" });
+    expect(heart).toHaveAccessibleDescription("memo.add-reaction");
+    expect(picker.getByRole("gridcell", { name: "party popper" })).toHaveAccessibleDescription("memo.remove-reaction");
+    fireEvent.mouseMove(heart);
+    expect(picker.queryByText("red heart")).not.toBeInTheDocument();
+    fireEvent.keyDown(search, { key: "ArrowRight" });
+    expect(document.getElementById(search.getAttribute("aria-activedescendant")!)).toHaveAccessibleName("party popper");
+    expect(picker.queryByText("party popper")).not.toBeInTheDocument();
+    expect(picker.queryByText("memo.add-reaction")).not.toBeInTheDocument();
+  });
+
+  it("selects with the keyboard, closes immediately and updates the strip during a slow request", async () => {
+    setup();
+    const request = Promise.withResolvers<Reaction>();
+    state.api.upsertMemoReaction.mockReturnValue(request.promise);
+    const picker = await openPicker();
+    const search = picker.getByRole("combobox");
+    fireEvent.change(search, { target: { value: "fox" } });
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    fireEvent.keyDown(search, { key: "Enter" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "memo.add-reaction" })).toHaveFocus();
+    await waitFor(() => expect(screen.getByRole("button", { name: /fox: 1/ })).toHaveAttribute("aria-pressed", "true"));
+    expect(state.api.upsertMemoReaction).toHaveBeenCalledWith({ parent: "memos/1", reaction: { reactionType: "🦊" } });
+    expect(screen.getByRole("button", { name: "memo.add-reaction" })).toHaveAttribute("aria-disabled", "true");
+    await act(async () =>
+      request.resolve(create(ReactionSchema, { name: "memos/1/reactions/3", creator: "users/me", reactionType: "🦊" })),
     );
-    const request = Promise.withResolvers<void>();
-    state.api.upsertMemoReaction.mockReturnValue(request.promise);
-
-    const picker = await openPicker();
-    fireEvent.click(picker.getByRole("button", { name: "👍" }));
-    expect(state.api.upsertMemoReaction).toHaveBeenCalledWith({ parent: memo.name, reaction: { reactionType: "👍" } });
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    await act(async () => request.resolve());
-
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "setting.memo.add-reaction" })).toHaveFocus();
-    expect(screen.getByRole("button", { name: /👍\s*2/ })).toHaveAttribute("aria-pressed", "true");
-    expect((await openPicker()).getByRole("button", { name: "👍" })).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(screen.getByRole("button", { name: "memo.add-reaction" })).toHaveAttribute("aria-disabled", "false"));
+    expect((await openPicker()).getByRole("gridcell", { name: "fox" })).toHaveAttribute("aria-selected", "true");
   });
 
-  it("removes an existing reaction and closes after the request completes", async () => {
-    const memo = reactionMemo();
-    setup(memo);
-    state.api.getMemo.mockResolvedValue(create(MemoSchema, { ...memo, reactions: memo.reactions.filter((r) => r.creator !== "users/me") }));
-
-    fireEvent.click((await openPicker()).getByRole("button", { name: "🎉" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(state.api.deleteMemoReaction).toHaveBeenCalledExactlyOnceWith({ name: "memos/1/reactions/1" });
-    expect(screen.queryByRole("button", { name: /🎉\s*1/ })).not.toBeInTheDocument();
-    expect((await openPicker()).getByRole("button", { name: "🎉" })).toHaveAttribute("aria-pressed", "false");
-  });
-
-  it("preserves the existing failure behavior: closes without changing saved reactions", async () => {
+  it("removes an existing reaction from the picker", async () => {
     setup();
-    state.api.upsertMemoReaction.mockRejectedValue(new Error("Request failed"));
-    fireEvent.click((await openPicker()).getByRole("button", { name: "👍" }));
-
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "setting.memo.add-reaction" })).toHaveFocus();
-    expect(state.api.getMemo).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: /👍\s*1/ })).toHaveAttribute("aria-pressed", "false");
-    expect((await openPicker()).getByRole("button", { name: "👍" })).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click((await openPicker()).getByRole("gridcell", { name: "party popper" }));
+    await waitFor(() => expect(state.api.deleteMemoReaction).toHaveBeenCalledWith({ name: "memos/1/reactions/1" }));
+    expect(screen.queryByRole("button", { name: /party popper:/ })).not.toBeInTheDocument();
   });
 
-  it.each(["success", "failure"])("keeps editing focus when a dismissed picker's slow request ends in %s", async (outcome) => {
+  it("reports failure, restores the reaction and leaves editing focus alone", async () => {
     setup();
-    const request = Promise.withResolvers<void>();
+    const request = Promise.withResolvers<never>();
     state.api.upsertMemoReaction.mockReturnValue(request.promise);
-    const picker = await openPicker();
-    const choice = picker.getByRole("button", { name: "👍" });
-    choice.focus();
-    fireEvent.click(choice);
-    expect(state.api.upsertMemoReaction).toHaveBeenCalledTimes(1);
-
+    fireEvent.click((await openPicker()).getByRole("gridcell", { name: "fox" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /fox: 1/ })).toBeInTheDocument());
     const editor = screen.getByRole("textbox", { name: "Memo draft" });
-    fireEvent.pointerDown(editor, { pointerType: "mouse", button: 0 });
     editor.focus();
-    fireEvent.pointerUp(editor, { pointerType: "mouse", button: 0 });
-    fireEvent.click(editor);
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(editor).toHaveFocus();
     fireEvent.change(editor, { target: { value: "Continue editing" } });
-
-    await act(async () => {
-      if (outcome === "success") request.resolve();
-      else request.reject(new Error("Request failed"));
-      await request.promise.catch(() => {});
-    });
-
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    await act(async () => request.reject(new Error("Request failed")));
+    await waitFor(() => expect(state.api.showErrorToast).toHaveBeenCalledWith("Request failed"));
+    expect(screen.queryByRole("button", { name: /fox: 1/ })).not.toBeInTheDocument();
     expect(editor).toHaveFocus();
     expect(editor).toHaveValue("Continue editing");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    logged.mockRestore();
+  });
+
+  it("keeps counts and names when profile lookup is unavailable", () => {
+    state.resolveUsers = false;
+    setup();
+    expect(screen.getByRole("button", { name: /party popper: 1 · me/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /thumbs up: 1 · other/ })).toBeInTheDocument();
+  });
+
+  it("keeps a focused pill mounted when its count changes", async () => {
+    setup();
+    const pill = screen.getByRole("button", { name: /thumbs up: 1/ });
+    const request = Promise.withResolvers<Reaction>();
+    state.api.upsertMemoReaction.mockReturnValue(request.promise);
+    pill.focus();
+    fireEvent.click(pill);
+    await waitFor(() => expect(screen.getByRole("button", { name: /thumbs up: 2/ })).toBe(pill));
+    expect(pill).toHaveFocus();
+    await act(async () => request.resolve(create(ReactionSchema, { creator: "users/me", reactionType: "👍" })));
+    expect(pill).toHaveFocus();
+  });
+
+  it("shows participants on touch long-press without toggling the reaction", async () => {
+    vi.useFakeTimers();
+    try {
+      setup();
+      const pill = screen.getByRole("button", { name: /thumbs up: 1/ });
+      fireEvent.pointerDown(pill, { pointerType: "touch" });
+      await act(async () => vi.advanceTimersByTimeAsync(550));
+      expect(screen.getByText("other")).toBeVisible();
+      fireEvent.pointerUp(pill, { pointerType: "touch" });
+      fireEvent.click(pill);
+      expect(state.api.upsertMemoReaction).not.toHaveBeenCalled();
+      expect(state.api.deleteMemoReaction).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it.each(["signed out", "archived"])("keeps reactions non-interactive when %s", (mode) => {
@@ -198,21 +203,35 @@ describe("ReactionSelector", () => {
     if (mode === "signed out") state.currentUser = undefined;
     else memo.state = State.ARCHIVED;
     setup(memo);
-
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
-    expect(screen.getByText("🎉").closest("button, [role=button], [tabindex]")).toBeNull();
-    expect(screen.getByText("👍")).toBeInTheDocument();
-    expect(state.api.upsertMemoReaction).not.toHaveBeenCalled();
+    expect(screen.getByText("🎉")).toBeInTheDocument();
   });
 
-  it("keeps the header's supplied trigger and returns focus after Escape", async () => {
+  it("hides the picker for a Space outsider but lets them withdraw their existing reaction", async () => {
+    const memo = reactionMemo();
+    memo.space = "spaces/a";
+    setup(memo);
+    expect(screen.queryByRole("button", { name: "memo.add-reaction" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /thumbs up:/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /party popper:/ }));
+    await waitFor(() => expect(state.api.deleteMemoReaction).toHaveBeenCalledWith({ name: "memos/1/reactions/1" }));
+  });
+
+  it("offers the picker to an active Space member", async () => {
+    state.role = SpaceMember_Role.USER;
+    const memo = reactionMemo();
+    memo.space = "spaces/a";
+    setup(memo);
+    expect((await openPicker()).getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("keeps a supplied header trigger and returns focus after Escape", async () => {
     setup(reactionMemo(), <Button variant="ghost" size="sm" icon={<SmilePlusIcon />} data-testid="header-trigger" />);
-    const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
+    const trigger = screen.getByRole("button", { name: "memo.add-reaction" });
     expect(trigger).toBe(screen.getByTestId("header-trigger"));
-    trigger.focus();
     await openPicker();
-    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(trigger).toHaveFocus();
   });
 });

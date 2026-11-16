@@ -1,10 +1,14 @@
 import { Button, Dialog } from "@usememos/ui";
-import { ChevronLeft, ChevronRight, InfoIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, InfoIcon, PaletteIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
 import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
+import { getAttachmentUrl } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import type { PreviewMediaItem } from "@/utils/media-item";
 
@@ -14,6 +18,7 @@ interface Props {
   imgUrls?: string[];
   items?: PreviewMediaItem[];
   initialIndex?: number;
+  drawingContext?: { memo: Pick<Memo, "name" | "attachments">; canEdit: boolean };
 }
 
 const MIN_ZOOM = 1;
@@ -66,11 +71,12 @@ interface SwipeGesture {
 const distanceBetween = (first: { x: number; y: number }, second: { x: number; y: number }) =>
   Math.hypot(first.x - second.x, first.y - second.y);
 
-function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0 }: Props) {
+function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0, drawingContext }: Props) {
   const t = useTranslate();
   const sm = useMediaQuery("sm");
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomScale, setZoomScale] = useState(MIN_ZOOM);
+  const [annotation, setAnnotation] = useState<Attachment>();
   const [showDetails, setShowDetails] = useState(false);
   const [panOffset, setPanOffset] = useState<PanOffset>(NO_PAN);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -96,6 +102,17 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   const itemCount = previewItems.length;
   const safeIndex = Math.max(0, Math.min(currentIndex, itemCount - 1));
   const currentItem = previewItems[safeIndex];
+  const annotationSource =
+    drawingContext?.canEdit && currentItem?.kind === "image"
+      ? drawingContext.memo.attachments.find(
+          (attachment) =>
+            !attachment.externalLink &&
+            !attachment.motionMedia &&
+            attachment.type.startsWith("image/") &&
+            !isDrawingFilename(attachment.filename) &&
+            (attachment.name === currentItem.id || getAttachmentUrl(attachment) === currentItem.sourceUrl),
+        )
+      : undefined;
   const hasMultiple = itemCount > 1;
   const isImagePreview = currentItem?.kind === "image";
   const canGoPrevious = safeIndex > 0;
@@ -113,6 +130,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     pinchRef.current = null;
     swipeRef.current = null;
     setZoomScale(MIN_ZOOM);
+    setAnnotation(undefined);
     setPanOffset(NO_PAN);
     setSwipeOffset(0);
     setIsInteracting(false);
@@ -347,6 +365,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5" data-theme="dark">
+                {annotationSource && (
+                  <Button icon={<PaletteIcon />} onClick={() => setAnnotation(annotationSource)}>
+                    {t("editor.drawing.annotate")}
+                  </Button>
+                )}
                 <Button
                   onClick={() => setShowDetails((visible) => !visible)}
                   aria-label={showDetails ? t("attachment-details.actions.hide") : t("attachment-details.actions.show")}
@@ -504,6 +527,19 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
           {showDetails && <MediaMetadataDetails id="attachment-media-details" item={currentItem} onClose={() => setShowDetails(false)} />}
         </div>
       </Dialog.Popup>
+      {open && annotation && drawingContext && (
+        <Suspense fallback={null}>
+          <DrawingViewer
+            key={annotation.name}
+            attachment={annotation}
+            memo={drawingContext.memo}
+            canEdit={drawingContext.canEdit}
+            annotate
+            onClose={() => setAnnotation(undefined)}
+            onNoScene={() => setAnnotation(undefined)}
+          />
+        </Suspense>
+      )}
     </Dialog.Root>
   );
 }

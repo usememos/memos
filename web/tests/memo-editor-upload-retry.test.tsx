@@ -4,7 +4,7 @@ import { act, renderHook } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoSave } from "@/components/MemoEditor/edit/hooks/useMemoSave";
-import { DrawingNotSavedError, memoService } from "@/components/MemoEditor/edit/services/memoService";
+import { DrawingNotSavedError, DrawingSavedError, memoService } from "@/components/MemoEditor/edit/services/memoService";
 import type { EditorState } from "@/components/MemoEditor/edit/state";
 import { createInitialState } from "@/components/MemoEditor/edit/state/types";
 import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
@@ -40,13 +40,20 @@ vi.mock("@/components/MemoEditor/edit/state", () => ({
       setLocalFiles: (localFiles: LocalFile[]) => ({ type: "set-local-files", localFiles }),
       setAttachmentOrder: (attachmentOrder: string[]) => ({ type: "set-attachment-order", attachmentOrder }),
       setTimestamps: () => ({ type: "noop" }),
+      setDrawingMemoUpdate: (drawingNeedsMemoUpdate: boolean) => ({ type: "set-drawing-memo-update", drawingNeedsMemoUpdate }),
+      setDrawingSaveError: (drawingSaveError: EditorState["drawingSaveError"]) => ({ type: "set-drawing-save-error", drawingSaveError }),
     },
     dispatch: (action: {
       type: string;
       metadata?: Partial<EditorState["metadata"]>;
       localFiles?: LocalFile[];
       attachmentOrder?: string[];
+      drawingNeedsMemoUpdate?: boolean;
+      drawingSaveError?: EditorState["drawingSaveError"];
     }) => {
+      if (action.type === "set-drawing-memo-update")
+        mocks.state = { ...mocks.state, drawingNeedsMemoUpdate: action.drawingNeedsMemoUpdate };
+      if (action.type === "set-drawing-save-error") mocks.state = { ...mocks.state, drawingSaveError: action.drawingSaveError };
       if (action.type === "set-attachment-order") mocks.state = { ...mocks.state, attachmentOrder: action.attachmentOrder ?? [] };
       if (action.type === "set-metadata") mocks.state = { ...mocks.state, metadata: { ...mocks.state.metadata, ...action.metadata } };
       if (action.type === "set-local-files") mocks.state = { ...mocks.state, localFiles: action.localFiles ?? [] };
@@ -134,6 +141,33 @@ describe("useMemoSave after a failed save", () => {
 
     expect(mocks.state.localFiles).toEqual([file]);
     expect(mocks.state.metadata.attachments).toEqual([]);
+  });
+
+  it("retains an acknowledged drawing and retries the pending memo update without uploading again", async () => {
+    const edit: LocalFile = { ...localFile("drawing.canvas.png"), replaces: "attachments/drawing" };
+    const attachment = create(AttachmentSchema, { name: edit.replaces, filename: edit.file.name });
+    mocks.state = editorState([edit], [attachment]);
+    mocks.save
+      .mockImplementationOnce(
+        async (_state: EditorState, options: { onFileUploaded: (file: LocalFile, attachment: Attachment) => void }) => {
+          options.onFileUploaded(edit, attachment);
+          throw new DrawingSavedError(new Error("offline"));
+        },
+      )
+      .mockRejectedValueOnce(new Error("still offline"));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/m", discardDraft: vi.fn() }), { wrapper });
+    await act(async () => result.current());
+    expect(mocks.state.localFiles).toEqual([]);
+    expect(mocks.state.drawingNeedsMemoUpdate).toBe(true);
+    expect(mocks.state.drawingSaveError).toBe("editor.drawing.saved-needs-update");
+    expect(showErrorToast).toHaveBeenCalledWith("editor.drawing.saved-needs-update");
+    await act(async () => result.current());
+    const retried = mocks.save.mock.calls[1][0] as EditorState;
+    expect(retried.localFiles).toEqual([]);
+    expect(retried.metadata.attachments).toEqual([attachment]);
+    expect(retried.drawingNeedsMemoUpdate).toBe(true);
   });
 
   it("says the memo is saved when only an edited drawing failed, and keeps the edit for a retry", async () => {

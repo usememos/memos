@@ -114,7 +114,7 @@ describe("instance ACCESS React Query integration", () => {
     await waitFor(() => expect(screen.getByTestId("setting-access")).toHaveTextContent(String(InstanceAccessMode.PRIVATE)));
 
     expect(clients.batchGetInstanceSettings).toHaveBeenCalledWith({
-      names: ["instance/settings/GENERAL", "instance/settings/MEMO_RELATED"],
+      names: ["instance/settings/GENERAL"],
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Make public" }));

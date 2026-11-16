@@ -170,15 +170,14 @@
       "image-upload-failed": "일부 이미지를 업로드할 수 없습니다. 다시 시도하거나 업로드된 파일을 첨부 파일로 유지하세요.",
       "image-upload-stopped": "이미지 업로드 중지됨 {{completed}}/{{total}}",
       "insert-image": "이미지 삽입",
-      "drawing": "그리기",
+      "drawing": "마크업",
       "keep-as-attachments": "첨부 파일로 유지",
       "retry-image-upload": "다시 시도",
       "uploading-inline-image": "콘텐츠에 업로드 중",
       "uploading-images": "이미지 업로드 중 {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "새 그림",
-      "edit": "그림 편집",
+      "edit": "마크업 편집",
       "tools": "도구",
       "tool-select": "선택",
       "tool-pen": "펜",
@@ -203,8 +202,8 @@
       "color-violet": "보라색",
       "undo": "실행 취소",
       "redo": "다시 실행",
+      "zoom": "확대/축소",
       "zoom-to-fit": "화면에 맞추기",
-      "done": "완료",
       "discard-title": "이 그림을 삭제할까요?",
       "discard-description": "아직 메모에 추가되지 않았습니다.",
       "discard-edit-title": "변경 사항을 삭제할까요?",
@@ -214,7 +213,13 @@
       "open-failed": "그림을 열 수 없습니다. 다시 시도하세요.",
       "export-failed": "그림을 저장할 수 없습니다. 다시 시도하세요.",
       "image-failed": "이미지를 그림에 추가할 수 없습니다.",
-      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요."
+      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요.",
+      "annotate": "마크업",
+      "save-copy": "사본 저장",
+      "unavailable": "저장 위치를 사용할 수 없습니다.",
+      "saved-needs-update": "그림이 저장되었습니다. 메모 업데이트를 다시 시도하세요.",
+      "changed-save-copy": "원본이 변경되었습니다. 사본을 저장하세요.",
+      "bind-failed": "그림이 업로드되었습니다. 메모에 추가를 다시 시도하세요."
     },
     "audio-recorder": {
       "attachment-label": "오디오 녹음",
@@ -436,7 +441,9 @@
       "uncheck-all": "모든 작업 선택 해제",
       "updated": "작업 업데이트됨"
     },
-    "view-options": "보기 옵션"
+    "view-options": "보기 옵션",
+    "add-reaction": "반응 추가",
+    "remove-reaction": "반응 제거"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
@@ -894,16 +901,6 @@
       "disallow-user-registration-description": "신규 사용자가 가입 페이지에서 계정을 만들지 못하도록 합니다.",
       "week-start-day-description": "캘린더 스타일 보기에서 표시되는 첫 번째 날짜를 제어합니다."
     },
-    "memo": {
-      "reactions": "반응",
-      "label": "메모",
-      "reactions-required": "반응 목록은 비워둘 수 없습니다.",
-      "add-reaction": "반응 추가",
-      "configured-reactions": "구성된 반응",
-      "reaction-placeholder": "예: 👍",
-      "reactions-description": "사용자가 메모에 적용할 수 있는 반응 옵션을 정의합니다.",
-      "remove-reaction": "반응 제거"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "기억하기 쉬운 이름",
@@ -1305,7 +1302,7 @@
       "search-emoji": "이모지 검색 또는 붙여넣기…",
       "no-results": "일치하는 항목 없음",
       "emoji-help": "일반적인 이모지를 선택하거나 직접 붙여넣으세요.",
-      "reset": "기본값으로 재설정",
+      "reset": "기본 아이콘 사용",
       "use-emoji": "{{emoji}} 사용"
     },
     "unavailable": "이 공간이 없거나 접근 권한이 없습니다.",

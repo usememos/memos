@@ -17,6 +17,13 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @layer base {
+  .memos-theme-changing,
+  .memos-theme-changing *,
+  .memos-theme-changing *::before,
+  .memos-theme-changing *::after {
+    transition: none !important;
+  }
+
   * {
     @apply border-mu-line outline-none ring-0;
     scrollbar-color: color-mix(in oklch, var(--mu-text-secondary) 55%, transparent) transparent;

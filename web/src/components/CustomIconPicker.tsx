@@ -1,10 +1,11 @@
-import { Button, Combobox, Popover, Toggle, ToggleGroup } from "@usememos/ui";
-import { AstroidIcon, type LucideIcon, RotateCcwIcon } from "lucide-react";
+import { Button, Combobox, Popover, Tabs } from "@usememos/ui";
+import { AstroidIcon, type LucideIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import CustomIcon from "@/components/CustomIcon";
 import type { CustomIconValue } from "@/lib/custom-icons";
 import { CUSTOM_SYMBOLS, customIconsEqual } from "@/lib/custom-icons";
 import { SPACE_EMOJI } from "@/lib/space-emoji";
+import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { FULLY_QUALIFIED_EMOJI } from "@/utils/tag-unicode-data";
 
@@ -95,83 +96,89 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
         }
       />
       <Popover.Popup align="start" className="w-[306px] max-w-[calc(100vw-2rem)]" aria-label={label} initialFocus={searchRef}>
-        <ToggleGroup
-          size="sm"
-          aria-label={t("space.icon.kind")}
-          value={[tab]}
-          onValueChange={([next]: string[]) => next && changeTab(next)}
-        >
-          {(["icons", "emoji"] as const).map((name) => (
-            <Toggle key={name} value={name}>
-              {t(`space.icon.${name}`)}
-            </Toggle>
-          ))}
-        </ToggleGroup>
-        <div>
-          {/* The rows are filtered here (labels and the glyph itself, plus a pasted emoji), so the
-              combobox's own filter is off and it only drives the 2-D highlight and Enter. */}
-          <Combobox.Root
-            items={options}
-            filter={null}
-            inline
-            grid
-            autoHighlight
-            value={value ? { label: "", icon: value } : null}
-            isItemEqualToValue={(item: IconOption, current: IconOption) => customIconsEqual(item.icon, current.icon)}
-            itemToStringLabel={(item: IconOption) => item.label}
-            onValueChange={(item: IconOption | null) => {
-              if (item) select(item.icon);
-            }}
-            inputValue={query}
-            onInputValueChange={(next, { reason }) => {
-              // Picking a cell would write its label into the search; the popup closes instead.
-              if (reason === "input-change" || reason === "input-clear") setQuery(next);
-            }}
-            onOpenChange={(next, { reason }) => {
-              if (!next && reason === "escape-key") setOpen(false);
-            }}
-          >
-            <Combobox.Input
-              ref={searchRef}
-              className="mb-1"
-              aria-label={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
-              placeholder={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
-            />
-            <Combobox.Empty>{t("space.icon.no-results")}</Combobox.Empty>
-            {/* The list's own padding keeps highlighted cells clear of its scroll edge; the negative
-                margin lines the cells up with the search box as before. */}
-            <Combobox.List aria-label={t(`space.icon.${tab === "icons" ? "icons" : "emoji"}`)} className="-mx-1">
-              {rows.map((row) => (
-                <Combobox.Row key={`${row[0].icon.value.case}:${row[0].icon.value.value}`}>
-                  {row.map((option) => (
-                    <Combobox.Item
-                      key={`${option.icon.value.case}:${option.icon.value.value}`}
-                      value={option}
-                      aria-label={option.label}
-                      title={option.label}
-                    >
-                      <CustomIcon icon={option.icon} className={tab === "emoji" ? "size-5 text-xl" : undefined} />
-                    </Combobox.Item>
-                  ))}
-                </Combobox.Row>
+        <Tabs.Root value={tab} onValueChange={changeTab}>
+          <div className="flex items-center justify-between gap-2">
+            <Tabs.List aria-label={t("space.icon.kind")} activateOnFocus className="shrink-0">
+              {(["icons", "emoji"] as const).map((name) => (
+                <Tabs.Tab key={name} value={name}>
+                  {t(`space.icon.${name}`)}
+                </Tabs.Tab>
               ))}
-            </Combobox.List>
-          </Combobox.Root>
-          {tab === "emoji" && <p className="px-1 pt-2 mu-caption text-mu-text-secondary">{t("space.icon.emoji-help")}</p>}
-        </div>
-        <div className="mt-2 border-t pt-1.5">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            disabled={!value}
-            onClick={() => select()}
-            icon={<RotateCcwIcon aria-hidden />}
-          >
-            {t("space.icon.reset")}
-          </Button>
-        </div>
+            </Tabs.List>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn("min-w-0", !value && "invisible")}
+              aria-hidden={!value || undefined}
+              disabled={!value}
+              title={t("space.icon.reset")}
+              onClick={() => select()}
+            >
+              {t("space.icon.reset")}
+            </Button>
+          </div>
+          {(["icons", "emoji"] as const).map((name) => (
+            <Tabs.Panel
+              key={name}
+              value={name}
+              tabIndex={-1}
+              className="-mx-px flex h-72 max-h-[calc(100dvh-12rem)] min-h-0 flex-col gap-2"
+            >
+              {/* The rows are filtered here (labels and the glyph itself, plus a pasted emoji), so the
+                  combobox's own filter is off and it only drives the 2-D highlight and Enter. */}
+              <Combobox.Root
+                items={options}
+                filter={null}
+                inline
+                grid
+                autoHighlight
+                value={value ? { label: "", icon: value } : null}
+                isItemEqualToValue={(item: IconOption, current: IconOption) => customIconsEqual(item.icon, current.icon)}
+                itemToStringLabel={(item: IconOption) => item.label}
+                onValueChange={(item: IconOption | null) => {
+                  if (item) select(item.icon);
+                }}
+                inputValue={query}
+                onInputValueChange={(next, { reason }) => {
+                  // Picking a cell would write its label into the search; the popup closes instead.
+                  if (reason === "input-change" || reason === "input-clear") setQuery(next);
+                }}
+                onOpenChange={(next, { reason }) => {
+                  if (!next && reason === "escape-key") setOpen(false);
+                }}
+              >
+                <Combobox.Input
+                  ref={searchRef}
+                  aria-label={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
+                  placeholder={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
+                />
+                <div className="-mx-1 min-h-0 flex-1 overflow-hidden">
+                  <Combobox.Empty>{t("space.icon.no-results")}</Combobox.Empty>
+                  {/* The list's own padding keeps highlighted cells clear of its scroll edge; the negative
+                      margin lines the cells up with the search box. */}
+                  <Combobox.List aria-label={t(`space.icon.${tab === "icons" ? "icons" : "emoji"}`)} className="h-full max-h-full">
+                    {rows.map((row) => (
+                      <Combobox.Row key={`${row[0].icon.value.case}:${row[0].icon.value.value}`}>
+                        {row.map((option) => (
+                          <Combobox.Item
+                            key={`${option.icon.value.case}:${option.icon.value.value}`}
+                            value={option}
+                            aria-label={option.label}
+                            title={option.label}
+                          >
+                            <CustomIcon icon={option.icon} className={tab === "emoji" ? "size-5 text-xl" : undefined} />
+                          </Combobox.Item>
+                        ))}
+                      </Combobox.Row>
+                    ))}
+                  </Combobox.List>
+                </div>
+              </Combobox.Root>
+              <p className={cn("mu-caption text-mu-text-secondary", name === "icons" && "invisible")}>{t("space.icon.emoji-help")}</p>
+            </Tabs.Panel>
+          ))}
+        </Tabs.Root>
       </Popover.Popup>
     </Popover.Root>
   );

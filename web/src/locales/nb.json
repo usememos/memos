@@ -169,14 +169,13 @@
       "image-upload-failed": "Noen bilder kunne ikke lastes opp. Prøv på nytt eller behold de opplastede filene som vedlegg.",
       "image-upload-stopped": "Bildeopplasting stoppet {{completed}}/{{total}}",
       "insert-image": "Sett inn bilde",
-      "drawing": "Tegning",
+      "drawing": "Markering",
       "keep-as-attachments": "Behold som vedlegg",
       "uploading-inline-image": "Laster opp til innhold",
       "uploading-images": "Laster opp bilder {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "Ny tegning",
-      "edit": "Rediger tegning",
+      "edit": "Rediger markering",
       "tools": "Verktøy",
       "tool-select": "Velg",
       "tool-pen": "Penn",
@@ -201,8 +200,8 @@
       "color-violet": "Fiolett",
       "undo": "Angre",
       "redo": "Gjør om",
+      "zoom": "Zoom",
       "zoom-to-fit": "Tilpass til vinduet",
-      "done": "Ferdig",
       "discard-title": "Forkaste denne tegningen?",
       "discard-description": "Den er ikke lagt til i memoen ennå.",
       "discard-edit-title": "Forkaste endringene?",
@@ -212,7 +211,13 @@
       "open-failed": "Kunne ikke åpne tegningen. Prøv på nytt.",
       "export-failed": "Kunne ikke lagre tegningen. Prøv på nytt.",
       "image-failed": "Kunne ikke legge bildet til i tegningen.",
-      "saved-without-drawing": "Memoen er lagret, men tegningen er ikke det. Lagre på nytt for å prøve igjen."
+      "saved-without-drawing": "Memoen er lagret, men tegningen er ikke det. Lagre på nytt for å prøve igjen.",
+      "annotate": "Markering",
+      "save-copy": "Lagre kopi",
+      "unavailable": "Målet er utilgjengelig.",
+      "saved-needs-update": "Tegningen er lagret. Prøv å oppdatere notatet igjen.",
+      "changed-save-copy": "Originalen er endret. Lagre en kopi.",
+      "bind-failed": "Tegningen er lastet opp. Prøv å legge den til i notatet igjen."
     },
     "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
@@ -441,7 +446,9 @@
     "layout-list-description": "En enkelt kolonne med lesebredde",
     "on-this-memo": "På dette notatet",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsalternativer"
+    "view-options": "Visningsalternativer",
+    "add-reaction": "Legg til reaksjon",
+    "remove-reaction": "Fjern reaksjonen"
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",
@@ -572,16 +579,6 @@
       "username-password-required": "Brukernavn og passord kan ikke være tomme",
       "create-success": "Bruker opprettet",
       "update-success": "Bruker oppdatert"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reaksjoner",
-      "reactions-required": "Reaksjonslisten må ikke være tom",
-      "add-reaction": "Legg til reaksjon",
-      "configured-reactions": "Konfigurerte reaksjoner",
-      "reaction-placeholder": "f.eks. 👍",
-      "reactions-description": "Definer reaksjonsalternativene brukere kan bruke på notater.",
-      "remove-reaction": "Fjern reaksjonen"
     },
     "my-account": {
       "label": "Min konto"
@@ -1305,7 +1302,7 @@
       "search-emoji": "Søk eller lim inn emoji…",
       "no-results": "Ingen treff",
       "emoji-help": "Velg en vanlig emoji eller lim inn din egen.",
-      "reset": "Tilbakestill til standard",
+      "reset": "Bruk standardikon",
       "use-emoji": "Bruk {{emoji}}"
     },
     "unavailable": "Dette rommet finnes ikke, eller du har ikke tilgang til det.",

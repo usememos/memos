@@ -34,13 +34,18 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
     { value: User_Role.ADMIN, label: t("setting.member.admin") },
   ];
 
+  // The dialog stays mounted while closed, so each opening starts again from the saved user;
+  // otherwise a cancelled edit, such as a typed password, is sent with the next change.
   useEffect(() => {
+    if (!open) return;
+    fieldErrors.clear("username");
+    fieldErrors.clear("password");
     if (initialUser) {
       setUser(create(UserSchema, { name: initialUser.name, username: initialUser.username, role: initialUser.role }));
     } else {
       setUser(create(UserSchema, {}));
     }
-  }, [initialUser]);
+  }, [open, initialUser]);
 
   const setPartialUser = (state: Partial<User>) => {
     setUser({

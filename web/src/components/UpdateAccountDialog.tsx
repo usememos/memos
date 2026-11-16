@@ -2,7 +2,7 @@ import { Code } from "@connectrpc/connect";
 import { Button, Dialog, Field, Input, Textarea, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -43,6 +43,25 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     description: currentUser?.description ?? "",
   });
   const [emailError, setEmailError] = useState<string | undefined>();
+  // Changes whenever the dialog opens or closes, so an avatar read that finishes later is dropped.
+  const openingRef = useRef(0);
+
+  // The dialog stays mounted while closed, so each opening starts again from the saved account;
+  // otherwise a cancelled edit is saved with the next change.
+  useEffect(() => {
+    openingRef.current += 1;
+    if (!open) return;
+    fieldErrors.clear("avatar");
+    fieldErrors.clear("username");
+    setState({
+      avatarUrl: currentUser?.avatarUrl ?? "",
+      username: currentUser?.username ?? "",
+      displayName: currentUser?.displayName ?? "",
+      email: currentUser?.email ?? "",
+      description: currentUser?.description ?? "",
+    });
+    setEmailError(undefined);
+  }, [open]);
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
@@ -65,14 +84,17 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
         fieldErrors.set("avatar", t("setting.account.avatar-too-large"));
         return;
       }
+      const opening = openingRef.current;
       try {
         const base64 = await convertFileToBase64(image);
+        if (opening !== openingRef.current) return;
         fieldErrors.clear("avatar");
         setPartialState({
           avatarUrl: base64,
         });
       } catch (error) {
         console.error(error);
+        if (opening !== openingRef.current) return;
         fieldErrors.set("avatar", t("setting.account.avatar-unreadable"));
       }
     }

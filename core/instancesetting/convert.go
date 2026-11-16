@@ -35,10 +35,6 @@ func ToStore(setting *apipb.InstanceSetting) *storepb.InstanceSetting {
 		if value := setting.GetStorageSetting(); value != nil {
 			result.Value = &storepb.InstanceSetting_StorageSetting{StorageSetting: storageSettingToStore(value)}
 		}
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		if value := setting.GetMemoRelatedSetting(); value != nil {
-			result.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSettingToStore(value)}
-		}
 	case storepb.InstanceSettingKey_TAGS:
 		if value := setting.GetTagsSetting(); value != nil {
 			result.Value = &storepb.InstanceSetting_TagsSetting{TagsSetting: tagsSettingToStore(value)}
@@ -74,8 +70,6 @@ func FromStore(setting *storepb.InstanceSetting) *apipb.InstanceSetting {
 		result.Value = &apipb.InstanceSetting_GeneralSetting_{GeneralSetting: generalSettingFromStore(setting.GetGeneralSetting())}
 	case *storepb.InstanceSetting_StorageSetting:
 		result.Value = &apipb.InstanceSetting_StorageSetting_{StorageSetting: storageSettingFromStore(setting.GetStorageSetting())}
-	case *storepb.InstanceSetting_MemoRelatedSetting:
-		result.Value = &apipb.InstanceSetting_MemoRelatedSetting_{MemoRelatedSetting: memoRelatedSettingFromStore(setting.GetMemoRelatedSetting())}
 	case *storepb.InstanceSetting_TagsSetting:
 		result.Value = &apipb.InstanceSetting_TagsSetting_{TagsSetting: tagsSettingFromStore(setting.GetTagsSetting())}
 	case *storepb.InstanceSetting_NotificationSetting:
@@ -310,24 +304,6 @@ func storageToStore(storage *apipb.InstanceSetting_Storage) *storepb.Storage {
 		}
 	}
 	return storagepb
-}
-
-func memoRelatedSettingFromStore(setting *storepb.InstanceMemoRelatedSetting) *apipb.InstanceSetting_MemoRelatedSetting {
-	if setting == nil {
-		return nil
-	}
-	return &apipb.InstanceSetting_MemoRelatedSetting{
-		Reactions: setting.Reactions,
-	}
-}
-
-func memoRelatedSettingToStore(setting *apipb.InstanceSetting_MemoRelatedSetting) *storepb.InstanceMemoRelatedSetting {
-	if setting == nil {
-		return nil
-	}
-	return &storepb.InstanceMemoRelatedSetting{
-		Reactions: setting.Reactions,
-	}
 }
 
 func tagsSettingFromStore(setting *storepb.InstanceTagsSetting) *apipb.InstanceSetting_TagsSetting {

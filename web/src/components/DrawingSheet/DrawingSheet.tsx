@@ -1,18 +1,24 @@
-import { type CanvasError, type CanvasHandle, drawingFileName, type Scene, type ToolName } from "@usememos/canvas";
+import { type CanvasError, type CanvasHandle, drawingFileName, MAX_ZOOM, MIN_ZOOM, type Scene, type ToolName } from "@usememos/canvas";
 import { Canvas } from "@usememos/canvas/react";
-import { AlertDialog, Button, Dialog, Popover, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
+import { AlertDialog, Button, Dialog, Menu, Popover, Spinner, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
 import {
+  CircleAlertIcon,
   CircleIcon,
   EraserIcon,
   ImagePlusIcon,
+  MinusIcon,
   MousePointer2Icon,
   MoveUpRightIcon,
+  PaletteIcon,
   PencilIcon,
+  PlusIcon,
   Redo2Icon,
-  ScanIcon,
+  RotateCcwIcon,
+  ScanSearchIcon,
   SquareIcon,
   TypeIcon,
   Undo2Icon,
+  XIcon,
 } from "lucide-react";
 import { type ClipboardEvent, type ReactElement, useEffect, useRef, useState } from "react";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -21,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { type Translations, useTranslate } from "@/utils/i18n";
 import { primaryModifierGlyph } from "@/utils/platform";
 import { DrawingDialogPopup, FloatingAction, FloatingBar, FloatingRow } from "./DrawingFrame";
+import { DrawingActionError } from "./drawing";
 import { DRAWING_HUES, useCanvasTheme } from "./useCanvasTheme";
 
 const TOOLS: { name: ToolName; label: Translations; shortcut: string; icon: ReactElement }[] = [
@@ -42,15 +49,21 @@ const WIDTHS: { value: number; label: Translations }[] = [
 ];
 
 export interface DrawingSheetProps {
-  /** `edit` reopens a saved drawing; it changes the sheet's name and the discard prompt. */
-  mode: "new" | "edit";
+  mode: "new" | "edit" | "view";
+  /** Present only when the viewer permits editing. */
+  onEdit?: () => void;
+  loading?: boolean;
   /** The scene read from the drawing's original file. */
   initialScene?: Scene;
+  commitLabel?: Translations;
+  /** Returns the accepted scene when an acknowledged upload has already replaced the source. */
+  onDiscard?: () => Scene | void | Promise<Scene | void>;
+  submissionPending?: boolean;
   /** A picture to draw on: a file named like a drawing whose scene could not be read. */
   background?: Blob;
   /**
    * The finished drawing, a PNG with the scene embedded, named `drawing-YYYYMMDD-HHMMSS.canvas.png`.
-   * A promise keeps Done busy until it settles; a rejection keeps the sheet open to retry.
+   * A promise keeps the action busy until it settles; a rejection keeps the sheet open to retry.
    */
   onDone: (file: File) => void | Promise<void>;
   onClose: () => void;
@@ -62,7 +75,18 @@ export interface DrawingSheetProps {
  * theme, discard prompt) is memos'. On a phone the tools float at the bottom, in thumb
  * reach, with each control 44 px apart.
  */
-const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: DrawingSheetProps) => {
+const DrawingSheet = ({
+  mode,
+  onEdit,
+  loading = false,
+  initialScene,
+  background,
+  commitLabel,
+  onDiscard,
+  submissionPending,
+  onDone,
+  onClose,
+}: DrawingSheetProps) => {
   const t = useTranslate();
   const isWide = useMediaQuery("sm");
   // Small controls on a desktop; a phone keeps the 32px ones, 44px apart, for touch.
@@ -71,39 +95,109 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   const canvasRef = useRef<CanvasHandle | null>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+  const isViewing = mode === "view";
   const [tool, setTool] = useState<ToolName>("pen");
   const [history, setHistory] = useState({ undo: false, redo: false });
+  const [zoom, setZoom] = useState(1);
+  const [zoomMenuOpen, setZoomMenuOpen] = useState(false);
+  const zoomFrame = useRef<number | undefined>(undefined);
   // Null follows the theme's ink, so a drawing started in one theme keeps reading in the other.
-  const [color, setColor] = useState<string | null>(null);
+  const [color, setColor] = useState<string | null>(background ? "#e03131" : null);
   const [width, setWidth] = useState(2);
   const [isExporting, setIsExporting] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   // Drawing waits for a background picture, so no stroke can land before it and be marked saved with it.
   const [isPreparing, setIsPreparing] = useState(Boolean(background));
-  const title = t(mode === "edit" ? "editor.drawing.edit" : "editor.drawing.new-title");
+  const [commitError, setCommitError] = useState<Translations>();
+  const [prepareFailed, setPrepareFailed] = useState(false);
+  const busy = useRef(false);
+  const locked = useRef(submissionPending);
+  locked.current = isViewing || submissionPending;
+  const preparing = useRef(Boolean(background));
+  const alive = useRef(true);
+  const actionLabel = commitLabel ?? (mode === "edit" ? "common.save" : "common.add");
+  const title = t("editor.insert-menu.drawing");
   const currentColor = color ?? ink;
 
   // Runs once the canvas has mounted (see CanvasMounted): the pen is ready, and a
   // picture without a scene becomes the drawing's locked background.
-  const setUpCanvas = () => {
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      if (zoomFrame.current !== undefined) cancelAnimationFrame(zoomFrame.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isViewing) {
+      if (editButtonRef.current) editButtonRef.current.focus();
+      else canvasRef.current?.focus();
+    } else {
+      canvasRef.current?.setTool("pen");
+      setTool("pen");
+      setHistory({ undo: Boolean(canvasRef.current?.canUndo()), redo: Boolean(canvasRef.current?.canRedo()) });
+      canvasRef.current?.focus();
+    }
+  }, [isViewing]);
+
+  const setUpCanvas = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    canvas.setTool("pen");
+    if (!isViewing) canvas.setTool("pen");
+    syncZoom();
     if (!background) return;
-    canvas
-      .insertImage(background, { background: true })
-      .then(() => {
-        // The picture is where the drawing starts, not a change to discard.
-        canvas.markSaved();
-        canvas.zoomToFit();
-      })
-      .catch(() => showErrorToast(t("editor.drawing.image-failed")))
-      .finally(() => setIsPreparing(false));
+    preparing.current = true;
+    setIsPreparing(true);
+    setPrepareFailed(false);
+    canvas.setReadOnly(false);
+    try {
+      // The inert surface blocks user input while the import establishes its baseline.
+      const id = await canvas.insertImage(background, { background: true });
+      if (!alive.current) return;
+      if (!id) throw new Error("Image preparation failed");
+      canvas.setScene(canvas.getScene());
+      canvas.setStyle({ strokeColor: "#e03131" });
+      setColor("#e03131");
+      canvas.zoomToFit();
+      syncZoom();
+      preparing.current = false;
+      canvas.setReadOnly(false);
+    } catch {
+      if (alive.current) {
+        setPrepareFailed(true);
+        showErrorToast(t("editor.drawing.image-failed"));
+      }
+    } finally {
+      if (alive.current) setIsPreparing(false);
+    }
   };
 
   const syncHistory = () => {
     const canvas = canvasRef.current;
     setHistory({ undo: Boolean(canvas?.canUndo()), redo: Boolean(canvas?.canRedo()) });
+    syncZoom();
+  };
+
+  const syncZoom = () => {
+    const canvas = canvasRef.current;
+    if (canvas) setZoom(canvas.getViewport().zoom);
+  };
+
+  const scheduleZoom = () => {
+    if (zoomFrame.current !== undefined) return;
+    zoomFrame.current = requestAnimationFrame(() => {
+      zoomFrame.current = undefined;
+      syncZoom();
+    });
+  };
+
+  const changeZoom = (factor: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.zoomTo(canvas.getViewport().zoom * factor);
+    syncZoom();
   };
 
   const handleCanvasError = (error: CanvasError) => {
@@ -114,16 +208,19 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   };
 
   const chooseTool = (next: ToolName) => {
+    if (isViewing || busy.current || preparing.current || prepareFailed || submissionPending) return;
     setTool(next);
     canvasRef.current?.setTool(next);
   };
 
   const applyWidth = (strokeWidth: number) => {
+    if (isViewing || busy.current || preparing.current || prepareFailed || submissionPending) return;
     canvasRef.current?.setStyle({ strokeWidth });
     setWidth(strokeWidth);
   };
 
   const insertImages = (files: File[]) => {
+    if (isViewing || busy.current || preparing.current || prepareFailed || submissionPending) return;
     for (const file of files.filter((candidate) => candidate.type.startsWith("image/"))) {
       canvasRef.current?.insertImage(file).catch(() => showErrorToast(t("editor.drawing.image-failed")));
     }
@@ -135,32 +232,32 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
     insertImages(Array.from(event.clipboardData.files));
   };
 
-  // Cancel, Escape and the system back gesture all ask first when the drawing has changes.
   const requestClose = () => {
-    if (canvasRef.current?.isDirty()) {
-      setDiscardOpen(true);
-      return;
-    }
-    onClose();
+    if (busy.current) return;
+    if (!isViewing && canvasRef.current?.isDirty()) setDiscardOpen(true);
+    else onClose();
   };
 
   const handleDone = async () => {
     const canvas = canvasRef.current;
-    if (!canvas || isExporting || isPreparing) return;
-    // Text still being typed is part of the drawing.
-    canvas.commitText();
+    if (!canvas || isViewing || busy.current || preparing.current || prepareFailed) return;
+    busy.current = true;
     setIsExporting(true);
+    canvas.setReadOnly(true);
+    setCommitError(undefined);
     try {
       const blob = await canvas.exportPng();
       await onDone(new File([blob], drawingFileName(), { type: "image/png" }));
-      // Only once Done went through: after a failed save, Cancel still asks before discarding.
-      // The host may have closed the sheet already.
       canvasRef.current?.markSaved();
     } catch (error) {
       console.error(error);
-      showErrorToast(t("editor.drawing.export-failed"));
+      const label = error instanceof DrawingActionError ? error.label : "editor.drawing.export-failed";
+      setCommitError(label);
+      showErrorToast(t(label));
     } finally {
-      setIsExporting(false);
+      busy.current = false;
+      canvasRef.current?.setReadOnly(Boolean(locked.current));
+      if (alive.current) setIsExporting(false);
     }
   };
 
@@ -174,6 +271,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
                 size={size}
                 aria-label={t(item.label)}
                 icon={item.icon}
+                disabled={isExporting || isPreparing || prepareFailed || submissionPending}
                 pressed={tool === item.name}
                 onPressedChange={() => chooseTool(item.name)}
               />
@@ -196,6 +294,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
                 <Button
                   variant="ghost"
                   size={size}
+                  disabled={isExporting || isPreparing || prepareFailed || submissionPending}
                   aria-label={t("editor.drawing.style")}
                   icon={<CircleIcon style={{ color: currentColor, fill: currentColor }} />}
                 />
@@ -255,57 +354,80 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   const modifier = primaryModifierGlyph();
   const historyControls = (
     <>
-      <IconAction
-        size={size}
-        label={t("editor.drawing.undo")}
-        shortcut={`${modifier} Z`}
-        icon={<Undo2Icon />}
-        disabled={!history.undo}
-        onClick={() => {
-          canvasRef.current?.undo();
-          syncHistory();
-        }}
-      />
-      <IconAction
-        size={size}
-        label={t("editor.drawing.redo")}
-        shortcut={`⇧ ${modifier} Z`}
-        icon={<Redo2Icon />}
-        disabled={!history.redo}
-        onClick={() => {
-          canvasRef.current?.redo();
-          syncHistory();
-        }}
-      />
-    </>
-  );
-  const viewControls = (
-    <>
-      <IconAction size={size} label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
-      <IconAction
-        size={size}
-        label={t("editor.insert-menu.insert-image")}
-        icon={<ImagePlusIcon />}
-        onClick={() => fileInputRef.current?.click()}
-      />
+      {(isWide || history.undo) && (
+        <IconAction
+          size={size}
+          label={t("editor.drawing.undo")}
+          shortcut={`${modifier} Z`}
+          icon={<Undo2Icon />}
+          disabled={!history.undo || isExporting || isPreparing || prepareFailed || submissionPending}
+          onClick={() => {
+            canvasRef.current?.undo();
+            syncHistory();
+            if (!isWide) canvasRef.current?.focus();
+          }}
+        />
+      )}
+      {(isWide || history.redo) && (
+        <IconAction
+          size={size}
+          label={t("editor.drawing.redo")}
+          shortcut={`⇧ ${modifier} Z`}
+          icon={<Redo2Icon />}
+          disabled={!history.redo || isExporting || isPreparing || prepareFailed || submissionPending}
+          onClick={() => {
+            canvasRef.current?.redo();
+            syncHistory();
+            if (!isWide) canvasRef.current?.focus();
+          }}
+        />
+      )}
     </>
   );
   const cancelButton = (
-    <Button variant="ghost" size={size} onClick={requestClose}>
-      {t("common.cancel")}
-    </Button>
+    <div className="flex items-center gap-1" data-theme="light">
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              variant="ghost"
+              size={size}
+              aria-label={t("common.close")}
+              icon={<XIcon />}
+              onClick={() => void requestClose()}
+              disabled={isExporting}
+            />
+          }
+        />
+        <Tooltip.Popup>{t("common.close")}</Tooltip.Popup>
+      </Tooltip.Root>
+    </div>
   );
+  const exception = prepareFailed || commitError;
   const doneButton = (
-    <Button
-      variant="primary"
-      size={size}
-      onClick={handleDone}
-      disabled={isPreparing}
-      loading={isExporting}
-      loadingLabel={t("editor.drawing.done")}
-    >
-      {t("editor.drawing.done")}
-    </Button>
+    <div className="flex items-center gap-1" data-theme="light">
+      {exception && (
+        <IconAction
+          size={size}
+          label={t(prepareFailed ? "editor.drawing.image-failed" : (commitError ?? "editor.drawing.export-failed"))}
+          icon={<CircleAlertIcon />}
+          disabled={isExporting}
+          onClick={() => {
+            if (prepareFailed) void setUpCanvas();
+          }}
+        />
+      )}
+      <Button
+        variant="primary"
+        size={size}
+        onClick={handleDone}
+        disabled={isPreparing || prepareFailed}
+        loading={isExporting || isPreparing}
+        loadingLabel={isPreparing ? t("editor.blocks.loading") : t(actionLabel)}
+      >
+        {t(actionLabel)}
+      </Button>
+    </div>
   );
 
   return (
@@ -316,8 +438,9 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
         // The sheet closes only through requestClose, which asks first when there are changes.
         eventDetails.cancel();
         // Escape on the drawing surface leaves the current tool or selection; it belongs to the canvas.
-        const escapeOnSurface = eventDetails.reason === "escape-key" && surfaceRef.current?.contains(eventDetails.event.target as Node);
-        if (!escapeOnSurface) requestClose();
+        const escapeOnSurface =
+          !isViewing && eventDetails.reason === "escape-key" && surfaceRef.current?.contains(eventDetails.event.target as Node);
+        if (!escapeOnSurface) void requestClose();
       }}
     >
       <DrawingDialogPopup label={title}>
@@ -328,29 +451,47 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
           <div
             ref={surfaceRef}
             className={cn("absolute inset-0", isPreparing && "pointer-events-none")}
+            inert={isPreparing || prepareFailed || zoomMenuOpen}
             aria-busy={isPreparing || undefined}
             onPointerUp={syncHistory}
+            onPointerCancel={syncHistory}
+            onPointerMove={scheduleZoom}
+            onWheel={scheduleZoom}
             onKeyUp={syncHistory}
           >
-            <Canvas
-              ref={canvasRef}
-              className="absolute inset-0"
-              autoFocus
-              ariaLabel={title}
-              initialScene={initialScene}
-              theme={theme}
-              tools={TOOL_NAMES}
-              fontFamily={fontFamily}
-              onChange={syncHistory}
-              onToolChange={setTool}
-              onError={handleCanvasError}
-            />
-            <CanvasMounted onMounted={setUpCanvas} />
+            {loading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Spinner label={t("editor.blocks.loading")} />
+              </div>
+            ) : (
+              <>
+                <Canvas
+                  ref={canvasRef}
+                  className="absolute inset-0"
+                  readOnly={isViewing || isExporting || prepareFailed || submissionPending}
+                  autoFocus={!isViewing && !background}
+                  ariaLabel={title}
+                  initialScene={initialScene}
+                  theme={theme}
+                  tools={TOOL_NAMES}
+                  fontFamily={fontFamily}
+                  onChange={syncHistory}
+                  onToolChange={setTool}
+                  onError={handleCanvasError}
+                />
+                <CanvasMounted onMounted={setUpCanvas} />
+              </>
+            )}
           </div>
 
-          {isWide ? (
-            <FloatingRow edge="top">
-              <FloatingAction>{cancelButton}</FloatingAction>
+          <FloatingRow edge="top" className="sm:min-h-[34px]">
+            <FloatingAction>
+              <div className="flex items-center gap-3 sm:gap-0.5">
+                {cancelButton}
+                {!isWide && !isViewing && historyControls}
+              </div>
+            </FloatingAction>
+            {isWide && !isViewing && (
               <FloatingBar>
                 {toolRow}
                 <Divider />
@@ -358,20 +499,72 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
                 <Divider />
                 {historyControls}
                 <Divider />
-                {viewControls}
+                <IconAction
+                  size={size}
+                  label={t("editor.insert-menu.insert-image")}
+                  icon={<ImagePlusIcon />}
+                  onClick={() => fileInputRef.current?.click()}
+                />
               </FloatingBar>
-              <FloatingAction>{doneButton}</FloatingAction>
-            </FloatingRow>
-          ) : (
+            )}
+            <FloatingAction>
+              {isViewing
+                ? onEdit && (
+                    <Button ref={editButtonRef} variant="ghost" size={size} icon={<PaletteIcon />} disabled={loading} onClick={onEdit}>
+                      {t("common.edit")}
+                    </Button>
+                  )
+                : doneButton}
+            </FloatingAction>
+          </FloatingRow>
+          <FloatingRow edge="bottom" className="justify-start max-sm:bottom-[calc(64px+env(safe-area-inset-bottom))]">
+            <FloatingAction>
+              <Menu.Root size="md" open={zoomMenuOpen} onOpenChange={setZoomMenuOpen}>
+                <Menu.Trigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size={size}
+                      disabled={loading}
+                      className="min-w-14 tabular-nums"
+                      aria-label={`${t("editor.drawing.zoom")} ${Math.round(zoom * 100)}%`}
+                    />
+                  }
+                >
+                  {Math.round(zoom * 100)}%
+                </Menu.Trigger>
+                <Menu.Popup side="top" align="start" data-theme="light" aria-label={t("editor.drawing.zoom")}>
+                  <Menu.Item icon={<PlusIcon />} disabled={zoom >= MAX_ZOOM} onClick={() => changeZoom(1.2)}>
+                    {t("map.zoom-in")}
+                  </Menu.Item>
+                  <Menu.Item icon={<MinusIcon />} disabled={zoom <= MIN_ZOOM} onClick={() => changeZoom(1 / 1.2)}>
+                    {t("map.zoom-out")}
+                  </Menu.Item>
+                  <Menu.Separator />
+                  <Menu.Item
+                    icon={<ScanSearchIcon />}
+                    onClick={() => {
+                      canvasRef.current?.zoomToFit();
+                      syncZoom();
+                    }}
+                  >
+                    {t("editor.drawing.zoom-to-fit")}
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<RotateCcwIcon />}
+                    onClick={() => {
+                      canvasRef.current?.zoomTo(1);
+                      syncZoom();
+                    }}
+                  >
+                    {t("attachment-preview.reset-zoom")}
+                  </Menu.Item>
+                </Menu.Popup>
+              </Menu.Root>
+            </FloatingAction>
+          </FloatingRow>
+          {!isWide && !isViewing && (
             <>
-              <FloatingRow edge="top">
-                <FloatingAction>{cancelButton}</FloatingAction>
-                <FloatingBar className="gap-3">
-                  {historyControls}
-                  {viewControls}
-                </FloatingBar>
-                <FloatingAction>{doneButton}</FloatingAction>
-              </FloatingRow>
               {/* The tools in thumb reach. Under 380px the divider goes and the bar nears the
                   edges, so a 360px screen keeps 44px between targets. */}
               <FloatingRow edge="bottom" className="max-[380px]:inset-x-1.5">
@@ -402,15 +595,23 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
               {t(mode === "edit" ? "editor.drawing.discard-edit-title" : "editor.drawing.discard-title")}
             </AlertDialog.Title>
             <AlertDialog.Description>
-              {t(mode === "edit" ? "editor.drawing.discard-edit-description" : "editor.drawing.discard-description")}
+              {t(commitError ?? (mode === "edit" ? "editor.drawing.discard-edit-description" : "editor.drawing.discard-description"))}
             </AlertDialog.Description>
             <AlertDialog.Footer>
               <AlertDialog.Close render={<Button variant="ghost">{t("editor.drawing.keep-drawing")}</Button>} />
               <Button
                 variant="danger"
-                onClick={() => {
-                  setDiscardOpen(false);
-                  onClose();
+                onClick={async () => {
+                  try {
+                    const accepted = (await onDiscard?.()) ?? initialScene;
+                    if (accepted) canvasRef.current?.setScene(accepted);
+                    setCommitError(undefined);
+                    syncHistory();
+                    setDiscardOpen(false);
+                    onClose();
+                  } catch {
+                    showErrorToast(t("editor.drawing.export-failed"));
+                  }
                 }}
               >
                 {t("editor.drawing.discard")}

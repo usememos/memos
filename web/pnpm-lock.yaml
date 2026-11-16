@@ -39,14 +39,14 @@ importers:
         specifier: ^5.100.9
         version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.6))(react@19.2.6)
       '@usememos/canvas':
-        specifier: 26.11.2
-        version: 26.11.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@usememos/editor':
         specifier: 26.11.3
         version: 26.11.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@usememos/editor':
+        specifier: 26.11.5
+        version: 26.11.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@usememos/ui':
-        specifier: 26.11.20
-        version: 26.11.20(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.11.21
+        version: 26.11.21(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -129,6 +129,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^2.12.0
         version: 2.12.0(patch_hash=9d60cec35402ba36bc21a72fefc68ccef8db0acb883504cc47c05a00a0029f8c)
+      '@playwright/test':
+        specifier: 1.63.0
+        version: 1.63.0
       '@rolldown/plugin-babel':
         specifier: 0.2.3
         version: 0.2.3(@babel/core@7.29.0)(@babel/runtime@7.29.7)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@24.12.2)(jiti@2.6.1))
@@ -515,6 +518,11 @@ packages:
 
   '@pierre/highlights@0.3.0':
     resolution: {integrity: sha512-s6xZ/giPPrSeCO2w254GiysUXD4ditKMTOrl1vHynvPqP7VdlujYi01O9joxJ0T16XkoXGQMN6zkRi9+O8NCzg==}
+
+  '@playwright/test@1.63.0':
+    resolution: {integrity: sha512-oxMK4vllB9RK5NQ2l1pq1IfOf2AvnEuj/vYGDj0H2nMtmtZpKtCwt/l00GEO6xjGfpBNAvjovvYdCm50dRQkpQ==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@react-leaflet/core@3.0.0':
     resolution: {integrity: sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==}
@@ -951,8 +959,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@usememos/canvas@26.11.2':
-    resolution: {integrity: sha512-sgFrRUSUz5qq3JMiVqPVsLd8NPL+nmWfuEG45mpjbvBbPRxHdKSzNVYc6DwokG/Z670zJI3gDc5Lfsi75QYvGw==}
+  '@usememos/canvas@26.11.3':
+    resolution: {integrity: sha512-KMIGsm/1afZpSuV2uILNBmB9rTUNpplhcCI6A7IsP+2kQUVGNcVOsTFIfSyVyqcrUdTKgnbt+XlfG1NwRhi3SA==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -962,8 +970,8 @@ packages:
       react-dom:
         optional: true
 
-  '@usememos/editor@26.11.3':
-    resolution: {integrity: sha512-wJKSwkx8h4JRuYnMMC/zbrBeGb7j2/AUYlNdxVe0zzK1PvHCJ9XGNkt3qj1uz39Hq1Lv24x0tOXjL+gW/5l1EQ==}
+  '@usememos/editor@26.11.5':
+    resolution: {integrity: sha512-GXLVvTcCIn8bwYubEXavU/SpU+caHL6bQHUApSmFZ2RhvRP5knDr9S4k5AWBLynUdNhj/i4PCtEb2YPOPav9dQ==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -973,8 +981,8 @@ packages:
       react-dom:
         optional: true
 
-  '@usememos/ui@26.11.20':
-    resolution: {integrity: sha512-jm2Il+Xa1/o381n2JJo/X3nozPunKMXsfWudnYNkqWfKSrOMitJNPcvgL6S8+/3+DM8beKssLdRz17o7CdVNqw==}
+  '@usememos/ui@26.11.21':
+    resolution: {integrity: sha512-HFLA+raEM7u3yj4M5SsJ3z1XhVhVj+Yu0pR/MAPO7+3rFKaWoyRgzQSiWTV9+BKN3OHk5YQzdVi/fs8wrgPEeA==}
     peerDependencies:
       '@base-ui/react': 1.9.0
       lucide-react: '>=1.0.0'
@@ -1403,6 +1411,16 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
+
+  playwright-core@1.63.0:
+    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright@1.63.0:
+    resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   postcss@8.5.14:
     resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
@@ -2075,6 +2093,10 @@ snapshots:
 
   '@pierre/highlights@0.3.0': {}
 
+  '@playwright/test@1.63.0':
+    dependencies:
+      playwright: 1.63.0
+
   '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       leaflet: 1.9.4
@@ -2382,17 +2404,17 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  '@usememos/canvas@26.11.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/canvas@26.11.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@usememos/editor@26.11.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/editor@26.11.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@usememos/ui@26.11.20(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/ui@26.11.21(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       lucide-react: 1.34.0(react@19.2.6)
@@ -2752,6 +2774,12 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.4: {}
+
+  playwright-core@1.63.0: {}
+
+  playwright@1.63.0:
+    dependencies:
+      playwright-core: 1.63.0
 
   postcss@8.5.14:
     dependencies:

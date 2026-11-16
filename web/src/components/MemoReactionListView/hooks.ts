@@ -1,84 +1,49 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { memoServiceClient } from "@/connect";
 import { useResolvedUsersByNames } from "@/contexts/MentionResolutionContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { memoDetailQueryOptions, memoKeys } from "@/hooks/useMemoQueries";
-import type { Memo, Reaction } from "@/types/proto/api/memo_service_pb";
-import type { User } from "@/types/proto/api/user_service_pb";
+import { useToggleReaction } from "@/hooks/useReactionQueries";
+import { useSpaces } from "@/hooks/useSpaceQueries";
+import { extractUsernameFromName } from "@/lib/resource-names";
+import { State } from "@/types/proto/api/common_pb";
+import { type Memo, type Reaction, Visibility } from "@/types/proto/api/memo_service_pb";
+import { SpaceMember_Role } from "@/types/proto/api/space_service_pb";
+import { isSuperUser } from "@/utils/user";
 
-export type ReactionGroup = Map<string, User[]>;
-
-export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
-  const creatorNames = useMemo(() => reactions.map((r) => r.creator), [reactions]);
-  const userMap = useResolvedUsersByNames(creatorNames);
-
+export const useReactionGroups = (reactions: Reaction[]) => {
+  const creatorNames = useMemo(() => reactions.map((reaction) => reaction.creator), [reactions]);
+  const users = useResolvedUsersByNames(creatorNames);
   return useMemo(() => {
-    const reactionGroup = new Map<string, User[]>();
+    const groups = new Map<string, { reactions: Reaction[]; names: string[] }>();
     for (const reaction of reactions) {
-      const user = userMap?.get(reaction.creator);
-      if (!user) continue;
-
-      const users = reactionGroup.get(reaction.reactionType) || [];
-      users.push(user);
-      reactionGroup.set(reaction.reactionType, users);
+      const group = groups.get(reaction.reactionType) ?? { reactions: [], names: [] };
+      const user = users.get(reaction.creator);
+      group.reactions.push(reaction);
+      group.names.push(user?.displayName || user?.username || extractUsernameFromName(reaction.creator));
+      groups.set(reaction.reactionType, group);
     }
-    return reactionGroup;
-  }, [reactions, userMap]);
+    return groups;
+  }, [reactions, users]);
 };
 
-interface UseReactionActionsOptions {
-  memo: Memo;
-  onComplete?: () => void;
-}
-
-export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptions) => {
+export const useReactionActions = ({ memo }: { memo: Memo }) => {
   const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
+  const admin = isSuperUser(currentUser);
+  const { data: spaces } = useSpaces(currentUser?.name, { enabled: Boolean(memo.space) && !admin });
+  const role = spaces?.find((space) => space.name === memo.space)?.currentUserRole;
+  const active = Boolean(currentUser) && currentUser?.state !== State.ARCHIVED && memo.state !== State.ARCHIVED;
+  const canReact =
+    active &&
+    (admin ||
+      ((!memo.space || role === SpaceMember_Role.ADMIN || role === SpaceMember_Role.USER) &&
+        (memo.visibility !== Visibility.PRIVATE || memo.creator === currentUser?.name)));
+  const { toggleReaction, isPending } = useToggleReaction(memo, currentUser?.name);
+  const hasReacted = (reactionType: string) =>
+    memo.reactions.some((reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser?.name);
 
-  const hasReacted = (reactionType: string) => {
-    return memo.reactions.some((r) => r.reactionType === reactionType && r.creator === currentUser?.name);
+  const handleReactionClick = (reactionType: string) => {
+    if (!active || (!canReact && !hasReacted(reactionType))) return false;
+    return toggleReaction(reactionType);
   };
 
-  const handleReactionClick = async (reactionType: string) => {
-    if (!currentUser) return;
-
-    try {
-      if (hasReacted(reactionType)) {
-        const reactions = memo.reactions.filter(
-          (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
-        );
-        await Promise.all(reactions.map((reaction) => memoServiceClient.deleteMemoReaction({ name: reaction.name })));
-      } else {
-        await memoServiceClient.upsertMemoReaction({
-          parent: memo.name,
-          reaction: { reactionType },
-        });
-      }
-      // Fetch the memo into its detail query, which every surface showing the memo reads, a card in a list included.
-      // Cancelling the fetch in flight first keeps an older copy of the reactions (an earlier click's) from landing
-      // after this one.
-      await queryClient.cancelQueries({ queryKey: memoKeys.detail(memo.name) });
-      await queryClient.fetchQuery({ ...memoDetailQueryOptions(memo.name), staleTime: 0 });
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      // If this memo is a comment, refresh the parent's comments list so the comment's reactions update in the UI
-      if (memo.parent) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
-      }
-    } catch {
-      // skip error
-    }
-    onComplete?.();
-  };
-
-  return { hasReacted, handleReactionClick };
-};
-
-export const formatReactionTooltip = (users: User[], reactionType: string): string => {
-  if (users.length === 0) return "";
-  const formatUserName = (user: User) => user.displayName || user.username;
-  if (users.length < 5) {
-    return `${users.map(formatUserName).join(", ")} reacted with ${reactionType.toLowerCase()}`;
-  }
-  return `${users.slice(0, 4).map(formatUserName).join(", ")} and ${users.length - 4} more reacted with ${reactionType.toLowerCase()}`;
+  return { hasReacted, handleReactionClick, isPending, canReact, canWithdraw: active };
 };

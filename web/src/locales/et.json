@@ -207,14 +207,13 @@
       "image-upload-failed": "Mõnda pilti ei õnnestunud üles laadida. Proovige uuesti või hoidke üleslaaditud failid manusena.",
       "image-upload-stopped": "Pildi üleslaadimine peatatud {{completed}}/{{total}}",
       "insert-image": "Lisa pilt",
-      "drawing": "Joonistus",
+      "drawing": "Märgistus",
       "keep-as-attachments": "Säilita manusena",
       "uploading-inline-image": "Üleslaadimine sisusse",
       "uploading-images": "Piltide üleslaadimine {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "Uus joonistus",
-      "edit": "Muuda joonistust",
+      "edit": "Muuda märgistust",
       "tools": "Tööriistad",
       "tool-select": "Vali",
       "tool-pen": "Pliiats",
@@ -239,8 +238,8 @@
       "color-violet": "Violetne",
       "undo": "Võta tagasi",
       "redo": "Tee uuesti",
+      "zoom": "Suum",
       "zoom-to-fit": "Sobita aknasse",
-      "done": "Valmis",
       "discard-title": "Kas loobuda sellest joonistusest?",
       "discard-description": "Seda pole veel memole lisatud.",
       "discard-edit-title": "Kas loobuda muudatustest?",
@@ -250,7 +249,13 @@
       "open-failed": "Joonistust ei õnnestunud avada. Proovige uuesti.",
       "export-failed": "Joonistust ei õnnestunud salvestada. Proovige uuesti.",
       "image-failed": "Pilti ei õnnestunud joonistusele lisada.",
-      "saved-without-drawing": "Memo on salvestatud, kuid joonistus mitte. Salvestage veel kord, et uuesti proovida."
+      "saved-without-drawing": "Memo on salvestatud, kuid joonistus mitte. Salvestage veel kord, et uuesti proovida.",
+      "annotate": "Märgistus",
+      "save-copy": "Salvesta koopia",
+      "unavailable": "Sihtkoht pole saadaval.",
+      "saved-needs-update": "Joonistus salvestatud. Proovi märget uuesti uuendada.",
+      "changed-save-copy": "Algne fail on muutunud. Salvesta koopia.",
+      "bind-failed": "Joonistus üles laaditud. Proovi seda uuesti märkmesse lisada."
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
@@ -479,7 +484,9 @@
     "layout-list-description": "Üks lugemislaiusega veerg",
     "on-this-memo": "Sellel memo peal",
     "parent-memo": "Ülemmemo",
-    "view-options": "Vaate valikud"
+    "view-options": "Vaate valikud",
+    "add-reaction": "Lisa reaktsioon",
+    "remove-reaction": "Eemaldage reaktsioon"
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",
@@ -653,16 +660,6 @@
       "username-password-required": "Kasutajanimi ja parool ei tohi olla tühjad",
       "create-success": "Kasutaja loodud",
       "update-success": "Kasutaja uuendatud"
-    },
-    "memo": {
-      "add-reaction": "Lisa reaktsioon",
-      "configured-reactions": "Konfigureeritud reaktsioonid",
-      "label": "Memo",
-      "reaction-placeholder": "nt. 👍",
-      "reactions-description": "Määratlege reaktsioonivalikud, mida kasutajad saavad memodele rakendada.",
-      "remove-reaction": "Eemaldage reaktsioon",
-      "reactions": "Reactions",
-      "reactions-required": "Reactionsi loend ei tohi olla tühi"
     },
     "my-account": {
       "label": "Minu konto"
@@ -1305,7 +1302,7 @@
       "search-emoji": "Otsi või kleebi emotikone…",
       "no-results": "Vasteid pole",
       "emoji-help": "Vali tavaline emotikon või kleebi oma.",
-      "reset": "Lähtesta vaikeseadetele",
+      "reset": "Kasuta vaikeikooni",
       "use-emoji": "Kasuta {{emoji}}"
     },
     "unavailable": "Seda ruumi pole olemas või sul pole sellele juurdepääsu.",

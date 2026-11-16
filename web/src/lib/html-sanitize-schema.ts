@@ -1,3 +1,5 @@
+import { isAllowedLinkUrl } from "@/lib/url-policy";
+
 const TRUSTED_IFRAME_SRC_PATTERNS = [
   /^https:\/\/www\.youtube\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/www\.youtube-nocookie\.com\/embed\/[^?#]+(?:\?.*)?$/i,
@@ -183,13 +185,12 @@ const CLASS_NAMES: Record<string, readonly (string | RegExp)[]> = {
 };
 
 /**
- * The URL schemes an attribute may use; a relative URL is always allowed. Links also allow
- * `tel:` and `sms:`, which hand off to another app (dialer, messaging) instead of navigating;
- * they cannot run script, so they are as safe as `mailto:`. Sources load over https only.
+ * The URL schemes an attribute may use; a relative URL is always allowed. `href` follows
+ * memos' link policy (`isAllowedLinkUrl`) instead of a fixed list, since a custom scheme
+ * hands off to another app as `mailto:` does. Sources load over https only.
  */
 const URL_PROTOCOLS: Record<string, readonly string[]> = {
   cite: ["http", "https"],
-  href: ["http", "https", "irc", "ircs", "mailto", "xmpp", "tel", "sms"],
   longdesc: ["http", "https"],
   src: ["https"],
 };
@@ -223,6 +224,7 @@ export const allowedAttributeValue = (tag: string, name: string, value: string):
     return names.length ? names.join(" ") : null;
   }
   if (tag === "iframe" && name === "src") return isTrustedIframeSrc(value) ? value : null;
+  if (name === "href") return isAllowedLinkUrl(value) ? value : null;
   const protocols = URL_PROTOCOLS[name];
   return protocols && !hasAllowedProtocol(value.trim(), protocols) ? null : value;
 };

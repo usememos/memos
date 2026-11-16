@@ -14,8 +14,8 @@ enum InstanceSettingKey {
   GENERAL = 2;
   // STORAGE is the key for storage settings.
   STORAGE = 3;
-  // MEMO_RELATED is the key for memo related settings.
-  MEMO_RELATED = 4;
+  reserved 4;
+  reserved "MEMO_RELATED";
   // TAGS is the key for tag metadata.
   TAGS = 5;
   // NOTIFICATION is the key for notification transport settings.
@@ -34,12 +34,13 @@ enum InstanceSettingKey {
 }
 
 message InstanceSetting {
+  reserved 5;
+  reserved "memo_related_setting";
   InstanceSettingKey key = 1;
   oneof value {
     InstanceBasicSetting basic_setting = 2;
     InstanceGeneralSetting general_setting = 3;
     InstanceStorageSetting storage_setting = 4;
-    InstanceMemoRelatedSetting memo_related_setting = 5;
     InstanceTagsSetting tags_setting = 6;
     InstanceNotificationSetting notification_setting = 7;
     InstanceAISetting ai_setting = 8;
@@ -145,11 +146,6 @@ message StorageS3Config {
   // to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
   // certificate; it removes protection against man-in-the-middle attacks.
   bool insecure_skip_tls_verify = 7;
-}
-
-message InstanceMemoRelatedSetting {
-  // reactions is the list of reactions.
-  repeated string reactions = 1;
 }
 
 message InstanceTagMetadata {

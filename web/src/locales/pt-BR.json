@@ -170,15 +170,14 @@
       "image-upload-failed": "Algumas imagens não puderam ser carregadas. Tente novamente ou mantenha os arquivos carregados como anexos.",
       "image-upload-stopped": "Upload de imagem interrompido {{completed}}/{{total}}",
       "insert-image": "Inserir imagem",
-      "drawing": "Desenho",
+      "drawing": "Marcação",
       "keep-as-attachments": "Manter como anexos",
       "retry-image-upload": "Tentar novamente",
       "uploading-inline-image": "Carregando conteúdo",
       "uploading-images": "Carregando imagens {{completed}}/{{total}}"
     },
     "drawing": {
-      "new-title": "Novo desenho",
-      "edit": "Editar desenho",
+      "edit": "Editar marcação",
       "tools": "Ferramentas",
       "tool-select": "Selecionar",
       "tool-pen": "Caneta",
@@ -203,8 +202,8 @@
       "color-violet": "Violeta",
       "undo": "Desfazer",
       "redo": "Refazer",
+      "zoom": "Zoom",
       "zoom-to-fit": "Ajustar à tela",
-      "done": "Concluído",
       "discard-title": "Descartar este desenho?",
       "discard-description": "Ele ainda não foi adicionado ao memo.",
       "discard-edit-title": "Descartar as alterações?",
@@ -214,7 +213,13 @@
       "open-failed": "Não foi possível abrir o desenho. Tente novamente.",
       "export-failed": "Não foi possível salvar o desenho. Tente novamente.",
       "image-failed": "Não foi possível adicionar a imagem ao desenho.",
-      "saved-without-drawing": "O memo foi salvo, mas o desenho não. Salve novamente para tentar de novo."
+      "saved-without-drawing": "O memo foi salvo, mas o desenho não. Salve novamente para tentar de novo.",
+      "annotate": "Marcação",
+      "save-copy": "Salvar cópia",
+      "unavailable": "O destino não está disponível.",
+      "saved-needs-update": "Desenho salvo. Tente atualizar a nota novamente.",
+      "changed-save-copy": "O original mudou. Salve uma cópia.",
+      "bind-failed": "Desenho enviado. Tente adicioná-lo à nota novamente."
     },
     "audio-recorder": {
       "attachment-label": "Gravação de áudio",
@@ -437,7 +442,9 @@
       "uncheck-all": "Desmarcar todas as tarefas",
       "updated": "Tarefas atualizadas"
     },
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "add-reaction": "Adicionar reação",
+    "remove-reaction": "Remover reação"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -895,16 +902,6 @@
       "disallow-user-registration-description": "Impedir que novos usuários criem contas na página de cadastro.",
       "week-start-day-description": "Controla o primeiro dia exibido nas visualizações em estilo de calendário."
     },
-    "memo": {
-      "reactions": "Reações",
-      "label": "Memo",
-      "reactions-required": "A lista de reações não deve estar vazia",
-      "add-reaction": "Adicionar reação",
-      "configured-reactions": "Reações configuradas",
-      "reaction-placeholder": "Ex.: 👍",
-      "reactions-description": "Definir as opções de reação que os usuários podem aplicar aos memorandos.",
-      "remove-reaction": "Remover reação"
-    },
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Um nome fácil de lembrar",
@@ -1306,7 +1303,7 @@
       "search-emoji": "Pesquisar ou colar emoji…",
       "no-results": "Nenhuma correspondência",
       "emoji-help": "Escolha um emoji comum ou cole o seu.",
-      "reset": "Redefinir para o padrão",
+      "reset": "Usar ícone padrão",
       "use-emoji": "Usar {{emoji}}"
     },
     "unavailable": "Este espaço não existe ou você não tem acesso a ele.",

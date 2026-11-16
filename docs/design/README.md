@@ -14,6 +14,10 @@ behavior; a design document does not have to.
 
 ## Index
 
+Implemented, awaiting release:
+
+- [Markup: image annotation and saving](drawing-annotation-and-recovery.md)
+
 Implemented and frozen:
 
 - [API abuse controls](api-abuse-controls.md)

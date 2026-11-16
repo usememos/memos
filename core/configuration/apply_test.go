@@ -144,7 +144,7 @@ func TestApplyRemovals(t *testing.T) {
 		"idp.json": `{"identityProviders":[` + validIDP + `]}`,
 		"settings.json": `{"instanceSettings":[
 			{"name":"instance/settings/ACCESS","accessSetting":{"accessMode":"INSTANCE_ACCESS_MODE_PUBLIC"}},
-			{"name":"instance/settings/MEMO_RELATED","memoRelatedSetting":{"reactions":["👍"]}}]}`,
+			{"name":"instance/settings/NOTIFICATION","notificationSetting":{"email":{"fromName":"Memos"}}}]}`,
 	}
 	_, state := applyFor(t, loadDesired(t, declared), s)
 	require.Len(t, state.Resources, 3)
@@ -152,7 +152,7 @@ func TestApplyRemovals(t *testing.T) {
 	_, state = applyFor(t, loadDesired(t, map[string]string{"removed.json": `{"removed":[
 		{"resource":"identity-providers/sso","destroy":true},
 		{"resource":"instance/settings/ACCESS","destroy":true},
-		{"resource":"instance/settings/MEMO_RELATED"}]}`}), s)
+		{"resource":"instance/settings/NOTIFICATION"}]}`}), s)
 	require.Empty(t, state.Resources)
 
 	providers, err := s.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
@@ -161,9 +161,9 @@ func TestApplyRemovals(t *testing.T) {
 	access, err := s.GetInstanceAccessSetting(ctx)
 	require.NoError(t, err)
 	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, access.AccessMode, "a reset ACCESS is private")
-	memoRelated, err := s.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "MEMO_RELATED"})
+	notification, err := s.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "NOTIFICATION"})
 	require.NoError(t, err)
-	require.Equal(t, []string{"👍"}, memoRelated.GetMemoRelatedSetting().GetReactions(), "a released setting is left as it is")
+	require.Equal(t, "Memos", notification.GetNotificationSetting().GetEmail().GetFromName(), "a released setting is left as it is")
 }
 
 func TestApplyLinkedIdentities(t *testing.T) {
