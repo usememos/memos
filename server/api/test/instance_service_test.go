@@ -5,10 +5,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/require"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -1162,6 +1164,388 @@ func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
 
 	archive.GetS3Config().Region = "us-east-1"
 	require.NoError(t, update([]*apipb.InstanceSetting_Storage{local, archive}, "local"))
+}
+
+func TestUpdateInstanceSettingUpdateMask(t *testing.T) {
+	ctx := context.Background()
+
+	setup := func(t *testing.T) (*TestService, context.Context) {
+		ts := NewTestService(t)
+		t.Cleanup(ts.Cleanup)
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		return ts, ts.CreateUserContext(ctx, admin.ID)
+	}
+	general := func(setting *apipb.InstanceSetting_GeneralSetting) *apipb.InstanceSetting {
+		return &apipb.InstanceSetting{
+			Name:  "instance/settings/GENERAL",
+			Value: &apipb.InstanceSetting_GeneralSetting_{GeneralSetting: setting},
+		}
+	}
+	seedGeneral := func(t *testing.T, ts *TestService, adminCtx context.Context) {
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{
+				AdditionalStyle:    "body { color: red; }",
+				WeekStartDayOffset: 1,
+				CustomProfile:      &apipb.InstanceSetting_GeneralSetting_CustomProfile{Title: "Seeded", Description: "Kept"},
+			}),
+		})
+		require.NoError(t, err)
+	}
+
+	t.Run("masked fields change and the rest are kept", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{
+				DisallowChangeNickname: true,
+				AdditionalStyle:        "ignored because unmasked",
+				CustomProfile:          &apipb.InstanceSetting_GeneralSetting_CustomProfile{Title: "Renamed"},
+			}),
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{
+				"general_setting.disallow_change_nickname",
+				"general_setting.custom_profile.title",
+			}},
+		})
+		require.NoError(t, err)
+		got := resp.GetGeneralSetting()
+		require.True(t, got.GetDisallowChangeNickname())
+		require.Equal(t, "body { color: red; }", got.GetAdditionalStyle())
+		require.Equal(t, int32(1), got.GetWeekStartDayOffset())
+		require.Equal(t, "Renamed", got.GetCustomProfile().GetTitle())
+		require.Equal(t, "Kept", got.GetCustomProfile().GetDescription())
+
+		stored, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/GENERAL"})
+		require.NoError(t, err)
+		require.Equal(t, "body { color: red; }", stored.GetGeneralSetting().GetAdditionalStyle())
+		require.True(t, stored.GetGeneralSetting().GetDisallowChangeNickname())
+	})
+
+	t.Run("a message path replaces the whole message", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{
+				CustomProfile: &apipb.InstanceSetting_GeneralSetting_CustomProfile{Title: "Only title"},
+			}),
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"general_setting.custom_profile"}},
+		})
+		require.NoError(t, err)
+		require.Equal(t, "Only title", resp.GetGeneralSetting().GetCustomProfile().GetTitle())
+		require.Empty(t, resp.GetGeneralSetting().GetCustomProfile().GetDescription())
+		require.Equal(t, "body { color: red; }", resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("paths may be relative to the setting value", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{WeekStartDayOffset: 6}),
+			UpdateMask:      &fieldmaskpb.FieldMask{Paths: []string{"week_start_day_offset"}},
+		})
+		require.NoError(t, err)
+		require.Equal(t, int32(6), resp.GetGeneralSetting().GetWeekStartDayOffset())
+		require.Equal(t, "body { color: red; }", resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("a REST PATCH body keeps unsent fields", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+
+		// The REST gateway decodes the body and, when no mask is sent, derives
+		// one from the body keys, including "name".
+		body := `{"name":"instance/settings/GENERAL","generalSetting":{"disallowChangeNickname":true}}`
+		setting := &apipb.InstanceSetting{}
+		require.NoError(t, protojson.Unmarshal([]byte(body), setting))
+		mask, err := runtime.FieldMaskFromRequestBody(strings.NewReader(body), setting)
+		require.NoError(t, err)
+		require.Contains(t, mask.GetPaths(), "name")
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: setting,
+			UpdateMask:      mask,
+		})
+		require.NoError(t, err)
+		require.True(t, resp.GetGeneralSetting().GetDisallowChangeNickname())
+		require.Equal(t, "body { color: red; }", resp.GetGeneralSetting().GetAdditionalStyle())
+		require.Equal(t, "instance/settings/GENERAL", resp.GetName())
+	})
+
+	t.Run("no mask replaces the whole setting", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{DisallowChangeNickname: true}),
+		})
+		require.NoError(t, err)
+		require.True(t, resp.GetGeneralSetting().GetDisallowChangeNickname())
+		require.Empty(t, resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("invalid paths are rejected", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		for _, path := range []string{
+			"general_setting.no_such_field",
+			"no_such_field",
+			"storage_setting.default_storage_id",
+			"general_setting.custom_profile.title.extra",
+		} {
+			_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+				InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{}),
+				UpdateMask:      &fieldmaskpb.FieldMask{Paths: []string{path}},
+			})
+			require.Equal(t, codes.InvalidArgument, status.Code(err), path)
+		}
+	})
+
+	t.Run("a value for another setting is rejected", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name:  "instance/settings/GENERAL",
+				Value: &apipb.InstanceSetting_TagsSetting_{TagsSetting: &apipb.InstanceSetting_TagsSetting{}},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"general_setting.additional_style"}},
+		})
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	t.Run("smtp password is kept on a masked update", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/NOTIFICATION",
+				Value: &apipb.InstanceSetting_NotificationSetting_{NotificationSetting: &apipb.InstanceSetting_NotificationSetting{
+					Email: &apipb.InstanceSetting_NotificationSetting_EmailSetting{
+						Enabled:      true,
+						SmtpHost:     "smtp.example.com",
+						SmtpPort:     587,
+						SmtpUsername: "bot",
+						SmtpPassword: "stored-password",
+						FromEmail:    "bot@example.com",
+						UseTls:       true,
+					},
+				}},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/NOTIFICATION",
+				Value: &apipb.InstanceSetting_NotificationSetting_{NotificationSetting: &apipb.InstanceSetting_NotificationSetting{
+					Email: &apipb.InstanceSetting_NotificationSetting_EmailSetting{FromName: "Memos Bot"},
+				}},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"notification_setting.email.from_name"}},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceNotificationSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, "stored-password", stored.GetEmail().GetSmtpPassword())
+		require.Equal(t, "Memos Bot", stored.GetEmail().GetFromName())
+		require.Equal(t, "smtp.example.com", stored.GetEmail().GetSmtpHost())
+	})
+}
+
+func TestUpdateInstanceSettingUpdateMaskStorage(t *testing.T) {
+	ctx := context.Background()
+	const secret = "archive-secret"
+
+	// setup stores LOCAL as the default and an S3 "archive" storage, the way
+	// the settings page saves them.
+	setup := func(t *testing.T) (*TestService, context.Context, string) {
+		ts := NewTestService(t)
+		t.Cleanup(ts.Cleanup)
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &apipb.InstanceSetting_StorageSetting_{StorageSetting: &apipb.InstanceSetting_StorageSetting{
+					Storages: []*apipb.InstanceSetting_Storage{
+						{Id: "local", Type: apipb.InstanceSetting_LOCAL},
+						{Id: "archive", Type: apipb.InstanceSetting_S3, Config: &apipb.InstanceSetting_Storage_S3Config_{
+							S3Config: &apipb.InstanceSetting_Storage_S3Config{
+								AccessKeyId: "AKID", AccessKeySecret: secret, Endpoint: "https://s3.example.com", Region: "us-east-1", Bucket: "memos",
+							},
+						}},
+					},
+					DefaultStorageId: "local",
+				}},
+			},
+		})
+		require.NoError(t, err)
+		var archiveID string
+		for _, storage := range resp.GetStorageSetting().GetStorages() {
+			if storage.GetType() == apipb.InstanceSetting_S3 {
+				archiveID = storage.GetId()
+			}
+		}
+		require.NotEmpty(t, archiveID)
+		return ts, adminCtx, archiveID
+	}
+	update := func(t *testing.T, ts *TestService, adminCtx context.Context, setting *apipb.InstanceSetting_StorageSetting, paths ...string) *storepb.InstanceStorageSetting {
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name:  "instance/settings/STORAGE",
+				Value: &apipb.InstanceSetting_StorageSetting_{StorageSetting: setting},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: paths},
+		})
+		require.NoError(t, err)
+		stored, err := ts.Store.GetInstanceStorageSetting(ctx)
+		require.NoError(t, err)
+		return stored
+	}
+	s3Storage := func(t *testing.T, setting *storepb.InstanceStorageSetting, bucket string) *storepb.Storage {
+		for _, storage := range setting.GetStorages() {
+			if storage.GetS3Config().GetBucket() == bucket {
+				return storage
+			}
+		}
+		require.Failf(t, "storage not found", "no S3 storage for bucket %q in %v", bucket, setting.GetStorages())
+		return nil
+	}
+
+	t.Run("default_storage_id", func(t *testing.T) {
+		ts, adminCtx, archiveID := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{DefaultStorageId: archiveID}, "storage_setting.default_storage_id")
+		require.Equal(t, archiveID, stored.GetDefaultStorageId())
+		require.Equal(t, storepb.InstanceStorageSetting_S3, stored.GetStorageType())
+		require.Equal(t, secret, s3Storage(t, stored, "memos").GetS3Config().GetAccessKeySecret())
+		require.Len(t, stored.GetStorages(), 2)
+	})
+
+	t.Run("storages list", func(t *testing.T) {
+		ts, adminCtx, archiveID := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{Storages: []*apipb.InstanceSetting_Storage{
+			{Id: "local", Type: apipb.InstanceSetting_LOCAL},
+			{Id: archiveID, Type: apipb.InstanceSetting_S3, Name: "Renamed", Config: &apipb.InstanceSetting_Storage_S3Config_{
+				S3Config: &apipb.InstanceSetting_Storage_S3Config{
+					AccessKeyId: "AKID", Endpoint: "https://s3.example.com", Region: "us-east-1", Bucket: "memos",
+				},
+			}},
+		}}, "storage_setting.storages")
+		require.Equal(t, "local", stored.GetDefaultStorageId())
+		archive := s3Storage(t, stored, "memos")
+		require.Equal(t, "Renamed", archive.GetName())
+		require.Equal(t, secret, archive.GetS3Config().GetAccessKeySecret())
+	})
+
+	t.Run("legacy storage_type", func(t *testing.T) {
+		ts, adminCtx, archiveID := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{
+			StorageType: apipb.InstanceSetting_StorageSetting_S3,
+		}, "storage_setting.storage_type")
+		require.Equal(t, storepb.InstanceStorageSetting_S3, stored.GetStorageType())
+		require.Equal(t, archiveID, stored.GetDefaultStorageId())
+		require.Equal(t, secret, s3Storage(t, stored, "memos").GetS3Config().GetAccessKeySecret())
+		require.Len(t, stored.GetStorages(), 2)
+	})
+
+	t.Run("legacy s3_config field", func(t *testing.T) {
+		ts, adminCtx, _ := setup(t)
+		update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{StorageType: apipb.InstanceSetting_StorageSetting_S3}, "storage_type")
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{
+			S3Config: &apipb.InstanceSetting_StorageSetting_S3Config{Bucket: "memos-new"},
+		}, "storage_setting.s3_config.bucket")
+		moved := s3Storage(t, stored, "memos-new")
+		require.Equal(t, moved.GetId(), stored.GetDefaultStorageId())
+		require.Equal(t, "memos-new", stored.GetS3Config().GetBucket())
+		require.Equal(t, secret, moved.GetS3Config().GetAccessKeySecret())
+		// The old bucket stays registered for attachments stored there.
+		require.Equal(t, secret, s3Storage(t, stored, "memos").GetS3Config().GetAccessKeySecret())
+	})
+
+	t.Run("legacy and current fields together are rejected", func(t *testing.T) {
+		ts, adminCtx, archiveID := setup(t)
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &apipb.InstanceSetting_StorageSetting_{StorageSetting: &apipb.InstanceSetting_StorageSetting{
+					StorageType:      apipb.InstanceSetting_StorageSetting_S3,
+					DefaultStorageId: archiveID,
+				}},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"storage_type", "default_storage_id"}},
+		})
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+}
+
+func TestUpdateInstanceSettingUpdateMaskTranscription(t *testing.T) {
+	ctx := context.Background()
+
+	// setup stores one provider with a transcription config.
+	setup := func(t *testing.T) (*TestService, context.Context) {
+		ts := NewTestService(t)
+		t.Cleanup(ts.Cleanup)
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &apipb.InstanceSetting_AiSetting{AiSetting: &apipb.InstanceSetting_AISetting{
+					Providers: []*apipb.InstanceSetting_AIProviderConfig{{
+						Id: "openai-main", Title: "OpenAI", Type: apipb.InstanceSetting_OPENAI, ApiKey: "sk-test-1234567890",
+					}},
+					Transcription: &apipb.InstanceSetting_TranscriptionConfig{ProviderId: "openai-main", Model: "whisper-1"},
+				}},
+			},
+		})
+		require.NoError(t, err)
+		return ts, adminCtx
+	}
+	update := func(t *testing.T, ts *TestService, adminCtx context.Context, setting *apipb.InstanceSetting_AISetting, paths ...string) *storepb.InstanceAISetting {
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name:  "instance/settings/AI",
+				Value: &apipb.InstanceSetting_AiSetting{AiSetting: setting},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: paths},
+		})
+		require.NoError(t, err)
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		return stored
+	}
+
+	t.Run("masked and unset clears it", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_AISetting{}, "ai_setting.transcription")
+		require.Empty(t, stored.GetTranscription().GetProviderId())
+		require.Empty(t, stored.GetTranscription().GetModel())
+		require.Len(t, stored.GetProviders(), 1)
+		require.Equal(t, "sk-test-1234567890", stored.GetProviders()[0].GetApiKey())
+	})
+
+	t.Run("not masked keeps it", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_AISetting{Providers: []*apipb.InstanceSetting_AIProviderConfig{{
+			Id: "openai-main", Title: "Renamed", Type: apipb.InstanceSetting_OPENAI,
+		}}}, "ai_setting.providers")
+		require.Equal(t, "Renamed", stored.GetProviders()[0].GetTitle())
+		require.Equal(t, "openai-main", stored.GetTranscription().GetProviderId())
+		require.Equal(t, "whisper-1", stored.GetTranscription().GetModel())
+	})
+
+	t.Run("a masked subfield changes only that field", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		stored := update(t, ts, adminCtx, &apipb.InstanceSetting_AISetting{
+			Transcription: &apipb.InstanceSetting_TranscriptionConfig{Language: "en"},
+		}, "ai_setting.transcription.language")
+		require.Equal(t, "openai-main", stored.GetTranscription().GetProviderId())
+		require.Equal(t, "whisper-1", stored.GetTranscription().GetModel())
+		require.Equal(t, "en", stored.GetTranscription().GetLanguage())
+	})
 }
 
 func TestConfigurationStateIsNotExposed(t *testing.T) {

@@ -1218,14 +1218,19 @@ export const BatchGetInstanceSettingsResponseSchema: GenMessage<BatchGetInstance
  */
 export type UpdateInstanceSettingRequest = Message<"memos.api.UpdateInstanceSettingRequest"> & {
   /**
-   * Required. The instance setting, which replaces the stored setting.
+   * Required. The instance setting. Without update_mask it replaces the stored setting.
    *
    * @generated from field: memos.api.InstanceSetting instance_setting = 1;
    */
   instanceSetting?: InstanceSetting | undefined;
 
   /**
-   * Optional. The list of fields to update. Currently ignored; the whole setting is replaced.
+   * Optional. The fields to update; other fields keep their stored values. Paths are relative to
+   * InstanceSetting and must lie within the value for the setting's key, such as
+   * "general_setting.disallow_user_registration" for GENERAL. A path may also be relative to that value,
+   * such as "disallow_user_registration". The "name" path is ignored. For STORAGE, the legacy storage_type and
+   * s3_config fields cannot be combined with storages or default_storage_id in one mask. If omitted or empty, the
+   * whole setting is replaced; over REST, a mask is derived from the request body's keys instead.
    *
    * @generated from field: google.protobuf.FieldMask update_mask = 2;
    */
