@@ -16,7 +16,7 @@ describe("TagsSection", () => {
     render(
       <MemoryRouter>
         <MemoFilterProvider>
-          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" />
+          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" userName="users/tester" />
         </MemoFilterProvider>
       </MemoryRouter>,
     );
@@ -36,7 +36,7 @@ describe("TagsSection", () => {
     render(
       <MemoryRouter>
         <MemoFilterProvider>
-          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" onSelect={onSelect} />
+          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" userName="users/tester" onSelect={onSelect} />
         </MemoFilterProvider>
       </MemoryRouter>,
     );
@@ -68,7 +68,7 @@ describe("TagsSection", () => {
     render(
       <MemoryRouter>
         <MemoFilterProvider>
-          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" />
+          <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" userName="users/tester" />
         </MemoFilterProvider>
       </MemoryRouter>,
     );
@@ -82,7 +82,7 @@ describe("TagsSection", () => {
     render(
       <MemoryRouter>
         <MemoFilterProvider>
-          <TagsSection tagCount={{ alpha: 2, "a/very-long-tag-path": 1 }} scope="home" />
+          <TagsSection tagCount={{ alpha: 2, "a/very-long-tag-path": 1 }} scope="home" userName="users/tester" />
         </MemoFilterProvider>
       </MemoryRouter>,
     );
@@ -98,5 +98,41 @@ describe("TagsSection", () => {
     expect(path).toHaveClass("truncate", "text-start");
     expect(path).not.toContainElement(count);
     expect(count).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
+  });
+
+  it("collapses tag rows, persists the choice per user, and allows restoring them", async () => {
+    render(
+      <MemoryRouter>
+        <MemoFilterProvider>
+          <TagsSection tagCount={{ a: 2 }} scope="home" userName="users/alice" />
+        </MemoFilterProvider>
+      </MemoryRouter>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "common.tags: common.more" });
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByRole("menuitemcheckbox", { name: "common.collapse" }));
+
+    expect(screen.getByRole("heading", { name: "common.tags", level: 2 })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "#a, setting.tags.used-count" })).not.toBeInTheDocument();
+    expect(localStorage.getItem("sidebar-tags-collapsed:users/alice")).toBe("true");
+
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByRole("menuitemcheckbox", { name: "common.collapse" }));
+    expect(screen.getByRole("button", { name: "#a, setting.tags.used-count" })).toBeInTheDocument();
+    expect(localStorage.getItem("sidebar-tags-collapsed:users/alice")).toBe("false");
+  });
+
+  it("does not reuse a collapsed preference for a different user", () => {
+    localStorage.setItem("sidebar-tags-collapsed:users/alice", "true");
+    render(
+      <MemoryRouter>
+        <MemoFilterProvider>
+          <TagsSection tagCount={{ a: 2 }} scope="home" userName="users/bob" />
+        </MemoFilterProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("button", { name: "#a, setting.tags.used-count" })).toBeInTheDocument();
   });
 });

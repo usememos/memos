@@ -49,7 +49,7 @@ describe("sidebar selected grammar", () => {
     render(
       <MemoryRouter>
         <MemoFilterProvider>
-          <TagsSection tagCount={{ work: 2 }} scope="home" />
+          <TagsSection tagCount={{ work: 2 }} scope="home" userName="users/tester" />
         </MemoFilterProvider>
       </MemoryRouter>,
     );
