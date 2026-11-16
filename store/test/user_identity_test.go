@@ -91,20 +91,26 @@ func TestUserIdentityUniqueConflict(t *testing.T) {
 	userB, err := createTestingUserWithRole(ctx, ts, "conflict_user", store.RoleUser)
 	require.NoError(t, err)
 
-	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
-		UserID:    userA.ID,
-		Provider:  "idp-A",
-		ExternUID: "sub-1",
-	})
-	require.NoError(t, err)
+	for _, tc := range []struct{ provider, subject string }{
+		{provider: "idp-A", subject: "sub-1"},
+		{provider: "idp-key-marker", subject: "x for key 'username"},
+	} {
+		t.Run(tc.provider, func(t *testing.T) {
+			_, err := ts.CreateUserIdentity(ctx, &store.UserIdentity{
+				UserID:    userA.ID,
+				Provider:  tc.provider,
+				ExternUID: tc.subject,
+			})
+			require.NoError(t, err)
 
-	// Second insert with the same (provider, extern_uid) must fail regardless of user_id.
-	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
-		UserID:    userB.ID,
-		Provider:  "idp-A",
-		ExternUID: "sub-1",
-	})
-	require.ErrorIs(t, err, store.ErrUserIdentityTaken)
+			_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+				UserID:    userB.ID,
+				Provider:  tc.provider,
+				ExternUID: tc.subject,
+			})
+			require.ErrorIs(t, err, store.ErrUserIdentityTaken)
+		})
+	}
 }
 
 func TestUserIdentitySameExternUIDDifferentProviders(t *testing.T) {

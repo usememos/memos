@@ -43,11 +43,11 @@ func classifyUserUniqueViolation(err error) error {
 	}
 	message := err.Error()
 	for _, marker := range uniqueViolationMarkers {
-		_, after, ok := strings.Cut(message, marker)
-		if !ok {
+		index := strings.LastIndex(message, marker)
+		if index < 0 {
 			continue
 		}
-		target := after
+		target := message[index+len(marker):]
 		if marker == " for key '" {
 			target, _, _ = strings.Cut(target, "'")
 		}
