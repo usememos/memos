@@ -437,7 +437,7 @@
     "moved": "Memorándum movido.",
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
-    "grid-compact-hint": "Los diseños de cuadrícula siempre utilizan tarjetas compactas.",
+    "grid-compact-hint": "Contraer los memos largos. Siempre activado en los diseños de cuadrícula.",
     "layout": "Diseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como quepan en la pantalla",
@@ -449,7 +449,9 @@
     "parent-memo": "Memo principal",
     "view-options": "Opciones de vista",
     "add-reaction": "Añadir reacción",
-    "remove-reaction": "Eliminar reacción"
+    "remove-reaction": "Eliminar reacción",
+    "full-width": "Ancho completo",
+    "full-width-hint": "Usar todo el ancho de la cronología de memos."
   },
   "message": {
     "archived-successfully": "Archivado correctamente",

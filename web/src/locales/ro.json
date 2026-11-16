@@ -475,7 +475,7 @@
     "moved": "Nota mutată",
     "back-to": "Înapoi la {{source}}",
     "connections": "Conexiuni",
-    "grid-compact-hint": "Aspectele de tip grilă utilizează întotdeauna carduri compacte.",
+    "grid-compact-hint": "Restrânge notele lungi. Mereu activat în aspectele de tip grilă.",
     "layout": "Aspect",
     "layout-auto": "Automat",
     "layout-auto-description": "Atâtea coloane câte se potrivesc pe ecran",
@@ -487,7 +487,9 @@
     "parent-memo": "Notă părinte",
     "view-options": "Opțiuni de vizualizare",
     "add-reaction": "Adăugați reacția",
-    "remove-reaction": "Îndepărtați reacția"
+    "remove-reaction": "Îndepărtați reacția",
+    "full-width": "Lățime completă",
+    "full-width-hint": "Folosește întreaga lățime a cronologiei notelor."
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

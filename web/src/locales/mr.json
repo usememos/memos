@@ -424,7 +424,7 @@
     "back-to": "{{source}} कडे परत",
     "count-memos-updated-in-date": "{{count}} {{memos}} हे {{date}} वर अद्यतनित केले",
     "connections": "जोडण्या",
-    "grid-compact-hint": "ग्रिड लेआउटमध्ये नेहमी संक्षिप्त कार्ड वापरले जातात.",
+    "grid-compact-hint": "लांब मेमो संकुचित करा. ग्रिड लेआउटमध्ये हा पर्याय नेहमी सक्षम असतो.",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीनवर मावतील तितके स्तंभ",
@@ -443,7 +443,9 @@
     },
     "view-options": "पाहण्याचे पर्याय",
     "add-reaction": "प्रतिक्रिया जोडा",
-    "remove-reaction": "प्रतिक्रिया काढून टाका"
+    "remove-reaction": "प्रतिक्रिया काढून टाका",
+    "full-width": "पूर्ण रुंदी",
+    "full-width-hint": "मेमो कालरेषेची संपूर्ण रुंदी वापरा."
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

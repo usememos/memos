@@ -438,7 +438,7 @@
     "moved": "Poznámka přesunuta",
     "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
-    "grid-compact-hint": "Mřížkové rozvržení vždy používá kompaktní karty.",
+    "grid-compact-hint": "Sbalit delší poznámky. V rozvržení mřížky je vždy zapnuto.",
     "layout": "Rozvržení",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Tolik sloupců, kolik se vejde na obrazovku",
@@ -450,7 +450,9 @@
     "parent-memo": "Nadřazená poznámka",
     "view-options": "Možnosti zobrazení",
     "add-reaction": "Přidejte reakci",
-    "remove-reaction": "Odstraňte reakci"
+    "remove-reaction": "Odstraňte reakci",
+    "full-width": "Plná šířka",
+    "full-width-hint": "Využít celou šířku časové osy poznámek."
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",

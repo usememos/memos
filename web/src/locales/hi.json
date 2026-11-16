@@ -424,7 +424,7 @@
     "back-to": "{{source}} पर वापस जाएं",
     "count-memos-updated-in-date": "{{count}} {{memos}} को {{date}} पर अपडेट किया गया",
     "connections": "कनेक्शन",
-    "grid-compact-hint": "ग्रिड लेआउट हमेशा कॉम्पैक्ट कार्ड का इस्तेमाल करते हैं।",
+    "grid-compact-hint": "लंबे मेमो संकुचित करें। ग्रिड लेआउट में हमेशा सक्षम रहता है।",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीन में जितने कॉलम फिट हों",
@@ -443,7 +443,9 @@
     },
     "view-options": "ऑप्शन देखें",
     "add-reaction": "रिएक्शन जोड़ें",
-    "remove-reaction": "रिएक्शन हटाएँ"
+    "remove-reaction": "रिएक्शन हटाएँ",
+    "full-width": "पूरी चौड़ाई",
+    "full-width-hint": "मेमो समयरेखा की पूरी चौड़ाई का उपयोग करें।"
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",

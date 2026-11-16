@@ -438,7 +438,7 @@
     "moved": "Notatka przeniesiona",
     "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
-    "grid-compact-hint": "Układy siatki zawsze korzystają z kart kompaktowych.",
+    "grid-compact-hint": "Zwijaj dłuższe notatki. Zawsze włączone w układzie siatki.",
     "layout": "Układ",
     "layout-auto": "Automatycznie",
     "layout-auto-description": "Tyle kolumn, ile mieści się na ekranie",
@@ -450,7 +450,9 @@
     "parent-memo": "Notatka nadrzędna",
     "view-options": "Opcje widoku",
     "add-reaction": "Dodaj reakcję",
-    "remove-reaction": "Usuń reakcję"
+    "remove-reaction": "Usuń reakcję",
+    "full-width": "Pełna szerokość",
+    "full-width-hint": "Używaj całej szerokości osi czasu notatek."
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",

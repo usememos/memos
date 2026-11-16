@@ -425,7 +425,7 @@
     "back-to": "Voltar para {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} atualizado em {{date}}",
     "connections": "Conexões",
-    "grid-compact-hint": "Os layouts de grade sempre usam cartões compactos.",
+    "grid-compact-hint": "Recolher memos longos. Sempre ativado nos layouts em grade.",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem na tela",
@@ -444,7 +444,9 @@
     },
     "view-options": "Opções de visualização",
     "add-reaction": "Adicionar reação",
-    "remove-reaction": "Remover reação"
+    "remove-reaction": "Remover reação",
+    "full-width": "Largura total",
+    "full-width-hint": "Usar toda a largura da linha do tempo dos memos."
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",

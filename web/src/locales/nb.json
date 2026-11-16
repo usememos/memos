@@ -436,7 +436,7 @@
     "moved": "Notat flyttet",
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
-    "grid-compact-hint": "Rutenettoppsett bruker alltid kompakte kort.",
+    "grid-compact-hint": "Fold sammen lange memoer. Alltid aktivert i rutenettoppsett.",
     "layout": "Oppsett",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som får plass på skjermen",
@@ -448,7 +448,9 @@
     "parent-memo": "Overordnet notat",
     "view-options": "Visningsalternativer",
     "add-reaction": "Legg til reaksjon",
-    "remove-reaction": "Fjern reaksjonen"
+    "remove-reaction": "Fjern reaksjonen",
+    "full-width": "Full bredde",
+    "full-width-hint": "Bruk hele bredden på memoenes tidslinje."
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",

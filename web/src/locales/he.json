@@ -450,7 +450,7 @@
       "remove": "הסרת מסנן"
     },
     "compact-mode": "מצב קומפקטי",
-    "grid-compact-hint": "פריסות רשת משתמשות תמיד בכרטיסים קומפקטיים.",
+    "grid-compact-hint": "כיווץ פתקים ארוכים. תמיד מופעל בפריסות רשת.",
     "layout": "פריסה",
     "layout-auto": "אוטומטי",
     "layout-auto-description": "מספר העמודות המרבי שמתאים למסך",
@@ -519,7 +519,9 @@
     "on-this-memo": "על תזכיר זה",
     "parent-memo": "תזכיר אב",
     "add-reaction": "הוסף תגובה",
-    "remove-reaction": "הסר תגובה"
+    "remove-reaction": "הסר תגובה",
+    "full-width": "רוחב מלא",
+    "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים."
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

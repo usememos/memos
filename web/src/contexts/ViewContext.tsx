@@ -13,6 +13,7 @@ interface ViewState {
   timeBasis?: MemoTimeBasis;
   sortTimeField?: MemoTimeBasis;
   compactMode: boolean;
+  fullWidth: boolean;
   maxColumns: MemoMaxColumns;
 }
 
@@ -20,10 +21,12 @@ interface ViewContextValue {
   orderByTimeAsc: boolean;
   timeBasis: MemoTimeBasis;
   compactMode: boolean;
+  fullWidth: boolean;
   maxColumns: MemoMaxColumns;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
+  setFullWidth: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
 }
 
@@ -31,7 +34,7 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, maxColumns: 1 };
+const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, fullWidth: false, maxColumns: 1 };
 
 export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
   const getInitialState = (): ViewState => {
@@ -48,6 +51,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
           timeBasis,
           compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
+          fullWidth: Boolean(data.fullWidth ?? DEFAULT_VIEW_STATE.fullWidth),
           maxColumns,
         };
       }
@@ -81,6 +85,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   const setOrderByTimeAsc = (value: boolean) => updateState({ orderByTimeAsc: value });
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
+  const setFullWidth = (value: boolean) => updateState({ fullWidth: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
 
   return (
@@ -89,10 +94,12 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         orderByTimeAsc: activeState.orderByTimeAsc,
         timeBasis,
         compactMode: activeState.compactMode,
+        fullWidth: activeState.fullWidth,
         maxColumns: activeState.maxColumns,
         setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
+        setFullWidth,
         setMaxColumns,
       }}
     >

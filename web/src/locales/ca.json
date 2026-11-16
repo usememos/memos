@@ -437,7 +437,7 @@
     "moved": "Nota moguda",
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
-    "grid-compact-hint": "Els dissenys de quadrícula sempre utilitzen targetes compactes.",
+    "grid-compact-hint": "Redueix els memos llargs. Sempre activat en dissenys de quadrícula.",
     "layout": "Disseny",
     "layout-auto": "Automàtic",
     "layout-auto-description": "Tantes columnes com càpiguen a la pantalla",
@@ -449,7 +449,9 @@
     "parent-memo": "Nota principal",
     "view-options": "Opcions de visualització",
     "add-reaction": "Afegeix reacció",
-    "remove-reaction": "Elimina la reacció"
+    "remove-reaction": "Elimina la reacció",
+    "full-width": "Amplada completa",
+    "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos."
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

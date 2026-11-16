@@ -475,7 +475,7 @@
     "moved": "Белешка је премештена",
     "back-to": "Назад на {{source}}",
     "connections": "Везе",
-    "grid-compact-hint": "Распореди мреже увек користе компактне картице.",
+    "grid-compact-hint": "Скупи дуже мемое. Увек омогућено у мрежним распоредима.",
     "layout": "Распоред",
     "layout-auto": "Аутоматски",
     "layout-auto-description": "Колико год колона стане на екран",
@@ -487,7 +487,9 @@
     "parent-memo": "Надређена порука",
     "view-options": "Опције приказа",
     "add-reaction": "Додајте реакцију",
-    "remove-reaction": "Уклоните реакцију"
+    "remove-reaction": "Уклоните реакцију",
+    "full-width": "Пуна ширина",
+    "full-width-hint": "Користи целу ширину временске линије мемоа."
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

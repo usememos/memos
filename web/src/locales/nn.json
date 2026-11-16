@@ -482,7 +482,7 @@
       "has-task-list": "Har gjeremålsliste",
       "remove": "Fjern filteret"
     },
-    "grid-compact-hint": "Rutenett nyttar alltid kompakte kort.",
+    "grid-compact-hint": "Fald saman lange notat. Alltid aktivert i rutenettoppsett.",
     "layout": "Oppsett",
     "layout-auto": "Automatisk",
     "layout-auto-description": "Så mange kolonnar som skjermen har plass til",
@@ -550,7 +550,9 @@
       "space-description": "Alle i {{space}}"
     },
     "add-reaction": "Legg til reaksjon",
-    "remove-reaction": "Fjern reaksjon"
+    "remove-reaction": "Fjern reaksjon",
+    "full-width": "Full breidd",
+    "full-width-hint": "Bruk heile breidda på tidslina for notata."
   },
   "message": {
     "archived-successfully": "Arkivert",

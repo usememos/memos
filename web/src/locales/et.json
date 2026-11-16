@@ -474,7 +474,7 @@
     "moved": "Memo teisaldatud",
     "back-to": "Tagasi {{source}} juurde",
     "connections": "Ühendused",
-    "grid-compact-hint": "Ruudustikupaigutused kasutavad alati kompaktseid kaarte.",
+    "grid-compact-hint": "Ahenda pikemad memod. Ruudustikupaigutustes alati sisse lülitatud.",
     "layout": "Paigutus",
     "layout-auto": "Automaatne",
     "layout-auto-description": "Nii palju veerge kui ekraanile mahub",
@@ -486,7 +486,9 @@
     "parent-memo": "Ülemmemo",
     "view-options": "Vaate valikud",
     "add-reaction": "Lisa reaktsioon",
-    "remove-reaction": "Eemaldage reaktsioon"
+    "remove-reaction": "Eemaldage reaktsioon",
+    "full-width": "Täislaius",
+    "full-width-hint": "Kasuta memode ajajoone kogu laiust."
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",

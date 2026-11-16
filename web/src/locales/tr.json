@@ -416,7 +416,7 @@
     },
     "compact-mode": "Kompakt görünüm",
     "connections": "Bağlantılar",
-    "grid-compact-hint": "Izgara düzeninde kartlar her zaman kompakt gösterilir.",
+    "grid-compact-hint": "Uzun notları daralt. Izgara düzenlerinde her zaman etkindir.",
     "layout": "Düzen",
     "layout-auto": "Otomatik",
     "layout-auto-description": "Ekrana sığabildiği kadar sütun",
@@ -479,7 +479,9 @@
       "updated": "Görevler güncellendi"
     },
     "add-reaction": "Tepki ekle",
-    "remove-reaction": "Reaksiyonu kaldır"
+    "remove-reaction": "Reaksiyonu kaldır",
+    "full-width": "Tam genişlik",
+    "full-width-hint": "Not zaman tünelinin tüm genişliğini kullan."
   },
   "message": {
     "archived-successfully": "Arşivlendi",

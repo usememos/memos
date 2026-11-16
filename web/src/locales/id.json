@@ -424,7 +424,7 @@
     "back-to": "Kembali ke {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
     "connections": "Koneksi",
-    "grid-compact-hint": "Tata letak grid selalu menggunakan kartu ringkas.",
+    "grid-compact-hint": "Ciutkan memo yang panjang. Selalu aktif pada tata letak kisi.",
     "layout": "Tata Letak",
     "layout-auto": "Otomatis",
     "layout-auto-description": "Sebanyak kolom yang sesuai dengan layar",
@@ -443,7 +443,9 @@
     },
     "view-options": "Opsi tampilan",
     "add-reaction": "Tambahkan reaksi",
-    "remove-reaction": "Hapus reaksi"
+    "remove-reaction": "Hapus reaksi",
+    "full-width": "Lebar penuh",
+    "full-width-hint": "Gunakan seluruh lebar linimasa memo."
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
