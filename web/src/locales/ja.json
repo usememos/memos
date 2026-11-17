@@ -1284,6 +1284,7 @@
     "place-placeholder": "先に位置を選択してください。"
   },
   "calendar": {
+    "has-entries": "記録があります",
     "new-memo-on-day": "この日に新しいメモが作成",
     "next-year": "来年",
     "no-memos-in-month": "{{month}} 件にメモはありません",

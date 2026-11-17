@@ -1265,6 +1265,7 @@
     "place-placeholder": "먼저 위치를 선택하세요."
   },
   "calendar": {
+    "has-entries": "기록이 있습니다",
     "new-memo-on-day": "오늘 새 메모가 있습니다.",
     "next-year": "내년",
     "no-memos-in-month": "{{month}}년 동안 메모가 없습니다.",

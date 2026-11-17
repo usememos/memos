@@ -1284,6 +1284,7 @@
     "place-placeholder": "Kies eerst een positie."
   },
   "calendar": {
+    "has-entries": "bevat items",
     "new-memo-on-day": "Nieuwe memo op deze dag",
     "next-year": "Volgend jaar",
     "no-memos-in-month": "Geen memo's in {{month}}",

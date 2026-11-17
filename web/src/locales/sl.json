@@ -1286,6 +1286,7 @@
     "place-placeholder": "Najprej izberite položaj."
   },
   "calendar": {
+    "has-entries": "vsebuje vnose",
     "new-memo-on-day": "Nova beležka na ta dan",
     "next-year": "Naslednje leto",
     "no-memos-in-month": "Ni beležk v {{month}}",

@@ -1284,6 +1284,7 @@
     "place-placeholder": "Välj en position först."
   },
   "calendar": {
+    "has-entries": "har poster",
     "new-memo-on-day": "Nytt PM denna dag",
     "next-year": "Nästa år",
     "no-memos-in-month": "Inga PM i {{month}}",

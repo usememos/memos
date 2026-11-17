@@ -64,6 +64,7 @@
     "signups-closed-description": "Bu instansda yeni hesablar deaktiv edilib. Giriş lazımdırsa, administratorunuzla əlaqə saxlayın."
   },
   "calendar": {
+    "has-entries": "qeydlər var",
     "new-memo-on-day": "Bu gün üçün yeni qeyd",
     "next-year": "Növbəti il",
     "no-memos-in-month": "{{month}} ayında qeyd yoxdur",

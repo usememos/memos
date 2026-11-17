@@ -1285,6 +1285,7 @@
     "place-placeholder": "Vispirms izvēlieties punktu."
   },
   "calendar": {
+    "has-entries": "ir ieraksti",
     "new-memo-on-day": "Jauna piezīme šajā dienā",
     "next-year": "Nākamgad",
     "no-memos-in-month": "Nav piezīmju {{month}}",

@@ -1265,6 +1265,7 @@
     "place-placeholder": "पहले कोई स्थिति चुनें।"
   },
   "calendar": {
+    "has-entries": "प्रविष्टियाँ हैं",
     "new-memo-on-day": "इस दिन नया मेमो",
     "next-year": "अगले साल",
     "no-memos-in-month": "{{month}} में कोई मेमो नहीं",

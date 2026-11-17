@@ -1286,6 +1286,7 @@
     "place-placeholder": "Najpierw wybierz położenie."
   },
   "calendar": {
+    "has-entries": "zawiera wpisy",
     "new-memo-on-day": "Nowa notatka z tego dnia",
     "next-year": "Następny rok",
     "no-memos-in-month": "Brak notatek w {{month}}",

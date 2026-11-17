@@ -1286,6 +1286,7 @@
     "place-placeholder": "Pirmiausia pasirinkite tašką."
   },
   "calendar": {
+    "has-entries": "yra įrašų",
     "new-memo-on-day": "Naujas priminimas šią dieną",
     "next-year": "Kitais metais",
     "no-memos-in-month": "Nėra priminimų {{month}}",

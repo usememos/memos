@@ -1284,6 +1284,7 @@
     "place-placeholder": "ჯერ აირჩიეთ წერტილი."
   },
   "calendar": {
+    "has-entries": "ჩანაწერები არსებობს",
     "new-memo-on-day": "ახალი შენიშვნა ამ დღეს",
     "next-year": "შემდეგი წელი",
     "no-memos-in-month": "შეტყობინებები არ არის {{month}}-ში",

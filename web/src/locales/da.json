@@ -1284,6 +1284,7 @@
     "place-placeholder": "Vælg først en position."
   },
   "calendar": {
+    "has-entries": "har poster",
     "new-memo-on-day": "Nyt notat på denne dag",
     "next-year": "Næste år",
     "no-memos-in-month": "Ingen notater i {{month}}",

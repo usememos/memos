@@ -1286,6 +1286,7 @@
     "place-placeholder": "Спочатку виберіть точку."
   },
   "calendar": {
+    "has-entries": "є записи",
     "new-memo-on-day": "Нова нотатка цього дня",
     "next-year": "Наступного року",
     "no-memos-in-month": "Немає нотаток у {{month}}",

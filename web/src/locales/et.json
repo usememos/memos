@@ -1284,6 +1284,7 @@
     "place-placeholder": "Valige kõigepealt asukoht."
   },
   "calendar": {
+    "has-entries": "sisaldab kirjeid",
     "new-memo-on-day": "Uus memo sel päeval",
     "next-year": "Järgmisel aastal",
     "no-memos-in-month": "Memosid pole {{month}}",
