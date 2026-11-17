@@ -130,7 +130,7 @@ const SSOSection = () => {
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="min-w-0 mu-label break-words text-mu-text">{row.title}</span>
-                  <Badge>{row.typeLabel}</Badge>
+                  <Badge size="xs">{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />

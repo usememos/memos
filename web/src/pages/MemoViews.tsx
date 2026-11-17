@@ -596,7 +596,11 @@ const MemoViews = () => {
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <h2 className="mu-label text-mu-text">{t("setting.memo-view.all")}</h2>
-                {!isPending && !isError && <Badge tone="outline">{memoViews.length}</Badge>}
+                {!isPending && !isError && (
+                  <Badge size="xs" tone="outline">
+                    {memoViews.length}
+                  </Badge>
+                )}
               </div>
 
               {isPending ? (

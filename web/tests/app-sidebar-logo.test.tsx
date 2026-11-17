@@ -601,7 +601,7 @@ describe("App sidebar logo", () => {
     expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
   });
 
-  it("uses md text-only actions for a saved view", async () => {
+  it("uses fixed-density text-only actions for a saved view", async () => {
     authState.memoViews = [{ name: "memoViews/1", title: "testgp" }];
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -612,7 +612,7 @@ describe("App sidebar logo", () => {
     fireEvent.click(screen.getByRole("button", { name: "common.edit testgp" }));
 
     const menu = await screen.findByRole("menu");
-    expect(menu.closest(".mu-s-md") ?? menu.querySelector(".mu-s-md")).not.toBeNull();
+    expect(menu).toHaveClass("mu-s-sm");
     const editItem = screen.getByRole("menuitem", { name: "common.edit" });
     const deleteItem = screen.getByRole("menuitem", { name: "common.delete" });
     expect(editItem.querySelector("svg")).toBeNull();

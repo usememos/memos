@@ -121,7 +121,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
 const NewBadge = () => {
   const t = useTranslate();
   return (
-    <Badge tone="primary" className="shrink-0">
+    <Badge size="xs" tone="primary" className="shrink-0">
       {t("memo.new-badge")}
     </Badge>
   );

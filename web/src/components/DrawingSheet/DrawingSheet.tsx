@@ -519,7 +519,7 @@ const DrawingSheet = ({
           </FloatingRow>
           <FloatingRow edge="bottom" className="justify-start max-sm:bottom-[calc(64px+env(safe-area-inset-bottom))]">
             <FloatingAction>
-              <Menu.Root size="md" open={zoomMenuOpen} onOpenChange={setZoomMenuOpen}>
+              <Menu.Root open={zoomMenuOpen} onOpenChange={setZoomMenuOpen}>
                 <Menu.Trigger
                   render={
                     <Button

@@ -39,8 +39,8 @@ export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
 });
 
 /**
- * The scope panel that opens from the sidebar title is a list Popover with `mu-compact`, so its
- * rows are the package's menu rows at 28px. Each keeps a 20px leading slot, so icons, the avatar
+ * The scope panel that opens from the sidebar title is a list Popover whose menu rows use the
+ * package's fixed 28px density. Each keeps a 20px leading slot, so icons, the avatar
  * and Space marks share one column; a Popover sets no highlight, so the rows add their own hover.
  * A row whose own menu is open takes the package's highlight.
  */

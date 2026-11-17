@@ -49,14 +49,14 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
       </span>
       <ChevronRightIcon aria-hidden="true" className={cn(SCOPE_PANEL_ICON_CLASSES, "rtl:rotate-180")} />
     </Menu.Trigger>
-    {/* Like a nested submenu: its first row lines up with this one, and its rows match the panel's (`mu-compact`).
+    {/* Like a nested submenu: its first row lines up with this one, and its rows match the panel's fixed menu density.
         When neither side has room (narrow screens), it drops below the row instead of overflowing. */}
     <Menu.Popup
       side="inline-end"
       align="start"
       collisionAvoidance={{ fallbackAxisSide: "end" }}
       positionMethod="fixed"
-      className={cn("mu-compact", className)}
+      className={className}
     >
       <Menu.RadioGroup value={value} onValueChange={onChange}>
         {options.map((option) => (

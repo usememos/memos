@@ -65,7 +65,11 @@ const AttachmentMediaCard = ({ item, creator, onPreview }: { item: AttachmentLib
             {item.filename}
           </div>
 
-          {item.kind === "motion" && <Badge tone="outline">{t("attachment-library.labels.live")}</Badge>}
+          {item.kind === "motion" && (
+            <Badge size="xs" tone="outline">
+              {t("attachment-library.labels.live")}
+            </Badge>
+          )}
         </div>
 
         <AttachmentMetadataLine

@@ -32,7 +32,7 @@ import type { MemoActionMenuProps } from "./types";
  * only Restore and Delete, and a viewer only Open and Copy.
  */
 /** The open link is a real link, so its row takes the package's menu row classes. */
-const MENU_ROW_CLASSES = menuClasses({ size: "md" });
+const MENU_ROW_CLASSES = menuClasses();
 
 const MemoActionMenu = (props: MemoActionMenuProps) => {
   const { memo, parentPage, readonly } = props;
@@ -163,7 +163,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
   };
 
   return (
-    <Menu.Root modal={false} size="md">
+    <Menu.Root modal={false}>
       <Tooltip.Root>
         <Tooltip.Trigger
           render={<Menu.Trigger render={<Button variant="ghost" size="sm" aria-label={t("common.more")} icon={<MoreVerticalIcon />} />} />}

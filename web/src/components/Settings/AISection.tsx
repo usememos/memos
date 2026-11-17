@@ -225,7 +225,9 @@ const AISection = () => {
       <div>
         <div className="flex max-w-3xl flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="outline">{t("setting.ai.byok-label")}</Badge>
+            <Badge size="xs" tone="outline">
+              {t("setting.ai.byok-label")}
+            </Badge>
             <h4 className="mu-label text-mu-text">{t("setting.ai.byok-title")}</h4>
           </div>
           <p className="mu-body text-mu-text-secondary">{t("setting.ai.byok-description")}</p>

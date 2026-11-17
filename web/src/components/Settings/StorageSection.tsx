@@ -297,7 +297,7 @@ const StorageSection = () => {
                         {option.badges && (
                           <span className="flex flex-wrap gap-1.5 ps-6">
                             {option.badges.map((badge) => (
-                              <Badge key={badge} tone={badge === "setting.storage.badge-recommended" ? "neutral" : "outline"}>
+                              <Badge key={badge} size="xs" tone={badge === "setting.storage.badge-recommended" ? "neutral" : "outline"}>
                                 {t(badge)}
                               </Badge>
                             ))}

@@ -222,7 +222,9 @@ const TagsSection = () => {
           <h4 id={configuredRulesId} className="mu-label text-mu-text-secondary">
             {t("setting.tags.configured-rules")}
           </h4>
-          <Badge tone="outline">{configuredEntries.length}</Badge>
+          <Badge size="xs" tone="outline">
+            {configuredEntries.length}
+          </Badge>
         </div>
 
         {configuredEntries.length === 0 ? (

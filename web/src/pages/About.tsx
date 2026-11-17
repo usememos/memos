@@ -99,7 +99,11 @@ const About = () => {
                       {versionLabel}
                     </Chip>
                   )}
-                  {profile.demo && <Badge tone="warning">{t("about.demo")}</Badge>}
+                  {profile.demo && (
+                    <Badge size="xs" tone="warning">
+                      {t("about.demo")}
+                    </Badge>
+                  )}
                 </div>
               )}
             </div>
