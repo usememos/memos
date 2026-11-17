@@ -183,8 +183,8 @@ describe("automatic SSO auth pages", () => {
     renderPage("/auth", <IdentityProviderButtons identityProviderList={[provider, otherProvider]} />);
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
     const otherButton = screen.getByRole("button", { name: "auth.continue-with: Other SSO" });
-    const slot = button.querySelector(".mu-button-loading-slot");
-    expect(slot).not.toBeNull();
+    const label = button.querySelector(".mu-button-label");
+    expect(button.firstElementChild).toBe(label);
     act(() => button.focus());
     fireEvent.click(button);
     fireEvent.click(button);
@@ -196,7 +196,7 @@ describe("automatic SSO auth pages", () => {
     expect(otherButton).toBeDisabled();
     fireEvent.click(otherButton);
     expect(signInWithSSO).toHaveBeenCalledOnce();
-    await waitFor(() => expect(button.querySelector(".mu-spinner")).toBe(slot));
+    await waitFor(() => expect(button.firstElementChild).toHaveClass("mu-spinner"));
     expect(button).toHaveTextContent("auth.continue-with: Company SSO");
     expect(button).toHaveFocus();
   });

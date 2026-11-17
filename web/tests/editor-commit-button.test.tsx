@@ -61,12 +61,11 @@ describe("EditorToolbar commit button", () => {
     expect(tooltip.querySelector(".mu-tooltip-shortcut")).toHaveTextContent("Enter");
   });
 
-  it("keeps the same button, label and spinner slot while saving", async () => {
+  it("keeps the same button and label while saving, with the spinner before the label", async () => {
     renderToolbar("A thought");
     const button = screen.getByRole("button", { name: "editor.save" });
     const label = button.querySelector(".mu-button-label");
-    const slot = button.querySelector(".mu-button-loading-slot");
-    expect(slot).not.toBeNull();
+    expect(button.firstElementChild).toBe(label);
 
     act(() => dispatchSaving?.(true));
 
@@ -74,24 +73,23 @@ describe("EditorToolbar commit button", () => {
     expect(button).toHaveAttribute("aria-busy", "true");
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAccessibleDescription("editor.saving");
-    await waitFor(() => expect(button.querySelector(".mu-spinner")).toBe(slot));
+    await waitFor(() => expect(button.firstElementChild).toHaveClass("mu-spinner"));
     expect(button.querySelector(".mu-button-label")).toBe(label);
     expect(label).toHaveTextContent("editor.save");
 
     act(() => dispatchSaving?.(false));
 
     expect(screen.getByRole("button", { name: "editor.save" })).toBe(button);
-    expect(button.querySelector(".mu-button-loading-slot")).toBe(slot);
+    expect(button.firstElementChild).toBe(label);
     expect(button.querySelector(".mu-spinner")).toBeNull();
     expect(button).not.toHaveAttribute("aria-busy");
   });
 
-  it("keeps the button, label, slot and keyboard focus when validation changes", () => {
+  it("keeps the button, label and keyboard focus when validation changes", () => {
     renderToolbar("");
     const button = screen.getByRole("button", { name: "editor.save" });
     const label = button.querySelector(".mu-button-label");
-    const slot = button.querySelector(".mu-button-loading-slot");
-    expect(slot).not.toBeNull();
+    expect(button.firstElementChild).toBe(label);
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAccessibleDescription("editor.validation.content-required");
     act(() => button.focus());
@@ -102,7 +100,7 @@ describe("EditorToolbar commit button", () => {
     expect(screen.getByRole("button", { name: "editor.save" })).toBe(button);
     expect(button).not.toHaveAttribute("aria-disabled", "true");
     expect(button.querySelector(".mu-button-label")).toBe(label);
-    expect(button.querySelector(".mu-button-loading-slot")).toBe(slot);
+    expect(button.firstElementChild).toBe(label);
     expect(button).toHaveFocus();
     fireEvent.click(button);
     expect(onSave).toHaveBeenCalledOnce();
@@ -110,7 +108,7 @@ describe("EditorToolbar commit button", () => {
     act(() => dispatchContent?.(""));
     expect(screen.getByRole("button", { name: "editor.save" })).toBe(button);
     expect(button).toHaveAttribute("aria-disabled", "true");
-    expect(button.querySelector(".mu-button-loading-slot")).toBe(slot);
+    expect(button.firstElementChild).toBe(label);
     expect(button).toHaveFocus();
   });
 

@@ -92,8 +92,8 @@ describe("<PasswordSignInForm>", () => {
     initialize.mockReturnValue(new Promise<void>((resolve) => (finishInitialize = resolve)));
     render(<PasswordSignInForm redirectPath="/memos/example" />);
     const button = screen.getByRole("button", { name: "common.sign-in" });
-    const slot = button.querySelector(".mu-button-loading-slot");
-    expect(slot).not.toBeNull();
+    const label = button.querySelector(".mu-button-label");
+    expect(button.firstElementChild).toBe(label);
     act(() => button.focus());
 
     fill();
@@ -105,7 +105,7 @@ describe("<PasswordSignInForm>", () => {
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByLabelText("common.username")).toHaveAttribute("readonly");
     expect(screen.getByLabelText("common.password")).toHaveAttribute("readonly");
-    await waitFor(() => expect(button.querySelector(".mu-spinner")).toBe(slot));
+    await waitFor(() => expect(button.firstElementChild).toHaveClass("mu-spinner"));
     expect(button).toHaveTextContent("common.sign-in");
     expect(button).toHaveFocus();
 
@@ -122,7 +122,7 @@ describe("<PasswordSignInForm>", () => {
     signIn.mockRejectedValueOnce(new ConnectError("offline", Code.Unavailable));
     render(<PasswordSignInForm />);
     const button = screen.getByRole("button", { name: "common.sign-in" });
-    const slot = button.querySelector(".mu-button-loading-slot");
+    const label = button.querySelector(".mu-button-label");
 
     fill();
 
@@ -130,7 +130,7 @@ describe("<PasswordSignInForm>", () => {
     expect(screen.getByRole("button", { name: "common.sign-in" })).toBe(button);
     expect(button).not.toHaveAttribute("aria-busy");
     expect(button).not.toHaveAttribute("aria-description");
-    expect(button.querySelector(".mu-button-loading-slot")).toBe(slot);
+    expect(button.firstElementChild).toBe(label);
     expect(screen.getByLabelText("common.password")).not.toHaveAttribute("readonly");
 
     signIn.mockResolvedValueOnce({});
