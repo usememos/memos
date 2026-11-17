@@ -192,6 +192,78 @@ func TestServeAttachmentFile_StorageFailureIsAJSONError(t *testing.T) {
 	}
 }
 
+// External attachments store no blob; the file route answers with a redirect
+// to the recorded external URL, for thumbnail requests as well as full reads,
+// instead of an empty 200 body (usememos/memos#6573).
+func TestServeAttachmentFile_ExternalAttachmentRedirectsToReference(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "external-owner",
+		Role:     store.RoleUser,
+		Email:    "external-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	memo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content:    "external attachment",
+		Visibility: apipb.Visibility_PUBLIC,
+	}})
+	require.NoError(t, err)
+	memoUID := strings.TrimPrefix(memo.Name, "memos/")
+	storedMemo, err := stores.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMemo)
+
+	// Memo import is the path that records EXTERNAL rows: the reference is
+	// the external URL and the row carries no blob.
+	attachment, err := stores.CreateAttachment(ctx, &store.Attachment{
+		UID:         random.UUID(),
+		CreatorID:   creator.ID,
+		MemoID:      &storedMemo.ID,
+		Filename:    "linked.png",
+		Type:        "image/png",
+		Size:        1234,
+		StorageType: storepb.AttachmentStorageType_EXTERNAL,
+		Reference:   "https://cdn.example.com/linked.png",
+	})
+	require.NoError(t, err)
+
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
+
+	url := fmt.Sprintf("/file/attachments/%s/%s", attachment.UID, attachment.Filename)
+	for _, suffix := range []string{"", "?thumbnail=true"} {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url+suffix, nil))
+		require.Equal(t, http.StatusFound, rec.Code, "request %q", suffix)
+		require.Equal(t, attachment.Reference, rec.Header().Get("Location"))
+	}
+
+	// A stored reference that is not a servable http(s) URL cannot be
+	// redirected to; the request fails instead of serving another scheme,
+	// a hostless URL, or an empty body.
+	for _, reference := range []string{"javascript:alert(1)", "https://:443/file"} {
+		badAttachment, err := stores.CreateAttachment(ctx, &store.Attachment{
+			UID:         random.UUID(),
+			CreatorID:   creator.ID,
+			MemoID:      &storedMemo.ID,
+			Filename:    "not-a-url.png",
+			Type:        "image/png",
+			StorageType: storepb.AttachmentStorageType_EXTERNAL,
+			Reference:   reference,
+		})
+		require.NoError(t, err)
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/attachments/%s/%s", badAttachment.UID, badAttachment.Filename), nil))
+		require.Equal(t, http.StatusInternalServerError, rec.Code, "reference %q", reference)
+		require.Empty(t, rec.Header().Get("Location"), "reference %q", reference)
+	}
+}
+
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)

@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -174,6 +175,11 @@ func (s *FileServerService) serveAttachmentFile(w http.ResponseWriter, r *http.R
 	if readClass == access.MemoReadClassPublic {
 		w.Header().Set("Cache-Control", publicAttachmentCacheControl)
 	}
+	// External attachments carry no blob; their reference is the upstream URL
+	// the content lives at, so they are answered with a redirect.
+	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL {
+		return serveExternalAttachment(w, r, attachment)
+	}
 	if attachment.StorageType != storepb.AttachmentStorageType_LOCAL && attachment.StorageType != storepb.AttachmentStorageType_S3 {
 		attachment, err = s.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
 		if err != nil {
@@ -251,6 +257,21 @@ func (s *FileServerService) serveUserAvatar(w http.ResponseWriter, r *http.Reque
 // =============================================================================
 // File Serving Methods
 // =============================================================================
+
+// serveExternalAttachment redirects the client to an external attachment's
+// recorded URL. External rows carry no blob, so there is nothing to stream or
+// thumbnail locally; only http(s) targets are redirected so a malformed or
+// hostile reference cannot turn the file route into an open redirector for
+// other schemes.
+func serveExternalAttachment(w http.ResponseWriter, r *http.Request, attachment *store.Attachment) error {
+	target, err := url.Parse(attachment.Reference)
+	if err != nil || target.Hostname() == "" || (target.Scheme != "http" && target.Scheme != "https") {
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "attachment has no servable external URL"}
+	}
+	setSecurityHeaders(w)
+	http.Redirect(w, r, attachment.Reference, http.StatusFound)
+	return nil
+}
 
 // serveMediaStream serves video/audio files using streaming to avoid memory exhaustion.
 func (s *FileServerService) serveMediaStream(w http.ResponseWriter, r *http.Request, attachment *store.Attachment, contentType string) error {
