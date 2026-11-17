@@ -37,8 +37,8 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
   const deleteShare = useDeleteMemoShare();
   const url = getShareUrl(share);
 
-  const handleCopy = () => {
-    copy(url);
+  const handleCopy = async () => {
+    if (!(await copy(url))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

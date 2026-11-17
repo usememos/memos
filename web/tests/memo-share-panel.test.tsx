@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Tooltip } from "@usememos/ui";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import MemoSharePanel from "@/components/MemoDetailSidebar/MemoSharePanel";
@@ -49,6 +49,7 @@ describe("MemoSharePanel", () => {
   it("copies the share link when the Clipboard API is unavailable over plain HTTP", async () => {
     // navigator.clipboard exists only in secure contexts; jsdom has none, matching
     // the self-hosted http:// case where the copy button silently did nothing.
+    copyToClipboard.mockResolvedValue(true);
     clients.listMemoShares.mockResolvedValue({
       memoShares: [create(MemoShareSchema, { name: "memos/detail/shares/share-token" })],
     });
@@ -59,6 +60,24 @@ describe("MemoSharePanel", () => {
 
     expect(copyToClipboard).toHaveBeenCalledWith(`${window.location.origin}/memos/shares/share-token`);
     // The check mark proves setCopied ran — the copy path did not throw.
-    expect(screen.getByRole("button", { name: "memo.share.copy" }).querySelector("svg.lucide-check")).not.toBeNull();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "memo.share.copy" }).querySelector("svg.lucide-check")).not.toBeNull();
+    });
+  });
+
+  it("does not show the check mark when the copy fails", async () => {
+    copyToClipboard.mockResolvedValue(false);
+    clients.listMemoShares.mockResolvedValue({
+      memoShares: [create(MemoShareSchema, { name: "memos/detail/shares/share-token" })],
+    });
+
+    renderPanel();
+
+    fireEvent.click(await screen.findByRole("button", { name: "memo.share.copy" }));
+
+    await waitFor(() => expect(copyToClipboard).toHaveBeenCalled());
+    // Flush the resolved copy promise so a wrongly-set check mark would appear.
+    await act(async () => {});
+    expect(screen.getByRole("button", { name: "memo.share.copy" }).querySelector("svg.lucide-check")).toBeNull();
   });
 });
