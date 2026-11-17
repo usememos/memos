@@ -340,12 +340,20 @@ func TestSSOSignInAllowsLinkedUserWhenRegistrationDisabled(t *testing.T) {
 }
 
 func signInWithTestingSSO(ctx context.Context, ts *TestService, idpName, code string) (*apipb.SignInResponse, error) {
+	stateResp, err := ts.Service.CreateSSOAuthorizationState(ctx, &apipb.CreateSSOAuthorizationStateRequest{
+		IdentityProvider: idpName,
+		RedirectUri:      testingSSOCallbackURI,
+	})
+	if err != nil {
+		return nil, err
+	}
 	return ts.Service.SignIn(api.WithHeaderCarrier(ctx), &apipb.SignInRequest{
 		Credentials: &apipb.SignInRequest_SsoCredentials_{
 			SsoCredentials: &apipb.SignInRequest_SsoCredentials{
 				IdentityProvider: idpName,
 				Code:             code,
-				RedirectUri:      "http://localhost:8080/auth/callback",
+				RedirectUri:      testingSSOCallbackURI,
+				State:            stateResp.GetState(),
 			},
 		},
 	})

@@ -36,6 +36,9 @@ const (
 const (
 	// AuthServiceSignInProcedure is the fully-qualified name of the AuthService's SignIn RPC.
 	AuthServiceSignInProcedure = "/memos.api.AuthService/SignIn"
+	// AuthServiceCreateSSOAuthorizationStateProcedure is the fully-qualified name of the AuthService's
+	// CreateSSOAuthorizationState RPC.
+	AuthServiceCreateSSOAuthorizationStateProcedure = "/memos.api.AuthService/CreateSSOAuthorizationState"
 	// AuthServiceRefreshTokenProcedure is the fully-qualified name of the AuthService's RefreshToken
 	// RPC.
 	AuthServiceRefreshTokenProcedure = "/memos.api.AuthService/RefreshToken"
@@ -52,6 +55,14 @@ type AuthServiceClient interface {
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
 	// Public. Attempts are rate limited. Archived users cannot sign in.
 	SignIn(context.Context, *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error)
+	// CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+	// identity provider. It returns a single-use, short-lived state token that
+	// SignIn or UserService.CreateLinkedIdentity must present to redeem an
+	// authorization code. The redirect URI given here is recorded with the state
+	// and used for the token exchange; any redirect URI sent at redemption is
+	// ignored.
+	// Public. Cheap to mint; tokens expire on their own and are consumed on use.
+	CreateSSOAuthorizationState(context.Context, *connect.Request[api.CreateSSOAuthorizationStateRequest]) (*connect.Response[api.CreateSSOAuthorizationStateResponse], error)
 	// RefreshToken exchanges the refresh token for a new access token.
 	// The refresh token is read from the HttpOnly cookie and rotated: the old token is revoked and a new one with a
 	// fresh 30-day expiry is set in the cookie.
@@ -83,6 +94,12 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("SignIn")),
 			connect.WithClientOptions(opts...),
 		),
+		createSSOAuthorizationState: connect.NewClient[api.CreateSSOAuthorizationStateRequest, api.CreateSSOAuthorizationStateResponse](
+			httpClient,
+			baseURL+AuthServiceCreateSSOAuthorizationStateProcedure,
+			connect.WithSchema(authServiceMethods.ByName("CreateSSOAuthorizationState")),
+			connect.WithClientOptions(opts...),
+		),
 		refreshToken: connect.NewClient[api.RefreshTokenRequest, api.RefreshTokenResponse](
 			httpClient,
 			baseURL+AuthServiceRefreshTokenProcedure,
@@ -106,15 +123,21 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // authServiceClient implements AuthServiceClient.
 type authServiceClient struct {
-	signIn         *connect.Client[api.SignInRequest, api.SignInResponse]
-	refreshToken   *connect.Client[api.RefreshTokenRequest, api.RefreshTokenResponse]
-	getCurrentUser *connect.Client[api.GetCurrentUserRequest, api.GetCurrentUserResponse]
-	signOut        *connect.Client[api.SignOutRequest, emptypb.Empty]
+	signIn                      *connect.Client[api.SignInRequest, api.SignInResponse]
+	createSSOAuthorizationState *connect.Client[api.CreateSSOAuthorizationStateRequest, api.CreateSSOAuthorizationStateResponse]
+	refreshToken                *connect.Client[api.RefreshTokenRequest, api.RefreshTokenResponse]
+	getCurrentUser              *connect.Client[api.GetCurrentUserRequest, api.GetCurrentUserResponse]
+	signOut                     *connect.Client[api.SignOutRequest, emptypb.Empty]
 }
 
 // SignIn calls memos.api.AuthService.SignIn.
 func (c *authServiceClient) SignIn(ctx context.Context, req *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error) {
 	return c.signIn.CallUnary(ctx, req)
+}
+
+// CreateSSOAuthorizationState calls memos.api.AuthService.CreateSSOAuthorizationState.
+func (c *authServiceClient) CreateSSOAuthorizationState(ctx context.Context, req *connect.Request[api.CreateSSOAuthorizationStateRequest]) (*connect.Response[api.CreateSSOAuthorizationStateResponse], error) {
+	return c.createSSOAuthorizationState.CallUnary(ctx, req)
 }
 
 // RefreshToken calls memos.api.AuthService.RefreshToken.
@@ -138,6 +161,14 @@ type AuthServiceHandler interface {
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
 	// Public. Attempts are rate limited. Archived users cannot sign in.
 	SignIn(context.Context, *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error)
+	// CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+	// identity provider. It returns a single-use, short-lived state token that
+	// SignIn or UserService.CreateLinkedIdentity must present to redeem an
+	// authorization code. The redirect URI given here is recorded with the state
+	// and used for the token exchange; any redirect URI sent at redemption is
+	// ignored.
+	// Public. Cheap to mint; tokens expire on their own and are consumed on use.
+	CreateSSOAuthorizationState(context.Context, *connect.Request[api.CreateSSOAuthorizationStateRequest]) (*connect.Response[api.CreateSSOAuthorizationStateResponse], error)
 	// RefreshToken exchanges the refresh token for a new access token.
 	// The refresh token is read from the HttpOnly cookie and rotated: the old token is revoked and a new one with a
 	// fresh 30-day expiry is set in the cookie.
@@ -165,6 +196,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("SignIn")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceCreateSSOAuthorizationStateHandler := connect.NewUnaryHandler(
+		AuthServiceCreateSSOAuthorizationStateProcedure,
+		svc.CreateSSOAuthorizationState,
+		connect.WithSchema(authServiceMethods.ByName("CreateSSOAuthorizationState")),
+		connect.WithHandlerOptions(opts...),
+	)
 	authServiceRefreshTokenHandler := connect.NewUnaryHandler(
 		AuthServiceRefreshTokenProcedure,
 		svc.RefreshToken,
@@ -187,6 +224,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		switch r.URL.Path {
 		case AuthServiceSignInProcedure:
 			authServiceSignInHandler.ServeHTTP(w, r)
+		case AuthServiceCreateSSOAuthorizationStateProcedure:
+			authServiceCreateSSOAuthorizationStateHandler.ServeHTTP(w, r)
 		case AuthServiceRefreshTokenProcedure:
 			authServiceRefreshTokenHandler.ServeHTTP(w, r)
 		case AuthServiceGetCurrentUserProcedure:
@@ -204,6 +243,10 @@ type UnimplementedAuthServiceHandler struct{}
 
 func (UnimplementedAuthServiceHandler) SignIn(context.Context, *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.SignIn is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) CreateSSOAuthorizationState(context.Context, *connect.Request[api.CreateSSOAuthorizationStateRequest]) (*connect.Response[api.CreateSSOAuthorizationStateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.CreateSSOAuthorizationState is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) RefreshToken(context.Context, *connect.Request[api.RefreshTokenRequest]) (*connect.Response[api.RefreshTokenResponse], error) {

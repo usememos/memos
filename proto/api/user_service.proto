@@ -1197,6 +1197,9 @@ message CreateLinkedIdentityRequest {
 
   // Optional. The PKCE code verifier used in the OAuth flow.
   string code_verifier = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. The single-use state token from AuthService.CreateSSOAuthorizationState.
+  string state = 6 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Request message for UserService.DeleteLinkedIdentity.

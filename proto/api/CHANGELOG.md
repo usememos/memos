@@ -29,6 +29,12 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 
 ### Breaking
 
+- `AuthService.SignIn` with `sso_credentials` and `UserService.CreateLinkedIdentity` now require the single-use
+  `state` token minted by the new `AuthService.CreateSSOAuthorizationState` RPC; an SSO redemption without a valid
+  state is rejected. `SignInRequest.SsoCredentials.redirect_uri` and `CreateLinkedIdentityRequest.redirect_uri` are
+  still accepted for compatibility but ignored: the token exchange uses the redirect URI recorded when the flow
+  started. Clients driving the SSO sign-in flow must call `CreateSSOAuthorizationState` before redirecting to the
+  identity provider.
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
   Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
   `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.

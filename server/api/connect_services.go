@@ -101,6 +101,12 @@ func (s *ConnectServiceHandler) RefreshToken(ctx context.Context, req *connect.R
 	})
 }
 
+func (s *ConnectServiceHandler) CreateSSOAuthorizationState(ctx context.Context, req *connect.Request[apipb.CreateSSOAuthorizationStateRequest]) (*connect.Response[apipb.CreateSSOAuthorizationStateResponse], error) {
+	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*apipb.CreateSSOAuthorizationStateResponse, error) {
+		return s.APIService.CreateSSOAuthorizationState(ctx, req.Msg)
+	})
+}
+
 // UserService
 
 func (s *ConnectServiceHandler) ListUsers(ctx context.Context, req *connect.Request[apipb.ListUsersRequest]) (*connect.Response[apipb.ListUsersResponse], error) {

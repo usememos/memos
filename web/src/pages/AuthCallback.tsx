@@ -97,6 +97,7 @@ const AuthCallback = () => {
             code,
             redirectUri,
             codeVerifier: codeVerifier || "",
+            state,
           });
         } else {
           const response = await authServiceClient.signIn({
@@ -107,6 +108,7 @@ const AuthCallback = () => {
                 code,
                 redirectUri,
                 codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
+                state,
               },
             },
           });

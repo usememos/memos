@@ -36,8 +36,8 @@ describe("SSO callback recovery", () => {
   });
 
   it("offers manual recovery after cancellation while retaining the validated destination", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example#comment");
-    renderCallback(`error=access_denied&state=${state}`);
+    storeOAuthState("server-state-cancel", "identityProviders/company", "signin", "/memos/example#comment");
+    renderCallback(`error=access_denied&state=server-state-cancel`);
     await expectRecovery("/memos/example#comment");
     expect(screen.getByRole("alert")).toHaveTextContent("access_denied");
     expect(mocks.signIn).not.toHaveBeenCalled();
@@ -45,7 +45,7 @@ describe("SSO callback recovery", () => {
   });
 
   it("does not trust the return path when cancellation state does not match", async () => {
-    await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    storeOAuthState("server-state-stored", "identityProviders/company", "signin", "/memos/example");
     renderCallback("error=access_denied&state=wrong");
     await expectRecovery();
     expect(mocks.signIn).not.toHaveBeenCalled();
@@ -58,18 +58,18 @@ describe("SSO callback recovery", () => {
   });
 
   it("retains the destination after the sign-in RPC fails without retrying", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    storeOAuthState("server-state-fail", "identityProviders/company", "signin", "/memos/example");
     mocks.signIn.mockRejectedValueOnce(new Error("Provider unavailable"));
-    renderCallback(`code=example&state=${state}`);
+    renderCallback(`code=example&state=server-state-fail`);
     await expectRecovery("/memos/example");
     expect(mocks.signIn).toHaveBeenCalledOnce();
     expect(screen.getByRole("alert")).toHaveTextContent("Provider unavailable");
   });
 
   it("completes a successful callback once and returns to the requested destination", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    storeOAuthState("server-state-ok", "identityProviders/company", "signin", "/memos/example", undefined, "verifier-abc");
     mocks.signIn.mockResolvedValueOnce({});
-    renderCallback(`code=example&state=${state}`);
+    renderCallback(`code=example&state=server-state-ok`);
     await waitFor(() => expect(mocks.navigateTo).toHaveBeenCalledWith("/memos/example"));
     expect(mocks.signIn).toHaveBeenCalledOnce();
     expect(mocks.signIn).toHaveBeenCalledWith({
@@ -79,7 +79,8 @@ describe("SSO callback recovery", () => {
           identityProvider: "identityProviders/company",
           code: "example",
           redirectUri: `${window.location.origin}/auth/callback`,
-          codeVerifier: expect.any(String),
+          codeVerifier: "verifier-abc",
+          state: "server-state-ok",
         },
       },
     });

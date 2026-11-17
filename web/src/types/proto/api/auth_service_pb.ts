@@ -17,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/auth_service.proto.
  */
 export const file_api_auth_service: GenFile = /*@__PURE__*/
-  fileDesc("ChZhcGkvYXV0aF9zZXJ2aWNlLnByb3RvEgltZW1vcy5hcGkikQMKDVNpZ25JblJlcXVlc3QSTAoUcGFzc3dvcmRfY3JlZGVudGlhbHMYASABKAsyLC5tZW1vcy5hcGkuU2lnbkluUmVxdWVzdC5QYXNzd29yZENyZWRlbnRpYWxzSAASQgoPc3NvX2NyZWRlbnRpYWxzGAIgASgLMicubWVtb3MuYXBpLlNpZ25JblJlcXVlc3QuU3NvQ3JlZGVudGlhbHNIABpDChNQYXNzd29yZENyZWRlbnRpYWxzEhUKCHVzZXJuYW1lGAEgASgJQgPgQQISFQoIcGFzc3dvcmQYAiABKAlCA+BBAhqZAQoOU3NvQ3JlZGVudGlhbHMSPQoRaWRlbnRpdHlfcHJvdmlkZXIYASABKAlCIuBBAvpBHAoabWVtb3MuYXBpL0lkZW50aXR5UHJvdmlkZXISEQoEY29kZRgCIAEoCUID4EECEhkKDHJlZGlyZWN0X3VyaRgDIAEoCUID4EECEhoKDWNvZGVfdmVyaWZpZXIYBCABKAlCA+BBAUINCgtjcmVkZW50aWFscyKDAQoOU2lnbkluUmVzcG9uc2USHQoEdXNlchgBIAEoCzIPLm1lbW9zLmFwaS5Vc2VyEhQKDGFjY2Vzc190b2tlbhgCIAEoCRI8ChhhY2Nlc3NfdG9rZW5fZXhwaXJlX3RpbWUYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhUKE1JlZnJlc2hUb2tlblJlcXVlc3QiagoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEjwKGGFjY2Vzc190b2tlbl9leHBpcmVfdGltZRgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiFwoVR2V0Q3VycmVudFVzZXJSZXF1ZXN0IjcKFkdldEN1cnJlbnRVc2VyUmVzcG9uc2USHQoEdXNlchgBIAEoCzIPLm1lbW9zLmFwaS5Vc2VyIhAKDlNpZ25PdXRSZXF1ZXN0Mp4DCgtBdXRoU2VydmljZRJaCgZTaWduSW4SGC5tZW1vcy5hcGkuU2lnbkluUmVxdWVzdBoZLm1lbW9zLmFwaS5TaWduSW5SZXNwb25zZSIbgtPkkwIVOgEqIhAvYXBpL2F1dGgvc2lnbmluEm0KDFJlZnJlc2hUb2tlbhIeLm1lbW9zLmFwaS5SZWZyZXNoVG9rZW5SZXF1ZXN0Gh8ubWVtb3MuYXBpLlJlZnJlc2hUb2tlblJlc3BvbnNlIhyC0+STAhY6ASoiES9hcGkvYXV0aC9yZWZyZXNoEmsKDkdldEN1cnJlbnRVc2VyEiAubWVtb3MuYXBpLkdldEN1cnJlbnRVc2VyUmVxdWVzdBohLm1lbW9zLmFwaS5HZXRDdXJyZW50VXNlclJlc3BvbnNlIhSC0+STAg4SDC9hcGkvYXV0aC9tZRJXCgdTaWduT3V0EhkubWVtb3MuYXBpLlNpZ25PdXRSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IhmC0+STAhMiES9hcGkvYXV0aC9zaWdub3V0Qo8BCg1jb20ubWVtb3MuYXBpQhBBdXRoU2VydmljZVByb3RvUAFaJ2dpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaaICA01BWKoCCU1lbW9zLkFwacoCCU1lbW9zXEFwaeICFU1lbW9zXEFwaVxHUEJNZXRhZGF0YeoCCk1lbW9zOjpBcGliBnByb3RvMw", [file_api_user_service, file_google_api_annotations, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("ChZhcGkvYXV0aF9zZXJ2aWNlLnByb3RvEgltZW1vcy5hcGkipQMKDVNpZ25JblJlcXVlc3QSTAoUcGFzc3dvcmRfY3JlZGVudGlhbHMYASABKAsyLC5tZW1vcy5hcGkuU2lnbkluUmVxdWVzdC5QYXNzd29yZENyZWRlbnRpYWxzSAASQgoPc3NvX2NyZWRlbnRpYWxzGAIgASgLMicubWVtb3MuYXBpLlNpZ25JblJlcXVlc3QuU3NvQ3JlZGVudGlhbHNIABpDChNQYXNzd29yZENyZWRlbnRpYWxzEhUKCHVzZXJuYW1lGAEgASgJQgPgQQISFQoIcGFzc3dvcmQYAiABKAlCA+BBAhqtAQoOU3NvQ3JlZGVudGlhbHMSPQoRaWRlbnRpdHlfcHJvdmlkZXIYASABKAlCIuBBAvpBHAoabWVtb3MuYXBpL0lkZW50aXR5UHJvdmlkZXISEQoEY29kZRgCIAEoCUID4EECEhkKDHJlZGlyZWN0X3VyaRgDIAEoCUID4EECEhoKDWNvZGVfdmVyaWZpZXIYBCABKAlCA+BBARISCgVzdGF0ZRgFIAEoCUID4EECQg0KC2NyZWRlbnRpYWxzIpoBCiJDcmVhdGVTU09BdXRob3JpemF0aW9uU3RhdGVSZXF1ZXN0Ej0KEWlkZW50aXR5X3Byb3ZpZGVyGAEgASgJQiLgQQL6QRwKGm1lbW9zLmFwaS9JZGVudGl0eVByb3ZpZGVyEhkKDHJlZGlyZWN0X3VyaRgCIAEoCUID4EECEhoKDXBrY2VfcmVxdWlyZWQYAyABKAhCA+BBASJlCiNDcmVhdGVTU09BdXRob3JpemF0aW9uU3RhdGVSZXNwb25zZRINCgVzdGF0ZRgBIAEoCRIvCgtleHBpcmVfdGltZRgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAigwEKDlNpZ25JblJlc3BvbnNlEh0KBHVzZXIYASABKAsyDy5tZW1vcy5hcGkuVXNlchIUCgxhY2Nlc3NfdG9rZW4YAiABKAkSPAoYYWNjZXNzX3Rva2VuX2V4cGlyZV90aW1lGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIVChNSZWZyZXNoVG9rZW5SZXF1ZXN0ImoKFFJlZnJlc2hUb2tlblJlc3BvbnNlEhQKDGFjY2Vzc190b2tlbhgBIAEoCRI8ChhhY2Nlc3NfdG9rZW5fZXhwaXJlX3RpbWUYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhcKFUdldEN1cnJlbnRVc2VyUmVxdWVzdCI3ChZHZXRDdXJyZW50VXNlclJlc3BvbnNlEh0KBHVzZXIYASABKAsyDy5tZW1vcy5hcGkuVXNlciIQCg5TaWduT3V0UmVxdWVzdDK9BAoLQXV0aFNlcnZpY2USWgoGU2lnbkluEhgubWVtb3MuYXBpLlNpZ25JblJlcXVlc3QaGS5tZW1vcy5hcGkuU2lnbkluUmVzcG9uc2UiG4LT5JMCFToBKiIQL2FwaS9hdXRoL3NpZ25pbhKcAQobQ3JlYXRlU1NPQXV0aG9yaXphdGlvblN0YXRlEi0ubWVtb3MuYXBpLkNyZWF0ZVNTT0F1dGhvcml6YXRpb25TdGF0ZVJlcXVlc3QaLi5tZW1vcy5hcGkuQ3JlYXRlU1NPQXV0aG9yaXphdGlvblN0YXRlUmVzcG9uc2UiHoLT5JMCGDoBKiITL2FwaS9hdXRoL3Nzby9zdGF0ZRJtCgxSZWZyZXNoVG9rZW4SHi5tZW1vcy5hcGkuUmVmcmVzaFRva2VuUmVxdWVzdBofLm1lbW9zLmFwaS5SZWZyZXNoVG9rZW5SZXNwb25zZSIcgtPkkwIWOgEqIhEvYXBpL2F1dGgvcmVmcmVzaBJrCg5HZXRDdXJyZW50VXNlchIgLm1lbW9zLmFwaS5HZXRDdXJyZW50VXNlclJlcXVlc3QaIS5tZW1vcy5hcGkuR2V0Q3VycmVudFVzZXJSZXNwb25zZSIUgtPkkwIOEgwvYXBpL2F1dGgvbWUSVwoHU2lnbk91dBIZLm1lbW9zLmFwaS5TaWduT3V0UmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIZgtPkkwITIhEvYXBpL2F1dGgvc2lnbm91dEKPAQoNY29tLm1lbW9zLmFwaUIQQXV0aFNlcnZpY2VQcm90b1ABWidnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGmiAgNNQViqAglNZW1vcy5BcGnKAglNZW1vc1xBcGniAhVNZW1vc1xBcGlcR1BCTWV0YWRhdGHqAgpNZW1vczo6QXBpYgZwcm90bzM", [file_api_user_service, file_google_api_annotations, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * Request message for AuthService.SignIn.
@@ -120,6 +120,13 @@ export type SignInRequest_SsoCredentials = Message<"memos.api.SignInRequest.SsoC
    * @generated from field: string code_verifier = 4;
    */
   codeVerifier: string;
+
+  /**
+   * Required. The single-use state token from CreateSSOAuthorizationState.
+   *
+   * @generated from field: string state = 5;
+   */
+  state: string;
 };
 
 /**
@@ -128,6 +135,73 @@ export type SignInRequest_SsoCredentials = Message<"memos.api.SignInRequest.SsoC
  */
 export const SignInRequest_SsoCredentialsSchema: GenMessage<SignInRequest_SsoCredentials> = /*@__PURE__*/
   messageDesc(file_api_auth_service, 0, 1);
+
+/**
+ * Request message for AuthService.CreateSSOAuthorizationState.
+ *
+ * @generated from message memos.api.CreateSSOAuthorizationStateRequest
+ */
+export type CreateSSOAuthorizationStateRequest = Message<"memos.api.CreateSSOAuthorizationStateRequest"> & {
+  /**
+   * Required. The resource name of the identity provider.
+   * Format: identity-providers/{idp}
+   *
+   * @generated from field: string identity_provider = 1;
+   */
+  identityProvider: string;
+
+  /**
+   * Required. The absolute callback URI of this instance used in the
+   * authorization request. Recorded with the state and sent to the identity
+   * provider at token exchange.
+   *
+   * @generated from field: string redirect_uri = 2;
+   */
+  redirectUri: string;
+
+  /**
+   * Optional. Set when the authorization request carries a PKCE code
+   * challenge. Redeeming the returned state then requires a code verifier.
+   *
+   * @generated from field: bool pkce_required = 3;
+   */
+  pkceRequired: boolean;
+};
+
+/**
+ * Describes the message memos.api.CreateSSOAuthorizationStateRequest.
+ * Use `create(CreateSSOAuthorizationStateRequestSchema)` to create a new message.
+ */
+export const CreateSSOAuthorizationStateRequestSchema: GenMessage<CreateSSOAuthorizationStateRequest> = /*@__PURE__*/
+  messageDesc(file_api_auth_service, 1);
+
+/**
+ * Response message for AuthService.CreateSSOAuthorizationState.
+ *
+ * @generated from message memos.api.CreateSSOAuthorizationStateResponse
+ */
+export type CreateSSOAuthorizationStateResponse = Message<"memos.api.CreateSSOAuthorizationStateResponse"> & {
+  /**
+   * The state token to send as the OAuth2 state parameter.
+   *
+   * @generated from field: string state = 1;
+   */
+  state: string;
+
+  /**
+   * The time the state token stops being redeemable.
+   *
+   * @generated from field: google.protobuf.Timestamp expire_time = 2;
+   */
+  expireTime?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message memos.api.CreateSSOAuthorizationStateResponse.
+ * Use `create(CreateSSOAuthorizationStateResponseSchema)` to create a new message.
+ */
+export const CreateSSOAuthorizationStateResponseSchema: GenMessage<CreateSSOAuthorizationStateResponse> = /*@__PURE__*/
+  messageDesc(file_api_auth_service, 2);
 
 /**
  * Response message for AuthService.SignIn.
@@ -164,7 +238,7 @@ export type SignInResponse = Message<"memos.api.SignInResponse"> & {
  * Use `create(SignInResponseSchema)` to create a new message.
  */
 export const SignInResponseSchema: GenMessage<SignInResponse> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 1);
+  messageDesc(file_api_auth_service, 3);
 
 /**
  * Request message for AuthService.RefreshToken.
@@ -180,7 +254,7 @@ export type RefreshTokenRequest = Message<"memos.api.RefreshTokenRequest"> & {
  * Use `create(RefreshTokenRequestSchema)` to create a new message.
  */
 export const RefreshTokenRequestSchema: GenMessage<RefreshTokenRequest> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 2);
+  messageDesc(file_api_auth_service, 4);
 
 /**
  * Response message for AuthService.RefreshToken.
@@ -208,7 +282,7 @@ export type RefreshTokenResponse = Message<"memos.api.RefreshTokenResponse"> & {
  * Use `create(RefreshTokenResponseSchema)` to create a new message.
  */
 export const RefreshTokenResponseSchema: GenMessage<RefreshTokenResponse> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 3);
+  messageDesc(file_api_auth_service, 5);
 
 /**
  * Request message for AuthService.GetCurrentUser.
@@ -223,7 +297,7 @@ export type GetCurrentUserRequest = Message<"memos.api.GetCurrentUserRequest"> &
  * Use `create(GetCurrentUserRequestSchema)` to create a new message.
  */
 export const GetCurrentUserRequestSchema: GenMessage<GetCurrentUserRequest> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 4);
+  messageDesc(file_api_auth_service, 6);
 
 /**
  * Response message for AuthService.GetCurrentUser.
@@ -244,7 +318,7 @@ export type GetCurrentUserResponse = Message<"memos.api.GetCurrentUserResponse">
  * Use `create(GetCurrentUserResponseSchema)` to create a new message.
  */
 export const GetCurrentUserResponseSchema: GenMessage<GetCurrentUserResponse> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 5);
+  messageDesc(file_api_auth_service, 7);
 
 /**
  * Request message for AuthService.SignOut.
@@ -259,7 +333,7 @@ export type SignOutRequest = Message<"memos.api.SignOutRequest"> & {
  * Use `create(SignOutRequestSchema)` to create a new message.
  */
 export const SignOutRequestSchema: GenMessage<SignOutRequest> = /*@__PURE__*/
-  messageDesc(file_api_auth_service, 6);
+  messageDesc(file_api_auth_service, 8);
 
 /**
  * AuthService manages sign-in sessions: it issues, refreshes, and revokes the tokens that authenticate API calls.
@@ -278,6 +352,22 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof SignInRequestSchema;
     output: typeof SignInResponseSchema;
+  },
+  /**
+   * CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+   * identity provider. It returns a single-use, short-lived state token that
+   * SignIn or UserService.CreateLinkedIdentity must present to redeem an
+   * authorization code. The redirect URI given here is recorded with the state
+   * and used for the token exchange; any redirect URI sent at redemption is
+   * ignored.
+   * Public. Cheap to mint; tokens expire on their own and are consumed on use.
+   *
+   * @generated from rpc memos.api.AuthService.CreateSSOAuthorizationState
+   */
+  createSSOAuthorizationState: {
+    methodKind: "unary";
+    input: typeof CreateSSOAuthorizationStateRequestSchema;
+    output: typeof CreateSSOAuthorizationStateResponseSchema;
   },
   /**
    * RefreshToken exchanges the refresh token for a new access token.

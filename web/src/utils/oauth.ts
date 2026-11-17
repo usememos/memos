@@ -13,11 +13,26 @@ interface OAuthState {
   codeVerifier?: string; // PKCE code_verifier
 }
 
-// Generate a cryptographically secure random state value
-function generateSecureState(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+// Generate a PKCE code_verifier/code_challenge pair (RFC 7636)
+// Returns empty values when crypto.subtle is unavailable (plain HTTP context),
+// falling back to a standard OAuth flow without PKCE
+export async function generatePKCEPair(): Promise<{ codeVerifier?: string; codeChallenge?: string }> {
+  try {
+    // crypto.subtle requires a secure context (HTTPS or localhost)
+    if (typeof crypto !== "undefined" && crypto.subtle) {
+      const codeVerifier = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      return { codeVerifier, codeChallenge };
+    }
+    console.warn(
+      "PKCE not available: crypto.subtle requires HTTPS. Falling back to standard OAuth flow without PKCE. " +
+        "For enhanced security, please access Memos over HTTPS.",
+    );
+  } catch (error) {
+    // If PKCE generation fails for any reason, fall back to standard OAuth
+    console.warn("Failed to generate PKCE parameters, falling back to standard OAuth flow:", error);
+  }
+  return {};
 }
 
 // Generate a cryptographically secure random code_verifier for PKCE (RFC 7636)
@@ -43,40 +58,18 @@ function base64UrlEncode(buffer: Uint8Array): string {
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-// Store OAuth state and PKCE parameters in sessionStorage
-// Returns state and optional codeChallenge for use in authorization URL
-// PKCE is optional - if crypto APIs are unavailable (HTTP context), falls back to standard OAuth
-export async function storeOAuthState(
+// Store OAuth flow metadata in sessionStorage for the callback page.
+// The state token itself is minted by the server
+// (AuthService.CreateSSOAuthorizationState) and verified there at redemption;
+// this entry only carries the flow context the callback needs locally.
+export function storeOAuthState(
+  state: string,
   identityProviderName: string,
   flowMode: OAuthFlowMode,
   returnUrl?: string,
   linkingUserName?: string,
-): Promise<{ state: string; codeChallenge?: string }> {
-  const state = generateSecureState();
-
-  // Try to generate PKCE parameters if crypto.subtle is available (HTTPS/localhost)
-  // Falls back to standard OAuth flow if unavailable (HTTP context)
-  let codeVerifier: string | undefined;
-  let codeChallenge: string | undefined;
-
-  try {
-    // Check if crypto.subtle is available (requires secure context: HTTPS or localhost)
-    if (typeof crypto !== "undefined" && crypto.subtle) {
-      codeVerifier = generateCodeVerifier();
-      codeChallenge = await generateCodeChallenge(codeVerifier);
-    } else {
-      console.warn(
-        "PKCE not available: crypto.subtle requires HTTPS. Falling back to standard OAuth flow without PKCE. " +
-          "For enhanced security, please access Memos over HTTPS.",
-      );
-    }
-  } catch (error) {
-    // If PKCE generation fails for any reason, fall back to standard OAuth
-    console.warn("Failed to generate PKCE parameters, falling back to standard OAuth:", error);
-    codeVerifier = undefined;
-    codeChallenge = undefined;
-  }
-
+  codeVerifier?: string,
+): void {
   const stateData: OAuthState = {
     state,
     identityProviderName,
@@ -93,8 +86,6 @@ export async function storeOAuthState(
     console.error("Failed to store OAuth state:", error);
     throw new Error("Failed to initialize OAuth flow");
   }
-
-  return { state, codeChallenge };
 }
 
 // Validate and retrieve OAuth state from storage (CSRF protection)

@@ -20,10 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_SignIn_FullMethodName         = "/memos.api.AuthService/SignIn"
-	AuthService_RefreshToken_FullMethodName   = "/memos.api.AuthService/RefreshToken"
-	AuthService_GetCurrentUser_FullMethodName = "/memos.api.AuthService/GetCurrentUser"
-	AuthService_SignOut_FullMethodName        = "/memos.api.AuthService/SignOut"
+	AuthService_SignIn_FullMethodName                      = "/memos.api.AuthService/SignIn"
+	AuthService_CreateSSOAuthorizationState_FullMethodName = "/memos.api.AuthService/CreateSSOAuthorizationState"
+	AuthService_RefreshToken_FullMethodName                = "/memos.api.AuthService/RefreshToken"
+	AuthService_GetCurrentUser_FullMethodName              = "/memos.api.AuthService/GetCurrentUser"
+	AuthService_SignOut_FullMethodName                     = "/memos.api.AuthService/SignOut"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -36,6 +37,14 @@ type AuthServiceClient interface {
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
 	// Public. Attempts are rate limited. Archived users cannot sign in.
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
+	// CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+	// identity provider. It returns a single-use, short-lived state token that
+	// SignIn or UserService.CreateLinkedIdentity must present to redeem an
+	// authorization code. The redirect URI given here is recorded with the state
+	// and used for the token exchange; any redirect URI sent at redemption is
+	// ignored.
+	// Public. Cheap to mint; tokens expire on their own and are consumed on use.
+	CreateSSOAuthorizationState(ctx context.Context, in *CreateSSOAuthorizationStateRequest, opts ...grpc.CallOption) (*CreateSSOAuthorizationStateResponse, error)
 	// RefreshToken exchanges the refresh token for a new access token.
 	// The refresh token is read from the HttpOnly cookie and rotated: the old token is revoked and a new one with a
 	// fresh 30-day expiry is set in the cookie.
@@ -62,6 +71,16 @@ func (c *authServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SignInResponse)
 	err := c.cc.Invoke(ctx, AuthService_SignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) CreateSSOAuthorizationState(ctx context.Context, in *CreateSSOAuthorizationStateRequest, opts ...grpc.CallOption) (*CreateSSOAuthorizationStateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSSOAuthorizationStateResponse)
+	err := c.cc.Invoke(ctx, AuthService_CreateSSOAuthorizationState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +127,14 @@ type AuthServiceServer interface {
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
 	// Public. Attempts are rate limited. Archived users cannot sign in.
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
+	// CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+	// identity provider. It returns a single-use, short-lived state token that
+	// SignIn or UserService.CreateLinkedIdentity must present to redeem an
+	// authorization code. The redirect URI given here is recorded with the state
+	// and used for the token exchange; any redirect URI sent at redemption is
+	// ignored.
+	// Public. Cheap to mint; tokens expire on their own and are consumed on use.
+	CreateSSOAuthorizationState(context.Context, *CreateSSOAuthorizationStateRequest) (*CreateSSOAuthorizationStateResponse, error)
 	// RefreshToken exchanges the refresh token for a new access token.
 	// The refresh token is read from the HttpOnly cookie and rotated: the old token is revoked and a new one with a
 	// fresh 30-day expiry is set in the cookie.
@@ -132,6 +159,9 @@ type UnimplementedAuthServiceServer struct{}
 
 func (UnimplementedAuthServiceServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedAuthServiceServer) CreateSSOAuthorizationState(context.Context, *CreateSSOAuthorizationStateRequest) (*CreateSSOAuthorizationStateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSSOAuthorizationState not implemented")
 }
 func (UnimplementedAuthServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RefreshToken not implemented")
@@ -177,6 +207,24 @@ func _AuthService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).SignIn(ctx, req.(*SignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_CreateSSOAuthorizationState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSSOAuthorizationStateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CreateSSOAuthorizationState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CreateSSOAuthorizationState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CreateSSOAuthorizationState(ctx, req.(*CreateSSOAuthorizationStateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -245,6 +293,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _AuthService_SignIn_Handler,
+		},
+		{
+			MethodName: "CreateSSOAuthorizationState",
+			Handler:    _AuthService_CreateSSOAuthorizationState_Handler,
 		},
 		{
 			MethodName: "RefreshToken",
