@@ -1,6 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
 import { Button, Dialog, Select, Skeleton, Tooltip } from "@usememos/ui";
+import copy from "copy-to-clipboard";
 import { CheckIcon, CopyIcon, LinkIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getShareUrl, useCreateMemoShare, useDeleteMemoShare, useMemoShares } from "@/hooks/useMemoShareQueries";
@@ -36,8 +37,8 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
   const deleteShare = useDeleteMemoShare();
   const url = getShareUrl(share);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(url);
+  const handleCopy = () => {
+    copy(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
