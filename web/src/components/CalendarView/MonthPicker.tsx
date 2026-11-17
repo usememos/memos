@@ -82,6 +82,7 @@ export const MonthPicker = ({ month, monthLabel, today, activityStats }: MonthPi
                 onClick={() => setOpen(false)}
               >
                 {monthShortLabels[value - 1]}
+                {hasActivity && <span className="mu-visually-hidden">{t("calendar.has-entries")}</span>}
                 {hasActivity && (
                   <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-mu-primary" />
                 )}

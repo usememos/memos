@@ -64,6 +64,7 @@
     "signups-closed-description": "New accounts are disabled on this instance. Contact your administrator if you need access."
   },
   "calendar": {
+    "has-entries": "has entries",
     "new-memo-on-day": "New memo on this day",
     "next-year": "Next year",
     "no-memos-in-month": "No memos in {{month}}",

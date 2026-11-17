@@ -1265,6 +1265,7 @@
     "place-placeholder": "Hãy chọn một vị trí trước."
   },
   "calendar": {
+    "has-entries": "có ghi chú",
     "new-memo-on-day": "Ghi chú mới trong ngày này",
     "next-year": "Năm tới",
     "no-memos-in-month": "Không có ghi chú nào trong {{month}}",
