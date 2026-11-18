@@ -50,7 +50,7 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
           conditions.push(creatorFilter);
         }
         if (searchText) {
-          conditions.push(`content.contains("${searchText}")`);
+          conditions.push(`content.contains(${JSON.stringify(searchText)})`);
         }
         const { memos } = await memoServiceClient.listMemos({
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
