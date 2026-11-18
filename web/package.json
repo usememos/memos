@@ -28,7 +28,7 @@
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
     "@usememos/canvas": "26.11.3",
-    "@usememos/editor": "26.11.5",
+    "@usememos/editor": "26.11.6",
     "@usememos/ui": "26.11.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
