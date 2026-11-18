@@ -208,6 +208,19 @@ func (s *ssoAuthorizationStateStore) reapExpiredLocked(now time.Time) {
 		s.removeLocked(elem, now)
 		elem = next
 	}
+	// callerIssued entries expire independently of live states. Prune them on
+	// every sweep so a caller whose states are all gone does not leave stale
+	// throttle history behind when only other callers generate activity.
+	for key, issued := range s.callerIssued {
+		if s.callerCounts[key] > 0 {
+			continue
+		}
+		if pruned := s.pruneIssuanceLocked(issued, now); len(pruned) == 0 {
+			delete(s.callerIssued, key)
+		} else {
+			s.callerIssued[key] = pruned
+		}
+	}
 }
 
 func (s *ssoAuthorizationStateStore) removeLocked(elem *list.Element, now time.Time) {

@@ -197,6 +197,33 @@ func TestSSOAuthStateStoreDropsStaleCallerHistory(t *testing.T) {
 		"once a caller holds no live states and no in-window issuances, its throttle history must be dropped")
 }
 
+func TestSSOAuthStateStoreSweepsCallerHistoryForInactiveCallers(t *testing.T) {
+	t.Parallel()
+
+	now := time.Now()
+	states := newSSOAuthStateStoreWithLimits(10*time.Minute, 100, 100)
+	states.clock = func() time.Time { return now }
+
+	// caller-a issues and redeems a state, leaving only throttle history.
+	state, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.NoError(t, err)
+	_, err = states.redeem(state, "idp-a")
+	require.NoError(t, err)
+	require.Contains(t, states.callerIssued, "caller-a")
+
+	// Advance past the issuance window. caller-a's history is now expired but
+	// still present because no sweep has run for it.
+	now = now.Add(states.issueWindow + time.Second)
+
+	// Activity from another caller triggers the sweep and drops caller-a's
+	// expired history without disturbing caller-b's live entry.
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-b")
+	require.NoError(t, err)
+	require.NotContains(t, states.callerIssued, "caller-a",
+		"an expired caller history must be swept even when only other callers generate activity")
+	require.Contains(t, states.callerIssued, "caller-b")
+}
+
 func TestSSOAuthStateStoreKeepsExpiryOrderUnderConcurrentIssue(t *testing.T) {
 	t.Parallel()
 
