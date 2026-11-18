@@ -38,6 +38,17 @@ const (
 	// maxSSOAuthStateRedirectURILength bounds the recorded callback URI so each
 	// store entry has a bounded size.
 	maxSSOAuthStateRedirectURILength = 2048
+	// ssoAuthStateIssuanceWindow is the sliding window the nil-limiter
+	// issuance throttle counts over. Live-state caps alone do not bound
+	// issuance rate: a caller can redeem a state and immediately mint the
+	// next, so the throttle must remember recent issuances even after the
+	// corresponding states are gone.
+	ssoAuthStateIssuanceWindow = time.Minute
+	// maxSSOAuthStateIssuancesPerWindow caps how many states one caller
+	// address may mint per issuance window when no rate limiter is
+	// configured. One window of headroom is generous for interactive sign-in
+	// retries while still bounding anonymous churn.
+	maxSSOAuthStateIssuancesPerWindow = 8
 )
 
 var (
@@ -47,6 +58,11 @@ var (
 	// errSSOAuthStateTooManyForCaller rejects issuance when one caller address
 	// already holds maxSSOAuthStatesPerCaller live states.
 	errSSOAuthStateTooManyForCaller = errors.New("too many in-flight SSO flows for this caller")
+	// errSSOAuthStateIssuanceRateLimited rejects issuance when one caller
+	// address mints states faster than maxSSOAuthStateIssuancesPerWindow per
+	// ssoAuthStateIssuanceWindow. Unlike the live-state cap, this throttle
+	// keeps binding after states are redeemed.
+	errSSOAuthStateIssuanceRateLimited = errors.New("sso state issuance rate limit exceeded for this caller")
 	// errSSOAuthStateRedirectURITooLong rejects callbacks beyond
 	// maxSSOAuthStateRedirectURILength bytes.
 	errSSOAuthStateRedirectURITooLong = errors.New("redirect_uri exceeds the maximum supported length")
@@ -86,10 +102,18 @@ type ssoAuthorizationStateStore struct {
 	ttl          time.Duration
 	maxEntries   int
 	maxPerCaller int
+	issueWindow  time.Duration
+	maxPerWindow int
 	mu           sync.Mutex
 	states       map[string]*list.Element
 	queue        *list.List // of *ssoStateQueueEntry, oldest first
 	callerCounts map[string]int
+	// callerIssued records recent issuance times per caller for the
+	// nil-limiter throttle. Entries are pruned on every mutation and dropped
+	// once a caller holds no live states and no issuances inside the window.
+	callerIssued map[string][]time.Time
+	// clock is replaceable in tests.
+	clock func() time.Time
 }
 
 func newSSOAuthStateStore(ttl time.Duration) *ssoAuthorizationStateStore {
@@ -101,9 +125,13 @@ func newSSOAuthStateStoreWithLimits(ttl time.Duration, maxEntries, maxPerCaller 
 		ttl:          ttl,
 		maxEntries:   maxEntries,
 		maxPerCaller: maxPerCaller,
+		issueWindow:  ssoAuthStateIssuanceWindow,
+		maxPerWindow: maxSSOAuthStateIssuancesPerWindow,
 		states:       map[string]*list.Element{},
 		queue:        list.New(),
 		callerCounts: map[string]int{},
+		callerIssued: map[string][]time.Time{},
+		clock:        time.Now,
 	}
 }
 
@@ -116,17 +144,30 @@ func (s *ssoAuthorizationStateStore) issue(identityProviderUID, redirectURI stri
 		return "", time.Time{}, errors.Wrap(err, "failed to generate state token")
 	}
 	state := hex.EncodeToString(token[:])
-	expiresAt := time.Now().Add(s.ttl)
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.reapExpiredLocked(time.Now())
+	// The clock read must happen under the mutex. Reading it before acquiring
+	// the lock lets concurrent issuers insert out of expiry order, and the
+	// reaper stops at the first live entry, so a skewed insert could strand an
+	// expired entry behind a live one and surface false store-full rejections.
+	now := s.clock()
+	s.reapExpiredLocked(now)
 	if len(s.states) >= s.maxEntries {
 		return "", time.Time{}, errSSOAuthStateStoreFull
 	}
-	if callerKey != "" && s.callerCounts[callerKey] >= s.maxPerCaller {
-		return "", time.Time{}, errSSOAuthStateTooManyForCaller
+	if callerKey != "" {
+		if s.callerCounts[callerKey] >= s.maxPerCaller {
+			return "", time.Time{}, errSSOAuthStateTooManyForCaller
+		}
+		issued := s.pruneIssuanceLocked(s.callerIssued[callerKey], now)
+		if len(issued) >= s.maxPerWindow {
+			s.callerIssued[callerKey] = issued
+			return "", time.Time{}, errSSOAuthStateIssuanceRateLimited
+		}
+		s.callerIssued[callerKey] = append(issued, now)
 	}
+	expiresAt := now.Add(s.ttl)
 	entry := ssoAuthorizationState{
 		identityProviderUID: identityProviderUID,
 		redirectURI:         redirectURI,
@@ -142,6 +183,18 @@ func (s *ssoAuthorizationStateStore) issue(identityProviderUID, redirectURI stri
 	return state, expiresAt, nil
 }
 
+// pruneIssuanceLocked drops issuance timestamps outside the throttle window.
+func (s *ssoAuthorizationStateStore) pruneIssuanceLocked(issued []time.Time, now time.Time) []time.Time {
+	cutoff := now.Add(-s.issueWindow)
+	kept := issued[:0]
+	for _, at := range issued {
+		if at.After(cutoff) {
+			kept = append(kept, at)
+		}
+	}
+	return kept
+}
+
 // reapExpiredLocked drops expired entries from the head of the queue. Every
 // entry lives for exactly ttl from issuance, so the queue is ordered by
 // expiry and the sweep ends at the first live entry.
@@ -152,17 +205,26 @@ func (s *ssoAuthorizationStateStore) reapExpiredLocked(now time.Time) {
 		if now.Before(queued.state.expiresAt) {
 			break
 		}
-		s.removeLocked(elem)
+		s.removeLocked(elem, now)
 		elem = next
 	}
 }
 
-func (s *ssoAuthorizationStateStore) removeLocked(elem *list.Element) {
+func (s *ssoAuthorizationStateStore) removeLocked(elem *list.Element, now time.Time) {
 	queued := elem.Value.(*ssoStateQueueEntry)
 	delete(s.states, queued.token)
 	if key := queued.state.callerKey; key != "" {
 		if count := s.callerCounts[key]; count <= 1 {
 			delete(s.callerCounts, key)
+			// Once a caller holds no live states, its throttle history is only
+			// worth keeping while it can still throttle a fresh issuance.
+			// Dropping fully-expired history keeps the maps bounded by
+			// recently-active callers without a background sweeper.
+			if pruned := s.pruneIssuanceLocked(s.callerIssued[key], now); len(pruned) == 0 {
+				delete(s.callerIssued, key)
+			} else {
+				s.callerIssued[key] = pruned
+			}
 		} else {
 			s.callerCounts[key] = count - 1
 		}
@@ -175,13 +237,14 @@ func (s *ssoAuthorizationStateStore) removeLocked(elem *list.Element) {
 func (s *ssoAuthorizationStateStore) redeem(state, identityProviderUID string) (ssoAuthorizationState, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	now := s.clock()
 	elem, ok := s.states[state]
 	if !ok {
 		return ssoAuthorizationState{}, errors.New("unknown state token")
 	}
 	entry := elem.Value.(*ssoStateQueueEntry).state
-	s.removeLocked(elem)
-	if time.Now().After(entry.expiresAt) {
+	s.removeLocked(elem, now)
+	if now.After(entry.expiresAt) {
 		return ssoAuthorizationState{}, errors.New("state token expired")
 	}
 	if entry.identityProviderUID != identityProviderUID {
@@ -246,8 +309,8 @@ func (s *APIService) CreateSSOAuthorizationState(ctx context.Context, request *a
 	}
 
 	// The authorizer's per-address throttle only runs when a rate limiter is
-	// configured. With a nil limiter the store enforces its own per-caller cap
-	// instead, keyed by client address.
+	// configured. With a nil limiter the store enforces its own per-caller
+	// live-state cap and issuance throttle instead, keyed by client address.
 	callerKey := ""
 	if s.RateLimiter == nil {
 		callerKey = clientip.FromContext(ctx)
@@ -258,7 +321,7 @@ func (s *APIService) CreateSSOAuthorizationState(ctx context.Context, request *a
 		switch err {
 		case errSSOAuthStateRedirectURITooLong:
 			return nil, status.Errorf(codes.InvalidArgument, "%v", err)
-		case errSSOAuthStateStoreFull, errSSOAuthStateTooManyForCaller:
+		case errSSOAuthStateStoreFull, errSSOAuthStateTooManyForCaller, errSSOAuthStateIssuanceRateLimited:
 			return nil, status.Errorf(codes.ResourceExhausted, "%v", err)
 		default:
 			return nil, status.Errorf(codes.Internal, "failed to mint SSO state: %v", err)

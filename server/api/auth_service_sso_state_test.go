@@ -2,6 +2,7 @@ package api
 
 import (
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -128,6 +129,113 @@ func TestSSOAuthStateStoreExpiryReclaimsCallerCapacity(t *testing.T) {
 
 	_, err = states.redeem(stale, "idp-a")
 	require.Error(t, err, "the reaped state is gone")
+}
+
+func TestSSOAuthStateStoreThrottlesIssuanceRatePerCaller(t *testing.T) {
+	t.Parallel()
+
+	states := newSSOAuthStateStoreWithLimits(time.Minute, 100, 100)
+	states.maxPerWindow = 3
+
+	issued := make([]string, 0, states.maxPerWindow)
+	for range states.maxPerWindow {
+		state, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+		require.NoError(t, err)
+		issued = append(issued, state)
+	}
+	_, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.ErrorIs(t, err, errSSOAuthStateIssuanceRateLimited)
+
+	// Redeeming frees the live-state cap but must not reset the throttle:
+	// a caller that burns through the verifier check and re-issues stays bound.
+	for _, state := range issued {
+		_, err := states.redeem(state, "idp-a")
+		require.NoError(t, err)
+	}
+	require.Zero(t, states.callerCounts["caller-a"])
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.ErrorIs(t, err, errSSOAuthStateIssuanceRateLimited)
+
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-b")
+	require.NoError(t, err, "one caller's throttle must not affect another caller")
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "")
+	require.NoError(t, err, "unkeyed issuance (limiter configured) ignores the throttle")
+}
+
+func TestSSOAuthStateStoreIssuanceThrottleWindowSlides(t *testing.T) {
+	t.Parallel()
+
+	now := time.Now()
+	states := newSSOAuthStateStoreWithLimits(time.Minute, 100, 100)
+	states.maxPerWindow = 1
+	states.clock = func() time.Time { return now }
+
+	_, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.NoError(t, err)
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.ErrorIs(t, err, errSSOAuthStateIssuanceRateLimited)
+
+	now = now.Add(states.issueWindow + time.Second)
+	_, _, err = states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.NoError(t, err, "issuances older than the window must stop throttling")
+}
+
+func TestSSOAuthStateStoreDropsStaleCallerHistory(t *testing.T) {
+	t.Parallel()
+
+	now := time.Now()
+	states := newSSOAuthStateStoreWithLimits(10*time.Minute, 100, 100)
+	states.clock = func() time.Time { return now }
+
+	state, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, "caller-a")
+	require.NoError(t, err)
+
+	now = now.Add(states.issueWindow + time.Second)
+	_, err = states.redeem(state, "idp-a")
+	require.NoError(t, err)
+	require.NotContains(t, states.callerIssued, "caller-a",
+		"once a caller holds no live states and no in-window issuances, its throttle history must be dropped")
+}
+
+func TestSSOAuthStateStoreKeepsExpiryOrderUnderConcurrentIssue(t *testing.T) {
+	t.Parallel()
+
+	// Regression test: the expiry timestamp must come from a clock read taken
+	// under the store mutex. Reading it before the lock let concurrent issuers
+	// insert out of expiry order, and since the reaper stops at the first live
+	// entry, a skewed insert could strand an expired entry behind a live one
+	// and surface false store-full rejections.
+	states := newSSOAuthStateStoreWithLimits(time.Minute, 256, 256)
+
+	const issuers = 16
+	const perIssuer = 8
+	var wg sync.WaitGroup
+	errs := make(chan error, issuers*perIssuer)
+	for range issuers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range perIssuer {
+				if _, _, err := states.issue("idp-a", "http://localhost:8080/auth/callback", false, ""); err != nil {
+					errs <- err
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		require.NoError(t, err)
+	}
+
+	require.Equal(t, issuers*perIssuer, len(states.states))
+	previous := time.Time{}
+	for elem := states.queue.Front(); elem != nil; elem = elem.Next() {
+		queued := elem.Value.(*ssoStateQueueEntry)
+		require.False(t, queued.state.expiresAt.Before(previous),
+			"queue must stay in expiry order so reaping never strands an expired entry behind a live one")
+		previous = queued.state.expiresAt
+	}
 }
 
 func TestValidateSSORedirectURI(t *testing.T) {
