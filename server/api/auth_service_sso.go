@@ -185,7 +185,7 @@ func (s *APIService) createSSOUser(
 	return nil, errors.Errorf("exhausted %d UUID username attempts", ssoUsernameFallbackAttempts)
 }
 
-func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, redirectURI, codeVerifier string) (*storepb.IdentityProvider, *idp.IdentityProviderUserInfo, error) {
+func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, state, codeVerifier string) (*storepb.IdentityProvider, *idp.IdentityProviderUserInfo, error) {
 	idpUID, err := ExtractIdentityProviderUIDFromName(idpName)
 	if err != nil {
 		return nil, nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
@@ -200,6 +200,17 @@ func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, redi
 		return nil, nil, status.Errorf(codes.InvalidArgument, "identity provider not found")
 	}
 
+	// Redeem the flow state before talking to the provider. The exchange names
+	// the redirect URI recorded when the flow started, never a value from the
+	// redemption request, and a state token authorizes exactly one exchange.
+	flow, err := s.ssoAuthStates().redeem(state, idpUID)
+	if err != nil {
+		return nil, nil, status.Errorf(codes.InvalidArgument, "invalid or expired SSO state: %v", err)
+	}
+	if flow.pkceRequired && codeVerifier == "" {
+		return nil, nil, status.Errorf(codes.InvalidArgument, "SSO flow used PKCE; code_verifier is required")
+	}
+
 	var userInfo *idp.IdentityProviderUserInfo
 	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
 		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
@@ -207,7 +218,7 @@ func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, redi
 			return nil, nil, status.Errorf(codes.Internal, "failed to create oauth2 identity provider, error: %v", err)
 		}
 		// Pass code_verifier for PKCE support (empty string if not provided for backward compatibility)
-		token, err := oauth2IdentityProvider.ExchangeToken(ctx, redirectURI, code, codeVerifier)
+		token, err := oauth2IdentityProvider.ExchangeToken(ctx, flow.redirectURI, code, codeVerifier)
 		if err != nil {
 			return nil, nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
 		}

@@ -1,8 +1,9 @@
+import { authServiceClient } from "@/connect";
 import { absolutifyLink } from "@/lib/browser";
 import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
 import { getSafeRedirectPath } from "@/utils/auth-redirect";
-import { storeOAuthState } from "@/utils/oauth";
+import { generatePKCEPair, storeOAuthState } from "@/utils/oauth";
 
 export function getSSOConfig(identityProvider: IdentityProvider) {
   if (identityProvider.type !== IdentityProvider_Type.OAUTH2 || identityProvider.config?.config.case !== "oauth2Config") {
@@ -22,9 +23,18 @@ export async function prepareSSOSignIn(identityProvider: IdentityProvider, redir
   if (authUrl.protocol !== "https:" && authUrl.protocol !== "http:") {
     throw new Error("Identity provider configuration is invalid.");
   }
-  const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "signin", getSafeRedirectPath(redirectTarget));
+  const redirectUri = absolutifyLink(ROUTES.AUTH_CALLBACK);
+  const { codeVerifier, codeChallenge } = await generatePKCEPair();
+  // The server mints and records the state; the callback must present the same
+  // token to redeem the authorization code.
+  const { state } = await authServiceClient.createSSOAuthorizationState({
+    identityProvider: identityProvider.name,
+    redirectUri,
+    pkceRequired: !!codeChallenge,
+  });
+  storeOAuthState(state, identityProvider.name, "signin", getSafeRedirectPath(redirectTarget), undefined, codeVerifier);
   authUrl.searchParams.set("client_id", config.clientId);
-  authUrl.searchParams.set("redirect_uri", absolutifyLink(ROUTES.AUTH_CALLBACK));
+  authUrl.searchParams.set("redirect_uri", redirectUri);
   authUrl.searchParams.set("state", state);
   authUrl.searchParams.set("response_type", "code");
   authUrl.searchParams.set("scope", config.scopes.join(" "));

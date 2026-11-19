@@ -2,7 +2,7 @@ import { Badge, Button, List } from "@usememos/ui";
 import { useEffect, useMemo, useState } from "react";
 import InfoChip from "@/components/Settings/InfoChip";
 import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/components/Settings/sso-display";
-import { identityProviderServiceClient, userServiceClient } from "@/connect";
+import { authServiceClient, identityProviderServiceClient, userServiceClient } from "@/connect";
 import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { absolutifyLink } from "@/lib/browser";
@@ -11,7 +11,7 @@ import { showErrorToast, toast } from "@/lib/toast";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
 import { LinkedIdentity } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { storeOAuthState } from "@/utils/oauth";
+import { generatePKCEPair, storeOAuthState } from "@/utils/oauth";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import { SettingList } from "./SettingList";
@@ -103,7 +103,13 @@ const LinkedIdentitySection = () => {
 
     try {
       const returnUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "link", returnUrl, currentUser.name);
+      const { codeVerifier, codeChallenge } = await generatePKCEPair();
+      const { state } = await authServiceClient.createSSOAuthorizationState({
+        identityProvider: identityProvider.name,
+        redirectUri,
+        pkceRequired: !!codeChallenge,
+      });
+      storeOAuthState(state, identityProvider.name, "link", returnUrl, currentUser.name, codeVerifier);
 
       let authUrl = `${oauth2Config.authUrl}?client_id=${
         oauth2Config.clientId

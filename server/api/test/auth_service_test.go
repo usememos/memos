@@ -45,7 +45,8 @@ func TestCreateLinkedIdentityBindsCurrentUser(t *testing.T) {
 		Parent:           api.BuildUserName(currentUser.Username),
 		IdentityProvider: idpName,
 		Code:             "bind-code",
-		RedirectUri:      "http://localhost:8080/auth/callback",
+		RedirectUri:      testingSSOCallbackURI,
+		State:            issueTestingSSOState(ctx, t, ts, idpName, false),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, response)
@@ -100,7 +101,8 @@ func TestCreateLinkedIdentityRejectsBindingIdentityLinkedToAnotherUser(t *testin
 		Parent:           api.BuildUserName(binder.Username),
 		IdentityProvider: idpName,
 		Code:             "conflict-code",
-		RedirectUri:      "http://localhost:8080/auth/callback",
+		RedirectUri:      testingSSOCallbackURI,
+		State:            issueTestingSSOState(ctx, t, ts, idpName, false),
 	})
 	require.Error(t, err)
 	require.Equal(t, codes.AlreadyExists, status.Code(err))
@@ -202,7 +204,8 @@ func TestCreateLinkedIdentityRejectsSecondIdentityForSameProvider(t *testing.T) 
 		Parent:           api.BuildUserName(currentUser.Username),
 		IdentityProvider: idpName,
 		Code:             "second-code",
-		RedirectUri:      "http://localhost:8080/auth/callback",
+		RedirectUri:      testingSSOCallbackURI,
+		State:            issueTestingSSOState(ctx, t, ts, idpName, false),
 	})
 	require.Error(t, err)
 	require.Equal(t, codes.AlreadyExists, status.Code(err))

@@ -12,6 +12,8 @@ var PublicMethods = map[string]struct{}{
 	// Auth Service - login/token endpoints must be accessible without auth
 	"/memos.api.AuthService/SignIn":       {},
 	"/memos.api.AuthService/RefreshToken": {}, // Token refresh uses cookie, must be accessible when access token expired
+	// SSO flow initiation must be reachable before the caller has a session.
+	"/memos.api.AuthService/CreateSSOAuthorizationState": {},
 
 	// Instance Service - needed before login to show instance info
 	"/memos.api.InstanceService/GetInstanceProfile":       {},
@@ -62,6 +64,8 @@ var AuthBootstrapMethods = map[string]struct{}{
 	// Auth Service - sign-in and token refresh.
 	"/memos.api.AuthService/SignIn":       {},
 	"/memos.api.AuthService/RefreshToken": {},
+	// SSO sign-in on a private instance starts here.
+	"/memos.api.AuthService/CreateSSOAuthorizationState": {},
 
 	// Instance Service - needed to render the sign-in page (branding, auth options).
 	"/memos.api.InstanceService/GetInstanceProfile":       {},

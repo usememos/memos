@@ -53,7 +53,7 @@ func (s *APIService) CreateLinkedIdentity(ctx context.Context, request *apipb.Cr
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, request.IdentityProvider, request.Code, request.RedirectUri, request.CodeVerifier)
+	identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, request.IdentityProvider, request.Code, request.State, request.CodeVerifier)
 	if err != nil {
 		return nil, err
 	}

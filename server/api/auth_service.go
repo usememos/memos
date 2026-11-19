@@ -97,7 +97,7 @@ func (s *APIService) SignIn(ctx context.Context, request *apipb.SignInRequest) (
 		existingUser = user
 	} else if ssoCredentials := request.GetSsoCredentials(); ssoCredentials != nil {
 		// Authentication Method 2: SSO (OAuth2) authentication
-		identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, ssoCredentials.IdentityProvider, ssoCredentials.Code, ssoCredentials.RedirectUri, ssoCredentials.CodeVerifier)
+		identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, ssoCredentials.IdentityProvider, ssoCredentials.Code, ssoCredentials.State, ssoCredentials.CodeVerifier)
 		if err != nil {
 			// A rejected exchange is a credential failure and stays counted.
 			return nil, err

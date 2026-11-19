@@ -356,6 +356,38 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/auth/sso/state:
+        post:
+            tags:
+                - AuthService
+            description: |-
+                CreateSSOAuthorizationState starts an OAuth2 authorization-code flow with an
+                 identity provider. It returns a single-use, short-lived state token that
+                 SignIn or UserService.CreateLinkedIdentity must present to redeem an
+                 authorization code. The redirect URI given here is recorded with the state
+                 and used for the token exchange; any redirect URI sent at redemption is
+                 ignored.
+                 Public. Cheap to mint; tokens expire on their own and are consumed on use.
+            operationId: AuthService_CreateSSOAuthorizationState
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateSSOAuthorizationStateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateSSOAuthorizationStateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/identity-providers:
         get:
             tags:
@@ -3553,6 +3585,7 @@ components:
                 - identityProvider
                 - code
                 - redirectUri
+                - state
             type: object
             properties:
                 parent:
@@ -3574,6 +3607,9 @@ components:
                 codeVerifier:
                     type: string
                     description: Optional. The PKCE code verifier used in the OAuth flow.
+                state:
+                    type: string
+                    description: Required. The single-use state token from AuthService.CreateSSOAuthorizationState.
             description: Request message for UserService.CreateLinkedIdentity.
         CreatePersonalAccessTokenRequest:
             required:
@@ -3606,6 +3642,40 @@ components:
                     type: string
                     description: The token value. This is the only time it is returned.
             description: Response message for UserService.CreatePersonalAccessToken.
+        CreateSSOAuthorizationStateRequest:
+            required:
+                - identityProvider
+                - redirectUri
+            type: object
+            properties:
+                identityProvider:
+                    type: string
+                    description: |-
+                        Required. The resource name of the identity provider.
+                         Format: identity-providers/{idp}
+                redirectUri:
+                    type: string
+                    description: |-
+                        Required. The absolute callback URI of this instance used in the
+                         authorization request. Recorded with the state and sent to the identity
+                         provider at token exchange.
+                pkceRequired:
+                    type: boolean
+                    description: |-
+                        Optional. Set when the authorization request carries a PKCE code
+                         challenge. Redeeming the returned state then requires a code verifier.
+            description: Request message for AuthService.CreateSSOAuthorizationState.
+        CreateSSOAuthorizationStateResponse:
+            type: object
+            properties:
+                state:
+                    type: string
+                    description: The state token to send as the OAuth2 state parameter.
+                expireTime:
+                    type: string
+                    description: The time the state token stops being redeemable.
+                    format: date-time
+            description: Response message for AuthService.CreateSSOAuthorizationState.
         DeclineSpaceInvitationRequest:
             required:
                 - name
@@ -5051,6 +5121,7 @@ components:
                 - identityProvider
                 - code
                 - redirectUri
+                - state
             type: object
             properties:
                 identityProvider:
@@ -5067,6 +5138,9 @@ components:
                 codeVerifier:
                     type: string
                     description: Optional. The PKCE code verifier (RFC 7636). Set it when the authorization request used a code challenge.
+                state:
+                    type: string
+                    description: Required. The single-use state token from CreateSSOAuthorizationState.
             description: |-
                 SsoCredentials are the result of an OAuth2 authorization code flow with an identity provider.
                  A first sign-in creates a local user unless the instance disallows user registration.

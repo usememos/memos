@@ -5,6 +5,9 @@ import { validateOAuthState } from "@/utils/oauth";
 import { prepareSSOSignIn } from "@/utils/sso";
 
 vi.mock("@/auth-state", () => ({ clearAccessToken: vi.fn() }));
+
+const mocks = vi.hoisted(() => ({ createSSOAuthorizationState: vi.fn() }));
+vi.mock("@/connect", () => ({ authServiceClient: { createSSOAuthorizationState: mocks.createSSOAuthorizationState } }));
 const provider = create(IdentityProviderSchema, {
   name: "identityProviders/company",
   type: IdentityProvider_Type.OAUTH2,
@@ -17,8 +20,12 @@ const provider = create(IdentityProviderSchema, {
 });
 
 describe("SSO initiation", () => {
-  beforeEach(() => sessionStorage.clear());
-  it("preserves URL parameters and destination with state and PKCE", async () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    mocks.createSSOAuthorizationState.mockReset();
+    mocks.createSSOAuthorizationState.mockImplementation(async () => ({ state: "server-minted-state" }));
+  });
+  it("preserves URL parameters and destination with the server-minted state and PKCE", async () => {
     const url = new URL(await prepareSSOSignIn(provider, "/memos/example?view=full#comment"));
     expect(url.origin).toBe("https://sso.example.com");
     expect(url.searchParams.get("tenant")).toBe("team");
@@ -27,6 +34,12 @@ describe("SSO initiation", () => {
     expect(url.searchParams.get("scope")).toBe("openid profile");
     expect(url.searchParams.get("response_type")).toBe("code");
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
+    expect(mocks.createSSOAuthorizationState).toHaveBeenCalledWith({
+      identityProvider: provider.name,
+      redirectUri: `${window.location.origin}/auth/callback`,
+      pkceRequired: true,
+    });
+    expect(url.searchParams.get("state")).toBe("server-minted-state");
     const state = validateOAuthState(url.searchParams.get("state")!);
     expect(state).toMatchObject({
       identityProviderName: provider.name,
@@ -45,10 +58,11 @@ describe("SSO initiation", () => {
     const url = new URL(await prepareSSOSignIn(provider, "https://other.example.com"));
     expect(validateOAuthState(url.searchParams.get("state")!)?.returnUrl).toBeUndefined();
   });
-  it("rejects incomplete configuration before creating OAuth state", async () => {
+  it("rejects incomplete configuration before minting OAuth state", async () => {
     await expect(prepareSSOSignIn(create(IdentityProviderSchema, { type: IdentityProvider_Type.OAUTH2 }))).rejects.toThrow(
       "Identity provider configuration is invalid.",
     );
+    expect(mocks.createSSOAuthorizationState).not.toHaveBeenCalled();
     expect(sessionStorage.getItem("oauth_state")).toBeNull();
   });
 });

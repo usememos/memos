@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"sync"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -94,6 +95,11 @@ type APIService struct {
 	attachmentUploads   attachmentUploads
 	attachmentReplaces  attachmentReplaceLocks
 	memoImports         memoImports
+
+	// ssoStates holds in-flight OAuth2 state tokens; created lazily so
+	// struct-literal constructions (tests) keep working.
+	ssoStateOnce sync.Once
+	ssoStates    *ssoAuthorizationStateStore
 }
 
 // NewAPIService creates an API v1 service with its shared dependencies.

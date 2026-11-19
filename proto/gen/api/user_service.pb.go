@@ -3208,7 +3208,9 @@ type CreateLinkedIdentityRequest struct {
 	// Required. The redirect URI used in the OAuth flow.
 	RedirectUri string `protobuf:"bytes,4,opt,name=redirect_uri,json=redirectUri,proto3" json:"redirect_uri,omitempty"`
 	// Optional. The PKCE code verifier used in the OAuth flow.
-	CodeVerifier  string `protobuf:"bytes,5,opt,name=code_verifier,json=codeVerifier,proto3" json:"code_verifier,omitempty"`
+	CodeVerifier string `protobuf:"bytes,5,opt,name=code_verifier,json=codeVerifier,proto3" json:"code_verifier,omitempty"`
+	// Required. The single-use state token from AuthService.CreateSSOAuthorizationState.
+	State         string `protobuf:"bytes,6,opt,name=state,proto3" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3274,6 +3276,13 @@ func (x *CreateLinkedIdentityRequest) GetRedirectUri() string {
 func (x *CreateLinkedIdentityRequest) GetCodeVerifier() string {
 	if x != nil {
 		return x.CodeVerifier
+	}
+	return ""
+}
+
+func (x *CreateLinkedIdentityRequest) GetState() string {
+	if x != nil {
+		return x.State
 	}
 	return ""
 }
@@ -5308,7 +5317,7 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x11linked_identities\x18\x01 \x03(\v2\x19.memos.api.LinkedIdentityR\x10linkedIdentities\"P\n" +
 	"\x18GetLinkedIdentityRequest\x124\n" +
 	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18memos.api/LinkedIdentityR\x04name\"\x89\x02\n" +
+	"\x18memos.api/LinkedIdentityR\x04name\"\xa4\x02\n" +
 	"\x1bCreateLinkedIdentityRequest\x12.\n" +
 	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
 	"\x0ememos.api/UserR\x06parent\x12O\n" +
@@ -5316,7 +5325,8 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x1amemos.api/IdentityProviderR\x10identityProvider\x12\x17\n" +
 	"\x04code\x18\x03 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x04 \x01(\tB\x03\xe0A\x02R\vredirectUri\x12(\n" +
-	"\rcode_verifier\x18\x05 \x01(\tB\x03\xe0A\x01R\fcodeVerifier\"S\n" +
+	"\rcode_verifier\x18\x05 \x01(\tB\x03\xe0A\x01R\fcodeVerifier\x12\x19\n" +
+	"\x05state\x18\x06 \x01(\tB\x03\xe0A\x02R\x05state\"S\n" +
 	"\x1bDeleteLinkedIdentityRequest\x124\n" +
 	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
 	"\x18memos.api/LinkedIdentityR\x04name\"\xaa\x03\n" +
