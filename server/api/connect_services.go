@@ -370,6 +370,15 @@ func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect
 	return connect.NewResponse(resp), nil
 }
 
+// ReorderMemoViews sets the order of the saved memo views owned by a user.
+func (s *ConnectServiceHandler) ReorderMemoViews(ctx context.Context, req *connect.Request[apipb.ReorderMemoViewsRequest]) (*connect.Response[apipb.ReorderMemoViewsResponse], error) {
+	resp, err := s.APIService.ReorderMemoViews(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // MemoService
 
 func (s *ConnectServiceHandler) CreateMemo(ctx context.Context, req *connect.Request[apipb.CreateMemoRequest]) (*connect.Response[apipb.Memo], error) {

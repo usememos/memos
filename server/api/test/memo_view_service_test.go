@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -673,6 +675,83 @@ func TestDeleteMemoView(t *testing.T) {
 		_, err = ts.Service.DeleteMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
+	})
+}
+
+func TestReorderMemoViews(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "testuser")
+	require.NoError(t, err)
+	peer, err := ts.CreateRegularUser(ctx, "peer")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	parent := fmt.Sprintf("users/%s", user.Username)
+
+	names := make([]string, 0, 3)
+	for _, title := range []string{"first", "second", "third"} {
+		created, err := ts.Service.CreateMemoView(userCtx, &apipb.CreateMemoViewRequest{
+			Parent:   parent,
+			MemoView: &apipb.MemoView{Title: title, Filter: `tag in ["work"]`},
+		})
+		require.NoError(t, err)
+		names = append(names, created.Name)
+	}
+	listedNames := func() []string {
+		resp, err := ts.Service.ListMemoViews(userCtx, &apipb.ListMemoViewsRequest{Parent: parent})
+		require.NoError(t, err)
+		listed := make([]string, 0, len(resp.MemoViews))
+		for _, memoView := range resp.MemoViews {
+			listed = append(listed, memoView.Name)
+		}
+		return listed
+	}
+
+	t.Run("stores the requested order", func(t *testing.T) {
+		reordered := []string{names[2], names[0], names[1]}
+		resp, err := ts.Service.ReorderMemoViews(userCtx, &apipb.ReorderMemoViewsRequest{Parent: parent, Names: reordered})
+		require.NoError(t, err)
+		require.Len(t, resp.MemoViews, 3)
+		require.Equal(t, "third", resp.MemoViews[0].Title)
+		require.Equal(t, `tag in ["work"]`, resp.MemoViews[0].Filter)
+		require.Equal(t, reordered, listedNames())
+	})
+
+	t.Run("rejects a list that is not exactly the user's views", func(t *testing.T) {
+		before := listedNames()
+		for name, request := range map[string][]string{
+			"missing a view":  {names[0], names[1]},
+			"repeated view":   {names[0], names[0], names[1]},
+			"unknown view":    {names[0], names[1], parent + "/views/unknown"},
+			"extra view":      {names[0], names[1], names[2], parent + "/views/unknown"},
+			"no views at all": {},
+		} {
+			_, err := ts.Service.ReorderMemoViews(userCtx, &apipb.ReorderMemoViewsRequest{Parent: parent, Names: request})
+			require.Equal(t, codes.FailedPrecondition, status.Code(err), name)
+		}
+		require.Equal(t, before, listedNames())
+	})
+
+	t.Run("rejects names outside the parent", func(t *testing.T) {
+		for _, name := range []string{
+			fmt.Sprintf("users/%s/views/any", peer.Username),
+			parent + "/views/",
+			parent + "/views/a/b",
+			"views/any",
+		} {
+			_, err := ts.Service.ReorderMemoViews(userCtx, &apipb.ReorderMemoViewsRequest{Parent: parent, Names: []string{name, names[0], names[1]}})
+			require.Equal(t, codes.InvalidArgument, status.Code(err), name)
+		}
+	})
+
+	t.Run("permission denied for a different user", func(t *testing.T) {
+		peerCtx := ts.CreateUserContext(ctx, peer.ID)
+		before := listedNames()
+		_, err := ts.Service.ReorderMemoViews(peerCtx, &apipb.ReorderMemoViewsRequest{Parent: parent, Names: []string{names[0], names[1], names[2]}})
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		require.Equal(t, before, listedNames())
 	})
 }
 

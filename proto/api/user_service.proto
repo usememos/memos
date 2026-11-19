@@ -151,6 +151,16 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
+  // ReorderMemoViews sets the order of a user's memo views, which is the order
+  // ListMemoViews returns them in. Only the user may call it.
+  rpc ReorderMemoViews(ReorderMemoViewsRequest) returns (ReorderMemoViewsResponse) {
+    option (google.api.http) = {
+      post: "/api/{parent=users/*}/views:reorder"
+      body: "*"
+    };
+    option (google.api.method_signature) = "parent,names";
+  }
+
   // ListUserNotifications lists a user's notifications. Only the user may call
   // it. Notifications whose memos or space invitation the user can no longer
   // read are left out.
@@ -840,6 +850,31 @@ message DeleteMemoViewRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api/MemoView"}
   ];
+}
+
+// Request message for UserService.ReorderMemoViews.
+message ReorderMemoViewsRequest {
+  // Required. The user whose memo views are reordered.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api/MemoView"}
+  ];
+
+  // Required. The resource names of all the user's memo views, in the new
+  // order. The service rejects a list that omits a memo view, repeats one, or
+  // names one the user does not have.
+  // Format: users/{user}/views/{view}
+  repeated string names = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/MemoView"}
+  ];
+}
+
+// Response message for UserService.ReorderMemoViews.
+message ReorderMemoViewsResponse {
+  // The memo views in their new order.
+  repeated MemoView memo_views = 1;
 }
 
 // UserNotification is a notification delivered to a user.

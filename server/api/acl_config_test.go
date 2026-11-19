@@ -95,6 +95,7 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.UserService/ListMemoViews",
 		"/memos.api.UserService/UpdateMemoView",
 		"/memos.api.UserService/DeleteMemoView",
+		"/memos.api.UserService/ReorderMemoViews",
 	}
 
 	for _, method := range protectedMethods {

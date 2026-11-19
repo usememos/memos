@@ -37,6 +37,7 @@ const (
 	UserService_CreateMemoView_FullMethodName              = "/memos.api.UserService/CreateMemoView"
 	UserService_UpdateMemoView_FullMethodName              = "/memos.api.UserService/UpdateMemoView"
 	UserService_DeleteMemoView_FullMethodName              = "/memos.api.UserService/DeleteMemoView"
+	UserService_ReorderMemoViews_FullMethodName            = "/memos.api.UserService/ReorderMemoViews"
 	UserService_ListUserNotifications_FullMethodName       = "/memos.api.UserService/ListUserNotifications"
 	UserService_UpdateUserNotification_FullMethodName      = "/memos.api.UserService/UpdateUserNotification"
 	UserService_DeleteUserNotification_FullMethodName      = "/memos.api.UserService/DeleteUserNotification"
@@ -111,6 +112,9 @@ type UserServiceClient interface {
 	UpdateMemoView(ctx context.Context, in *UpdateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(ctx context.Context, in *DeleteMemoViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(ctx context.Context, in *ReorderMemoViewsRequest, opts ...grpc.CallOption) (*ReorderMemoViewsResponse, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -346,6 +350,16 @@ func (c *userServiceClient) DeleteMemoView(ctx context.Context, in *DeleteMemoVi
 	return out, nil
 }
 
+func (c *userServiceClient) ReorderMemoViews(ctx context.Context, in *ReorderMemoViewsRequest, opts ...grpc.CallOption) (*ReorderMemoViewsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReorderMemoViewsResponse)
+	err := c.cc.Invoke(ctx, UserService_ReorderMemoViews_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserNotificationsResponse)
@@ -562,6 +576,9 @@ type UserServiceServer interface {
 	UpdateMemoView(context.Context, *UpdateMemoViewRequest) (*MemoView, error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(context.Context, *ReorderMemoViewsRequest) (*ReorderMemoViewsResponse, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -677,6 +694,9 @@ func (UnimplementedUserServiceServer) UpdateMemoView(context.Context, *UpdateMem
 }
 func (UnimplementedUserServiceServer) DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteMemoView not implemented")
+}
+func (UnimplementedUserServiceServer) ReorderMemoViews(context.Context, *ReorderMemoViewsRequest) (*ReorderMemoViewsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReorderMemoViews not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserNotifications not implemented")
@@ -1053,6 +1073,24 @@ func _UserService_DeleteMemoView_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ReorderMemoViews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReorderMemoViewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ReorderMemoViews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ReorderMemoViews_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ReorderMemoViews(ctx, req.(*ReorderMemoViewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_ListUserNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserNotificationsRequest)
 	if err := dec(in); err != nil {
@@ -1415,6 +1453,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteMemoView",
 			Handler:    _UserService_DeleteMemoView_Handler,
+		},
+		{
+			MethodName: "ReorderMemoViews",
+			Handler:    _UserService_ReorderMemoViews_Handler,
 		},
 		{
 			MethodName: "ListUserNotifications",

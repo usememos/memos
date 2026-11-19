@@ -618,6 +618,41 @@ func (s *Store) RemoveUserMemoView(ctx context.Context, userID int32, memoViewID
 	return true, nil
 }
 
+// ReorderUserMemoViews stores the user's memo views in the order of memoViewIDs.
+// It reports false and writes nothing unless memoViewIDs names each of the user's memo views exactly once.
+func (s *Store) ReorderUserMemoViews(ctx context.Context, userID int32, memoViewIDs []string) ([]*storepb.MemoViewsUserSetting_MemoView, bool, error) {
+	s.memoViewMu.Lock()
+	defer s.memoViewMu.Unlock()
+
+	existing, err := s.GetUserMemoViews(ctx, userID)
+	if err != nil {
+		return nil, false, errors.Wrap(err, "get existing memo views")
+	}
+	if len(memoViewIDs) != len(existing) {
+		return nil, false, nil
+	}
+
+	remaining := make(map[string]*storepb.MemoViewsUserSetting_MemoView, len(existing))
+	for _, item := range existing {
+		remaining[item.GetId()] = item
+	}
+	memoViews := make([]*storepb.MemoViewsUserSetting_MemoView, 0, len(existing))
+	for _, id := range memoViewIDs {
+		item, ok := remaining[id]
+		if !ok {
+			return nil, false, nil
+		}
+		// A repeated ID finds nothing the second time.
+		delete(remaining, id)
+		memoViews = append(memoViews, item)
+	}
+
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return nil, false, errors.Wrap(err, "reorder memo views")
+	}
+	return memoViews, true, nil
+}
+
 func (s *Store) upsertUserMemoViews(ctx context.Context, userID int32, memoViews []*storepb.MemoViewsUserSetting_MemoView) error {
 	_, err := s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,

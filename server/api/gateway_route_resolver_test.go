@@ -103,6 +103,7 @@ func TestGatewayRouteResolverResolvesKnownRoutes(t *testing.T) {
 		{http.MethodGet, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/GetMemoView"},
 		{http.MethodPatch, "/api/{memo_view.name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/UpdateMemoView"},
 		{http.MethodDelete, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/DeleteMemoView"},
+		{http.MethodPost, "/api/{parent=users/*}/views:reorder", "/api/users/alice/views:reorder", "/memos.api.UserService/ReorderMemoViews"},
 		{http.MethodGet, "/api/memos", "/api/memos", "/memos.api.MemoService/ListMemos"},
 		{http.MethodGet, "/api/{name=memos/*}", "/api/memos/abc", "/memos.api.MemoService/GetMemo"},
 		{http.MethodPost, "/api/memos", "/api/memos", "/memos.api.MemoService/CreateMemo"},
