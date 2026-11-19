@@ -13,6 +13,7 @@ const InfoChip = ({ label, value, tooltip, className }: Props) => {
   const chip = (
     <Badge tone="outline" className={cn("max-w-full", className)}>
       <span className="text-mu-text-secondary">{label}</span>
+      {" "}
       <span className="max-w-[20rem] truncate text-mu-text">{value}</span>
     </Badge>
   );
