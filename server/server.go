@@ -18,6 +18,7 @@ import (
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/requesthost"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/api"
 	"github.com/usememos/memos/server/fileserver"
@@ -117,7 +118,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		}
 		mux.ServeHTTP(w, routingRequest)
 	})
-	s.handler = httphandler.Recover(clientip.Middleware(clientIPResolver)(newCORSMiddleware(profile, mux)(router)))
+	s.handler = httphandler.Recover(clientip.Middleware(clientIPResolver)(newCORSMiddleware(profile, mux)(requesthost.Middleware(router))))
 
 	mcpService, err := mcp.NewMCPService(profile, s.handler)
 	if err != nil {

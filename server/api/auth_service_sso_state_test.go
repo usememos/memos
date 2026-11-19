@@ -271,6 +271,7 @@ func TestValidateSSORedirectURI(t *testing.T) {
 	tests := []struct {
 		name        string
 		instanceURL string
+		requestHost string
 		uri         string
 		wantErr     bool
 	}{
@@ -305,12 +306,45 @@ func TestValidateSSORedirectURI(t *testing.T) {
 			instanceURL: "://not-a-url",
 			uri:         "https://memos.example.com/auth/callback",
 		},
+		{
+			name:        "callback on the request host allowed without instance URL",
+			requestHost: "memos.example.com",
+			uri:         "https://memos.example.com/auth/callback",
+		},
+		{
+			name:        "request host comparison is case-insensitive",
+			requestHost: "MEMOS.example.com",
+			uri:         "https://memos.example.com/auth/callback",
+		},
+		{
+			name:        "http callback on the request host allowed",
+			requestHost: "memos.example.com",
+			uri:         "http://memos.example.com/auth/callback",
+		},
+		{
+			name:        "foreign host rejected without instance URL",
+			requestHost: "memos.example.com",
+			uri:         "https://attacker.example/callback",
+			wantErr:     true,
+		},
+		{
+			name:        "port mismatch on the request host rejected",
+			requestHost: "memos.example.com:5230",
+			uri:         "https://memos.example.com/auth/callback",
+			wantErr:     true,
+		},
+		{
+			name:        "instance URL takes precedence over the request host",
+			instanceURL: "https://memos.example.com",
+			requestHost: "attacker.example",
+			uri:         "https://memos.example.com/auth/callback",
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			p := &profile.Profile{InstanceURL: tc.instanceURL}
-			err := validateSSORedirectURI(p, tc.uri)
+			err := validateSSORedirectURI(p, tc.requestHost, tc.uri)
 			if tc.wantErr {
 				require.Error(t, err)
 			} else {

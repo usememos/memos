@@ -17,6 +17,7 @@ import (
 
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/requesthost"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -276,25 +277,30 @@ func (s *APIService) ssoAuthStates() *ssoAuthorizationStateStore {
 }
 
 // validateSSORedirectURI vets the callback a flow wants recorded for the
-// token exchange. It must be absolute http(s), and when the instance knows
-// its own URL the callback must sit on that origin: the URI recorded here is
-// what redemption later names to the identity provider, so an anonymous
-// caller must not pin a flow to a callback the instance does not control.
-// The origin comparison mirrors server/cors.go.
-func validateSSORedirectURI(p *profile.Profile, rawURI string) error {
+// token exchange. It must be absolute http(s), and it must sit on an origin
+// the instance trusts: the configured instance URL when one is set, and
+// otherwise the host the request itself was sent to, which is the origin a
+// browser-driven flow always comes from. The URI recorded here is what
+// redemption later names to the identity provider, so an anonymous caller
+// must not pin a flow to a callback the instance does not control. The host
+// comparison mirrors server/cors.go.
+func validateSSORedirectURI(p *profile.Profile, requestHost, rawURI string) error {
 	redirectURI, err := url.Parse(rawURI)
 	if err != nil || !redirectURI.IsAbs() || redirectURI.Host == "" || (redirectURI.Scheme != "https" && redirectURI.Scheme != "http") {
 		return status.Errorf(codes.InvalidArgument, "redirect_uri must be an absolute http(s) URI")
 	}
-	if p == nil || p.InstanceURL == "" {
+	if p != nil && p.InstanceURL != "" {
+		instanceURL, err := url.Parse(p.InstanceURL)
+		if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
+			return nil
+		}
+		if !strings.EqualFold(redirectURI.Scheme, instanceURL.Scheme) || !strings.EqualFold(redirectURI.Host, instanceURL.Host) {
+			return status.Errorf(codes.InvalidArgument, "redirect_uri must match the configured instance URL")
+		}
 		return nil
 	}
-	instanceURL, err := url.Parse(p.InstanceURL)
-	if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
-		return nil
-	}
-	if !strings.EqualFold(redirectURI.Scheme, instanceURL.Scheme) || !strings.EqualFold(redirectURI.Host, instanceURL.Host) {
-		return status.Errorf(codes.InvalidArgument, "redirect_uri must match the configured instance URL")
+	if requestHost != "" && !strings.EqualFold(redirectURI.Host, requestHost) {
+		return status.Errorf(codes.InvalidArgument, "redirect_uri must match the host the request was sent to")
 	}
 	return nil
 }
@@ -317,7 +323,7 @@ func (s *APIService) CreateSSOAuthorizationState(ctx context.Context, request *a
 		return nil, status.Errorf(codes.InvalidArgument, "identity provider is not an OAuth2 provider")
 	}
 
-	if err := validateSSORedirectURI(s.Profile, request.RedirectUri); err != nil {
+	if err := validateSSORedirectURI(s.Profile, requesthost.FromContext(ctx), request.RedirectUri); err != nil {
 		return nil, err
 	}
 
