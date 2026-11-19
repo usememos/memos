@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
 import { buildUserSettingName } from "@/lib/resource-names";
-import { isValidTagPattern } from "@/lib/tag";
+import { countTagRuleUsage, isValidTagPattern } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import {
   UserSetting_Key,
@@ -78,7 +78,7 @@ const TagsSection = () => {
     () =>
       Object.keys(localTags)
         .sort()
-        .map((name) => ({ name, count: Object.hasOwn(tagCounts, name) ? tagCounts[name] : 0 })),
+        .map((name) => ({ name, count: countTagRuleUsage(tagCounts, name) })),
     [localTags, tagCounts],
   );
 
