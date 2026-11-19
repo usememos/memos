@@ -3,6 +3,8 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Field, Input, Menu, Textarea, Tooltip } from "@usememos/ui";
 import {
+  ArrowDownIcon,
+  ArrowUpIcon,
   AstroidIcon,
   CheckCircle2Icon,
   ClipboardCheckIcon,
@@ -321,6 +323,7 @@ const MemoViews = () => {
   const createState = useLoading(false);
   const validateState = useLoading(false);
   const updateState = useLoading(false);
+  const [isReordering, setIsReordering] = useState(false);
   const isEditing = draft.name !== "";
   const isSaving = createState.isLoading || updateState.isLoading;
 
@@ -476,6 +479,29 @@ const MemoViews = () => {
     await handleCreateMemoView();
   };
 
+  const handleMoveMemoView = async (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (!user?.name || isReordering || target < 0 || target >= memoViews.length) return;
+    const queryKey = userKeys.memoViews(user.name);
+    const next = [...memoViews];
+    [next[index], next[target]] = [next[target], next[index]];
+
+    setIsReordering(true);
+    try {
+      // Show the new order at once; the response then replaces it with what was stored.
+      await queryClient.cancelQueries({ queryKey });
+      queryClient.setQueryData(queryKey, next);
+      const response = await userServiceClient.reorderMemoViews({ parent: user.name, names: next.map((memoView) => memoView.name) });
+      queryClient.setQueryData(queryKey, response.memoViews);
+    } catch (error: unknown) {
+      await handleError(error, showErrorToast, { context: "Reorder memo views" });
+      // The list changed elsewhere or the save failed: show the stored order again.
+      await queryClient.invalidateQueries({ queryKey });
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   const confirmDeleteMemoView = async () => {
     if (!deleteTarget) return;
 
@@ -622,7 +648,7 @@ const MemoViews = () => {
                 </div>
               ) : (
                 <div className="divide-y divide-mu-line overflow-hidden rounded-mu-lg border border-mu-line">
-                  {memoViews.map((memoView) => (
+                  {memoViews.map((memoView, index) => (
                     <div
                       key={memoView.name}
                       className="grid gap-3 bg-mu-canvas px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
@@ -656,6 +682,25 @@ const MemoViews = () => {
                           <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
                         </Tooltip.Root>
                         <Menu.Popup align="end">
+                          {memoViews.length > 1 && (
+                            <>
+                              <Menu.Item
+                                disabled={isReordering || index === 0}
+                                onClick={() => void handleMoveMemoView(index, -1)}
+                                icon={<ArrowUpIcon />}
+                              >
+                                {t("common.move-up")}
+                              </Menu.Item>
+                              <Menu.Item
+                                disabled={isReordering || index === memoViews.length - 1}
+                                onClick={() => void handleMoveMemoView(index, 1)}
+                                icon={<ArrowDownIcon />}
+                              >
+                                {t("common.move-down")}
+                              </Menu.Item>
+                              <Menu.Separator />
+                            </>
+                          )}
                           <Menu.Item onClick={() => handleEditMemoView(memoView)} icon={<PencilIcon />}>
                             {t("common.edit")}
                           </Menu.Item>

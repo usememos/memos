@@ -210,10 +210,10 @@ const UsageLimitsSection = () => {
                     {!row.entry.allUsers && (
                       <>
                         <Menu.Item disabled={row.index === 0} onClick={() => move(row.index, -1)} icon={<ArrowUpIcon />}>
-                          {t("setting.usage-limits.move-up")}
+                          {t("common.move-up")}
                         </Menu.Item>
                         <Menu.Item disabled={row.index >= lastMovable} onClick={() => move(row.index, 1)} icon={<ArrowDownIcon />}>
-                          {t("setting.usage-limits.move-down")}
+                          {t("common.move-down")}
                         </Menu.Item>
                         <Menu.Separator />
                       </>

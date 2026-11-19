@@ -79,6 +79,9 @@ const (
 	// UserServiceDeleteMemoViewProcedure is the fully-qualified name of the UserService's
 	// DeleteMemoView RPC.
 	UserServiceDeleteMemoViewProcedure = "/memos.api.UserService/DeleteMemoView"
+	// UserServiceReorderMemoViewsProcedure is the fully-qualified name of the UserService's
+	// ReorderMemoViews RPC.
+	UserServiceReorderMemoViewsProcedure = "/memos.api.UserService/ReorderMemoViews"
 	// UserServiceListUserNotificationsProcedure is the fully-qualified name of the UserService's
 	// ListUserNotifications RPC.
 	UserServiceListUserNotificationsProcedure = "/memos.api.UserService/ListUserNotifications"
@@ -178,6 +181,9 @@ type UserServiceClient interface {
 	UpdateMemoView(context.Context, *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(context.Context, *connect.Request[api.ReorderMemoViewsRequest]) (*connect.Response[api.ReorderMemoViewsResponse], error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -348,6 +354,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
 			connect.WithClientOptions(opts...),
 		),
+		reorderMemoViews: connect.NewClient[api.ReorderMemoViewsRequest, api.ReorderMemoViewsResponse](
+			httpClient,
+			baseURL+UserServiceReorderMemoViewsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ReorderMemoViews")),
+			connect.WithClientOptions(opts...),
+		),
 		listUserNotifications: connect.NewClient[api.ListUserNotificationsRequest, api.ListUserNotificationsResponse](
 			httpClient,
 			baseURL+UserServiceListUserNotificationsProcedure,
@@ -466,6 +478,7 @@ type userServiceClient struct {
 	createMemoView              *connect.Client[api.CreateMemoViewRequest, api.MemoView]
 	updateMemoView              *connect.Client[api.UpdateMemoViewRequest, api.MemoView]
 	deleteMemoView              *connect.Client[api.DeleteMemoViewRequest, emptypb.Empty]
+	reorderMemoViews            *connect.Client[api.ReorderMemoViewsRequest, api.ReorderMemoViewsResponse]
 	listUserNotifications       *connect.Client[api.ListUserNotificationsRequest, api.ListUserNotificationsResponse]
 	updateUserNotification      *connect.Client[api.UpdateUserNotificationRequest, api.UserNotification]
 	deleteUserNotification      *connect.Client[api.DeleteUserNotificationRequest, emptypb.Empty]
@@ -567,6 +580,11 @@ func (c *userServiceClient) UpdateMemoView(ctx context.Context, req *connect.Req
 // DeleteMemoView calls memos.api.UserService.DeleteMemoView.
 func (c *userServiceClient) DeleteMemoView(ctx context.Context, req *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteMemoView.CallUnary(ctx, req)
+}
+
+// ReorderMemoViews calls memos.api.UserService.ReorderMemoViews.
+func (c *userServiceClient) ReorderMemoViews(ctx context.Context, req *connect.Request[api.ReorderMemoViewsRequest]) (*connect.Response[api.ReorderMemoViewsResponse], error) {
+	return c.reorderMemoViews.CallUnary(ctx, req)
 }
 
 // ListUserNotifications calls memos.api.UserService.ListUserNotifications.
@@ -699,6 +717,9 @@ type UserServiceHandler interface {
 	UpdateMemoView(context.Context, *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(context.Context, *connect.Request[api.ReorderMemoViewsRequest]) (*connect.Response[api.ReorderMemoViewsResponse], error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -865,6 +886,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceReorderMemoViewsHandler := connect.NewUnaryHandler(
+		UserServiceReorderMemoViewsProcedure,
+		svc.ReorderMemoViews,
+		connect.WithSchema(userServiceMethods.ByName("ReorderMemoViews")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceListUserNotificationsHandler := connect.NewUnaryHandler(
 		UserServiceListUserNotificationsProcedure,
 		svc.ListUserNotifications,
@@ -997,6 +1024,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateMemoViewHandler.ServeHTTP(w, r)
 		case UserServiceDeleteMemoViewProcedure:
 			userServiceDeleteMemoViewHandler.ServeHTTP(w, r)
+		case UserServiceReorderMemoViewsProcedure:
+			userServiceReorderMemoViewsHandler.ServeHTTP(w, r)
 		case UserServiceListUserNotificationsProcedure:
 			userServiceListUserNotificationsHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserNotificationProcedure:
@@ -1104,6 +1133,10 @@ func (UnimplementedUserServiceHandler) UpdateMemoView(context.Context, *connect.
 
 func (UnimplementedUserServiceHandler) DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteMemoView is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ReorderMemoViews(context.Context, *connect.Request[api.ReorderMemoViewsRequest]) (*connect.Response[api.ReorderMemoViewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ReorderMemoViews is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserNotifications(context.Context, *connect.Request[api.ListUserNotificationsRequest]) (*connect.Response[api.ListUserNotificationsResponse], error) {

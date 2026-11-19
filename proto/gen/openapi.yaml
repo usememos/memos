@@ -2926,6 +2926,40 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/users/{user}/views:reorder:
+        post:
+            tags:
+                - UserService
+            description: |-
+                ReorderMemoViews sets the order of a user's memo views, which is the order
+                 ListMemoViews returns them in. Only the user may call it.
+            operationId: UserService_ReorderMemoViews
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReorderMemoViewsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReorderMemoViewsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/users/{user}/webhooks:
         get:
             tags:
@@ -4983,6 +5017,36 @@ components:
                     description: When the new access token expires.
                     format: date-time
             description: Response message for AuthService.RefreshToken.
+        ReorderMemoViewsRequest:
+            required:
+                - parent
+                - names
+            type: object
+            properties:
+                parent:
+                    type: string
+                    description: |-
+                        Required. The user whose memo views are reordered.
+                         Format: users/{user}
+                names:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Required. The resource names of all the user's memo views, in the new
+                         order. The service rejects a list that omits a memo view, repeats one, or
+                         names one the user does not have.
+                         Format: users/{user}/views/{view}
+            description: Request message for UserService.ReorderMemoViews.
+        ReorderMemoViewsResponse:
+            type: object
+            properties:
+                memoViews:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoView'
+                    description: The memo views in their new order.
+            description: Response message for UserService.ReorderMemoViews.
         SetMemoAttachmentsRequest:
             required:
                 - name
