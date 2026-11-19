@@ -51,47 +51,14 @@ export const findTagMetadata = (tag: string, tagsSetting: UserSetting_TagsSettin
   return undefined;
 };
 
-/**
- * Counts how many memos a configured tag rule covers, given per-tag memo
- * counts from user stats.
- *
- * An exact tag name present in tagCounts returns its stored count directly —
- * the same fast path findTagMetadata uses, so exact rules keep their
- * ancestor-inclusive count. Otherwise the rule is treated as an anchored
- * regex (same matching as findTagMetadata); matching tags that have a
- * matching strict ancestor are skipped because tag extraction is
- * ancestor-closed — a memo carrying "a/b" also carries "a", so summing both
- * would double-count the family.
- */
-export const countTagRuleUsage = (tagCounts: Record<string, number>, rule: string): number => {
-  if (Object.hasOwn(tagCounts, rule)) {
-    return tagCounts[rule];
+/** Count each memo once if any of its tags matches the rule literally or as an anchored pattern. */
+export const countTagRuleUsage = (memoTags: ReadonlyArray<{ tags: string[] }>, rule: string): number => {
+  const pattern = getCompiledPattern(rule);
+  let count = 0;
+  for (const { tags } of memoTags) {
+    if (tags.some((tag) => tag === rule || pattern?.test(tag))) count++;
   }
-  const re = getCompiledPattern(rule);
-  if (!re) {
-    return 0;
-  }
-  const matched = new Map<string, number>();
-  for (const [tag, count] of Object.entries(tagCounts)) {
-    if (re.test(tag)) {
-      matched.set(tag, count);
-    }
-  }
-  let total = 0;
-  for (const [tag, count] of matched) {
-    const segments = tag.split("/");
-    let hasMatchedAncestor = false;
-    for (let i = 1; i < segments.length; i++) {
-      if (matched.has(segments.slice(0, i).join("/"))) {
-        hasMatchedAncestor = true;
-        break;
-      }
-    }
-    if (!hasMatchedAncestor) {
-      total += count;
-    }
-  }
-  return total;
+  return count;
 };
 
 /**

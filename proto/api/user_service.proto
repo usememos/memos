@@ -642,6 +642,15 @@ message UserStats {
   // own stats, independently of the request's memo filter.
   optional int64 attachment_storage_bytes = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 
+  // Output only. Tags grouped by memo, with one entry per counted memo that
+  // has tags. Returned by GetUserStats when include_memo_tags is true.
+  repeated MemoTags memo_tags = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Tags extracted from one counted memo, including implied ancestors.
+  message MemoTags {
+    repeated string tags = 1;
+  }
+
   // MemoTypeStats counts memos by the kind of content they contain.
   message MemoTypeStats {
     // The number of memos that contain a link.
@@ -695,6 +704,9 @@ message GetUserStatsRequest {
   // Optional. A CEL expression selecting the readable non-comment memos to
   // count. Supports the same fields as ListMemos, including `space`.
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Include tag membership for each tagged memo in the response.
+  bool include_memo_tags = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UserUsage is a user's usage and the limit set in effect for the user.

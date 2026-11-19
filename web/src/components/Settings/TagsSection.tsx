@@ -4,7 +4,7 @@ import { isEqual } from "lodash-es";
 import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
+import { useUpdateUserSetting, useUserStats } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
 import { buildUserSettingName } from "@/lib/resource-names";
 import { countTagRuleUsage, isValidTagPattern } from "@/lib/tag";
@@ -49,7 +49,7 @@ const TagsSection = () => {
   const configuredRulesId = useId();
   const { currentUser, userTagsSetting, refetchSettings } = useAuth();
   const { mutateAsync: updateUserSetting } = useUpdateUserSetting();
-  const { data: tagCounts = {} } = useTagCounts(true);
+  const { data: stats } = useUserStats(currentUser?.name, { includeMemoTags: true });
   const originalSetting = useMemo(() => userTagsSetting ?? create(UserSetting_TagsSettingSchema, {}), [userTagsSetting]);
 
   // Local state: map of tagName → { color, blur } for editing.
@@ -69,8 +69,8 @@ const TagsSection = () => {
 
   // All known tag names: union of saved entries and tags used in memos.
   const allKnownTags = useMemo(
-    () => Array.from(new Set([...Object.keys(localTags), ...Object.keys(tagCounts)])).sort(),
-    [localTags, tagCounts],
+    () => Array.from(new Set([...Object.keys(localTags), ...Object.keys(stats?.tagCounts ?? {})])).sort(),
+    [localTags, stats],
   );
 
   // Only show rows for tags that have metadata configured.
@@ -78,8 +78,8 @@ const TagsSection = () => {
     () =>
       Object.keys(localTags)
         .sort()
-        .map((name) => ({ name, count: countTagRuleUsage(tagCounts, name) })),
-    [localTags, tagCounts],
+        .map((name) => ({ name, count: stats && countTagRuleUsage(stats.memoTags, name) })),
+    [localTags, stats],
   );
 
   const originalMetaMap = useMemo(
@@ -243,8 +243,12 @@ const TagsSection = () => {
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 mu-caption text-mu-text-secondary">
                     <span>{t("setting.tags.matching-rule")}</span>
-                    <span className="text-mu-line">/</span>
-                    <span>{t("setting.tags.used-count", { count: row.count })}</span>
+                    {row.count !== undefined && (
+                      <>
+                        <span className="text-mu-line">/</span>
+                        <span>{t("setting.tags.used-count", { count: row.count })}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
