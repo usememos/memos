@@ -48,7 +48,6 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.NotNil(t, response)
-	require.Empty(t, response.MemoTags)
 	require.Equal(t, fmt.Sprintf("users/%s/stats", user.Username), response.Name)
 
 	// A memo contributes at most once to an exact tag count, even if its payload
@@ -95,16 +94,10 @@ func TestGetUserStats_TagCount(t *testing.T) {
 
 	// Test GetUserStats for the new tag
 	response3, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{
-		Name:            userName,
-		IncludeMemoTags: true,
+		Name: userName,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, response3)
-	var tagsByMemo [][]string
-	for _, memo := range response3.MemoTags {
-		tagsByMemo = append(tagsByMemo, memo.Tags)
-	}
-	require.ElementsMatch(t, [][]string{{"test", "test"}, {"test"}, {"unique"}}, tagsByMemo)
 
 	// Check that the unique tag count is exactly 1
 	require.Contains(t, response3.TagCounts, "unique")

@@ -3151,11 +3151,6 @@ paths:
                      count. Supports the same fields as ListMemos, including `space`.
                   schema:
                     type: string
-                - name: includeMemoTags
-                  in: query
-                  description: Optional. Include tag membership for each tagged memo in the response.
-                  schema:
-                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -5855,23 +5850,7 @@ components:
                          uploads and attachments in all spaces. Excludes temporary uploads and
                          derived files. Returned only by GetUserStats for the authenticated user's
                          own stats, independently of the request's memo filter.
-                memoTags:
-                    readOnly: true
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UserStats_MemoTags'
-                    description: |-
-                        Output only. Tags grouped by memo, with one entry per counted memo that
-                         has tags. Returned by GetUserStats when include_memo_tags is true.
             description: UserStats is a summary of a user's memos. Comments are not counted.
-        UserStats_MemoTags:
-            type: object
-            properties:
-                tags:
-                    type: array
-                    items:
-                        type: string
-            description: Tags extracted from one counted memo, including implied ancestors.
         UserStats_MemoTypeStats:
             type: object
             properties:

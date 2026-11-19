@@ -1,32 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { countTagRuleUsage } from "@/lib/tag";
+import { getTagRuleUsage } from "@/lib/tag";
 
-describe("countTagRuleUsage", () => {
-  const memoTags = [{ tags: ["universidade"] }, { tags: ["universidade", "universidade/sts"] }];
+describe("getTagRuleUsage", () => {
+  const counts = { universidade: 2, "universidade/sts": 1 };
 
-  it.each([
-    ["universidade", 2],
-    ["universidade.*", 2],
-    ["universidade/.*", 1],
-    ["outra-coisa.*", 0],
-    ["[", 0],
-  ])("counts memos matching %s", (rule, expected) => {
-    expect(countTagRuleUsage(memoTags, rule)).toBe(expected);
+  it("uses exact aggregate counts for a single match, including prototype-shaped and non-regex tags", () => {
+    expect(getTagRuleUsage("universidade", counts)).toEqual({ count: 2 });
+    expect(getTagRuleUsage("toString", counts)).toEqual({ count: 0 });
+    expect(getTagRuleUsage("C++", { "C++": 1 })).toEqual({ count: 1 });
+    expect(getTagRuleUsage("a+", { aaa: 2 })).toEqual({ count: 2 });
+    expect(getTagRuleUsage("x|y", counts)).toEqual({ count: 0 });
   });
 
-  it("distinguishes sibling tags on one memo from the same tags on separate memos", () => {
-    expect(countTagRuleUsage([{ tags: ["a", "a/x", "a/y"] }], "a/.*")).toBe(1);
-    expect(countTagRuleUsage([{ tags: ["a", "a/x"] }, { tags: ["a", "a/y"] }], "a/.*")).toBe(2);
+  it.each(["universidade", "universidade/", ""])("uses a compact filter for the literal prefix %j", (prefix) => {
+    expect(getTagRuleUsage(`${prefix}.*`, counts)).toEqual({ filter: `tags.exists(t, t.startsWith(${JSON.stringify(prefix)}))` });
   });
 
-  it("keeps regex matches when a memo has the literal rule as a tag", () => {
-    const memos = [{ tags: ["aaa"] }, { tags: ["aaa"] }];
-    expect(countTagRuleUsage([...memos, { tags: ["a+"] }], "a+")).toBe(3);
-    expect(countTagRuleUsage([{ tags: ["a+", "aaa"] }], "a+")).toBe(1);
+  it("includes literal and anchored regex matches in a stable union", () => {
+    expect(getTagRuleUsage("a+", { aaa: 2, "a+": 1, baaa: 1 })).toEqual({ filter: 'tag in ["a+","aaa"]' });
+    expect(getTagRuleUsage("a[xy].*", { ax: 1, ay: 1, az: 1 })).toEqual({ filter: 'tag in ["ax","ay"]' });
   });
 
-  it("counts literal tags that are invalid regexes or Object prototype keys", () => {
-    expect(countTagRuleUsage([{ tags: ["C++"] }], "C++")).toBe(1);
-    expect(countTagRuleUsage([{ tags: ["toString"] }], "toString")).toBe(1);
+  it("checks the finished filter at the 8192-code-point boundary, including astral characters", () => {
+    const tag = "😀".repeat(8192 - Array.from('tag in ["x",""]').length);
+    const counts = { x: 1, [tag]: 1 };
+    const rule = ".+";
+    expect(getTagRuleUsage(rule, counts)).toEqual({ filter: `tag in ["x","${tag}"]` });
+    expect(getTagRuleUsage(rule, { x: 1, [tag + "😀"]: 1 })).toEqual({});
+    expect(getTagRuleUsage("x".repeat(8192) + ".*", counts)).toEqual({});
+  });
+
+  it("groups large literal lists in one filter so a memo matching several groups counts once", () => {
+    const tags = Array.from({ length: 1001 }, (_, i) => String.fromCharCode(0x4e00 + i));
+    const counts = Object.fromEntries(tags.map((tag) => [tag, 1]));
+    const groups = [tags.slice(0, 500), tags.slice(500, 1000), tags.slice(1000)];
+    expect(getTagRuleUsage(".+", counts)).toEqual({ filter: groups.map((group) => `tag in ${JSON.stringify(group)}`).join(" || ") });
   });
 });

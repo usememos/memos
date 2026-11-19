@@ -230,7 +230,6 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	createdTimestamps := []*timestamppb.Timestamp{}
 	updatedTimestamps := []*timestamppb.Timestamp{}
 	tagCount := make(map[string]int32)
-	var memoTags []*apipb.UserStats_MemoTags
 	linkCount := int32(0)
 	codeCount := int32(0)
 	todoCount := int32(0)
@@ -260,9 +259,6 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 			// Count different memo types based on content.
 			if memo.Payload != nil {
 				incrementTagCounts(tagCount, memo.Payload.Tags)
-				if request.IncludeMemoTags && len(memo.Payload.Tags) > 0 {
-					memoTags = append(memoTags, &apipb.UserStats_MemoTags{Tags: memo.Payload.Tags})
-				}
 				if memo.Payload.Property != nil {
 					if memo.Payload.Property.HasLink {
 						linkCount++
@@ -291,7 +287,6 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 		MemoCreatedTimestamps: createdTimestamps,
 		MemoUpdatedTimestamps: updatedTimestamps,
 		TagCounts:             tagCount,
-		MemoTags:              memoTags,
 		PinnedMemos:           pinnedMemos,
 		TotalMemoCount:        totalMemoCount,
 		MemoTypeStats: &apipb.UserStats_MemoTypeStats{

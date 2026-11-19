@@ -58,15 +58,15 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-export function useUserStats(username?: string, options?: { enabled?: boolean; filter?: string; includeMemoTags?: boolean }) {
-  const queryKey = username ? userKeys.userStats(username, options?.filter) : userKeys.stats();
+export function useUserStats(username?: string, options?: { enabled?: boolean; filter?: string }) {
   return useQuery({
-    queryKey: options?.includeMemoTags ? [...queryKey, { includeMemoTags: true }] : queryKey,
+    queryKey: username ? userKeys.userStats(username, options?.filter) : userKeys.stats(),
     queryFn: async () => {
       if (!username) {
         throw new Error("Username is required");
       }
-      return userServiceClient.getUserStats({ name: username, filter: options?.filter, includeMemoTags: options?.includeMemoTags });
+      const stats = await userServiceClient.getUserStats({ name: username, filter: options?.filter });
+      return stats;
     },
     enabled: !!username && (options?.enabled ?? true),
   });
