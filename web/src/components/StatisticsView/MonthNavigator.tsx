@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@usememos/ui";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
@@ -10,14 +10,31 @@ import type { MonthNavigatorProps } from "@/types/statistics";
 export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
   const { i18n, t } = useTranslation();
   const monthLabel = formatMonthLabel(visibleMonth, i18n.language);
+  const handlePrevYear = () => onMonthChange(addMonths(visibleMonth, -12));
   const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
   const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
+  const handleNextYear = () => onMonthChange(addMonths(visibleMonth, 12));
 
   return (
     <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-2 justify-between")}>
       <h2 className="min-w-0 truncate mu-label text-mu-text select-none">{monthLabel}</h2>
 
       <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={handlePrevYear}
+                aria-label={t("calendar.previous-year")}
+                icon={<ChevronsLeftIcon className="rtl:rotate-180" />}
+              />
+            }
+          />
+          <Tooltip.Popup>{t("calendar.previous-year")}</Tooltip.Popup>
+        </Tooltip.Root>
+
         <Tooltip.Root>
           <Tooltip.Trigger
             render={
@@ -46,6 +63,21 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
             }
           />
           <Tooltip.Popup>{t("common.next-month")}</Tooltip.Popup>
+        </Tooltip.Root>
+
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={handleNextYear}
+                aria-label={t("calendar.next-year")}
+                icon={<ChevronsRightIcon className="rtl:rotate-180" />}
+              />
+            }
+          />
+          <Tooltip.Popup>{t("calendar.next-year")}</Tooltip.Popup>
         </Tooltip.Root>
       </nav>
     </header>
