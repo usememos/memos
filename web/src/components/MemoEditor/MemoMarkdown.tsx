@@ -6,6 +6,7 @@ import { MEMO_MARKDOWN } from "@/lib/memo-ast";
 import { MEMO_EDITOR_THEME, memoEditorLabels, memoExtensions, memoResolveUrl, memoSanitizeHtml } from "@/lib/memo-markdown";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import "./MemoMarkdown.css";
 import { useMemoDecorations } from "./useMemoDecorations";
 
 export interface MemoMarkdownProps {
