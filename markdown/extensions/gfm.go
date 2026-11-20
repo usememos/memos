@@ -23,7 +23,9 @@ var (
 	gfmURLPattern = regexp.MustCompile(`^https?://` + gfmDomainPattern + `[^<\x09-\x0d\p{Z}]*`)
 	gfmWWWPattern = regexp.MustCompile(`^www\.` + gfmDomainPattern + `[^<\x09-\x0d\p{Z}]*`)
 	// Extended emails are resolved after emphasis instead of by the linkify parser.
-	gfmNoEmail = regexp.MustCompile(`a^`)
+	// The pattern never matches; anchoring it makes the parser give up at the first
+	// byte instead of scanning the rest of the line after every space.
+	gfmNoEmail = regexp.MustCompile(`^a^`)
 )
 
 type gfmLinkify struct{}
@@ -151,7 +153,7 @@ func replaceUnparsedGFMURLs(document *ast.Document, source []byte) {
 		segment := textNode.Segment
 		var matches []inlineNodeMatch
 		for offset := segment.Start; offset < segment.Stop; offset++ {
-			if !hasWrittenGFMURLBoundary(source, offset) {
+			if !hasWrittenGFMURLBoundary(source, offset) || !mayStartGFMURL(source[offset:segment.Stop]) {
 				continue
 			}
 
@@ -184,6 +186,16 @@ func hasWrittenGFMURLBoundary(source []byte, offset int) bool {
 	previous := source[offset-1]
 	return previous == ' ' || previous >= '\t' && previous <= '\r' ||
 		previous == '*' || previous == '_' || previous == '~' || previous == '('
+}
+
+// mayStartGFMURL reports whether the linkify parser can return a URL for text.
+// The parser skips one leading space, '*', '_', '~' or '(' and then only
+// matches gfmURLPattern or gfmWWWPattern, so anything else needs no parse.
+func mayStartGFMURL(text []byte) bool {
+	if len(text) > 0 && (text[0] == ' ' || text[0] == '*' || text[0] == '_' || text[0] == '~' || text[0] == '(') {
+		text = text[1:]
+	}
+	return bytes.HasPrefix(text, []byte("http://")) || bytes.HasPrefix(text, []byte("https://")) || bytes.HasPrefix(text, []byte("www."))
 }
 
 func autoLinkLabelStart(link *ast.AutoLink, source, label []byte) (int, bool) {
