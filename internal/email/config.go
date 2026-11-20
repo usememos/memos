@@ -1,7 +1,9 @@
 package email
 
 import (
-	"fmt"
+	"net"
+	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -42,6 +44,8 @@ func (c *Config) Validate() error {
 }
 
 // GetServerAddress returns the SMTP server address in the format "host:port".
+// A bracketed IPv6 host such as "[::1]" is accepted and unwrapped first.
 func (c *Config) GetServerAddress() string {
-	return fmt.Sprintf("%s:%d", c.SMTPHost, c.SMTPPort)
+	host := strings.TrimSuffix(strings.TrimPrefix(c.SMTPHost, "["), "]")
+	return net.JoinHostPort(host, strconv.Itoa(c.SMTPPort))
 }
