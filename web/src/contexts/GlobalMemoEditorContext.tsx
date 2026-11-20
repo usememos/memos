@@ -15,6 +15,12 @@ interface GlobalMemoEditorContextValue {
   /** Whether the signed-in user is ready to compose; gates every visible entry point. */
   canOpen: boolean;
   openEditor: () => void;
+  /**
+   * Opens the composer with Markdown appended to its draft, such as an item shared from
+   * another app. Unlike `openEditor` it waits until composing is possible, so a caller
+   * can ask while the session is still loading.
+   */
+  openEditorWithContent: (content: string) => void;
   /** Claims the initial desktop Home focus once, after the editor restores its draft. */
   claimHomeAutoFocus: () => boolean;
 }
@@ -51,7 +57,9 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   // One snapshot taken when the composer opens: keyed by the user who opened it, so
   // signing out closes the composer in the same render and a different user signing
   // in cannot resurrect it, and pinned to the Space that was selected at that moment.
-  const [opened, setOpened] = useState<{ user: string; space?: string }>();
+  const [opened, setOpened] = useState<{ user: string; space?: string; content?: string }>();
+  // Content waiting for the composer to become available, kept by the user who asked.
+  const [pendingContent, setPendingContent] = useState<{ user: string; content: string }>();
   // Only ever read from event handlers, so a ref keeps each save from
   // re-rendering the provider and the whole editor tree it hosts.
   const isSavingRef = useRef(false);
@@ -92,22 +100,25 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   // them. Keep the rule here so every entry point uses the same gate.
   const canOpen = Boolean(currentUserName) && isUserSettingsInitialized && isSpaceReady;
 
-  const openEditor = useCallback(() => {
-    if (!canOpen || !currentUserName) return;
-    homeAutoFocusPending.current = false;
+  const openEditor = useCallback(
+    (content?: string) => {
+      if (!canOpen || !currentUserName) return;
+      homeAutoFocusPending.current = false;
 
-    // Owned here so no caller can leave a sidebar surface open underneath.
-    setMobileOpen(false);
-    setQuickFindOpen(false);
+      // Owned here so no caller can leave a sidebar surface open underneath.
+      setMobileOpen(false);
+      setQuickFindOpen(false);
 
-    isSavingRef.current = false;
-    const activeElement = document.activeElement;
-    returnFocusRef.current = activeElement instanceof HTMLElement && activeElement !== document.body ? activeElement : null;
+      isSavingRef.current = false;
+      const activeElement = document.activeElement;
+      returnFocusRef.current = activeElement instanceof HTMLElement && activeElement !== document.body ? activeElement : null;
 
-    // The dialog opens at once; the editor fills it as soon as its code is here.
-    preloadMemoEditing();
-    setOpened({ user: currentUserName, space: selectedSpaceName });
-  }, [canOpen, selectedSpaceName, currentUserName, setMobileOpen, setQuickFindOpen]);
+      // The dialog opens at once; the editor fills it as soon as its code is here.
+      preloadMemoEditing();
+      setOpened({ user: currentUserName, space: selectedSpaceName, content });
+    },
+    [canOpen, selectedSpaceName, currentUserName, setMobileOpen, setQuickFindOpen],
+  );
 
   useEffect(() => {
     // RootLayout remains mounted when a public instance moves from Home to
@@ -116,6 +127,26 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
     closeEditor();
     returnFocusRef.current = null;
   }, [closeEditor, currentUserName, isUserSettingsInitialized]);
+
+  const openEditorWithContent = useCallback(
+    (content: string) => {
+      if (currentUserName) setPendingContent({ user: currentUserName, content });
+    },
+    [currentUserName],
+  );
+
+  // Declared after the session-boundary reset so, when composing becomes possible in the
+  // same commit that reset runs in, the reset does not close what this opens.
+  useEffect(() => {
+    if (!pendingContent) return;
+    if (pendingContent.user !== currentUserName) {
+      setPendingContent(undefined);
+      return;
+    }
+    if (!canOpen) return;
+    setPendingContent(undefined);
+    openEditor(pendingContent.content);
+  }, [pendingContent, currentUserName, canOpen, openEditor]);
 
   const resolveFinalFocus = useCallback(() => {
     // Release the remembered node here rather than in closeEditor: base-ui asks
@@ -128,7 +159,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   }, []);
 
   const editorIsOpen = opened !== undefined && opened.user === currentUserName;
-  const value = useMemo(() => ({ canOpen, openEditor, claimHomeAutoFocus }), [canOpen, openEditor, claimHomeAutoFocus]);
+  const value = useMemo(
+    () => ({ canOpen, openEditor: () => openEditor(), openEditorWithContent, claimHomeAutoFocus }),
+    [canOpen, openEditor, openEditorWithContent, claimHomeAutoFocus],
+  );
 
   return (
     <GlobalMemoEditorContext.Provider value={value}>
@@ -159,7 +193,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
               <DialogPrimitive.Title className="mu-visually-hidden">{t("editor.new-memo")}</DialogPrimitive.Title>
               <MemoEditor
                 autoFocus
-                draft={{ scope: "global", space: opened?.space }}
+                draft={{ scope: "global", space: opened?.space, content: opened?.content }}
                 suggestions={suggestions}
                 placeholder={t("editor.any-thoughts")}
                 onConfirm={closeEditor}

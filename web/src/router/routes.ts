@@ -18,6 +18,7 @@ export const ROUTES = {
   AUTH_ADMIN: "/auth/admin",
   AUTH_CALLBACK: "/auth/callback",
   SHARED_MEMO: "/memos/shares",
+  SHARE: "/share",
 } as const;
 
 /** Router pattern for the calendar: month and day are optional so `/calendar` can redirect. */
