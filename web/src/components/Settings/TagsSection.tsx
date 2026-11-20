@@ -4,10 +4,10 @@ import { isEqual } from "lodash-es";
 import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
+import { useTagCounts, useUpdateUserSetting, useUserStats } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
 import { buildUserSettingName } from "@/lib/resource-names";
-import { isValidTagPattern } from "@/lib/tag";
+import { getTagRuleUsage, isValidTagPattern } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import {
   UserSetting_Key,
@@ -44,12 +44,27 @@ const toLocalTagMeta = (meta: {
   blur: meta.blurContent,
 });
 
+const TagRuleCount = ({ rule, tagCounts, userName }: { rule: string; tagCounts?: Record<string, number>; userName?: string }) => {
+  const t = useTranslate();
+  const usage = useMemo(() => tagCounts && getTagRuleUsage(rule, tagCounts), [rule, tagCounts]);
+  const filter = usage?.filter;
+  const { data } = useUserStats(userName, { filter, enabled: !!filter });
+  const count = filter ? data?.totalMemoCount : usage?.count;
+  if (count === undefined) return null;
+  return (
+    <>
+      <span className="text-mu-line">/</span>
+      <span>{t("setting.tags.used-count", { count })}</span>
+    </>
+  );
+};
+
 const TagsSection = () => {
   const t = useTranslate();
   const configuredRulesId = useId();
   const { currentUser, userTagsSetting, refetchSettings } = useAuth();
   const { mutateAsync: updateUserSetting } = useUpdateUserSetting();
-  const { data: tagCounts = {} } = useTagCounts(true);
+  const { data: tagCounts } = useTagCounts(true);
   const originalSetting = useMemo(() => userTagsSetting ?? create(UserSetting_TagsSettingSchema, {}), [userTagsSetting]);
 
   // Local state: map of tagName → { color, blur } for editing.
@@ -69,18 +84,12 @@ const TagsSection = () => {
 
   // All known tag names: union of saved entries and tags used in memos.
   const allKnownTags = useMemo(
-    () => Array.from(new Set([...Object.keys(localTags), ...Object.keys(tagCounts)])).sort(),
+    () => Array.from(new Set([...Object.keys(localTags), ...Object.keys(tagCounts ?? {})])).sort(),
     [localTags, tagCounts],
   );
 
   // Only show rows for tags that have metadata configured.
-  const configuredEntries = useMemo(
-    () =>
-      Object.keys(localTags)
-        .sort()
-        .map((name) => ({ name, count: Object.hasOwn(tagCounts, name) ? tagCounts[name] : 0 })),
-    [localTags, tagCounts],
-  );
+  const configuredRules = useMemo(() => Object.keys(localTags).sort(), [localTags]);
 
   const originalMetaMap = useMemo(
     () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])),
@@ -223,52 +232,51 @@ const TagsSection = () => {
             {t("setting.tags.configured-rules")}
           </h4>
           <Badge size="xs" tone="outline">
-            {configuredEntries.length}
+            {configuredRules.length}
           </Badge>
         </div>
 
-        {configuredEntries.length === 0 ? (
+        {configuredRules.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 rounded-mu-lg border border-dashed border-mu-line px-4 py-8 text-center">
             <TagIcon className="mu-icon size-5 text-mu-text-secondary" />
             <p className="mu-body text-mu-text-secondary">{t("setting.tags.no-tags-configured")}</p>
           </div>
         ) : (
           <SettingList aria-labelledby={configuredRulesId}>
-            {configuredEntries.map((row) => (
-              <List.Item key={row.name} className="grid gap-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
+            {configuredRules.map((name) => (
+              <List.Item key={name} className="grid gap-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
                 <div className="min-w-0">
                   <div className="flex min-w-0 items-center gap-2">
                     <TagIcon className="mu-icon shrink-0 text-mu-text-secondary" />
-                    <span className="truncate font-mono mu-body text-mu-text">{row.name}</span>
+                    <span className="truncate font-mono mu-body text-mu-text">{name}</span>
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 mu-caption text-mu-text-secondary">
                     <span>{t("setting.tags.matching-rule")}</span>
-                    <span className="text-mu-line">/</span>
-                    <span>{t("setting.tags.used-count", { count: row.count })}</span>
+                    <TagRuleCount rule={name} tagCounts={tagCounts} userName={currentUser?.name} />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 mu-body text-mu-text-secondary">
                   <span
-                    className={cn("size-5 rounded-mu-md border border-mu-line", !localTags[row.name].color && "bg-mu-canvas")}
-                    style={{ backgroundColor: localTags[row.name].color ?? DEFAULT_TAG_COLOR }}
+                    className={cn("size-5 rounded-mu-md border border-mu-line", !localTags[name].color && "bg-mu-canvas")}
+                    style={{ backgroundColor: localTags[name].color ?? DEFAULT_TAG_COLOR }}
                     aria-hidden
                   />
                   <input
                     type="color"
                     className="size-8 cursor-pointer rounded-mu-md border border-mu-line bg-transparent p-0.5"
-                    value={localTags[row.name].color ?? DEFAULT_TAG_COLOR}
-                    onChange={(e) => handleColorChange(row.name, e.target.value)}
+                    value={localTags[name].color ?? DEFAULT_TAG_COLOR}
+                    onChange={(e) => handleColorChange(name, e.target.value)}
                     aria-label={t("setting.tags.background-color")}
                   />
-                  <Button variant="ghost" size="md" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
-                    {localTags[row.name].color ?? t("setting.tags.default-color")}
+                  <Button variant="ghost" size="md" onClick={() => handleClearColor(name)} disabled={!localTags[name].color}>
+                    {localTags[name].color ?? t("setting.tags.default-color")}
                   </Button>
                 </div>
 
                 <Field.Root>
                   <Field.Label>
-                    <Checkbox checked={localTags[row.name].blur} onCheckedChange={(checked) => handleBlurChange(row.name, checked)} />
+                    <Checkbox checked={localTags[name].blur} onCheckedChange={(checked) => handleBlurChange(name, checked)} />
                     <EyeOffIcon className="mu-icon text-mu-text-secondary" />
                     {t("setting.tags.blur-content")}
                   </Field.Label>
@@ -280,7 +288,7 @@ const TagsSection = () => {
                       <Button
                         variant="ghost"
                         size="xs"
-                        onClick={() => handleRemoveTag(row.name)}
+                        onClick={() => handleRemoveTag(name)}
                         aria-label={t("common.delete")}
                         icon={<TrashIcon />}
                       />

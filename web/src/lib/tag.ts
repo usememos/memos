@@ -51,6 +51,42 @@ export const findTagMetadata = (tag: string, tagsSetting: UserSetting_TagsSettin
   return undefined;
 };
 
+// Keep in sync with maxFilterExpressionSize in filter/engine.go (Unicode code points).
+const MAX_FILTER_LENGTH = 8192;
+const regexSyntax = /[.*+?^${}()|[\]\\]/;
+
+interface TagRuleUsage {
+  count?: number;
+  filter?: string;
+}
+
+/** Resolve an exact memo count locally, or build one filter that counts the union on the server. */
+export const getTagRuleUsage = (rule: string, tagCounts: Record<string, number>): TagRuleUsage => {
+  if (!regexSyntax.test(rule)) {
+    return { count: Object.hasOwn(tagCounts, rule) ? tagCounts[rule] : 0 };
+  }
+
+  let filter: string;
+  const prefix = rule.slice(0, -2);
+  if (rule.endsWith(".*") && !regexSyntax.test(prefix)) {
+    filter = `tags.exists(t, t.startsWith(${JSON.stringify(prefix)}))`;
+  } else {
+    const pattern = getCompiledPattern(rule);
+    const tags = Object.keys(tagCounts).filter((tag) => tag === rule || pattern?.test(tag));
+    if (tags.length === 0) return { count: 0 };
+    if (tags.length === 1) return { count: tagCounts[tags[0]] };
+
+    // Each list becomes an OR chain in SQL. Group shorter chains in the same query to stay below SQLite's expression depth limit.
+    tags.sort();
+    const groups: string[] = [];
+    for (let i = 0; i < tags.length; i += 500) {
+      groups.push(`tag in ${JSON.stringify(tags.slice(i, i + 500))}`);
+    }
+    filter = groups.join(" || ");
+  }
+  return Array.from(filter).length <= MAX_FILTER_LENGTH ? { filter } : {};
+};
+
 /**
  * Returns true if the given string is a valid, ReDoS-safe JavaScript regex pattern.
  *
