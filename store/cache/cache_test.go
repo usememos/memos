@@ -547,7 +547,7 @@ func TestClearReportsRemovedValue(t *testing.T) {
 	ctx := context.Background()
 	const keys = 300
 
-	for round := 0; round < 50; round++ {
+	for round := range 50 {
 		var mu sync.Mutex
 		reported := make(map[string]map[any]bool)
 
@@ -564,7 +564,7 @@ func TestClearReportsRemovedValue(t *testing.T) {
 		}
 
 		cache := New(config)
-		for i := 0; i < keys; i++ {
+		for i := range keys {
 			cache.Set(ctx, fmt.Sprintf("key%d", i), "old")
 		}
 
@@ -573,7 +573,7 @@ func TestClearReportsRemovedValue(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Go(func() {
 			<-start
-			for i := 0; i < keys; i++ {
+			for i := range keys {
 				cache.Set(ctx, fmt.Sprintf("key%d", i), "fresh")
 			}
 		})
@@ -586,7 +586,7 @@ func TestClearReportsRemovedValue(t *testing.T) {
 
 		// A key that is gone after its overwrite lost the fresh value to Clear,
 		// so the callback must have been given that value.
-		for i := 0; i < keys; i++ {
+		for i := range keys {
 			key := fmt.Sprintf("key%d", i)
 			if _, ok := cache.Get(ctx, key); ok {
 				continue
