@@ -542,3 +542,63 @@ func TestEvictionCallbackRequestsCloseAsynchronously(t *testing.T) {
 		})
 	}
 }
+
+func TestClearReportsRemovedValue(t *testing.T) {
+	ctx := context.Background()
+	const keys = 300
+
+	for round := range 50 {
+		var mu sync.Mutex
+		reported := make(map[string]map[any]bool)
+
+		config := DefaultConfig()
+		config.CleanupInterval = time.Hour
+		config.MaxItems = 0
+		config.OnEviction = func(key string, value any) {
+			mu.Lock()
+			if reported[key] == nil {
+				reported[key] = make(map[any]bool)
+			}
+			reported[key][value] = true
+			mu.Unlock()
+		}
+
+		cache := New(config)
+		for i := range keys {
+			cache.Set(ctx, fmt.Sprintf("key%d", i), "old")
+		}
+
+		// Overwrite every key while Clear runs.
+		start := make(chan struct{})
+		var wg sync.WaitGroup
+		wg.Go(func() {
+			<-start
+			for i := range keys {
+				cache.Set(ctx, fmt.Sprintf("key%d", i), "fresh")
+			}
+		})
+		wg.Go(func() {
+			<-start
+			cache.Clear(ctx)
+		})
+		close(start)
+		wg.Wait()
+
+		// A key that is gone after its overwrite lost the fresh value to Clear,
+		// so the callback must have been given that value.
+		for i := range keys {
+			key := fmt.Sprintf("key%d", i)
+			if _, ok := cache.Get(ctx, key); ok {
+				continue
+			}
+			mu.Lock()
+			ok := reported[key]["fresh"]
+			mu.Unlock()
+			if !ok {
+				cache.Close()
+				t.Fatalf("round %d: Clear removed the fresh value of %s without reporting it to OnEviction", round, key)
+			}
+		}
+		cache.Close()
+	}
+}

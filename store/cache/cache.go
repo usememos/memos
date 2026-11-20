@@ -184,12 +184,14 @@ func (c *Cache) Delete(_ context.Context, key string) {
 
 // Clear removes all values from the cache.
 func (c *Cache) Clear(_ context.Context) {
-	c.data.Range(func(key, value any) bool {
-		if _, loaded := c.data.LoadAndDelete(key); loaded {
+	c.data.Range(func(key, _ any) bool {
+		// Report the value that was removed: a concurrent Set may have replaced
+		// the one Range saw.
+		if removed, loaded := c.data.LoadAndDelete(key); loaded {
 			(&c.itemCount).Add(-1)
 
 			if c.config.OnEviction != nil {
-				itm, ok := value.(*item)
+				itm, ok := removed.(*item)
 				if ok {
 					if keyStr, ok := key.(string); ok {
 						c.config.OnEviction(keyStr, itm.value)
