@@ -209,15 +209,29 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	if request.InstanceSetting == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "instance setting is required")
 	}
-	if _, err := ExtractInstanceSettingKeyFromName(request.InstanceSetting.Name); err != nil {
+	key, err := ExtractInstanceSettingKeyFromName(request.InstanceSetting.Name)
+	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting name: %v", err)
 	}
-	// TODO: Apply update_mask if specified
-	_ = request.UpdateMask
 
-	updateSetting := instancesetting.ToStore(request.InstanceSetting)
+	// Without a mask the request replaces the whole setting. With one, only the
+	// masked fields change; the rest come from the stored setting in the same
+	// redacted form a client reads, so credentials are preserved below.
+	setting := request.InstanceSetting
+	if paths := request.GetUpdateMask().GetPaths(); len(paths) > 0 {
+		current, err := s.getInstanceSettingByName(ctx, setting.Name, &instanceSettingCaller{user: user, loaded: true})
+		if err != nil {
+			return nil, err
+		}
+		setting, err = applyInstanceSettingUpdateMask(key, current, setting, paths)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update mask: %v", err)
+		}
+	}
+
+	updateSetting := instancesetting.ToStore(setting)
 	if updateSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
-		usageLimits, err := s.convertUsageLimitsSettingToStore(ctx, request.InstanceSetting.GetUsageLimitsSetting())
+		usageLimits, err := s.convertUsageLimitsSettingToStore(ctx, setting.GetUsageLimitsSetting())
 		if err != nil {
 			return nil, err
 		}
@@ -229,7 +243,7 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	var existingSetting *storepb.InstanceSetting
 	switch updateSetting.Key {
 	case storepb.InstanceSettingKey_TAGS:
-		if err := validateInstanceTagsSetting(request.InstanceSetting.GetTagsSetting()); err != nil {
+		if err := validateInstanceTagsSetting(setting.GetTagsSetting()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
 		}
 	case storepb.InstanceSettingKey_NOTIFICATION:
