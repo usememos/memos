@@ -44,10 +44,13 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const route = resolveCollectionRoute(location.pathname);
   const selectedSpaceName = route.spaceName;
+  // When a Space is active on Home without an explicit creator filter, show all
+  // Space members' memos (collaborative feed). The user can still narrow to
+  // their own memos via the creator filter in the URL.
   const creatorUsername = route.isCollection
     ? route.pathname === ROUTES.EXPLORE
       ? undefined
-      : (getCollectionCreator(location.search) ?? (route.pathname === ROUTES.HOME ? user?.username : undefined))
+      : (getCollectionCreator(location.search) ?? (route.pathname === ROUTES.HOME && !selectedSpaceName ? user?.username : undefined))
     : undefined;
   const spacesQuery = useSpaces(userName);
   const spaceQuery = useSpace(userName, selectedSpaceName);
