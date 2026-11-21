@@ -107,7 +107,12 @@ const CollectionSidebarContent = ({
       )}
       {/* Every collection route narrows the same way: views (yours, so signed-in only), days, tags. */}
       {currentUser && <ViewsSection />}
-      <TagsSection tagCount={tags} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
+      <TagsSection
+        tagCount={tags}
+        scope={tagStateScope}
+        userName={currentUser?.name ?? "anonymous"}
+        onSelect={() => setMobileOpen(false)}
+      />
     </div>
   );
 };

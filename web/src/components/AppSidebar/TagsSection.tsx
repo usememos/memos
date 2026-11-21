@@ -1,5 +1,5 @@
 import { Button, Menu, Tooltip } from "@usememos/ui";
-import { HashIcon, ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
+import { ChevronDownIcon, HashIcon, ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
@@ -20,6 +20,8 @@ interface Props {
   onSelect?: () => void;
   /** Whose tags these are; keeps tree expansion state from bleeding between users and views. */
   scope: string;
+  /** Account name scopes the sidebar display preference to this user in the current browser. */
+  userName: string;
 }
 
 const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
@@ -69,10 +71,11 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
   );
 };
 
-const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
+const TagsSection = ({ tagCount, onSelect, scope, userName }: Props) => {
   const t = useTranslate();
   const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
+  const [collapsed, setCollapsed] = useLocalStorage<boolean>(`sidebar-tags-collapsed:${userName}`, false);
   const activeTags = new Set(getFiltersByFactor("tagSearch").map((filter) => filter.value));
   const activeTag = activeTags.values().next().value as string | undefined;
   const tags = useMemo(() => Object.entries(tagCount).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])), [tagCount]);
@@ -114,27 +117,31 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
               <Menu.CheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick icon={<ListTreeIcon />}>
                 {t("common.tree-mode")}
               </Menu.CheckboxItem>
+              <Menu.CheckboxItem checked={collapsed} onCheckedChange={setCollapsed} closeOnClick icon={<ChevronDownIcon />}>
+                {t("common.collapse")}
+              </Menu.CheckboxItem>
             </Menu.Group>
           </Menu.Popup>
         </Menu.Root>
       }
     >
-      {treeMode ? (
-        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
-      ) : (
-        <>
-          {tags.map(([tag, amount]) => (
-            <FlatTagRow
-              key={tag}
-              tag={tag}
-              amount={amount}
-              active={activeTags.has(tag)}
-              ariaLabel={tagRowAriaLabel(t, tag, amount)}
-              onClick={() => handleTagClick(tag)}
-            />
-          ))}
-        </>
-      )}
+      {!collapsed &&
+        (treeMode ? (
+          <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
+        ) : (
+          <>
+            {tags.map(([tag, amount]) => (
+              <FlatTagRow
+                key={tag}
+                tag={tag}
+                amount={amount}
+                active={activeTags.has(tag)}
+                ariaLabel={tagRowAriaLabel(t, tag, amount)}
+                onClick={() => handleTagClick(tag)}
+              />
+            ))}
+          </>
+        ))}
     </SidebarSection>
   );
 };
