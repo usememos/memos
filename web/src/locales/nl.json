@@ -416,6 +416,13 @@
     },
     "show-less": "Minder tonen",
     "show-more": "Meer tonen",
+    "audience": {
+      "heading": "Wie kan dit zien?",
+      "private": "Alleen ik",
+      "space": "Leden van de ruimte",
+      "protected": "Ingelogde gebruikers",
+      "public": "Iedereen"
+    },
     "visibility": {
       "private": "Privé",
       "protected": "Werkruimte",

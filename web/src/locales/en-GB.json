@@ -416,6 +416,13 @@
     },
     "show-less": "Show less",
     "show-more": "Show more",
+    "audience": {
+      "heading": "Who can see this?",
+      "private": "Only me",
+      "space": "Space members",
+      "protected": "Signed-in users",
+      "public": "Everyone"
+    },
     "visibility": {
       "private": "Private",
       "protected": "Protected",

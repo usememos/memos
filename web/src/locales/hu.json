@@ -416,6 +416,13 @@
     },
     "show-less": "Kevesebb mutatása",
     "show-more": "Több mutatása",
+    "audience": {
+      "heading": "Ki láthatja?",
+      "private": "Csak én",
+      "space": "A tér tagjai",
+      "protected": "Bejelentkezett felhasználók",
+      "public": "Mindenki"
+    },
     "visibility": {
       "private": "Privát",
       "protected": "Munkatér",

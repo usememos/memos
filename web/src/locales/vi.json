@@ -384,6 +384,13 @@
     "order-by": "Sắp xếp theo",
     "show-less": "Hiển thị ít hơn",
     "show-more": "Hiển thị thêm",
+    "audience": {
+      "heading": "Ai có thể xem?",
+      "private": "Chỉ mình tôi",
+      "space": "Thành viên không gian",
+      "protected": "Người dùng đã đăng nhập",
+      "public": "Mọi người"
+    },
     "visibility": {
       "private": "Riêng tư",
       "protected": "Không gian làm việc",

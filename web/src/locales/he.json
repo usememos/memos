@@ -505,6 +505,13 @@
       "updated": "המשימות עודכנו"
     },
     "view-options": "אפשרויות תצוגה",
+    "audience": {
+      "heading": "מי יכול לראות את זה?",
+      "private": "רק אני",
+      "space": "חברי המרחב",
+      "protected": "משתמשים מחוברים",
+      "public": "כולם"
+    },
     "visibility": {
       "private": "פרטי",
       "private-description": "גלוי רק לכם",

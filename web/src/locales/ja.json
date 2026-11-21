@@ -425,6 +425,13 @@
     "show-less": "表示を減らす",
     "show-more": "もっと見る",
     "view-options": "表示オプション",
+    "audience": {
+      "heading": "誰が閲覧できますか？",
+      "private": "自分のみ",
+      "space": "スペースのメンバー",
+      "protected": "ログイン中のユーザー",
+      "public": "すべての人"
+    },
     "visibility": {
       "private": "非公開",
       "private-description": "自分にのみ表示",

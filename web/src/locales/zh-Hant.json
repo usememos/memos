@@ -513,6 +513,13 @@
       "updated": "待辦事項已更新"
     },
     "view-options": "檢視選項",
+    "audience": {
+      "heading": "誰可以看",
+      "private": "僅自己",
+      "space": "空間成員",
+      "protected": "本站登入使用者",
+      "public": "所有人"
+    },
     "visibility": {
       "private": "私人",
       "private-description": "僅您可見",

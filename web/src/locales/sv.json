@@ -416,6 +416,13 @@
     },
     "show-less": "Visa mindre",
     "show-more": "Visa mer",
+    "audience": {
+      "heading": "Vem kan se detta?",
+      "private": "Bara jag",
+      "space": "Utrymmets medlemmar",
+      "protected": "Inloggade användare",
+      "public": "Alla"
+    },
     "visibility": {
       "private": "Privat",
       "protected": "Skyddad",

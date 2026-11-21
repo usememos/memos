@@ -384,6 +384,13 @@
     "order-by": "정렬 기준",
     "show-less": "간략히 보기",
     "show-more": "더보기",
+    "audience": {
+      "heading": "누가 볼 수 있나요?",
+      "private": "나만",
+      "space": "공간 멤버",
+      "protected": "로그인한 사용자",
+      "public": "모든 사람"
+    },
     "visibility": {
       "private": "나만 볼 수 있음",
       "protected": "멤버 전용",

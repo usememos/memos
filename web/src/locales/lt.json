@@ -464,6 +464,13 @@
       "uncheck-all": "Panaikinkite visų užduočių žymėjimą",
       "updated": "Užduotys atnaujintos"
     },
+    "audience": {
+      "heading": "Kas gali matyti?",
+      "private": "Tik aš",
+      "space": "Erdvės nariai",
+      "protected": "Prisijungę naudotojai",
+      "public": "Visi"
+    },
     "visibility": {
       "private": "Privatus",
       "protected": "Apsaugotas",

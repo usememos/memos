@@ -384,6 +384,13 @@
     "order-by": "Urutkan Berdasarkan",
     "show-less": "Tampilkan lebih sedikit",
     "show-more": "Tampilkan lebih banyak",
+    "audience": {
+      "heading": "Siapa yang dapat melihat?",
+      "private": "Hanya saya",
+      "space": "Anggota ruang",
+      "protected": "Pengguna yang sudah masuk",
+      "public": "Semua orang"
+    },
     "visibility": {
       "private": "Pribadi",
       "protected": "Terlindungi",

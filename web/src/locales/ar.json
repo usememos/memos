@@ -388,6 +388,13 @@
     "order-by": "ترتيب حسب",
     "show-less": "عرض أقل",
     "show-more": "عرض المزيد",
+    "audience": {
+      "heading": "من يمكنه رؤيتها؟",
+      "private": "أنا فقط",
+      "space": "أعضاء المساحة",
+      "protected": "المستخدمون المسجّلون دخولهم",
+      "public": "الجميع"
+    },
     "visibility": {
       "private": "خاص",
       "protected": "محمي",

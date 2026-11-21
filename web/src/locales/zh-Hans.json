@@ -436,6 +436,13 @@
     "show-less": "显示较少",
     "show-more": "查看更多",
     "view-options": "视图选项",
+    "audience": {
+      "heading": "谁可以看",
+      "private": "仅自己",
+      "space": "空间成员",
+      "protected": "本站登录用户",
+      "public": "所有人"
+    },
     "visibility": {
       "private": "私有",
       "private-description": "仅你可见",

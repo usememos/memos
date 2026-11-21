@@ -384,6 +384,13 @@
     "order-by": "مرتب‌سازی بر اساس",
     "show-less": "نمایش کمتر",
     "show-more": "نمایش بیشتر",
+    "audience": {
+      "heading": "چه کسانی می‌توانند آن را ببینند؟",
+      "private": "فقط من",
+      "space": "اعضای فضا",
+      "protected": "کاربران واردشده",
+      "public": "همه"
+    },
     "visibility": {
       "private": "خصوصی",
       "protected": "فضای کار",

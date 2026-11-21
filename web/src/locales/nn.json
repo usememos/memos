@@ -545,6 +545,13 @@
       "updated": "Gjeremåla er oppdaterte"
     },
     "view-options": "Visingsval",
+    "audience": {
+      "heading": "Kven kan sjå dette?",
+      "private": "Berre eg",
+      "space": "Medlemmer i rommet",
+      "protected": "Innlogga brukarar",
+      "public": "Alle"
+    },
     "visibility": {
       "private": "Privat",
       "private-description": "Berre synleg for deg",

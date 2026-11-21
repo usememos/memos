@@ -462,6 +462,13 @@
       "uncheck-all": "Tühjendage kõigi ülesannete märge",
       "updated": "Ülesanded värskendatud"
     },
+    "audience": {
+      "heading": "Kes seda näevad?",
+      "private": "Ainult mina",
+      "space": "Ruumi liikmed",
+      "protected": "Sisselogitud kasutajad",
+      "public": "Kõik"
+    },
     "visibility": {
       "private": "Privaatne",
       "protected": "Kaitstud",

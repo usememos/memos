@@ -463,6 +463,13 @@
       "uncheck-all": "Debifați toate sarcinile",
       "updated": "Sarcini actualizate"
     },
+    "audience": {
+      "heading": "Cine poate vedea?",
+      "private": "Doar eu",
+      "space": "Membrii spațiului",
+      "protected": "Utilizatorii autentificați",
+      "public": "Toată lumea"
+    },
     "visibility": {
       "private": "Privat",
       "protected": "Protejat",

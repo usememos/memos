@@ -41,11 +41,7 @@ const openSpaces = async (name: string) => {
   return screen.findAllByRole("menu");
 };
 
-const visibilityRows = () =>
-  screen
-    .getAllByRole("menuitemradio")
-    .map((item) => item.textContent)
-    .filter((text) => text?.startsWith("memo.visibility."));
+const visibilityRows = () => screen.getAllByRole("menuitemradio").map((item) => item.textContent);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -62,28 +58,24 @@ describe("AudienceMenu visibility", () => {
     render(<AudienceMenu value={Visibility.PRIVATE} onChange={vi.fn()} />);
     await openMenu();
 
-    expect(visibilityRows()).toEqual([
-      "memo.visibility.privatememo.visibility.private-description",
-      "memo.visibility.protectedmemo.visibility.protected-description",
-      "memo.visibility.publicmemo.visibility.public-description",
-    ]);
+    expect(screen.getByRole("group", { name: "memo.audience.heading" })).toBeInTheDocument();
+    expect(visibilityRows()).toEqual(["memo.audience.private", "memo.audience.protected", "memo.audience.public"]);
   });
 
-  it("offers the Members audience, described with the Space's name, when the memo belongs to a Space", async () => {
-    render(<AudienceMenu value={Visibility.PRIVATE} space="spaces/work" onChange={vi.fn()} />);
+  it("uses the same Space audience name in the toolbar and the menu", async () => {
+    render(<AudienceMenu value={Visibility.SPACE} space="spaces/work" onChange={vi.fn()} onSpaceChange={vi.fn()} />);
+    expect(screen.getByRole("button")).toHaveAccessibleName("Work · memo.audience.space");
     await openMenu();
 
-    expect(screen.getByRole("menuitemradio", { name: /memo\.visibility\.space/ })).toHaveTextContent(
-      "memo.visibility.space-description(Work)",
-    );
+    expect(screen.getByRole("menuitemradio", { name: "memo.audience.space", checked: true })).toBeInTheDocument();
   });
 
   it("keeps naming the current Members audience even when placement is unavailable", async () => {
     render(<AudienceMenu value={Visibility.SPACE} onChange={vi.fn()} />);
 
-    expect(screen.getByRole("button")).toHaveTextContent("memo.visibility.space");
+    expect(screen.getByRole("button")).toHaveTextContent("memo.audience.space");
     await openMenu();
-    expect(screen.getByRole("menuitemradio", { name: /memo\.visibility\.space/ })).toBeInTheDocument();
+    expect(screen.getByRole("menuitemradio", { name: /memo\.audience\.space/ })).toBeInTheDocument();
   });
 
   it("reports the picked audience", async () => {
@@ -91,7 +83,7 @@ describe("AudienceMenu visibility", () => {
     render(<AudienceMenu value={Visibility.PRIVATE} onChange={onChange} />);
     await openMenu();
 
-    fireEvent.click(screen.getByRole("menuitemradio", { name: /memo\.visibility\.public/ }));
+    fireEvent.click(screen.getByRole("menuitemradio", { name: /memo\.audience\.public/ }));
 
     expect(onChange).toHaveBeenCalledWith(Visibility.PUBLIC);
   });
@@ -111,7 +103,7 @@ describe("AudienceMenu Space row", () => {
     const onSpaceChange = vi.fn();
     const onChange = vi.fn();
     render(<AudienceMenu value={Visibility.PRIVATE} onChange={onChange} onSpaceChange={onSpaceChange} />);
-    expect(screen.getByRole("button")).toHaveAccessibleName("memo.visibility.private");
+    expect(screen.getByRole("button")).toHaveAccessibleName("memo.audience.private");
     await openMenu();
 
     const items = screen.getAllByRole("menuitem");
@@ -127,7 +119,7 @@ describe("AudienceMenu Space row", () => {
   it("shows the chosen Space and toggles it off from the submenu", async () => {
     const onSpaceChange = vi.fn();
     render(<AudienceMenu value={Visibility.PRIVATE} space="spaces/work" onChange={vi.fn()} onSpaceChange={onSpaceChange} />);
-    expect(screen.getByRole("button")).toHaveAccessibleName("Work · memo.visibility.private");
+    expect(screen.getByRole("button")).toHaveAccessibleName("Work · memo.audience.private");
     await openMenu();
 
     expect(screen.queryByRole("menuitem", { name: "space.add-to" })).not.toBeInTheDocument();
@@ -160,7 +152,7 @@ describe("AudienceMenu Space row", () => {
     ];
     render(<AudienceMenu value={Visibility.PRIVATE} space="spaces/work" onChange={vi.fn()} onSpaceChange={vi.fn()} />);
 
-    expect(screen.getByRole("button")).toHaveAttribute("title", `${longTitle} · memo.visibility.private`);
+    expect(screen.getByRole("button")).toHaveAttribute("title", `${longTitle} · memo.audience.private`);
     await openMenu();
     await openSpaces(longTitle);
     expect(screen.getByRole("menuitem", { name: "Twin (a)" })).toBeInTheDocument();
@@ -220,7 +212,7 @@ it("removing a Members memo from its Space falls back to Private without discard
     </EditorProvider>,
   );
 
-  fireEvent.click(screen.getByRole("button", { name: "Work · memo.visibility.space" }));
+  fireEvent.click(screen.getByRole("button", { name: "Work · memo.audience.space" }));
   await screen.findByRole("menu");
   await openSpaces("Work");
   fireEvent.click(screen.getByRole("menuitem", { name: "space.remove-from(Work)" }));

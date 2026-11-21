@@ -100,7 +100,7 @@ The session's code is a chunk of its own, loaded when a memo is first edited or 
 
 ### Destination and visibility
 
-`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. New top-level memos and edits of top-level memos the user can manage offer the Space row; a draft seed's `space` fixes a new memo's placement; comments never offer it because their Space is their parent's. An edit that changes the Space sends `space` and `visibility` together so the server validates the move as one transition.
+`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. The toolbar button and menu use the same audience name. When the toolbar is narrow, the Space name shortens first; the open menu wraps long labels. New top-level memos and edits of top-level memos the user can manage offer the Space row; a draft seed's `space` fixes a new memo's placement; comments never offer it because their Space is their parent's. An edit that changes the Space sends `space` and `visibility` together so the server validates the move as one transition.
 
 ## Directory structure
 

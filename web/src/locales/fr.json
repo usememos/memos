@@ -417,6 +417,13 @@
     },
     "show-less": "Afficher moins",
     "show-more": "Afficher plus",
+    "audience": {
+      "heading": "Qui peut voir ce mémo ?",
+      "private": "Moi uniquement",
+      "space": "Membres de l’espace",
+      "protected": "Utilisateurs connectés",
+      "public": "Tout le monde"
+    },
     "visibility": {
       "private": "Privé",
       "protected": "Protégé",

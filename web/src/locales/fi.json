@@ -462,6 +462,13 @@
       "uncheck-all": "Poista kaikkien tehtävien valinta",
       "updated": "Tehtävät päivitetty"
     },
+    "audience": {
+      "heading": "Kuka näkee tämän?",
+      "private": "Vain minä",
+      "space": "Tilan jäsenet",
+      "protected": "Kirjautuneet käyttäjät",
+      "public": "Kaikki"
+    },
     "visibility": {
       "private": "Yksityinen",
       "protected": "Suojattu",

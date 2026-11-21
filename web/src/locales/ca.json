@@ -417,6 +417,13 @@
     },
     "show-less": "Mostra menys",
     "show-more": "Mostra més",
+    "audience": {
+      "heading": "Qui ho pot veure?",
+      "private": "Només jo",
+      "space": "Membres de l’espai",
+      "protected": "Usuaris amb sessió iniciada",
+      "public": "Tothom"
+    },
     "visibility": {
       "private": "Privat",
       "protected": "Espai de treball",

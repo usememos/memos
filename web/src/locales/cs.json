@@ -418,6 +418,13 @@
     },
     "show-less": "Zobrazit méně",
     "show-more": "Zobrazit více",
+    "audience": {
+      "heading": "Kdo to uvidí?",
+      "private": "Jen já",
+      "space": "Členové prostoru",
+      "protected": "Přihlášení uživatelé",
+      "public": "Všichni"
+    },
     "visibility": {
       "private": "Soukromá",
       "protected": "Chráněná",

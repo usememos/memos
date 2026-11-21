@@ -547,6 +547,13 @@
       "updated": "Tasks updated"
     },
     "view-options": "View options",
+    "audience": {
+      "heading": "Who can see this?",
+      "private": "Only me",
+      "space": "Space members",
+      "protected": "Signed-in users",
+      "public": "Everyone"
+    },
     "visibility": {
       "private": "Private",
       "private-description": "Only you",

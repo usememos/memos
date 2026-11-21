@@ -462,6 +462,13 @@
       "uncheck-all": "Fjern markeringen i alle opgaver",
       "updated": "Opgaver opdateret"
     },
+    "audience": {
+      "heading": "Hvem kan se det?",
+      "private": "Kun mig",
+      "space": "Rummets medlemmer",
+      "protected": "Indloggede brugere",
+      "public": "Alle"
+    },
     "visibility": {
       "private": "Privat",
       "protected": "Beskyttet",

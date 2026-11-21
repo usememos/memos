@@ -418,6 +418,13 @@
     },
     "show-less": "Prikaži manj",
     "show-more": "Prikaži več",
+    "audience": {
+      "heading": "Kdo lahko to vidi?",
+      "private": "Samo jaz",
+      "space": "Člani prostora",
+      "protected": "Prijavljeni uporabniki",
+      "public": "Vsi"
+    },
     "visibility": {
       "private": "Zasebno",
       "protected": "Za uporabnike",

@@ -384,6 +384,13 @@
     "order-by": "क्रमबद्ध करें",
     "show-less": "कम दिखाएँ",
     "show-more": "और दिखाएँ",
+    "audience": {
+      "heading": "इसे कौन देख सकता है?",
+      "private": "सिर्फ़ मैं",
+      "space": "स्पेस के सदस्य",
+      "protected": "साइन इन किए हुए उपयोगकर्ता",
+      "public": "सभी"
+    },
     "visibility": {
       "private": "निजी",
       "protected": "सदस्य",

@@ -417,6 +417,13 @@
     },
     "show-less": "Prikaži manje",
     "show-more": "Prikaži više",
+    "audience": {
+      "heading": "Tko ovo može vidjeti?",
+      "private": "Samo ja",
+      "space": "Članovi prostora",
+      "protected": "Prijavljeni korisnici",
+      "public": "Svi"
+    },
     "visibility": {
       "private": "Privatno",
       "protected": "Za članove",

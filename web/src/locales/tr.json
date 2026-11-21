@@ -465,6 +465,13 @@
     "show-less": "Daha az göster",
     "show-more": "Daha fazla göster",
     "view-options": "Görünüm seçenekleri",
+    "audience": {
+      "heading": "Kimler görebilir?",
+      "private": "Yalnızca ben",
+      "space": "Alan üyeleri",
+      "protected": "Oturum açmış kullanıcılar",
+      "public": "Herkes"
+    },
     "visibility": {
       "private": "Gizli",
       "private-description": "Sadece sen",

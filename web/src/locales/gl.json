@@ -416,6 +416,13 @@
     },
     "show-less": "Mostrar menos",
     "show-more": "Mostrar máis",
+    "audience": {
+      "heading": "Quen pode velo?",
+      "private": "Só eu",
+      "space": "Membros do espazo",
+      "protected": "Usuarios que iniciaron sesión",
+      "public": "Todas as persoas"
+    },
     "visibility": {
       "private": "Privada",
       "protected": "Protexida",

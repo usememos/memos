@@ -463,6 +463,13 @@
       "uncheck-all": "Noņemiet atzīmi no visiem uzdevumiem",
       "updated": "Uzdevumi atjaunināti"
     },
+    "audience": {
+      "heading": "Kas to var redzēt?",
+      "private": "Tikai es",
+      "space": "Telpas dalībnieki",
+      "protected": "Lietotāji, kuri ir pieteikušies",
+      "public": "Visi"
+    },
     "visibility": {
       "private": "Privāts",
       "protected": "Aizsargāts",

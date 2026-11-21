@@ -464,6 +464,13 @@
       "uncheck-all": "Zrušte začiarknutie všetkých úloh",
       "updated": "Úlohy aktualizované"
     },
+    "audience": {
+      "heading": "Kto to môže vidieť?",
+      "private": "Iba ja",
+      "space": "Členovia priestoru",
+      "protected": "Prihlásení používatelia",
+      "public": "Všetci"
+    },
     "visibility": {
       "private": "Súkromné",
       "protected": "Chránené",

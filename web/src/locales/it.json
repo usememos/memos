@@ -417,6 +417,13 @@
     },
     "show-less": "Mostra meno",
     "show-more": "Mostra di più",
+    "audience": {
+      "heading": "Chi può vedere questa nota?",
+      "private": "Solo io",
+      "space": "Membri dello spazio",
+      "protected": "Utenti che hanno effettuato l’accesso",
+      "public": "Tutti"
+    },
     "visibility": {
       "private": "Privato",
       "protected": "Protetto",

@@ -1,6 +1,5 @@
 import { buttonClasses, Menu } from "@usememos/ui";
 import { CheckIcon, ChevronDownIcon, PlusIcon, XIcon } from "lucide-react";
-import SpaceIcon from "@/components/SpaceIcon";
 import SpaceMark from "@/components/SpaceMark";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -11,6 +10,7 @@ import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
 import type { AudienceMenuProps } from "../types";
+import "./AudienceMenu.css";
 
 /**
  * One quiet control for a memo's audience and, where the host allows it, its Space.
@@ -25,13 +25,14 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
   const { data: spaces = [], isPending, isError, refetch } = useSpaces(user?.name, { enabled: Boolean(onSpaceChange) });
   const visibilityOptions = getAssignableVisibilityOptions({ hasSpacePlacement: Boolean(space), current: value });
   const currentOption = getVisibilityOption(value);
-  const visibilityLabel = currentOption ? t(currentOption.labelKey) : "";
+  const audience = currentOption ? t(currentOption.audienceKey) : "";
   const duplicates = getDuplicateSpaceTitles(spaces);
   const spaceLabel = (item: (typeof spaces)[number]) =>
     duplicates.has(item.title) ? `${item.title} (${extractSpaceUidFromName(item.name)})` : item.title;
   const selectedSpace = spaces.find((item) => item.name === space);
   const destination = space ? (selectedSpace ? spaceLabel(selectedSpace) : extractSpaceUidFromName(space)) : "";
-  const summary = onSpaceChange && space ? `${destination} · ${visibilityLabel}` : visibilityLabel;
+  const showDestination = Boolean(onSpaceChange && space);
+  const summary = showDestination ? `${destination} · ${audience}` : audience;
   // Nothing to add to and nothing to remove from: the Space row would be a dead end.
   const showSpaceRow = Boolean(onSpaceChange) && (Boolean(space) || isPending || isError || spaces.length > 0);
   // A placement outside the member list (e.g. the author left the Space) stays
@@ -43,45 +44,36 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
 
   return (
     <Menu.Root modal={false}>
-      {/* The trigger starts with an icon (a space mark or the lock) inside a span, so it takes the
-          package's icon-side padding itself; its gaps are the md icon gap, like a Button's. */}
+      {/* The Space name gets the width left after the audience, icons and separator. */}
       <Menu.Trigger
-        className={cn(buttonClasses({ variant: "ghost", size: "md" }), "min-w-0 max-w-64 shrink ps-(--mu-row-padding-icon)")}
+        className={cn(
+          buttonClasses({ variant: "ghost", size: "md" }),
+          "inline-grid min-w-0 max-w-64 grid-cols-[auto_minmax(0,max-content)_auto] ps-(--mu-row-padding-icon)",
+          showDestination && "grid-cols-[auto_minmax(0,1fr)_auto_auto_minmax(0,max-content)_auto]",
+        )}
         disabled={disabled}
         title={summary}
         aria-label={summary}
       >
-        {onSpaceChange && space && (
+        {showDestination && (
           <>
-            <span className="flex min-w-0 max-w-32 items-center gap-1.5 sm:max-w-40">
-              <SpaceIcon icon={selectedSpace?.icon} size={14} />
-              <span className="truncate">{destination}</span>
-            </span>
-            <span aria-hidden className="shrink-0 opacity-40">
+            <SpaceMark icon={selectedSpace?.icon} size="toolbar" />
+            <span className="max-w-32 truncate sm:max-w-40">{destination}</span>
+            <span aria-hidden className="opacity-40">
               ·
             </span>
           </>
         )}
-        <span className="flex shrink-0 items-center gap-1.5">
-          <VisibilityIcon visibility={value} className="text-current" />
-          <span>{visibilityLabel}</span>
-        </span>
+        <VisibilityIcon visibility={value} className="text-current" />
+        <span className="truncate">{audience}</span>
         <ChevronDownIcon className="mu-icon-sm" />
       </Menu.Trigger>
-      <Menu.Popup align="start" className="w-56" aria-label={t("common.visibility")}>
-        {/* Two lines per audience: the description is the only place the app explains who can
-            read a memo, and translations run long. The menu's fixed width makes long copy wrap
-            instead of widening it; icon and check stay on the title's line. */}
+      <Menu.Popup align="start" className="memo-audience-menu w-max" aria-label={t("common.visibility")}>
         <Menu.RadioGroup value={value} onValueChange={(next) => onChange(next)}>
+          <Menu.GroupLabel className="pt-1">{t("memo.audience.heading")}</Menu.GroupLabel>
           {visibilityOptions.map((option) => (
-            <Menu.RadioItem
-              key={option.value}
-              value={option.value}
-              closeOnClick
-              icon={<VisibilityIcon visibility={option.value} />}
-              description={t(option.descriptionKey, { space: destination })}
-            >
-              {t(option.labelKey)}
+            <Menu.RadioItem key={option.value} value={option.value} closeOnClick icon={<VisibilityIcon visibility={option.value} />}>
+              {t(option.audienceKey)}
             </Menu.RadioItem>
           ))}
         </Menu.RadioGroup>
@@ -106,7 +98,7 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
               >
                 {space ? destination : <span className="text-mu-text-secondary">{t("space.add-to")}</span>}
               </Menu.SubmenuTrigger>
-              <Menu.Popup className="w-56">
+              <Menu.Popup className="memo-audience-menu w-max">
                 {spaceChoices.map((item) => {
                   const selected = item.name === space;
                   const removeLabel = t("space.remove-from", { space: item.label });

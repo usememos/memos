@@ -545,6 +545,13 @@
       "updated": "Tapşırıqlar yeniləndi"
     },
     "view-options": "Görünüş parametrləri",
+    "audience": {
+      "heading": "Kim görə bilər?",
+      "private": "Yalnız mən",
+      "space": "Məkanın üzvləri",
+      "protected": "Daxil olmuş istifadəçilər",
+      "public": "Hər kəs"
+    },
     "visibility": {
       "private": "Şəxsi",
       "private-description": "Yalnız sizə görünür",

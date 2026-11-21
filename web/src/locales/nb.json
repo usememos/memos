@@ -416,6 +416,13 @@
     },
     "show-less": "Vis mindre",
     "show-more": "Vis mer",
+    "audience": {
+      "heading": "Hvem kan se dette?",
+      "private": "Bare jeg",
+      "space": "Medlemmer av rommet",
+      "protected": "Innloggede brukere",
+      "public": "Alle"
+    },
     "visibility": {
       "private": "Privat",
       "protected": "Beskyttet",
