@@ -1293,6 +1293,7 @@
     "place-placeholder": "Nejprve vyberte polohu."
   },
   "calendar": {
+    "has-entries": "obsahuje záznamy",
     "new-memo-on-day": "Nová poznámka z tohoto dne",
     "next-year": "Příští rok",
     "no-memos-in-month": "Žádné poznámky v {{month}}",

@@ -1,11 +1,10 @@
 import { Button, buttonClasses, Popover } from "@usememos/ui";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
-import { buildCalendarPath, buildMonthKey, getMonthOfDate } from "./paths";
+import { buildCalendarPath, buildMonthKey, getCalendarActivityMonths } from "./paths";
 
 export interface MonthPickerProps {
   /** `YYYY-MM` currently shown. */
@@ -13,6 +12,7 @@ export interface MonthPickerProps {
   monthLabel: string;
   /** `YYYY-MM-DD` */
   today: string;
+  activityStats: Record<string, number>;
 }
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
@@ -22,19 +22,21 @@ const TEXT_CONTROL_CLASSES = buttonClasses({ variant: "ghost", size: "sm" });
 const TITLE_CONTROL_CLASSES = buttonClasses({ variant: "ghost", size: "md" });
 
 /**
- * The month title is the trigger; the popup is a year stepper over the twelve months, the
- * shown month filled (it is the `aria-current` month) and the current month marked. Months
- * are links so the browser owns history and middle-click.
+ * The month title opens quick year and month navigation. Years with activity are listed,
+ * and months containing entries get a dot. Month links preserve browser history behavior.
  */
-export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
+export const MonthPicker = ({ month, monthLabel, today, activityStats }: MonthPickerProps) => {
   const t = useTranslate();
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const shownYear = Number(month.slice(0, 4));
   const [year, setYear] = useState(shownYear);
-  const currentMonth = getMonthOfDate(today);
+  const activityMonths = useMemo(() => getCalendarActivityMonths(activityStats), [activityStats]);
+  const years = useMemo(
+    () => [...new Set([...Object.keys(activityMonths).map(Number), shownYear, Number(today.slice(0, 4))])].sort((a, b) => a - b),
+    [activityMonths, shownYear, today],
+  );
 
-  // Reopening lands on the shown month's year, not wherever the stepper was left.
   useEffect(() => {
     if (open) setYear(shownYear);
   }, [open, shownYear]);
@@ -52,29 +54,25 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
           {monthLabel}
         </Popover.Trigger>
       </h1>
-      <Popover.Popup align="start" className="w-60">
-        <div className="mb-1 flex items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t("calendar.previous-year")}
-            icon={<ChevronLeftIcon className="mu-icon rtl:rotate-180" />}
-            onClick={() => setYear((value) => value - 1)}
-          />
-          <span className="flex-1 text-center mu-label-sm tabular-nums text-mu-text">{year}</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t("calendar.next-year")}
-            icon={<ChevronRightIcon className="mu-icon rtl:rotate-180" />}
-            onClick={() => setYear((value) => value + 1)}
-          />
+      <Popover.Popup align="start" className="w-72">
+        <div className="mb-2 flex max-h-24 flex-wrap gap-1 overflow-y-auto">
+          {years.map((value) => (
+            <Button
+              key={value}
+              variant={year === value ? "neutral" : "ghost"}
+              size="sm"
+              aria-pressed={year === value}
+              onClick={() => setYear(value)}
+            >
+              {value}
+            </Button>
+          ))}
         </div>
         <div className="grid grid-cols-3 gap-0.5">
           {MONTHS.map((value) => {
             const key = buildMonthKey(year, value);
             const isShown = key === month;
-            const isCurrent = key === currentMonth;
+            const hasActivity = activityMonths[year]?.includes(value) ?? false;
             return (
               <CalendarLink
                 key={key}
@@ -84,7 +82,8 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
                 onClick={() => setOpen(false)}
               >
                 {monthShortLabels[value - 1]}
-                {isCurrent && (
+                {hasActivity && <span className="mu-visually-hidden">{t("calendar.has-entries")}</span>}
+                {hasActivity && (
                   <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-mu-primary" />
                 )}
               </CalendarLink>

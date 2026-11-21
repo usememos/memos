@@ -1291,6 +1291,7 @@
     "place-placeholder": "Prima scegli un punto."
   },
   "calendar": {
+    "has-entries": "contiene voci",
     "new-memo-on-day": "Nuovo memo in questo giorno",
     "next-year": "Anno prossimo",
     "no-memos-in-month": "Nessun memo in {{month}}",

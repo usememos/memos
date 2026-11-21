@@ -1291,6 +1291,7 @@
     "place-placeholder": "Прво изаберите положај."
   },
   "calendar": {
+    "has-entries": "има записа",
     "new-memo-on-day": "Нова белешка на данашњи дан",
     "next-year": "Следећа година",
     "no-memos-in-month": "Нема белешки у {{month}}",

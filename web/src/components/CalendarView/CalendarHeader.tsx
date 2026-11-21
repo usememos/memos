@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addMonths } from "@/lib/calendar-utils";
 import { collectionPathForLocation } from "@/router/routes";
+import type { StatisticsData } from "@/types/statistics";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
 import { MonthPicker } from "./MonthPicker";
@@ -17,6 +18,7 @@ export interface CalendarHeaderProps {
   activeDate?: string;
   /** Whether the shown day can be dismissed: a panel or sheet can, the phone's inline list cannot. */
   closable: boolean;
+  activityStats: StatisticsData["activityStats"];
 }
 
 /**
@@ -30,7 +32,7 @@ export const getTodayPath = (month: string, activeDate: string | undefined, toda
   return closable && activeDate === today ? buildCalendarPath(currentMonth) : buildCalendarPath(currentMonth, today);
 };
 
-export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable }: CalendarHeaderProps) => {
+export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable, activityStats }: CalendarHeaderProps) => {
   const t = useTranslate();
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -41,7 +43,7 @@ export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable 
     // The title's text starts on the grid's text axis (border + cell padding); the month
     // controls sit at the trailing edge so they never move as the title's width changes.
     <header className="flex h-9 shrink-0 items-center ps-px">
-      <MonthPicker month={month} monthLabel={monthLabel} today={today} />
+      <MonthPicker month={month} monthLabel={monthLabel} today={today} activityStats={activityStats} />
       <div className="ms-auto flex items-center gap-0.5 pointer-coarse:gap-4">
         <CalendarLink to={buildCalendarPath(addMonths(month, -1))} aria-label={t("common.previous-month")} className={iconControlClassName}>
           <ChevronLeftIcon className="mu-icon rtl:rotate-180" />

@@ -1290,6 +1290,7 @@
     "place-placeholder": "Velg et punkt først."
   },
   "calendar": {
+    "has-entries": "har oppføringer",
     "new-memo-on-day": "Nytt notat denne dagen",
     "next-year": "Neste år",
     "no-memos-in-month": "Ingen notater i {{month}}",

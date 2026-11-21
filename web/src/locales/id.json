@@ -1271,6 +1271,7 @@
     "place-placeholder": "Pilih posisi terlebih dahulu."
   },
   "calendar": {
+    "has-entries": "memiliki entri",
     "new-memo-on-day": "Memo baru pada hari ini",
     "next-year": "Tahun depan",
     "no-memos-in-month": "Tidak ada memo dalam {{month}}",

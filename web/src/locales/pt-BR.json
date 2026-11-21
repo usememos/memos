@@ -1272,6 +1272,7 @@
     "place-placeholder": "Escolha uma posição primeiro."
   },
   "calendar": {
+    "has-entries": "contém registros",
     "new-memo-on-day": "Novo memorando neste dia",
     "next-year": "Próximo ano",
     "no-memos-in-month": "Nenhum memorando em {{month}}",

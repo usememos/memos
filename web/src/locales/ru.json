@@ -1278,6 +1278,7 @@
     "place-placeholder": "Сначала выберите точку."
   },
   "calendar": {
+    "has-entries": "есть записи",
     "new-memo-on-day": "Новая заметка в этот день",
     "next-year": "В следующем году",
     "no-memos-in-month": "Нет заметок в {{month}}",

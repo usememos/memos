@@ -1271,6 +1271,7 @@
     "place-placeholder": "ابتدا یک موقعیت انتخاب کنید."
   },
   "calendar": {
+    "has-entries": "دارای ورودی است",
     "new-memo-on-day": "یادداشت جدید در این روز",
     "next-year": "سال آینده",
     "no-memos-in-month": "هیچ یادداشتی در {{month}} وجود ندارد",

@@ -159,7 +159,7 @@ describe("Space calendar navigation", () => {
   it("keeps Space and filters in month links", () => {
     render(
       <MemoryRouter initialEntries={["/spaces/a/calendar/2026/09?filter=tagSearch%3Awork"]}>
-        <CalendarHeader month="2026-09" monthLabel="September 2026" today="2026-09-06" closable />
+        <CalendarHeader month="2026-09" monthLabel="September 2026" today="2026-09-06" closable activityStats={{}} />
       </MemoryRouter>,
     );
     expect(screen.getByRole("link", { name: "common.next-month" })).toHaveAttribute(

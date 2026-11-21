@@ -1290,6 +1290,7 @@
     "place-placeholder": "בחרו נקודה תחילה."
   },
   "calendar": {
+    "has-entries": "יש רשומות",
     "new-memo-on-day": "תזכיר חדש ביום זה",
     "next-year": "בשנה הבאה",
     "no-memos-in-month": "אין תזכירים ב-{{month}}",

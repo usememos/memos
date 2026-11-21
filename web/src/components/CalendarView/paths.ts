@@ -33,5 +33,21 @@ export const buildCalendarPath = (month: string, date?: string): string => {
 
 export const getMonthOfDate = (date: string): string => date.slice(0, 7);
 
+/** Month numbers with activity, grouped by year, from YYYY-MM-DD statistics keys. */
+export const getCalendarActivityMonths = (activityStats: Record<string, number>): Record<number, number[]> => {
+  const monthsByYear = new Map<number, Set<number>>();
+  for (const [date, count] of Object.entries(activityStats)) {
+    const match = /^(\d{4})-(\d{2})-\d{2}$/.exec(date);
+    if (!match || count <= 0) continue;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    if (month < 1 || month > 12) continue;
+    const months = monthsByYear.get(year) ?? new Set<number>();
+    months.add(month);
+    monthsByYear.set(year, months);
+  }
+  return Object.fromEntries([...monthsByYear].map(([year, months]) => [year, [...months].sort((a, b) => a - b)]));
+};
+
 /** The day a month shows by default: today when the month is the current one, else the first. */
 export const getDefaultDate = (month: string, today: string): string => (getMonthOfDate(today) === month ? today : `${month}-01`);
