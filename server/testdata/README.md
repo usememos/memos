@@ -12,3 +12,7 @@ are excluded because rebuilding the embedded frontend changes them.
 
 Treat these as the compatibility baseline. Do not regenerate them from the
 new implementation to make a failing test pass.
+
+The four `GET /memos/x` cases now include `Vary: Accept`: memo URLs can
+serve Markdown through content negotiation. Their HTML bodies and all other
+headers remain the original baseline.
