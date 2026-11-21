@@ -305,6 +305,100 @@ func TestRenderEmptyTagListIsFalse(t *testing.T) {
 	}
 }
 
+func TestRenderEmptyScalarListIsFalse(t *testing.T) {
+	t.Parallel()
+
+	schemas := []struct {
+		schema      Schema
+		expressions []string
+		rejected    []string
+	}{
+		{
+			schema:      NewSchema(),
+			expressions: []string{`visibility in []`, `creator_id in []`, `creator in []`, `space in []`, `content in []`},
+			rejected:    []string{`created_ts in []`, `updated_ts in []`},
+		},
+		{
+			schema:      NewAttachmentSchema(),
+			expressions: []string{`filename in []`, `mime_type in []`, `creator in []`, `memo_id in []`, `space in []`},
+			rejected:    []string{`create_time in []`},
+		},
+	}
+
+	for _, group := range schemas {
+		engine, err := NewEngine(group.schema)
+		require.NoError(t, err)
+		for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+			for _, expr := range group.expressions {
+				stmt, err := engine.CompileToStatement(context.Background(), expr, RenderOptions{Dialect: dialect})
+				require.NoError(t, err, "%s/%s/%s", group.schema.Name, dialect, expr)
+				require.Equal(t, "1 = 0", stmt.SQL, "%s/%s/%s", group.schema.Name, dialect, expr)
+				require.Empty(t, stmt.Args, "%s/%s/%s", group.schema.Name, dialect, expr)
+			}
+			for _, expr := range group.rejected {
+				_, err := engine.CompileToStatement(context.Background(), expr, RenderOptions{Dialect: dialect})
+				require.ErrorContains(t, err, "does not support IN() comparisons", "%s/%s/%s", group.schema.Name, dialect, expr)
+			}
+		}
+	}
+
+	memoEngine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		negated, err := memoEngine.CompileToStatement(context.Background(), `!(visibility in [])`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Equal(t, "NOT (1 = 0)", negated.SQL, dialect)
+		require.Empty(t, negated.Args, dialect)
+
+		combined, err := memoEngine.CompileToStatement(context.Background(), `visibility in [] || creator_id == 1`, RenderOptions{
+			Dialect:           dialect,
+			PlaceholderOffset: 2,
+		})
+		require.NoError(t, err, dialect)
+		require.Contains(t, combined.SQL, "1 = 0 OR", dialect)
+		require.Equal(t, []any{int64(1)}, combined.Args, dialect)
+	}
+}
+
+func TestRenderEmptyScalarListSQLiteBehavior(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+
+	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, visibility TEXT, creator_id INTEGER)`)
+	require.NoError(t, err)
+	for _, fixture := range []struct {
+		id         int
+		visibility string
+		creatorID  int
+	}{
+		{1, "PUBLIC", 1},
+		{2, "PRIVATE", 2},
+	} {
+		_, err = db.Exec(`INSERT INTO memo (id, visibility, creator_id) VALUES (?, ?, ?)`, fixture.id, fixture.visibility, fixture.creatorID)
+		require.NoError(t, err)
+	}
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	cases := []struct {
+		expr string
+		want []int
+	}{
+		{`visibility in []`, nil},
+		{`creator_id in []`, nil},
+		{`!(visibility in [])`, []int{1, 2}},
+		{`visibility in [] || creator_id == 1`, []int{1}},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+		require.NoError(t, err, tc.expr)
+		require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+	}
+}
+
 func TestRenderTagStringPredicatesSQLiteBehavior(t *testing.T) {
 	db, err := sql.Open("sqlite", ":memory:")
 	require.NoError(t, err)

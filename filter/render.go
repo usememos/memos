@@ -516,6 +516,13 @@ func (r *renderer) renderJSONListContains(field Field, value string) (renderResu
 }
 
 func (r *renderer) renderScalarInCondition(field Field, values []ValueExpr) (renderResult, error) {
+	if field.Type != FieldTypeString && field.Type != FieldTypeInt {
+		return renderResult{}, errors.Errorf("field %q does not support IN() comparisons", field.Name)
+	}
+	if len(values) == 0 {
+		return renderResult{sql: "1 = 0"}, nil
+	}
+
 	placeholders := make([]string, 0, len(values))
 
 	for _, v := range values {
