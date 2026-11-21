@@ -1,8 +1,10 @@
 package api
 
 import (
+	"cmp"
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -98,11 +100,10 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 	memoFind.Access = accessScope
 
 	userMemoStatMap := make(map[int32]*apipb.UserStats)
-	pinnedMemoUIDsByUserID := make(map[int32][]string)
+	statsMemosByUserID := make(map[int32][]statsMemo)
 	limit := 1000
-	offset := 0
 	memoFind.Limit = &limit
-	memoFind.Offset = &offset
+	memoFind.OrderByID = true
 
 	for {
 		memos, err := s.Store.ListMemos(ctx, memoFind)
@@ -132,9 +133,7 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 			}
 
 			stats := userMemoStatMap[memo.CreatorID]
-
-			stats.MemoCreatedTimestamps = append(stats.MemoCreatedTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
-			stats.MemoUpdatedTimestamps = append(stats.MemoUpdatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
+			statsMemosByUserID[memo.CreatorID] = append(statsMemosByUserID[memo.CreatorID], newStatsMemo(memo))
 
 			// Count memo stats
 			stats.TotalMemoCount++
@@ -157,14 +156,10 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 					}
 				}
 			}
-
-			// Track pinned memos
-			if memo.Pinned {
-				pinnedMemoUIDsByUserID[memo.CreatorID] = append(pinnedMemoUIDsByUserID[memo.CreatorID], memo.UID)
-			}
 		}
 
-		offset += limit
+		lastID := memos[len(memos)-1].ID
+		memoFind.AfterID = &lastID
 	}
 
 	userMemoStats := []*apipb.UserStats{}
@@ -182,9 +177,7 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 			return nil, status.Errorf(codes.Internal, "failed to resolve user stats name")
 		}
 		userMemoStat.Name = fmt.Sprintf("%s/stats", BuildUserName(username))
-		for _, memoUID := range pinnedMemoUIDsByUserID[userID] {
-			userMemoStat.PinnedMemos = append(userMemoStat.PinnedMemos, MemoNamePrefix+memoUID)
-		}
+		setStatsMemoLists(userMemoStat, statsMemosByUserID[userID])
 		userMemoStats = append(userMemoStats, userMemoStat)
 	}
 
@@ -227,20 +220,17 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 
 	memoFind.Access = accessScope
 
-	createdTimestamps := []*timestamppb.Timestamp{}
-	updatedTimestamps := []*timestamppb.Timestamp{}
+	statsMemos := []statsMemo{}
 	tagCount := make(map[string]int32)
 	linkCount := int32(0)
 	codeCount := int32(0)
 	todoCount := int32(0)
 	undoCount := int32(0)
-	pinnedMemos := []string{}
 	totalMemoCount := int32(0)
 
 	limit := 1000
-	offset := 0
 	memoFind.Limit = &limit
-	memoFind.Offset = &offset
+	memoFind.OrderByID = true
 
 	for {
 		memos, err := s.Store.ListMemos(ctx, memoFind)
@@ -254,8 +244,7 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 		totalMemoCount += int32(len(memos))
 
 		for _, memo := range memos {
-			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
-			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
+			statsMemos = append(statsMemos, newStatsMemo(memo))
 			// Count different memo types based on content.
 			if memo.Payload != nil {
 				incrementTagCounts(tagCount, memo.Payload.Tags)
@@ -274,21 +263,16 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 					}
 				}
 			}
-			if memo.Pinned {
-				pinnedMemos = append(pinnedMemos, MemoNamePrefix+memo.UID)
-			}
 		}
 
-		offset += limit
+		lastID := memos[len(memos)-1].ID
+		memoFind.AfterID = &lastID
 	}
 
 	userStats := &apipb.UserStats{
-		Name:                  fmt.Sprintf("%s/stats", BuildUserName(user.Username)),
-		MemoCreatedTimestamps: createdTimestamps,
-		MemoUpdatedTimestamps: updatedTimestamps,
-		TagCounts:             tagCount,
-		PinnedMemos:           pinnedMemos,
-		TotalMemoCount:        totalMemoCount,
+		Name:           fmt.Sprintf("%s/stats", BuildUserName(user.Username)),
+		TagCounts:      tagCount,
+		TotalMemoCount: totalMemoCount,
 		MemoTypeStats: &apipb.UserStats_MemoTypeStats{
 			LinkCount: linkCount,
 			CodeCount: codeCount,
@@ -296,6 +280,7 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 			UndoCount: undoCount,
 		},
 	}
+	setStatsMemoLists(userStats, statsMemos)
 
 	if currentUser != nil && currentUser.ID == userID {
 		size, err := s.Store.GetAttachmentStorageUsage(ctx, userID)
@@ -306,6 +291,51 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	}
 
 	return userStats, nil
+}
+
+// statsMemo is what UserStats lists for each counted memo.
+type statsMemo struct {
+	id        int32
+	uid       string
+	createdTs int64
+	updatedTs int64
+	pinned    bool
+}
+
+func newStatsMemo(memo *store.Memo) statsMemo {
+	return statsMemo{
+		id:        memo.ID,
+		uid:       memo.UID,
+		createdTs: memo.CreatedTs,
+		updatedTs: memo.UpdatedTs,
+		pinned:    memo.Pinned,
+	}
+}
+
+// setStatsMemoLists fills the timestamp and pinned memo lists of stats.
+//
+// The stats handlers read memos in pages ordered by ID, because each page then
+// starts where the last one ended. An OFFSET page makes the database find and
+// sort all earlier rows again, so reading every memo took time quadratic in
+// the number of memos. The lists keep the order they had with OFFSET paging:
+// newest created first, then highest ID first.
+func setStatsMemoLists(stats *apipb.UserStats, memos []statsMemo) {
+	slices.SortFunc(memos, func(a, b statsMemo) int {
+		if c := cmp.Compare(b.createdTs, a.createdTs); c != 0 {
+			return c
+		}
+		return cmp.Compare(b.id, a.id)
+	})
+	stats.MemoCreatedTimestamps = make([]*timestamppb.Timestamp, 0, len(memos))
+	stats.MemoUpdatedTimestamps = make([]*timestamppb.Timestamp, 0, len(memos))
+	stats.PinnedMemos = []string{}
+	for _, memo := range memos {
+		stats.MemoCreatedTimestamps = append(stats.MemoCreatedTimestamps, timestamppb.New(time.Unix(memo.createdTs, 0)))
+		stats.MemoUpdatedTimestamps = append(stats.MemoUpdatedTimestamps, timestamppb.New(time.Unix(memo.updatedTs, 0)))
+		if memo.pinned {
+			stats.PinnedMemos = append(stats.PinnedMemos, MemoNamePrefix+memo.uid)
+		}
+	}
 }
 
 // incrementTagCounts counts each distinct tag at most once for one memo payload.

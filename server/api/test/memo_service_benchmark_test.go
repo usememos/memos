@@ -344,3 +344,21 @@ func BenchmarkListMemosLargeAttachments(b *testing.B) {
 		})
 	}
 }
+
+// BenchmarkGetUserStats reads every seeded memo, as the sidebar heatmap and tag
+// list do on each home page load.
+func BenchmarkGetUserStats(b *testing.B) {
+	bench := newBenchmarkService(b)
+	req := &apipb.GetUserStatsRequest{Name: "users/" + bench.hostUser.Username}
+	resp, err := bench.Service.GetUserStats(bench.authenticatedCtx, req)
+	require.NoError(b, err)
+	require.EqualValues(b, benchmarkTopLevelMemoCount, resp.TotalMemoCount)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := bench.Service.GetUserStats(bench.authenticatedCtx, req); err != nil {
+			b.Fatalf("GetUserStats failed: %v", err)
+		}
+	}
+}
