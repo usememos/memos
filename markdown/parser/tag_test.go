@@ -289,6 +289,14 @@ func TestFindTagMatchesMemosTagV1(t *testing.T) {
 	}
 }
 
+func TestMatchFullyQualifiedEmojiMatchesEverySequence(t *testing.T) {
+	for sequence := range emoji17FullyQualified {
+		assert.Equal(t, len(sequence), matchFullyQualifiedEmoji([]byte(sequence+"a")), "%+q", sequence)
+	}
+	assert.Zero(t, matchFullyQualifiedEmoji([]byte("abc")))
+	assert.Zero(t, matchFullyQualifiedEmoji([]byte("1\ufe0f")))
+}
+
 func TestFindTagMatchesRejectsNumericCharacterReference(t *testing.T) {
 	for _, input := range []string{"&#35;tag", "&#x23;tag"} {
 		t.Run(input, func(t *testing.T) {

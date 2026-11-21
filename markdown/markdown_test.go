@@ -1137,6 +1137,20 @@ More content here with ` + "`inline code`" + ` and other elements.
 	}
 }
 
+// BenchmarkGenerateSnippetLongParagraph parses one long line with the
+// extensions the server enables. Its cost should grow linearly with the line.
+func BenchmarkGenerateSnippetLongParagraph(b *testing.B) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	content := []byte("#journal " + strings.Repeat("Some text that a person might write in a daily note, with a few more words about the day. ", 50))
+
+	for b.Loop() {
+		_, err := svc.GenerateSnippet(content, 64)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkExtractProperties(b *testing.B) {
 	svc := NewService()
 	content := []byte("# Title\n\n[Link](url)\n\n`code`\n\n- [ ] Task\n- [x] Done")
