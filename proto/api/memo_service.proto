@@ -248,26 +248,26 @@ message Memo {
     (google.api.resource_reference) = {type: "memos.api/Memo"}
   ];
 
-  // Output only. The number of comments directly on this memo that the caller
-  // can read.
-  int32 comment_count = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // Output only. The tags extracted from the content.
-  repeated string tags = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated string tags = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The properties computed from the content.
-  Property property = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  Property property = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. A plain-text snippet of the content.
-  string snippet = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string snippet = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Optional. The creation time. Defaults to the current time when unset on
   // creation.
-  google.protobuf.Timestamp create_time = 17 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp create_time = 16 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The last update time. Defaults to the current time when unset on
   // creation.
-  google.protobuf.Timestamp update_time = 18 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp update_time = 17 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The number of comments directly on this memo that the caller
+  // can read.
+  int32 comment_count = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Property holds properties computed from the memo content.
   message Property {

@@ -48,9 +48,6 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
     `Memo.comment_count` for the number of comments on a memo.
   - The MCP tools `memo_list_memo_comments` and `memo_create_memo_comment` are removed; `memo_list_memos` and
     `memo_create_memo` cover them.
-  - `Memo.comment_count` takes field number 13, and `tags`, `property`, `snippet`, `create_time` and `update_time`
-    move to 14 through 18. JSON field names are unchanged; clients that use the binary protobuf encoding must
-    regenerate from the new schema.
 
 ## 26.10.0
 

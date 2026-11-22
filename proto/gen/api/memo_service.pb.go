@@ -173,21 +173,21 @@ type Memo struct {
 	// even when the caller cannot read the parent, and grants no read access.
 	// Format: memos/{memo}
 	Parent *string `protobuf:"bytes,12,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
-	// Output only. The number of comments directly on this memo that the caller
-	// can read.
-	CommentCount int32 `protobuf:"varint,13,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
 	// Output only. The tags extracted from the content.
-	Tags []string `protobuf:"bytes,14,rep,name=tags,proto3" json:"tags,omitempty"`
+	Tags []string `protobuf:"bytes,13,rep,name=tags,proto3" json:"tags,omitempty"`
 	// Output only. The properties computed from the content.
-	Property *Memo_Property `protobuf:"bytes,15,opt,name=property,proto3" json:"property,omitempty"`
+	Property *Memo_Property `protobuf:"bytes,14,opt,name=property,proto3" json:"property,omitempty"`
 	// Output only. A plain-text snippet of the content.
-	Snippet string `protobuf:"bytes,16,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	Snippet string `protobuf:"bytes,15,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	// Optional. The creation time. Defaults to the current time when unset on
 	// creation.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Optional. The last update time. Defaults to the current time when unset on
 	// creation.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Output only. The number of comments directly on this memo that the caller
+	// can read.
+	CommentCount  int32 `protobuf:"varint,18,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -306,13 +306,6 @@ func (x *Memo) GetParent() string {
 	return ""
 }
 
-func (x *Memo) GetCommentCount() int32 {
-	if x != nil {
-		return x.CommentCount
-	}
-	return 0
-}
-
 func (x *Memo) GetTags() []string {
 	if x != nil {
 		return x.Tags
@@ -346,6 +339,13 @@ func (x *Memo) GetUpdateTime() *timestamppb.Timestamp {
 		return x.UpdateTime
 	}
 	return nil
+}
+
+func (x *Memo) GetCommentCount() int32 {
+	if x != nil {
+		return x.CommentCount
+	}
+	return 0
 }
 
 // Request message for MemoService.ListMemos.
@@ -2225,15 +2225,15 @@ const file_api_memo_service_proto_rawDesc = "" +
 	" \x03(\v2\x17.memos.api.MemoRelationB\x03\xe0A\x01R\trelations\x126\n" +
 	"\treactions\x18\v \x03(\v2\x13.memos.api.ReactionB\x03\xe0A\x03R\treactions\x126\n" +
 	"\x06parent\x18\f \x01(\tB\x19\xe0A\x01\xe0A\x05\xfaA\x10\n" +
-	"\x0ememos.api/MemoH\x02R\x06parent\x88\x01\x01\x12(\n" +
-	"\rcomment_count\x18\r \x01(\x05B\x03\xe0A\x03R\fcommentCount\x12\x17\n" +
-	"\x04tags\x18\x0e \x03(\tB\x03\xe0A\x03R\x04tags\x129\n" +
-	"\bproperty\x18\x0f \x01(\v2\x18.memos.api.Memo.PropertyB\x03\xe0A\x03R\bproperty\x12\x1d\n" +
-	"\asnippet\x18\x10 \x01(\tB\x03\xe0A\x03R\asnippet\x12@\n" +
-	"\vcreate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"\x0ememos.api/MemoH\x02R\x06parent\x88\x01\x01\x12\x17\n" +
+	"\x04tags\x18\r \x03(\tB\x03\xe0A\x03R\x04tags\x129\n" +
+	"\bproperty\x18\x0e \x01(\v2\x18.memos.api.Memo.PropertyB\x03\xe0A\x03R\bproperty\x12\x1d\n" +
+	"\asnippet\x18\x0f \x01(\tB\x03\xe0A\x03R\asnippet\x12@\n" +
+	"\vcreate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"createTime\x12@\n" +
-	"\vupdate_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"updateTime\x1a\xd6\x01\n" +
+	"\vupdate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"updateTime\x12(\n" +
+	"\rcomment_count\x18\x12 \x01(\x05B\x03\xe0A\x03R\fcommentCount\x1a\xd6\x01\n" +
 	"\bProperty\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
 	"\bhas_link\x18\x02 \x01(\bR\ahasLink\x12\x19\n" +

@@ -4553,13 +4553,6 @@ components:
                          to create a comment; unset for a top-level memo. Its identity is returned
                          even when the caller cannot read the parent, and grants no read access.
                          Format: memos/{memo}
-                commentCount:
-                    readOnly: true
-                    type: integer
-                    description: |-
-                        Output only. The number of comments directly on this memo that the caller
-                         can read.
-                    format: int32
                 tags:
                     readOnly: true
                     type: array
@@ -4587,6 +4580,13 @@ components:
                         Optional. The last update time. Defaults to the current time when unset on
                          creation.
                     format: date-time
+                commentCount:
+                    readOnly: true
+                    type: integer
+                    description: |-
+                        Output only. The number of comments directly on this memo that the caller
+                         can read.
+                    format: int32
             description: Memo is a Markdown note written by a user.
         MemoRelation:
             required:
