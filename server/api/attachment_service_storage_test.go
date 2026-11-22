@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -76,7 +77,13 @@ func TestSaveAttachmentContentKeepsConcurrentSameNameLocalUploadsApart(t *testin
 	go func() {
 		firstErr <- saveAttachmentContent(ctx, instanceProfile, nil, first, setting, slow)
 	}()
-	<-slow.started
+	select {
+	case <-slow.started:
+	case err := <-firstErr:
+		require.FailNow(t, "first upload returned before reading its content", "%v", err)
+	case <-time.After(10 * time.Second):
+		require.FailNow(t, "first upload never started reading its content")
+	}
 
 	second := &store.Attachment{UID: "second-uid", Filename: "image.png", Type: "image/png"}
 	require.NoError(t, saveAttachmentContent(ctx, instanceProfile, nil, second, setting, strings.NewReader("second upload")))
