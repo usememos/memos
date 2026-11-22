@@ -157,7 +157,7 @@ describe("MemoActionMenu", () => {
     expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(trigger.querySelector(".lucide-ellipsis-vertical")).not.toBeNull();
+    expect(trigger.querySelector(".lucide-ellipsis")).not.toBeNull();
 
     fireEvent.click(trigger);
 

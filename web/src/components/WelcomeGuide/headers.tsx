@@ -3,12 +3,12 @@ import {
   AstroidIcon,
   CalendarDaysIcon,
   ChevronDownIcon,
+  EllipsisIcon,
   HashIcon,
   LibraryIcon,
   ListChecksIcon,
   LockIcon,
   MapIcon,
-  MoreVerticalIcon,
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
@@ -68,7 +68,7 @@ const Meta = ({ time, children }: { time: string; children?: ReactNode }) => (
 const MetaActions = ({ visibility }: { visibility: Visibility }) => (
   <span className="ms-auto flex items-center gap-1">
     <VisibilityIcon visibility={visibility} />
-    <MoreVerticalIcon className="mu-icon text-mu-text-secondary" />
+    <EllipsisIcon className="mu-icon text-mu-text-secondary" />
   </span>
 );
 

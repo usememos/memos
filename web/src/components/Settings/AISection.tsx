@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { Badge, Button, Dialog, Field, Input, Menu, Select, Textarea, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
-import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { EllipsisIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -288,9 +288,7 @@ const AISection = () => {
                     <Tooltip.Trigger
                       render={
                         <Menu.Trigger
-                          render={
-                            <Button variant="ghost" aria-label={`${t("common.more")}: ${provider.title}`} icon={<MoreVerticalIcon />} />
-                          }
+                          render={<Button variant="ghost" aria-label={`${t("common.more")}: ${provider.title}`} icon={<EllipsisIcon />} />}
                         />
                       }
                     />

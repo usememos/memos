@@ -1,5 +1,5 @@
 import { Badge, Button, List, Menu, Tooltip } from "@usememos/ui";
-import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { EllipsisIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import InfoChip from "@/components/Settings/InfoChip";
@@ -149,7 +149,7 @@ const SSOSection = () => {
                     <Tooltip.Trigger
                       render={
                         <Menu.Trigger
-                          render={<Button variant="ghost" aria-label={`${t("common.more")}: ${row.title}`} icon={<MoreVerticalIcon />} />}
+                          render={<Button variant="ghost" aria-label={`${t("common.more")}: ${row.title}`} icon={<EllipsisIcon />} />}
                         />
                       }
                     />

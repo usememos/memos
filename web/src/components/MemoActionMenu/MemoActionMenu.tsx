@@ -9,10 +9,10 @@ import {
   CheckCheckIcon,
   CopyIcon,
   Edit3Icon,
+  EllipsisIcon,
   FileTextIcon,
   LinkIcon,
   ListRestartIcon,
-  MoreVerticalIcon,
   TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -166,7 +166,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     <Menu.Root modal={false}>
       <Tooltip.Root>
         <Tooltip.Trigger
-          render={<Menu.Trigger render={<Button variant="ghost" size="sm" aria-label={t("common.more")} icon={<MoreVerticalIcon />} />} />}
+          render={<Menu.Trigger render={<Button variant="ghost" size="sm" aria-label={t("common.more")} icon={<EllipsisIcon />} />} />}
         />
         <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
       </Tooltip.Root>
