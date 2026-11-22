@@ -165,20 +165,20 @@ const render = (ui: Parameters<typeof testingLibraryRender>[0]) =>
   );
 
 const expectCollapsedNavPill = (pill: HTMLElement, label: string) => {
-  expect(pill).toHaveClass("mu-s-md", "h-(--mu-row-height)", "rounded-(--mu-row-radius)", "px-1.5");
+  expect(pill).toHaveClass("mu-s-md", "h-(--mu-row-height)", "rounded-(--mu-row-radius)", "px-[5px]");
   expect(pill.firstElementChild).toHaveClass("size-4");
   const labelTrack = pill.querySelector('span.grid[aria-hidden="true"]');
   expect(labelTrack).toHaveClass("grid-cols-[0fr]", "ps-0");
-  expect(labelTrack).not.toHaveClass("@min-[230px]:grid-cols-[1fr]");
+  expect(labelTrack).not.toHaveClass("@min-[240px]:grid-cols-[1fr]");
   expect(labelTrack).toHaveTextContent(label);
 };
 
 const expectExpandedNavPill = (pill: HTMLElement, label: string) => {
-  expect(pill).toHaveClass("mu-s-md", "h-(--mu-row-height)", "rounded-(--mu-row-radius)", "px-1.5");
+  expect(pill).toHaveClass("mu-s-md", "h-(--mu-row-height)", "rounded-(--mu-row-radius)", "px-[5px]");
   expect(pill.firstElementChild).toHaveClass("size-4");
   const labelTrack = pill.querySelector("span.grid");
   // The label opens only where the row can afford it; the control's aria-label names it regardless.
-  expect(labelTrack).toHaveClass("@min-[230px]:grid-cols-[1fr]", "@min-[230px]:ps-1.5");
+  expect(labelTrack).toHaveClass("@min-[240px]:grid-cols-[1fr]", "@min-[240px]:ps-1.5");
   expect(labelTrack).toHaveAttribute("aria-hidden", "true");
   expect(pill.querySelector("[data-sidebar-label]")).toHaveTextContent(label);
 };
@@ -248,7 +248,7 @@ describe("App sidebar logo", () => {
     expect(compose).toHaveClass("mu-button", "mu-button-neutral", "mu-button-icon", "mu-s-md");
     expect(compose).not.toHaveClass("rounded-full");
     expect(header).not.toContainElement(search);
-    expect(search).toHaveClass("ms-auto", "h-(--mu-row-height)", "px-1.5");
+    expect(search).toHaveClass("ms-auto", "h-(--mu-row-height)", "px-[5px]");
     expect(search.querySelector(".lucide-search")).toHaveClass("mu-icon");
 
     fireEvent.click(search);
@@ -398,7 +398,7 @@ describe("App sidebar logo", () => {
     expect(primaryNavigation).toHaveClass("h-(--mu-row-height)", "items-center", "gap-1", "px-3");
     expect(primaryNavigation).not.toHaveClass("flex-col");
     const navigation = within(primaryNavigation);
-    expect(navigation.getByRole("button", { name: "common.search" })).toHaveClass("ms-auto", "h-(--mu-row-height)", "px-1.5");
+    expect(navigation.getByRole("button", { name: "common.search" })).toHaveClass("ms-auto", "h-(--mu-row-height)", "px-[5px]");
     expectActiveNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
     const calendar = navigation.getByRole("link", { name: "common.calendar" });
     expect(calendar).toHaveAttribute("href", "/calendar");

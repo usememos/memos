@@ -4,7 +4,6 @@ import {
   CalendarDaysIcon,
   ChevronDownIcon,
   EllipsisIcon,
-  HashIcon,
   LibraryIcon,
   ListChecksIcon,
   LockIcon,
@@ -15,7 +14,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar/MonthCalendar";
-import { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "@/components/AppSidebar/SidebarRow";
+import { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, SidebarTagMarkSlot, sidebarRowStateClasses } from "@/components/AppSidebar/SidebarRow";
 import SidebarSection from "@/components/AppSidebar/SidebarSection";
 import { sidebarSurfaceVariants } from "@/components/AppSidebar/sidebar-layout";
 import { MEMO_CARD_BASE_CLASSES } from "@/components/MemoView/constants";
@@ -140,7 +139,7 @@ export const KeepHeader = () => {
   const { month, today } = currentMonth();
   const days = [today, today - 1, today - 2, today - 9, today - 15].filter((day) => day >= 1);
   const data = Object.fromEntries(days.map((day, index) => [`${month}-${String(day).padStart(2, "0")}`, index === 0 ? 2 : 1]));
-  const pillClasses = cn(sidebarSurfaceVariants({ role: "navPill" }), sidebarRowStateClasses("current"), "gap-1.5 px-2 mu-body");
+  const pillClasses = cn(sidebarSurfaceVariants({ role: "navPill" }), sidebarRowStateClasses("current"), "gap-1.5 px-2 mu-label-sm");
   return (
     <Still className="grid gap-4 pt-1 sm:grid-cols-[minmax(0,1fr)_160px]">
       <div className="mu-caption">
@@ -171,7 +170,7 @@ export const KeepHeader = () => {
             [t("welcome.sample.tag-project"), 2],
           ].map(([tag, count]) => (
             <span key={String(tag)} className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}>
-              <SidebarRowIconSlot icon={HashIcon} />
+              <SidebarTagMarkSlot />
               <span className="min-w-0 flex-1 truncate">{tag}</span>
               <span className="mu-caption text-mu-text-secondary/60 tabular-nums">{count}</span>
             </span>

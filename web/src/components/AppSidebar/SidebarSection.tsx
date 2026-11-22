@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import SidebarSectionHeader from "./SidebarSectionHeader";
 
-export const SIDEBAR_SECTION_STACK_CLASSES = "flex flex-col gap-3";
+// 16px between sections: with the header on a 28px row box, a section break is clearly more than a row gap.
+export const SIDEBAR_SECTION_STACK_CLASSES = "flex flex-col gap-4";
 export const SIDEBAR_SECTION_CONTENT_CLASSES = "flex flex-col gap-0.5";
 
 interface Props {

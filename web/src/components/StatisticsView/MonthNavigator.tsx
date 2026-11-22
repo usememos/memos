@@ -14,8 +14,9 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
   const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
 
   return (
-    <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-2 justify-between")}>
-      <h2 className="min-w-0 truncate mu-label text-mu-text select-none">{monthLabel}</h2>
+    // `pe-1` puts the next-month arrow on the sidebar's action axis.
+    <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-2 justify-between pe-1")}>
+      <h2 className="min-w-0 truncate text-mu-text select-none">{monthLabel}</h2>
 
       <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
         <Tooltip.Root>

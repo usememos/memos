@@ -13,8 +13,8 @@ import { calculateMaxCount, getTooltipText } from "./utils";
  * leftover width goes into the column gaps, which keeps the first and last columns on the rails.
  */
 const CALENDAR_GRID_CLASSES = "grid grid-cols-[repeat(7,28px)] justify-between gap-y-1";
-/** Weekday initials: caption weight in muted ink, so they sit under the day numbers rather than beside them. */
-const WEEKDAY_LABEL_CLASSES = "mu-caption text-mu-text-secondary";
+/** Weekday initials: the 11px caption in muted ink inside their 20px row, a step below the day numbers they head. */
+const WEEKDAY_LABEL_CLASSES = "mu-caption-xs text-mu-text-secondary";
 
 /** Localized weekday labels starting on the instance's first day of the week. */
 export const useWeekdayLabels = (weekStartDayOffset: number) => {

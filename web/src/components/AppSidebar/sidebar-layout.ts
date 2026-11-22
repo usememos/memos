@@ -8,11 +8,19 @@ import { cva } from "class-variance-authority";
  * artwork column. The sidebar carries the package's `mu-compact`, so its md rows and
  * controls are 28px tall: rows read their height and radius from the md row variables,
  * and compact navigation is a 28px square like the header's compose control.
+ *
+ * Text is one size, 13px: rows and open nav labels are `mu-label-sm`, so a row leads by
+ * weight in secondary ink and stays quieter than the memos beside the rail.
+ *
+ * The end of the rail mirrors its start with one action axis, 26px from the edge: the centre
+ * of a 28px control sitting on the 12px inset (compose, search, the calendar's last column).
+ * Every trailing 20px control centres on it, so its box ends 16px from the edge: a box that
+ * holds one (a section header, the month row, a view row) pads its end by 4px (`pe-1`).
  */
 export const SIDEBAR_RAIL_CLASSES = "px-3";
 // Content rows reserve 20px so 16px icons and 20px marks share a stable label rail.
 export const SIDEBAR_LEADING_SLOT_CLASSES = "flex size-5 shrink-0 items-center justify-center";
-// Compact nav uses the visible 16px glyph itself as the cell, keeping 6px x/y padding.
+// Compact nav uses the visible 16px glyph itself as the cell: 5px padding plus the 1px focus border each side.
 export const SIDEBAR_NAV_LEADING_SLOT_CLASSES = "flex size-4 shrink-0 items-center justify-center";
 
 /**
@@ -25,8 +33,8 @@ export const SIDEBAR_NAV_LEADING_SLOT_CLASSES = "flex size-4 shrink-0 items-cent
 export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
   variants: {
     role: {
-      row: "mu-s-md flex h-(--mu-row-height) w-full gap-1 rounded-(--mu-row-radius) px-2 mu-body",
-      navPill: "mu-s-md relative flex h-(--mu-row-height) shrink-0 rounded-(--mu-row-radius) px-1.5",
+      row: "mu-s-md flex h-(--mu-row-height) w-full gap-1 rounded-(--mu-row-radius) px-2 mu-label-sm",
+      navPill: "mu-s-md relative flex h-(--mu-row-height) shrink-0 rounded-(--mu-row-radius) px-[5px]",
       headerBrand: "flex h-9 max-w-full gap-2 rounded-mu-md px-2",
       mobileBrand: "flex h-9 max-w-full gap-1.5 rounded-mu-md px-1",
       account: "flex h-9 w-full gap-1 rounded-none px-5",

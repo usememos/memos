@@ -47,12 +47,22 @@ describe("CalendarCell empty-day clickability", () => {
     expect(onClick).toHaveBeenCalledWith("2025-05-01");
   });
 
-  it("marks today with a dot without changing the numeral weight", () => {
+  it("outlines today without changing the numeral weight", () => {
     render(<CalendarCell day={makeDay({ isToday: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     const button = screen.getByRole("button", { name: /May 1, 2025/ });
+    expect(button).toHaveAttribute("aria-current", "date");
     expect(button).not.toHaveClass("font-semibold", "font-bold");
-    expect(button.querySelector('[aria-hidden="true"]')).toHaveClass("rounded-full");
+    expect(chipOf(button)).toHaveClass("border", "border-mu-text/40", "text-mu-text");
+    expect(chipOf(button)).not.toHaveClass("border-transparent");
+  });
+
+  it("shows a picked today by its fill alone", () => {
+    render(<CalendarCell day={makeDay({ isToday: true, isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
+
+    const chip = chipOf(screen.getByRole("button", { name: /May 1, 2025/ }));
+    expect(chip).toHaveClass("bg-mu-primary", "text-mu-on-primary", "border-transparent");
+    expect(chip).not.toHaveClass("border-mu-text/40");
   });
 
   it("fills a selected day with the accent like a checked filter row, keeping the numeral weight", () => {
@@ -81,7 +91,7 @@ describe("CalendarCell empty-day clickability", () => {
     // The square lives on the capped chip. Putting it back on the button would make row
     // height track the column width again, which is what made a widened rail so tall.
     expect(button).not.toHaveClass("aspect-square");
-    expect(chipOf(button)).toHaveClass("aspect-square", "max-w-7");
+    expect(chipOf(button)).toHaveClass("aspect-square", "max-w-6");
   });
 
   it("does not render out-of-month days as interactive (no role=button)", () => {
