@@ -291,13 +291,15 @@ func validateSSORedirectURI(p *profile.Profile, requestHost, rawURI string) erro
 	}
 	if p != nil && p.InstanceURL != "" {
 		instanceURL, err := url.Parse(p.InstanceURL)
-		if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
+		if err == nil && instanceURL.Scheme != "" && instanceURL.Host != "" {
+			if !strings.EqualFold(redirectURI.Scheme, instanceURL.Scheme) || !strings.EqualFold(redirectURI.Host, instanceURL.Host) {
+				return status.Errorf(codes.InvalidArgument, "redirect_uri must match the configured instance URL")
+			}
 			return nil
 		}
-		if !strings.EqualFold(redirectURI.Scheme, instanceURL.Scheme) || !strings.EqualFold(redirectURI.Host, instanceURL.Host) {
-			return status.Errorf(codes.InvalidArgument, "redirect_uri must match the configured instance URL")
-		}
-		return nil
+		// A configured but malformed instance URL must not silently pass any
+		// callback: fall through to the request-host check, the same way
+		// isAllowedCORSOrigin treats an unparseable instance URL as absent.
 	}
 	if requestHost != "" && !strings.EqualFold(redirectURI.Host, requestHost) {
 		return status.Errorf(codes.InvalidArgument, "redirect_uri must match the host the request was sent to")

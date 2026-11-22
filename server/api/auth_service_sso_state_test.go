@@ -307,6 +307,19 @@ func TestValidateSSORedirectURI(t *testing.T) {
 			uri:         "https://memos.example.com/auth/callback",
 		},
 		{
+			name:        "unparseable instance URL still vets against the request host",
+			instanceURL: "://not-a-url",
+			requestHost: "memos.example.com",
+			uri:         "https://attacker.example/callback",
+			wantErr:     true,
+		},
+		{
+			name:        "unparseable instance URL allows the request host",
+			instanceURL: "://not-a-url",
+			requestHost: "memos.example.com",
+			uri:         "https://memos.example.com/auth/callback",
+		},
+		{
 			name:        "callback on the request host allowed without instance URL",
 			requestHost: "memos.example.com",
 			uri:         "https://memos.example.com/auth/callback",
