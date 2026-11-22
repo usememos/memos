@@ -1,5 +1,6 @@
 import { Skeleton } from "@usememos/ui";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   type CalendarDayCell as CalendarDayCellData,
   DAY_CELL_FILLS,
@@ -9,6 +10,7 @@ import {
 import UserAvatar from "@/components/UserAvatar";
 import { useResolvedUser, useResolvedUsersByNames } from "@/contexts/MentionResolutionContext";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
+import { formatDayLabel } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
@@ -98,7 +100,7 @@ const getNumeralClass = (day: CalendarDayCellData, count: number): string => {
   if (day.isToday) return TODAY_BADGE;
   if (day.isSelected) return OPEN_BADGE;
   if (!day.isCurrentMonth) return "text-mu-text-secondary/40";
-  return count > 0 ? "text-mu-text" : "text-mu-text-secondary/70";
+  return count > 0 ? "text-mu-text" : "text-mu-text-secondary";
 };
 
 const NO_IMAGES: CalendarDaySummary["images"] = [];
@@ -163,6 +165,9 @@ const DayMark = ({
 export const CalendarDayCell = memo(
   ({ day, summary, maxCount, layout, pending, timeBasis, showAuthor, tabIndex, isLastColumn, isLastRow, corner }: CalendarDayCellProps) => {
     const t = useTranslate();
+    const { i18n } = useTranslation();
+    // Read aloud as a date, not as the ISO key the grid navigates by.
+    const dateLabel = useMemo(() => formatDayLabel(day.date, i18n.language), [day.date, i18n.language]);
     const [failedImages, setFailedImages] = useState<string[]>([]);
     const count = summary ? summary.memos.length : day.count;
     const level = getActivityLevel(count, maxCount);
@@ -185,11 +190,13 @@ export const CalendarDayCell = memo(
         to={buildCalendarPath(getMonthOfDate(day.date), day.date)}
         data-calendar-date={day.date}
         tabIndex={tabIndex}
-        aria-label={getTooltipText(count, day.date, t, timeBasis)}
+        aria-label={getTooltipText(count, dateLabel, t, timeBasis)}
         aria-current={day.isSelected ? "page" : undefined}
         className={cn(
           "group/day relative flex min-h-14 min-w-0 flex-col overflow-hidden px-1.5 py-2 text-start no-underline transition-colors sm:px-3 sm:min-h-20 md:min-h-[5.5rem]",
           layout.slim && "sm:px-2",
+          // The mark sits a step below the date so the open day's halo clears it; the row keeps its height.
+          layout.mark && "py-1.5",
           corner && CORNER_CLASSES[corner],
           "border border-mu-line/70 border-s-transparent border-t-transparent mu-focus focus-visible:border-mu-focus",
           // After the all-sides color: tailwind-merge drops a per-side color that comes before it.
@@ -211,7 +218,7 @@ export const CalendarDayCell = memo(
         )}
 
         {layout.mark && day.isCurrentMonth && !showSkeleton && summary && (
-          <span aria-hidden="true" className="flex h-4 shrink-0 items-center">
+          <span aria-hidden="true" className="mt-1 flex h-4 shrink-0 items-center">
             <DayMark
               photo={markPhoto}
               authorNames={showAuthor && !markPhoto ? summary.creators.slice(0, MARK_AUTHORS) : NO_CREATORS}
@@ -228,7 +235,7 @@ export const CalendarDayCell = memo(
                   "overflow-hidden whitespace-pre-line break-words mu-caption [display:-webkit-box] [-webkit-box-orient:vertical]",
                   "text-mu-text-secondary transition-colors group-hover/day:text-mu-text",
                   day.isSelected && "text-mu-text",
-                  excerpt.isCode && "font-mono mu-caption",
+                  excerpt.isCode && "font-mono",
                 )}
                 style={{ WebkitLineClamp: textLines }}
               >

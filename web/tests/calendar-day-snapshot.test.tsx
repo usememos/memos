@@ -71,7 +71,7 @@ describe("calendar daily snapshot cell", () => {
     // Today's badge is a 22px rounded square that starts on the text axis, not a centred disc.
     expect(screen.getByText("7")).toHaveClass("text-mu-on-primary", "bg-mu-primary", "rounded-mu-md", "h-[22px]", "mu-caption");
     expect(screen.getByText("7")).not.toHaveClass("size-6", "before:rounded-full");
-    expect(link).toHaveAccessibleName("2 memos in 2026-08-07");
+    expect(link).toHaveAccessibleName("2 memos in friday, august 7");
     expect(link).toHaveAttribute("href", "/spaces/work/calendar/2026/08/07?filter=test");
     expect(link).toHaveAttribute("aria-current", "page");
     expect(screen.getAllByRole("link")).toHaveLength(1);
@@ -95,12 +95,12 @@ describe("calendar daily snapshot cell", () => {
   it("tints the background by the day's share of the busiest day, like a heatmap", () => {
     cell(summary, { isSelected: false });
     // Two of a max of four memos is the second of four levels.
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.getByRole("link")).not.toHaveClass("bg-mu-surface", "bg-mu-hover");
   });
   it("keeps the heat tint under the open day and marks it with a quiet badge on the numeral", () => {
     cell(summary, { isToday: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.getByRole("link")).not.toHaveClass("bg-mu-hover");
     expect(screen.getByText("7")).toHaveClass("bg-mu-text/10", "text-mu-text", "rounded-mu-md");
     expect(screen.getByText("7")).not.toHaveClass("font-medium");
@@ -148,7 +148,7 @@ describe("calendar daily snapshot cell", () => {
   });
   it("trades the preview for a mark on the tinted date when very narrow", () => {
     cell(summary, { width: 56, isSelected: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.queryByText("A memorable afternoon")).toBeNull();
     expect(document.querySelectorAll("img")).toHaveLength(1);
     expect(document.querySelector("img")).toHaveClass("size-4");

@@ -16,6 +16,10 @@ export const addMonths = (date: Date | string, count: number): string => {
 export const formatMonthLabel = (month: string, locale: string): string =>
   dayjs(month).toDate().toLocaleString(locale, { year: "numeric", month: "long" });
 
+/** "Friday, August 7" for `YYYY-MM-DD`, in the viewer's language; the input itself when it is not a date. */
+export const formatDayLabel = (date: string, locale: string): string =>
+  parseLocalDate(date)?.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" }) ?? date;
+
 /**
  * The local midnight named by `YYYY-MM-DD`, or undefined for anything else — including
  * dates JS would silently roll forward (2026-02-30 → March 2).

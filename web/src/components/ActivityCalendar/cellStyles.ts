@@ -28,15 +28,16 @@ const INTENSITY_TINTS: Record<Exclude<ActivityLevel, 0>, string> = {
 };
 
 /**
- * The same ladder for a full calendar day cell, with its hover step: lighter than the chip
- * because excerpts and photos sit on top. Kept beside the chip's so the two cannot drift.
+ * The same ladder for a full calendar day cell, with its hover step: far lighter than the chip
+ * because excerpts and photos sit on top. It stops at 16%, the strongest wash on which the
+ * secondary excerpt text keeps 4.5:1 in both themes. Kept beside the chip's so the two cannot drift.
  */
 export const DAY_CELL_FILLS: Record<ActivityLevel, string> = {
   0: "bg-mu-surface hover:bg-mu-hover",
-  1: "bg-mu-primary/8 hover:bg-mu-primary/12",
-  2: "bg-mu-primary/16 hover:bg-mu-primary/20",
-  3: "bg-mu-primary/26 hover:bg-mu-primary/30",
-  4: "bg-mu-primary/38 hover:bg-mu-primary/42",
+  1: "bg-mu-primary/7 hover:bg-mu-primary/10",
+  2: "bg-mu-primary/10 hover:bg-mu-primary/13",
+  3: "bg-mu-primary/13 hover:bg-mu-primary/16",
+  4: "bg-mu-primary/16 hover:bg-mu-primary/20",
 };
 
 const getFillClass = (day: CalendarDayCell, maxCount: number): string => {
