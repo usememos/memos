@@ -7,7 +7,14 @@ package audiollm
 import (
 	"context"
 	"io"
+
+	"github.com/pkg/errors"
 )
+
+// ErrUnsupportedAudio marks audio a model cannot accept, such as a content
+// type it does not support or a payload over its size limit. Callers can
+// match it with errors.Is to report a client error instead of a server one.
+var ErrUnsupportedAudio = errors.New("unsupported audio")
 
 // Model invokes a multimodal LLM with audio input.
 type Model interface {
