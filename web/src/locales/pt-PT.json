@@ -443,9 +443,9 @@
       "updated": "Tarefas atualizadas"
     },
     "new-badge": "Novo",
-    "parent-loading": "A carregar memorando original…",
-    "parent-load-error": "Não foi possível carregar o memorando original.",
-    "parent-unavailable": "Memorando original indisponível",
+    "parent-loading": "A carregar memorando pai…",
+    "parent-load-error": "Não foi possível carregar o memorando pai.",
+    "parent-unavailable": "Memorando pai indisponível",
     "parent-unavailable-description": "Pode ter sido eliminado ou pode já não ter acesso a ele.",
     "moved": "Memorando movido",
     "back-to": "Voltar para {{source}}",
@@ -464,7 +464,9 @@
     "add-reaction": "Adicionar reação",
     "remove-reaction": "Remover reação",
     "full-width": "Largura total",
-    "full-width-hint": "Usar toda a largura da linha do tempo dos memos."
+    "full-width-hint": "Usar toda a largura da linha do tempo dos memos.",
+    "include-comments": "Incluir comentários",
+    "include-comments-hint": "Mostrar comentários juntamente com os memos nas listas."
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",

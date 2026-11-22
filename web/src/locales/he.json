@@ -522,9 +522,9 @@
       "space": "חברים",
       "space-description": "כל מי שב-{{space}}"
     },
-    "parent-loading": "טוען את התזכיר המקורי…",
-    "parent-load-error": "לא ניתן היה לטעון את התזכיר המקורי.",
-    "parent-unavailable": "התזכיר המקורי אינו זמין",
+    "parent-loading": "טוען את תזכיר האב…",
+    "parent-load-error": "לא ניתן היה לטעון את תזכיר האב.",
+    "parent-unavailable": "תזכיר האב אינו זמין",
     "parent-unavailable-description": "ייתכן שהוא נמחק או שאין לך עוד גישה.",
     "moved": "התזכיר הועבר",
     "back-to": "חזרה אל {{source}}",
@@ -534,7 +534,9 @@
     "add-reaction": "הוסף תגובה",
     "remove-reaction": "הסר תגובה",
     "full-width": "רוחב מלא",
-    "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים."
+    "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים.",
+    "include-comments": "הכללת תגובות",
+    "include-comments-hint": "הצגת תגובות לצד פתקים ברשימות."
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

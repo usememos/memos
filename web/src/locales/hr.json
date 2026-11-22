@@ -443,9 +443,9 @@
       "updated": "Zadaci ažurirani"
     },
     "new-badge": "Novi",
-    "parent-loading": "Učitavanje izvorne bilješke…",
-    "parent-load-error": "Nije moguće učitati izvornu bilješku.",
-    "parent-unavailable": "Izvorna bilješka nije dostupna",
+    "parent-loading": "Učitavanje nadređenog podsjetnika…",
+    "parent-load-error": "Nije moguće učitati nadređeni podsjetnik.",
+    "parent-unavailable": "Nadređeni podsjetnik nije dostupan",
     "parent-unavailable-description": "Možda je izbrisana ili više nemate pristup.",
     "moved": "Bilješka je premještena",
     "back-to": "Natrag na {{source}}",
@@ -464,7 +464,9 @@
     "add-reaction": "Dodajte reakciju",
     "remove-reaction": "Ukloni reakciju",
     "full-width": "Puna širina",
-    "full-width-hint": "Koristi cijelu širinu vremenske crte memoa."
+    "full-width-hint": "Koristi cijelu širinu vremenske crte memoa.",
+    "include-comments": "Uključi komentare",
+    "include-comments-hint": "Prikaži komentare uz memoe na popisima."
   },
   "message": {
     "archived-successfully": "Uspješno arhivirano",

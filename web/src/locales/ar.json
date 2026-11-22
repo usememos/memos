@@ -433,9 +433,9 @@
       "open-image": "مشاركة كصورة"
     },
     "new-badge": "جديد",
-    "parent-loading": "جارٍ تحميل المذكرة الأصلية...",
-    "parent-load-error": "تعذر تحميل المذكرة الأصلية.",
-    "parent-unavailable": "المذكرة الأصلية غير متوفرة",
+    "parent-loading": "جارٍ تحميل المذكرة الأم...",
+    "parent-load-error": "تعذر تحميل المذكرة الأم.",
+    "parent-unavailable": "المذكرة الأم غير متوفرة",
     "parent-unavailable-description": "ربما تم حذفها أو ربما لم يعد لديك صلاحية الوصول إليها.",
     "moved": "تم نقل المذكرة",
     "back-to": "العودة إلى {{source}}",
@@ -452,7 +452,7 @@
     "newest-first": "الأحدث أولًا",
     "oldest-first": "الأقدم أولًا",
     "on-this-memo": "في هذه المذكرة",
-    "parent-memo": "المذكرة الأصلية",
+    "parent-memo": "المذكرة الأم",
     "task-actions": {
       "check-all": "تحديد جميع المهام",
       "uncheck-all": "إلغاء تحديد جميع المهام",
@@ -462,7 +462,9 @@
     "add-reaction": "إضافة رد فعل",
     "remove-reaction": "إزالة التفاعل",
     "full-width": "العرض الكامل",
-    "full-width-hint": "استخدام العرض الكامل للخط الزمني للمذكرات."
+    "full-width-hint": "استخدام العرض الكامل للخط الزمني للمذكرات.",
+    "include-comments": "تضمين التعليقات",
+    "include-comments-hint": "عرض التعليقات مع المذكرات في القوائم."
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",

@@ -504,10 +504,10 @@
     "oldest-first": "Eldste fyrst",
     "on-this-memo": "På dette notatet",
     "order-by": "Sorter etter",
-    "parent-load-error": "Klarte diverre ikkje å laste opphavsnotatet.",
-    "parent-loading": "Lastar opphavsnotatet…",
+    "parent-load-error": "Klarte diverre ikkje å laste det overordna notatet.",
+    "parent-loading": "Lastar det overordna notatet…",
     "parent-memo": "Overordna notat",
-    "parent-unavailable": "Opphavsnotatet er ikkje tilgjengeleg",
+    "parent-unavailable": "Det overordna notatet er ikkje tilgjengeleg",
     "parent-unavailable-description": "Det kan vera sletta, eller du har ikkje lenger åtgang.",
     "pinned": "Festa",
     "share": {
@@ -565,7 +565,9 @@
     "add-reaction": "Legg til reaksjon",
     "remove-reaction": "Fjern reaksjon",
     "full-width": "Full breidd",
-    "full-width-hint": "Bruk heile breidda på tidslina for notata."
+    "full-width-hint": "Bruk heile breidda på tidslina for notata.",
+    "include-comments": "Inkluder kommentarar",
+    "include-comments-hint": "Vis kommentarar saman med notat i lister."
   },
   "message": {
     "archived-successfully": "Arkivert",

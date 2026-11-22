@@ -4,12 +4,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { TimelineViewProvider, useView } from "@/contexts/ViewContext";
 
 const storageKey = "memos-view-setting";
-const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true };
-const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false };
+const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3 };
+const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1 };
 
 function Probe() {
-  const { timeBasis, orderByTimeAsc, maxColumns, compactMode } = useView();
-  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns, compactMode })}</output>;
+  const { timeBasis, orderByTimeAsc, maxColumns } = useView();
+  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns })}</output>;
 }
 
 function renderRoute(path: string) {

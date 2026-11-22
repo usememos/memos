@@ -123,6 +123,10 @@ vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => authState.currentUser,
 }));
 
+vi.mock("@/hooks/useMemoFilters", () => ({
+  useCommentScopeFilter: () => "parent == null",
+}));
+
 vi.mock("@/hooks/useFilteredMemoStats", () => ({
   useFilteredMemoStats: (options: unknown) => {
     filteredStatsHook(options);
@@ -310,7 +314,9 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "collection", filter: 'space == "spaces/product"' }));
+    expect(filteredStatsHook).toHaveBeenCalledWith(
+      expect.objectContaining({ context: "collection", filter: '(space == "spaces/product") && (parent == null)' }),
+    );
   });
 
   it("includes authorized Space memos in All Explore statistics", () => {
@@ -320,7 +326,7 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "collection", filter: undefined }));
+    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "collection", filter: "(parent == null)" }));
   });
 
   it("keeps Archived statistics and tag UI state unscoped by Space", () => {
@@ -330,7 +336,7 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "archived", filter: undefined }));
+    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "archived", filter: "(parent == null)" }));
     expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "archived" }));
   });
 

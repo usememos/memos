@@ -223,3 +223,23 @@ Files for `PRIVATE`, `PROTECTED`, and `SPACE` memos use `private, no-store`; pub
 ## Deferred design
 
 Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification retention policy and per-user notification preferences, collaborative editing by Space members, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.
+
+## Amendments
+
+### 2026-11-21: a comment is a memo with a parent
+
+The comment's link to its context memo stays one immutable `COMMENT` row in `memo_relation`, and a comment remains an independent memo
+with its own author, audience, placement, and lifecycle. Three things in the body above no longer describe the product:
+
+- **Deletion cascades.** Deleting a memo deletes its comment subtree. The body's "It does not traverse relations or delete other memos"
+  was superseded before this amendment; replies were otherwise promoted into feeds as standalone memos.
+- **Feeds can include comments.** The body says "Global feeds return readable memos that do not have a `COMMENT` relation." `ListMemos` now
+  returns comments, and a feed excludes them with the filter `parent == null`, the same way it selects placement with `space == null`. The
+  web client sends that term unless the viewer turns on "Include comments". Statistics follow the same filter.
+- **The API no longer exposes the relation.** `MemoRelation.Type.COMMENT`, `ListMemoComments`, and `CreateMemoComment` are removed. A comment
+  is created by `CreateMemo` with `memo.parent`, read through `Memo.parent`, counted by `Memo.comment_count`, and listed by `ListMemos` with
+  `parent == "memos/{memo}"`. That listing applies each comment's own audience, so the body's "A comment or conversation query requires
+  its context memo to be readable" no longer holds: a readable comment is listed even when its parent is not readable, exactly as a direct
+  read of it already allowed.
+
+The change was made so that text search and tag filters can reach comments (usememos/memos#6354) without a comment-specific list flag.

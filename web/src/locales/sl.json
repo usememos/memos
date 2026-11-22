@@ -444,9 +444,9 @@
       "updated": "Naloge posodobljene"
     },
     "new-badge": "Novo",
-    "parent-loading": "Nalaganje izvirnega zapiska ...",
-    "parent-load-error": "Izvirnega zapiska ni bilo mogoče naložiti.",
-    "parent-unavailable": "Izvirni zapisek ni na voljo",
+    "parent-loading": "Nalaganje nadrejenega zapiska ...",
+    "parent-load-error": "Nadrejenega zapiska ni bilo mogoče naložiti.",
+    "parent-unavailable": "Nadrejeni zapisek ni na voljo",
     "parent-unavailable-description": "Morda je bil izbrisan ali pa nimate več dostopa.",
     "moved": "Zapisek premaknjen",
     "back-to": "Nazaj na {{source}}",
@@ -465,7 +465,9 @@
     "add-reaction": "Dodajte reakcijo",
     "remove-reaction": "Odstrani reakcijo",
     "full-width": "Polna širina",
-    "full-width-hint": "Uporabi celotno širino časovnice beležk."
+    "full-width-hint": "Uporabi celotno širino časovnice beležk.",
+    "include-comments": "Vključi komentarje",
+    "include-comments-hint": "V seznamih prikaži komentarje skupaj z beležkami."
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",

@@ -52,6 +52,14 @@ export const isMemoDetailPath = (pathname: string, memoName: string): boolean =>
 };
 
 /**
+ * Whether a comment's card names its parent on a strip above it: wherever the comment is
+ * shown away from its thread. On its own page the sidebar names the parent, and on the
+ * parent's page the thread itself does.
+ */
+export const showsParentStrip = (pathname: string, memo: { name: string; parent?: string }): boolean =>
+  Boolean(memo.parent) && !isMemoDetailPath(pathname, memo.name) && !isMemoDetailPath(pathname, memo.parent ?? "");
+
+/**
  * Captures the list page that opened a memo so canonical detail routes can
  * return to the real collection lens instead of assuming Home.
  */

@@ -34,6 +34,7 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { useCommentScopeFilter } from "@/hooks/useMemoFilters";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
@@ -89,7 +90,9 @@ const CollectionSidebarContent = ({
   // User-level collections stay aligned with their unscoped feeds even when a Space is remembered.
   const isUserLevelCollection = context === "archived";
   const collectionFilter = isUserLevelCollection ? undefined : memoFilter;
-  const statsFilter = scopeFilter ? combineCELFilters(collectionFilter, scopeFilter) : collectionFilter;
+  // The counts follow the lists: comments are in them only while the viewer includes comments.
+  const commentScopeFilter = useCommentScopeFilter();
+  const statsFilter = combineCELFilters(collectionFilter, scopeFilter, commentScopeFilter);
   const { statistics, tags } = useFilteredMemoStats({
     context: context === "archived" ? "archived" : "collection",
     filter: statsFilter,

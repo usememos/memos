@@ -32,6 +32,25 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
   Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
   `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.
+- A comment is a memo with a `parent`, and the comment-specific surface is removed:
+  - `MemoService.ListMemos` returns comments. Add `parent == null` to `filter` to list top-level memos only, the
+    previous behavior. `filter` gains the field `parent` (a memo resource name, or `null`); it supports `==` and
+    comparisons against `null`. `UserService.GetUserStats` and `ListUserStats` count comments unless their `filter`
+    excludes them the same way.
+  - `MemoService.ListMemoComments` and `ListMemoCommentsRequest`/`ListMemoCommentsResponse` are removed, with
+    `GET /api/memos/{memo}/comments`. Use `ListMemos` with `filter: parent == "memos/{memo}"`. Each comment is listed
+    by its own audience; the listing neither requires nor grants access to the parent.
+  - `MemoService.CreateMemoComment` and `CreateMemoCommentRequest` are removed, with
+    `POST /api/memos/{memo}/comments`. Use `CreateMemo` with `memo.parent` set; `Memo.parent` is now settable on
+    creation and immutable afterwards. The created memo's `parent` is populated in the response.
+  - `MemoRelation.Type.COMMENT` is removed and its number reserved. `Memo.relations`, `ListMemoRelations` and
+    `SetMemoRelations` carry `REFERENCE` relations only. Read `Memo.parent` for a comment's parent and the new
+    `Memo.comment_count` for the number of comments on a memo.
+  - The MCP tools `memo_list_memo_comments` and `memo_create_memo_comment` are removed; `memo_list_memos` and
+    `memo_create_memo` cover them.
+  - `Memo.comment_count` takes field number 13, and `tags`, `property`, `snippet`, `create_time` and `update_time`
+    move to 14 through 18. JSON field names are unchanged; clients that use the binary protobuf encoding must
+    regenerate from the new schema.
 
 ## 26.10.0
 

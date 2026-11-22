@@ -5,8 +5,30 @@ import {
   isMemoResourcePath,
   resolveMemoDetailOrigin,
   resolveMemoParentPage,
+  showsParentStrip,
   withMemoFilter,
 } from "@/components/MemoView/navigation";
+
+describe("parent strip", () => {
+  const comment = { name: "memos/comment", parent: "memos/parent" };
+
+  it("shows on a comment's card wherever the comment is listed away from its thread", () => {
+    for (const pathname of ["/", "/explore", "/archived", "/calendar/2026/11", "/spaces/team", "/memos/unrelated"]) {
+      expect(showsParentStrip(pathname, comment)).toBe(true);
+    }
+  });
+
+  it("stays off on the comment's own page, on its parent's page and on a shared memo", () => {
+    expect(showsParentStrip("/memos/comment", comment)).toBe(false);
+    expect(showsParentStrip("/memos/parent", comment)).toBe(false);
+    expect(showsParentStrip("/memos/shares/token", comment)).toBe(false);
+  });
+
+  it("never shows on a top-level memo", () => {
+    expect(showsParentStrip("/", { name: "memos/top" })).toBe(false);
+    expect(showsParentStrip("/", { name: "memos/top", parent: "" })).toBe(false);
+  });
+});
 
 describe("memo view navigation", () => {
   it("captures the complete collection origin", () => {

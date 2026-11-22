@@ -453,22 +453,6 @@ func (s *ConnectServiceHandler) ListMemoRelations(ctx context.Context, req *conn
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateMemoComment(ctx context.Context, req *connect.Request[apipb.CreateMemoCommentRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.CreateMemoComment(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) ListMemoComments(ctx context.Context, req *connect.Request[apipb.ListMemoCommentsRequest]) (*connect.Response[apipb.ListMemoCommentsResponse], error) {
-	resp, err := s.APIService.ListMemoComments(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
 func (s *ConnectServiceHandler) ListMemoReactions(ctx context.Context, req *connect.Request[apipb.ListMemoReactionsRequest]) (*connect.Response[apipb.ListMemoReactionsResponse], error) {
 	resp, err := s.APIService.ListMemoReactions(ctx, req.Msg)
 	if err != nil {

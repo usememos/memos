@@ -422,9 +422,9 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 		Content:  []byte("comment image"),
 	}})
 	require.NoError(t, err)
-	comment, err := svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: parent.Name,
-		Comment: &apipb.Memo{
+	comment, err := svc.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:      new(parent.Name),
 			Content:     "comment",
 			Visibility:  apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
@@ -544,9 +544,9 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: parentMemo.Name,
-		Comment: &apipb.Memo{
+	_, err = svc.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(parentMemo.Name),
 			Content:    "comment with attachment",
 			Visibility: apipb.Visibility_PROTECTED,
 			Attachments: []*apipb.Attachment{

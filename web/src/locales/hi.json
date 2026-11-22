@@ -429,9 +429,9 @@
       "open-image": "इमेज के तौर पर शेयर करें"
     },
     "new-badge": "नया",
-    "parent-loading": "ओरिजिनल मेमो लोड हो रहा है…",
-    "parent-load-error": "ओरिजिनल मेमो लोड नहीं हो सका.",
-    "parent-unavailable": "ओरिजिनल मेमो उपलब्ध नहीं है",
+    "parent-loading": "पैरेंट मेमो लोड हो रहा है…",
+    "parent-load-error": "पैरेंट मेमो लोड नहीं हो सका.",
+    "parent-unavailable": "पैरेंट मेमो उपलब्ध नहीं है",
     "parent-unavailable-description": "हो सकता है कि इसे डिलीट कर दिया गया हो या अब आपके पास एक्सेस न हो.",
     "moved": "मेमो मूव किया गया",
     "back-to": "{{source}} पर वापस जाएं",
@@ -458,7 +458,9 @@
     "add-reaction": "रिएक्शन जोड़ें",
     "remove-reaction": "रिएक्शन हटाएँ",
     "full-width": "पूरी चौड़ाई",
-    "full-width-hint": "मेमो समयरेखा की पूरी चौड़ाई का उपयोग करें।"
+    "full-width-hint": "मेमो समयरेखा की पूरी चौड़ाई का उपयोग करें।",
+    "include-comments": "टिप्पणियाँ शामिल करें",
+    "include-comments-hint": "सूचियों में मेमो के साथ टिप्पणियाँ दिखाएँ।"
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",

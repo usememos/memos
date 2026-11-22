@@ -480,9 +480,9 @@
       "space-description": "Kaikki tilassa {{space}}"
     },
     "new-badge": "Uusi",
-    "parent-loading": "Ladataan alkuperäistä muistiota…",
-    "parent-load-error": "Alkuperäistä muistiota ei voitu ladata.",
-    "parent-unavailable": "Alkuperäinen muistio ei ole käytettävissä",
+    "parent-loading": "Ladataan ylämuistiota…",
+    "parent-load-error": "Ylämuistiota ei voitu ladata.",
+    "parent-unavailable": "Ylämuistio ei ole käytettävissä",
     "parent-unavailable-description": "Se on ehkä poistettu tai sinulla ei ehkä enää ole siihen pääsyä.",
     "moved": "Muistio siirretty",
     "back-to": "Takaisin kohtaan {{source}}",
@@ -501,7 +501,9 @@
     "add-reaction": "Lisää reaktio",
     "remove-reaction": "Poista reaktio",
     "full-width": "Täysi leveys",
-    "full-width-hint": "Käytä muistioiden aikajanan koko leveyttä."
+    "full-width-hint": "Käytä muistioiden aikajanan koko leveyttä.",
+    "include-comments": "Sisällytä kommentit",
+    "include-comments-hint": "Näytä kommentit muistioiden rinnalla luetteloissa."
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",

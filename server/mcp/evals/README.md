@@ -111,8 +111,9 @@ content to the declared `steven` instead of creating a second one.
 
 - The CEL `tag` field does **not** support `==`; filter tags with
   `"work" in tags` (or `tags.exists(t, t == "work")`), not `tag == "work"`.
-- `memo_list_memos` returns only top-level memos; comments are reached via
-  `memo_list_memo_comments`.
+- `memo_list_memos` returns comments too. Pass the filter `parent == null` for
+  top-level memos only, or `parent == "memos/abc"` for the comments on one memo.
+  A memo's `commentCount` is the number of comments directly on it.
 - Placement is filtered with `space == "spaces/dev"`, `space == null`
   (unassigned), or `space != null`. `space_list_spaces` returns only spaces the
   caller is a member of, with `memberCount` and `currentUserRole` filled in.

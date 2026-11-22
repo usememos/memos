@@ -16,14 +16,13 @@ import {
 } from "@/hooks/useMemoQueries";
 import { memoShareKeys } from "@/hooks/useMemoShareQueries";
 import { userKeys } from "@/hooks/useUserQueries";
-import { ListMemoCommentsResponseSchema, ListMemosResponseSchema, type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { ListMemosResponseSchema, type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const api = vi.hoisted(() => ({
   getMemo: vi.fn(),
   listMemos: vi.fn(),
   updateMemo: vi.fn(),
   createMemo: vi.fn(),
-  createMemoComment: vi.fn(),
 }));
 vi.mock("@/connect", () => ({ memoServiceClient: api }));
 
@@ -55,7 +54,7 @@ describe("useMemoRecord", () => {
     const monthly = memo("memos/monthly");
     const shared = memo("memos/shared");
     client.setQueryData([...memoKeys.comments("memos/parent"), "infinite", 50], {
-      pages: [create(ListMemoCommentsResponseSchema, { comments: [comment] })],
+      pages: [create(ListMemosResponseSchema, { memos: [comment] })],
       pageParams: [""],
     });
     client.setQueryData([...memoKeys.lists(), "calendar-month", { filter: "", orderBy: "" }], [monthly]);
@@ -114,12 +113,12 @@ describe("useMemoRecord", () => {
     const { client, wrapper } = setup();
     const comment = create(MemoSchema, { name: "memos/c", parent: "memos/p", content: "before" });
     const key = [...memoKeys.comments("memos/p"), 0];
-    client.setQueryData(key, create(ListMemoCommentsResponseSchema, { comments: [comment] }));
+    client.setQueryData(key, create(ListMemosResponseSchema, { memos: [comment] }));
     api.updateMemo.mockImplementation(async ({ memo: update }: { memo: Memo }) => ({ ...comment, ...update }));
 
     const { result } = renderHook(() => useUpdateMemo(comment.name), { wrapper });
     act(() => result.current.mutate({ update: { name: comment.name, content: "after" }, updateMask: ["content"] }));
-    await waitFor(() => expect(client.getQueryData<{ comments: Memo[] }>(key)?.comments[0].content).toBe("after"));
+    await waitFor(() => expect(client.getQueryData<{ memos: Memo[] }>(key)?.memos[0].content).toBe("after"));
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(findMemoInCollectionQueries(client, comment.name)?.content).toBe("after");
   });
@@ -171,10 +170,10 @@ describe("useMemoByName", () => {
 describe("useCreateMemo", () => {
   beforeEach(() => vi.resetAllMocks());
 
-  it("creates a comment through the parent and refreshes the parent's comments", async () => {
+  it("creates a comment as a memo with a parent and refreshes the parent's comments", async () => {
     const { client, wrapper } = setup();
     const created = create(MemoSchema, { name: "memos/new", parent: "memos/p", content: "hi" });
-    api.createMemoComment.mockResolvedValue(created);
+    api.createMemo.mockResolvedValue(created);
     const invalidate = vi.spyOn(client, "invalidateQueries");
 
     const { result } = renderHook(() => useCreateMemo(), { wrapper });
@@ -182,8 +181,7 @@ describe("useCreateMemo", () => {
       await result.current.mutateAsync({ memo: memo("", "hi"), parent: "memos/p" });
     });
 
-    expect(api.createMemoComment).toHaveBeenCalledWith({ parent: "memos/p", comment: expect.objectContaining({ content: "hi" }) });
-    expect(api.createMemo).not.toHaveBeenCalled();
+    expect(api.createMemo).toHaveBeenCalledWith({ memo: expect.objectContaining({ content: "hi", parent: "memos/p" }) });
     expect(client.getQueryData(memoKeys.detail(created.name))).toEqual(created);
     const keys = invalidate.mock.calls.map(([filters]) => filters?.queryKey);
     expect(keys).toContainEqual(memoKeys.comments("memos/p"));
@@ -322,7 +320,7 @@ describe("useUpdateMemo", () => {
     const edited = create(MemoSchema, { ...moved, content: "edited" });
     const { client, server, result } = await onScreen(before);
     const commentsKey = memoKeys.comments(before.name);
-    client.setQueryData(commentsKey, create(ListMemoCommentsResponseSchema, { comments: [] }));
+    client.setQueryData(commentsKey, create(ListMemosResponseSchema, { memos: [] }));
     const invalidate = vi.spyOn(client, "invalidateQueries");
     const replies: Array<{ resolve: (memo: Memo) => void; reject: (error: Error) => void }> = [];
     api.updateMemo.mockImplementation(() => new Promise<Memo>((resolve, reject) => replies.push({ resolve, reject })));

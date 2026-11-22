@@ -444,9 +444,9 @@
       "uncheck-all": "Odznacz wszystkie zadania",
       "updated": "Zadania zaktualizowane"
     },
-    "parent-loading": "Ładowanie oryginalnej notatki…",
-    "parent-load-error": "Nie można załadować oryginalnej notatki.",
-    "parent-unavailable": "Oryginalna notatka jest niedostępna",
+    "parent-loading": "Ładowanie notatki nadrzędnej…",
+    "parent-load-error": "Nie można załadować notatki nadrzędnej.",
+    "parent-unavailable": "Notatka nadrzędna jest niedostępna",
     "parent-unavailable-description": "Mogła zostać usunięta lub nie masz już do niej dostępu.",
     "moved": "Notatka przeniesiona",
     "back-to": "Powrót do {{source}}",
@@ -465,7 +465,9 @@
     "add-reaction": "Dodaj reakcję",
     "remove-reaction": "Usuń reakcję",
     "full-width": "Pełna szerokość",
-    "full-width-hint": "Używaj całej szerokości osi czasu notatek."
+    "full-width-hint": "Używaj całej szerokości osi czasu notatek.",
+    "include-comments": "Uwzględnij komentarze",
+    "include-comments-hint": "Pokazuj komentarze razem z notatkami na listach."
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",

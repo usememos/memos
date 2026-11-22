@@ -480,9 +480,9 @@
       "space-description": "Kõik ruumis {{space}}"
     },
     "new-badge": "Uus",
-    "parent-loading": "Algse memo laadimine…",
-    "parent-load-error": "Algse memo laadimine ebaõnnestus.",
-    "parent-unavailable": "Algne memo pole saadaval",
+    "parent-loading": "Ülemmemo laadimine…",
+    "parent-load-error": "Ülemmemo laadimine ebaõnnestus.",
+    "parent-unavailable": "Ülemmemo pole saadaval",
     "parent-unavailable-description": "See võib olla kustutatud või teil pole enam juurdepääsu.",
     "moved": "Memo teisaldatud",
     "back-to": "Tagasi {{source}} juurde",
@@ -501,7 +501,9 @@
     "add-reaction": "Lisa reaktsioon",
     "remove-reaction": "Eemaldage reaktsioon",
     "full-width": "Täislaius",
-    "full-width-hint": "Kasuta memode ajajoone kogu laiust."
+    "full-width-hint": "Kasuta memode ajajoone kogu laiust.",
+    "include-comments": "Kaasa kommentaarid",
+    "include-comments-hint": "Näita loendites kommentaare koos memodega."
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",

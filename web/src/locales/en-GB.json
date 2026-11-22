@@ -441,9 +441,9 @@
       "uncheck-all": "Uncheck all tasks",
       "updated": "Tasks updated"
     },
-    "parent-loading": "Loading original memo…",
-    "parent-load-error": "Couldn’t load the original memo.",
-    "parent-unavailable": "Original memo unavailable",
+    "parent-loading": "Loading parent memo…",
+    "parent-load-error": "Couldn’t load the parent memo.",
+    "parent-unavailable": "Parent memo unavailable",
     "parent-unavailable-description": "It may have been deleted or you may no longer have access.",
     "moved": "Memo moved",
     "back-to": "Back to {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Add reaction",
     "remove-reaction": "Remove reaction",
     "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline."
+    "full-width-hint": "Use entire width of the memo timeline.",
+    "include-comments": "Include comments",
+    "include-comments-hint": "Show comments alongside memos in lists."
   },
   "message": {
     "archived-successfully": "Archived successfully",

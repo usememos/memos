@@ -21,21 +21,7 @@ const LAYOUT_OPTIONS: Record<MemoMaxColumns, { icon: LucideIcon; key: "layout-li
 
 function MemoDisplaySettingsContent() {
   const t = useTranslate();
-  const {
-    orderByTimeAsc,
-    timeBasis,
-    compactMode,
-    fullWidth,
-    maxColumns,
-    setTimeBasis,
-    setOrderByTimeAsc,
-    setCompactMode,
-    setFullWidth,
-    setMaxColumns,
-  } = useView();
-  // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
-  // there; it only becomes a real choice at a single column.
-  const compactLocked = maxColumns !== 1;
+  const { orderByTimeAsc, timeBasis, fullWidth, maxColumns, setTimeBasis, setOrderByTimeAsc, setFullWidth, setMaxColumns } = useView();
   const fullWidthLocked = maxColumns == 0;
 
   const timeBasisOptions = { create_time: t("common.created-at"), update_time: t("common.last-updated-at") };
@@ -106,11 +92,6 @@ function MemoDisplaySettingsContent() {
 
       <Separator />
 
-      <Field.Root orientation="horizontal" size="md">
-        <Field.Label>{t("memo.compact-mode")}</Field.Label>
-        <Field.Description className="w-0 min-w-full">{t("memo.grid-compact-hint")}</Field.Description>
-        <Switch checked={compactLocked || compactMode} onCheckedChange={setCompactMode} disabled={compactLocked} />
-      </Field.Root>
       <Field.Root orientation="horizontal" size="md">
         <Field.Label>{t("memo.full-width")}</Field.Label>
         <Field.Description className="w-0 min-w-full">{t("memo.full-width-hint")}</Field.Description>

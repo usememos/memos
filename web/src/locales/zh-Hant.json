@@ -530,19 +530,21 @@
       "space": "成員",
       "space-description": "{{space}} 的所有人"
     },
-    "parent-loading": "正在載入原始備忘錄…",
-    "parent-load-error": "無法載入原始備忘錄。",
-    "parent-unavailable": "原始備忘錄不可用",
+    "parent-loading": "正在載入父備忘錄…",
+    "parent-load-error": "無法載入父備忘錄。",
+    "parent-unavailable": "父備忘錄不可用",
     "parent-unavailable-description": "它可能已被刪除，或者您可能已失去存取權限。",
     "moved": "備忘錄已移動",
     "back-to": "返回 {{source}}",
     "connections": "關聯",
     "on-this-memo": "在此備忘錄中",
-    "parent-memo": "原始備忘錄",
+    "parent-memo": "父備忘錄",
     "add-reaction": "新增表情回應",
     "remove-reaction": "移除表情回應",
     "full-width": "全寬顯示",
-    "full-width-hint": "使用備忘錄時間軸的完整寬度。"
+    "full-width-hint": "使用備忘錄時間軸的完整寬度。",
+    "include-comments": "包含評論",
+    "include-comments-hint": "在列表中同時顯示評論與備忘錄。"
   },
   "message": {
     "archived-successfully": "封存成功",

@@ -69,7 +69,7 @@ func TestUpsertMemoReactionRequiresReaction(t *testing.T) {
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 
-func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
+func TestListCommentsIncludesReactionResourceNames(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -81,9 +81,8 @@ func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 		Memo: &apipb.Memo{Content: "parent", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	comment, err := ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent:  parent.Name,
-		Comment: &apipb.Memo{Content: "comment", Visibility: apipb.Visibility_PUBLIC},
+	comment, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(parent.Name), Content: "comment", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -95,11 +94,11 @@ func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comments, err := ts.Service.ListMemoComments(userCtx, &apipb.ListMemoCommentsRequest{Parent: parent.Name})
+	comments, err := ts.Service.ListMemos(userCtx, &apipb.ListMemosRequest{Filter: "parent == \"" + parent.Name + "\""})
 	require.NoError(t, err)
-	require.Len(t, comments.Comments, 1)
-	require.Len(t, comments.Comments[0].Reactions, 1)
-	require.True(t, strings.HasPrefix(comments.Comments[0].Reactions[0].Name, comment.Name+"/reactions/"))
+	require.Len(t, comments.Memos, 1)
+	require.Len(t, comments.Memos[0].Reactions, 1)
+	require.True(t, strings.HasPrefix(comments.Memos[0].Reactions[0].Name, comment.Name+"/reactions/"))
 }
 
 func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {

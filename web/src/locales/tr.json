@@ -392,9 +392,9 @@
     "no-matching-memos": "Eşleşen not yok",
     "clear-filters": "Filtreleri temizle",
     "pinned": "Sabitlenmiş",
-    "parent-loading": "Asıl not yükleniyor…",
-    "parent-load-error": "Asıl not yüklenemedi.",
-    "parent-unavailable": "Asıl nota ulaşılamıyor",
+    "parent-loading": "Üst not yükleniyor…",
+    "parent-load-error": "Üst not yüklenemedi.",
+    "parent-unavailable": "Üst nota ulaşılamıyor",
     "parent-unavailable-description": "Silinmiş olabilir ya da artık erişim iznin kalmamış olabilir.",
     "moved": "Not taşındı",
     "back-to": "{{source}} görünümüne dön",
@@ -494,7 +494,9 @@
     "add-reaction": "Tepki ekle",
     "remove-reaction": "Reaksiyonu kaldır",
     "full-width": "Tam genişlik",
-    "full-width-hint": "Not zaman tünelinin tüm genişliğini kullan."
+    "full-width-hint": "Not zaman tünelinin tüm genişliğini kullan.",
+    "include-comments": "Yorumları dahil et",
+    "include-comments-hint": "Listelerde yorumları notlarla birlikte göster."
   },
   "message": {
     "archived-successfully": "Arşivlendi",

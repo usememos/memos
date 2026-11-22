@@ -2,6 +2,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserStats } from "@/hooks/useUserQueries";
+import { TOP_LEVEL_MEMO_FILTER } from "@/lib/cel-filter";
 
 /** How long after an account is created the guide may still open on its own. */
 const WELCOME_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
@@ -32,7 +33,11 @@ const writeDismissed = (userName: string) => {
  */
 export function useWelcomeGuide(onOwnHome: boolean) {
   const { currentUser, isUserSettingsInitialized } = useAuth();
-  const { data: stats } = useUserStats(currentUser?.name, { enabled: Boolean(currentUser) && onOwnHome });
+  // "No memos yet" is about memos of the account's own: a comment on someone else's memo does not count.
+  const { data: stats } = useUserStats(currentUser?.name, {
+    enabled: Boolean(currentUser) && onOwnHome,
+    filter: TOP_LEVEL_MEMO_FILTER,
+  });
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 

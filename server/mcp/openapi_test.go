@@ -20,8 +20,6 @@ func TestLoadOpenAPIOperationsIncludesCuratedIDs(t *testing.T) {
 		"MemoService_GetMemo",
 		"MemoService_UpdateMemo",
 		"MemoService_DeleteMemo",
-		"MemoService_ListMemoComments",
-		"MemoService_CreateMemoComment",
 		"MemoService_ListMemoAttachments",
 		"MemoService_SetMemoAttachments",
 		"MemoService_ListMemoReactions",

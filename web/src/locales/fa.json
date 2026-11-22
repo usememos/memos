@@ -429,9 +429,9 @@
       "open-image": "اشتراک‌گذاری به عنوان تصویر"
     },
     "new-badge": "جدید",
-    "parent-loading": "در حال بارگیری یادداشت اصلی...",
-    "parent-load-error": "یادداشت اصلی بارگیری نشد.",
-    "parent-unavailable": "یادداشت اصلی در دسترس نیست",
+    "parent-loading": "در حال بارگیری یادداشت والد...",
+    "parent-load-error": "یادداشت والد بارگیری نشد.",
+    "parent-unavailable": "یادداشت والد در دسترس نیست",
     "parent-unavailable-description": "ممکن است حذف شده باشد یا دیگر دسترسی نداشته باشید.",
     "moved": "یادداشت منتقل شد",
     "back-to": "بازگشت به {{source}}",
@@ -458,7 +458,9 @@
     "add-reaction": "افزودن واکنش",
     "remove-reaction": "حذف واکنش",
     "full-width": "تمام عرض",
-    "full-width-hint": "از تمام عرض خط زمانی یادداشت‌ها استفاده کنید."
+    "full-width-hint": "از تمام عرض خط زمانی یادداشت‌ها استفاده کنید.",
+    "include-comments": "شامل نظرات",
+    "include-comments-hint": "نمایش نظرات در کنار یادداشت‌ها در فهرست‌ها."
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",

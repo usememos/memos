@@ -444,9 +444,9 @@
       "updated": "Úkoly aktualizovány"
     },
     "new-badge": "Nový",
-    "parent-loading": "Načítání původní poznámky…",
-    "parent-load-error": "Nepodařilo se načíst původní poznámku.",
-    "parent-unavailable": "Původní poznámka není k dispozici",
+    "parent-loading": "Načítání nadřazené poznámky…",
+    "parent-load-error": "Nepodařilo se načíst nadřazenou poznámku.",
+    "parent-unavailable": "Nadřazená poznámka není k dispozici",
     "parent-unavailable-description": "Možná byla smazána nebo k ní již nemáte přístup.",
     "moved": "Poznámka přesunuta",
     "back-to": "Zpět na {{source}}",
@@ -465,7 +465,9 @@
     "add-reaction": "Přidejte reakci",
     "remove-reaction": "Odstraňte reakci",
     "full-width": "Plná šířka",
-    "full-width-hint": "Využít celou šířku časové osy poznámek."
+    "full-width-hint": "Využít celou šířku časové osy poznámek.",
+    "include-comments": "Zahrnout komentáře",
+    "include-comments-hint": "Zobrazit komentáře v seznamech spolu s poznámkami."
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",

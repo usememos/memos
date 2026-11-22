@@ -80,10 +80,9 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 	commentCreateTime := time.Date(2023, time.April, 5, 6, 7, 8, 0, time.UTC)
 	commentUpdateTime := commentCreateTime.Add(3 * time.Hour)
 	commentLocation := &apipb.Location{Placeholder: "comment location", Latitude: 3.75, Longitude: 4.5}
-	comment, err := service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent:    topMemo.Name,
-		CommentId: "create-fields-comment",
-		Comment: &apipb.Memo{
+	comment, err := service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:      new(topMemo.Name),
 			Content:     fmt.Sprintf("![comment](/file/attachments/%s)", commentAttachmentUID),
 			Visibility:  apipb.Visibility_PROTECTED,
 			CreateTime:  timestamppb.New(commentCreateTime),
@@ -92,6 +91,7 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 			Relations:   []*apipb.MemoRelation{createReference()},
 			Location:    commentLocation,
 		},
+		MemoId: "create-fields-comment",
 	})
 	require.NoError(t, err)
 	require.Equal(t, commentCreateTime.Unix(), comment.CreateTime.AsTime().Unix())
@@ -102,7 +102,7 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 	require.Equal(t, apipb.Visibility_PROTECTED, comment.Visibility)
 	require.Len(t, comment.Attachments, 1)
 	require.Equal(t, commentAttachment.Name, comment.Attachments[0].Name)
-	requireMemoCreateRelation(t, comment, apipb.MemoRelation_COMMENT, topMemo.Name)
+	require.Equal(t, topMemo.Name, comment.GetParent())
 	requireMemoCreateRelation(t, comment, apipb.MemoRelation_REFERENCE, referenceTarget.Name)
 }
 
@@ -124,10 +124,9 @@ func TestMemoCreateDuplicateIDsUseAlreadyExists(t *testing.T) {
 	require.Equal(t, codes.AlreadyExists, status.Code(err))
 
 	createComment := func() error {
-		_, err := service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-			Parent:    parent.Name,
-			CommentId: "duplicate-comment",
-			Comment:   &apipb.Memo{Content: "comment", Visibility: apipb.Visibility_PRIVATE},
+		_, err := service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+			Memo:   &apipb.Memo{Parent: new(parent.Name), Content: "comment", Visibility: apipb.Visibility_PRIVATE},
+			MemoId: "duplicate-comment",
 		})
 		return err
 	}

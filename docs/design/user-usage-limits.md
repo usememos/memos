@@ -125,3 +125,10 @@ Migration `26.10/00` adds an index on `attachment.creator_id` on every driver, a
 - **A copied limit set per user** (Harbor, oCIS, Documenso). Every product that did this added a backfill job because editing the shared value did not propagate.
 - **A resolver supplied by the deployment** (Nextcloud quota event, Synapse module). Hides the record outside the product, so the admin UI and the usage call cannot explain a number. Rejected before this design as well.
 - **Merging several matching entries per field**, most permissive wins (Nextcloud group quota, Forgejo). Order-independent, but a rule to explain; first match needs none. An admin who wants two entries combined writes a third.
+
+## Amendments
+
+### 2026-11-21: comments are created by `CreateMemo`
+
+`CreateMemoComment` is removed; a comment is a memo created by `CreateMemo` with `memo.parent` set. `memo_count` and `memo_content_bytes`
+are enforced there for comments, unchanged.

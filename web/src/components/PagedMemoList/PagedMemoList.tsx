@@ -8,6 +8,7 @@ import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
+import { useDevicePreferences } from "@/hooks/useDevicePreferences";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
 import { combineCELFilters } from "@/lib/cel-filter";
@@ -134,7 +135,13 @@ const PagedMemoList = (props: Props) => {
   const { isUserSettingsInitialized } = useAuth();
   const { filters, memoView, removeFilter, setFilters, setMemoView } = useMemoFilterContext();
   const { setQuickFindOpen } = useAppSidebar();
-  const { maxColumns, compactMode, fullWidth } = useView();
+  const { maxColumns, fullWidth } = useView();
+  const { compactMode, includeComments } = useDevicePreferences();
+  // A memo's comment preview collapses to one row while the list holds the comments themselves.
+  const estimateHeight = useCallback(
+    (memo: Memo, options: { columnWidth: number }) => estimateMemoCardHeight(memo, { ...options, commentsCollapsed: includeComments }),
+    [includeComments],
+  );
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
   // column renders in normal document flow; anything wider becomes the packed grid.
   const multiColumn = maxColumns !== 1;
@@ -303,7 +310,7 @@ const PagedMemoList = (props: Props) => {
                   items={displayMemoList}
                   getKey={getMemoKey}
                   renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
-                  estimateHeight={estimateMemoCardHeight}
+                  estimateHeight={estimateHeight}
                   header={headerContent}
                   leading={gridLeading}
                   priorityKey={priorityKey}

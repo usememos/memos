@@ -373,9 +373,9 @@ func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing
 	requireMemoChanged(t, outsiderClient.events)
 }
 
-// ---- CreateMemoComment double-broadcast fix ----
+// ---- Comment creation double-broadcast fix ----
 
-func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
+func TestCreateComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -404,9 +404,8 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	defer svc.SSEHub.Unsubscribe(client)
 
 	// Comment creation is one mutation and emits one invalidation event.
-	_, err = svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent:  parent.Name,
-		Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
+	_, err = svc.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(parent.Name), Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -418,7 +417,7 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	assert.Equal(t, memoChangedSSEFrame, events[0])
 }
 
-func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
+func TestCreateComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	author, err := svc.Store.CreateUser(ctx, &store.User{
@@ -439,9 +438,9 @@ func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	commenterClient := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(commenterClient)
 
-	_, err = svc.CreateMemoComment(userCtx(ctx, commenter.ID), &apipb.CreateMemoCommentRequest{
-		Parent: parent.Name,
-		Comment: &apipb.Memo{
+	_, err = svc.CreateMemo(userCtx(ctx, commenter.ID), &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(parent.Name),
 			Content:    "private reply",
 			Visibility: apipb.Visibility_PRIVATE,
 		},
@@ -576,14 +575,12 @@ func TestDeleteMemo_DeletesCommentSubtreeOnly(t *testing.T) {
 		Memo: &apipb.Memo{Content: "context memo", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	comment, err := svc.CreateMemoComment(userCtx(ctx, commentAuthor.ID), &apipb.CreateMemoCommentRequest{
-		Parent:  root.Name,
-		Comment: &apipb.Memo{Content: "branch", Visibility: apipb.Visibility_PUBLIC},
+	comment, err := svc.CreateMemo(userCtx(ctx, commentAuthor.ID), &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(root.Name), Content: "branch", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	reply, err := svc.CreateMemoComment(userCtx(ctx, replyAuthor.ID), &apipb.CreateMemoCommentRequest{
-		Parent:  comment.Name,
-		Comment: &apipb.Memo{Content: "nested reply"},
+	reply, err := svc.CreateMemo(userCtx(ctx, replyAuthor.ID), &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(comment.Name), Content: "nested reply"},
 	})
 	require.NoError(t, err)
 

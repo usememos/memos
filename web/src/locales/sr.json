@@ -481,9 +481,9 @@
       "space-description": "Сви у {{space}}"
     },
     "new-badge": "Ново",
-    "parent-loading": "Учитавање оригиналне белешке…",
-    "parent-load-error": "Није могуће учитати оригиналну белешку.",
-    "parent-unavailable": "Оригинална белешка није доступна",
+    "parent-loading": "Учитавање надређене поруке…",
+    "parent-load-error": "Није могуће учитати надређену поруку.",
+    "parent-unavailable": "Надређена порука није доступна",
     "parent-unavailable-description": "Можда је обрисана или више немате приступ.",
     "moved": "Белешка је премештена",
     "back-to": "Назад на {{source}}",
@@ -502,7 +502,9 @@
     "add-reaction": "Додајте реакцију",
     "remove-reaction": "Уклоните реакцију",
     "full-width": "Пуна ширина",
-    "full-width-hint": "Користи целу ширину временске линије мемоа."
+    "full-width-hint": "Користи целу ширину временске линије мемоа.",
+    "include-comments": "Укључи коментаре",
+    "include-comments-hint": "Прикажи коментаре уз мемое на листама."
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

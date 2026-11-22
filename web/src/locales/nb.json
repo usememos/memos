@@ -442,9 +442,9 @@
       "updated": "Oppgaver oppdatert"
     },
     "new-badge": "Ny",
-    "parent-loading": "Laster inn originalt notat…",
-    "parent-load-error": "Kunne ikke laste inn det originale notatet.",
-    "parent-unavailable": "Originalt notat er ikke tilgjengelig",
+    "parent-loading": "Laster inn overordnet notat…",
+    "parent-load-error": "Kunne ikke laste inn det overordnede notatet.",
+    "parent-unavailable": "Overordnet notat er ikke tilgjengelig",
     "parent-unavailable-description": "Det kan ha blitt slettet, eller du har kanskje ikke lenger tilgang.",
     "moved": "Notat flyttet",
     "back-to": "Tilbake til {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Legg til reaksjon",
     "remove-reaction": "Fjern reaksjonen",
     "full-width": "Full bredde",
-    "full-width-hint": "Bruk hele bredden på memoenes tidslinje."
+    "full-width-hint": "Bruk hele bredden på memoenes tidslinje.",
+    "include-comments": "Inkluder kommentarer",
+    "include-comments-hint": "Vis kommentarer sammen med memoer i lister."
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",

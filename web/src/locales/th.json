@@ -429,9 +429,9 @@
       "open-image": "แชร์เป็นรูปภาพ"
     },
     "new-badge": "ใหม่",
-    "parent-loading": "กำลังโหลดบันทึกต้นฉบับ…",
-    "parent-load-error": "ไม่สามารถโหลดบันทึกต้นฉบับได้",
-    "parent-unavailable": "บันทึกต้นฉบับไม่พร้อมใช้งาน",
+    "parent-loading": "กำลังโหลดบันทึกหลัก…",
+    "parent-load-error": "ไม่สามารถโหลดบันทึกหลักได้",
+    "parent-unavailable": "บันทึกหลักไม่พร้อมใช้งาน",
     "parent-unavailable-description": "อาจถูกลบไปแล้วหรือคุณอาจไม่สามารถเข้าถึงได้อีกต่อไป",
     "moved": "ย้ายบันทึกแล้ว",
     "back-to": "กลับไปที่ {{source}}",
@@ -458,7 +458,9 @@
     "add-reaction": "เพิ่มปฏิกิริยา",
     "remove-reaction": "ลบการตอบสนอง",
     "full-width": "เต็มความกว้าง",
-    "full-width-hint": "ใช้ความกว้างทั้งหมดของไทม์ไลน์บันทึกช่วยจำ"
+    "full-width-hint": "ใช้ความกว้างทั้งหมดของไทม์ไลน์บันทึกช่วยจำ",
+    "include-comments": "รวมความคิดเห็น",
+    "include-comments-hint": "แสดงความคิดเห็นร่วมกับบันทึกช่วยจำในรายการ"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",

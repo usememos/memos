@@ -443,9 +443,9 @@
       "updated": "Tasques actualitzades"
     },
     "new-badge": "Nou",
-    "parent-loading": "S'està carregant la nota original...",
-    "parent-load-error": "No s'ha pogut carregar la nota original.",
-    "parent-unavailable": "Nota original no disponible",
+    "parent-loading": "S'està carregant la nota principal...",
+    "parent-load-error": "No s'ha pogut carregar la nota principal.",
+    "parent-unavailable": "Nota principal no disponible",
     "parent-unavailable-description": "Potser s'ha suprimit o ja no hi tens accés.",
     "moved": "Nota moguda",
     "back-to": "Torna a {{source}}",
@@ -464,7 +464,9 @@
     "add-reaction": "Afegeix reacció",
     "remove-reaction": "Elimina la reacció",
     "full-width": "Amplada completa",
-    "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos."
+    "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos.",
+    "include-comments": "Inclou els comentaris",
+    "include-comments-hint": "Mostra els comentaris juntament amb els memos a les llistes."
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

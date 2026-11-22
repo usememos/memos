@@ -12,7 +12,7 @@ import (
 )
 
 func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
-	require.Len(t, curatedOperationIDs, 36)
+	require.Len(t, curatedOperationIDs, 34)
 
 	for _, operationID := range curatedOperationIDs {
 		require.NotContains(t, operationID, "Admin")
@@ -128,14 +128,6 @@ func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
 				"body": map[string]any{"content": "updated"},
 			},
 			omittedProperties: []string{"name"},
-		},
-		{
-			name:        "comment defaults state and visibility",
-			operationID: "MemoService_CreateMemoComment",
-			arguments: map[string]any{
-				"memo": "memos/abc123",
-				"body": map[string]any{"content": "comment"},
-			},
 		},
 		{
 			name:        "set attachments gets name from path",

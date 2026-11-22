@@ -442,9 +442,9 @@
       "updated": "Aufgaben aktualisiert"
     },
     "new-badge": "Neu",
-    "parent-loading": "Original-Memo wird geladen…",
-    "parent-load-error": "Original-Memo konnte nicht geladen werden.",
-    "parent-unavailable": "Original-Memo nicht verfügbar",
+    "parent-loading": "Übergeordnetes Memo wird geladen…",
+    "parent-load-error": "Übergeordnetes Memo konnte nicht geladen werden.",
+    "parent-unavailable": "Übergeordnetes Memo nicht verfügbar",
     "parent-unavailable-description": "Es wurde möglicherweise gelöscht oder Sie haben keinen Zugriff mehr darauf.",
     "moved": "Memo verschoben",
     "back-to": "Zurück zu {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Reaktion hinzufügen",
     "remove-reaction": "Reaktion entfernen",
     "full-width": "Volle Breite",
-    "full-width-hint": "Die gesamte Breite der Notiz-Zeitleiste nutzen."
+    "full-width-hint": "Die gesamte Breite der Notiz-Zeitleiste nutzen.",
+    "include-comments": "Kommentare einbeziehen",
+    "include-comments-hint": "Kommentare in Listen zusammen mit Notizen anzeigen."
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",

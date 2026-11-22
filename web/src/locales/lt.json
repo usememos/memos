@@ -482,9 +482,9 @@
       "space-description": "Visi erdvėje {{space}}"
     },
     "new-badge": "Nauja",
-    "parent-loading": "Įkeliamas originalus priminimas…",
-    "parent-load-error": "Nepavyko įkelti originalaus priminimo.",
-    "parent-unavailable": "Originalus priminimas nepasiekiamas",
+    "parent-loading": "Įkeliamas pagrindinis priminimas…",
+    "parent-load-error": "Nepavyko įkelti pagrindinio priminimo.",
+    "parent-unavailable": "Pagrindinis priminimas nepasiekiamas",
     "parent-unavailable-description": "Jis galėjo būti ištrintas arba jūs nebeturite prieigos.",
     "moved": "Priminimas perkeltas",
     "back-to": "Atgal į {{source}}",
@@ -503,7 +503,9 @@
     "add-reaction": "Pridėti reakciją",
     "remove-reaction": "Pašalinti reakciją",
     "full-width": "Visas plotis",
-    "full-width-hint": "Naudoti visą atmintinių laiko juostos plotį."
+    "full-width-hint": "Naudoti visą atmintinių laiko juostos plotį.",
+    "include-comments": "Įtraukti komentarus",
+    "include-comments-hint": "Sąrašuose rodyti komentarus kartu su atmintinėmis."
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",

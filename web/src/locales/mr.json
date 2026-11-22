@@ -429,9 +429,9 @@
       "open-image": "प्रतिमा म्हणून शेअर करा"
     },
     "new-badge": "नविन",
-    "parent-loading": "मूळ मेमो लोड होत आहे…",
-    "parent-load-error": "मूळ मेमो लोड होऊ शकला नाही.",
-    "parent-unavailable": "मूळ मेमो अनुपलब्ध",
+    "parent-loading": "पालक मेमो लोड होत आहे…",
+    "parent-load-error": "पालक मेमो लोड होऊ शकला नाही.",
+    "parent-unavailable": "पालक मेमो अनुपलब्ध",
     "parent-unavailable-description": "तो कदाचित हटवला गेला असेल किंवा तुमचा प्रवेश आता नसेल.",
     "moved": "ज्ञापन हलवले",
     "back-to": "{{source}} कडे परत",
@@ -458,7 +458,9 @@
     "add-reaction": "प्रतिक्रिया जोडा",
     "remove-reaction": "प्रतिक्रिया काढून टाका",
     "full-width": "पूर्ण रुंदी",
-    "full-width-hint": "मेमो कालरेषेची संपूर्ण रुंदी वापरा."
+    "full-width-hint": "मेमो कालरेषेची संपूर्ण रुंदी वापरा.",
+    "include-comments": "टिप्पण्या समाविष्ट करा",
+    "include-comments-hint": "याद्यांमध्ये मेमोसोबत टिप्पण्या दाखवा."
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

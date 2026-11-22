@@ -443,9 +443,9 @@
       "updated": "Tareas actualizadas"
     },
     "new-badge": "Nuevo",
-    "parent-loading": "Cargando memorándum original…",
-    "parent-load-error": "No se pudo cargar el memorándum original.",
-    "parent-unavailable": "Memorándum original no disponible.",
+    "parent-loading": "Cargando memo principal…",
+    "parent-load-error": "No se pudo cargar el memo principal.",
+    "parent-unavailable": "Memo principal no disponible.",
     "parent-unavailable-description": "Es posible que se haya eliminado o que ya no tengas acceso.",
     "moved": "Memorándum movido.",
     "back-to": "Volver a {{source}}",
@@ -464,7 +464,9 @@
     "add-reaction": "Añadir reacción",
     "remove-reaction": "Eliminar reacción",
     "full-width": "Ancho completo",
-    "full-width-hint": "Usar todo el ancho de la cronología de memos."
+    "full-width-hint": "Usar todo el ancho de la cronología de memos.",
+    "include-comments": "Incluir comentarios",
+    "include-comments-hint": "Mostrar los comentarios junto a los memos en las listas."
   },
   "message": {
     "archived-successfully": "Archivado correctamente",

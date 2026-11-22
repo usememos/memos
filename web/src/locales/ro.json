@@ -481,9 +481,9 @@
       "space-description": "Toți din {{space}}"
     },
     "new-badge": "Nou",
-    "parent-loading": "Se încarcă nota originală…",
-    "parent-load-error": "Nu s-a putut încărca nota originală.",
-    "parent-unavailable": "Nota originală nu este disponibilă",
+    "parent-loading": "Se încarcă nota părinte…",
+    "parent-load-error": "Nu s-a putut încărca nota părinte.",
+    "parent-unavailable": "Nota părinte nu este disponibilă",
     "parent-unavailable-description": "Este posibil să fi fost ștersă sau să nu mai ai acces.",
     "moved": "Nota mutată",
     "back-to": "Înapoi la {{source}}",
@@ -502,7 +502,9 @@
     "add-reaction": "Adăugați reacția",
     "remove-reaction": "Îndepărtați reacția",
     "full-width": "Lățime completă",
-    "full-width-hint": "Folosește întreaga lățime a cronologiei notelor."
+    "full-width-hint": "Folosește întreaga lățime a cronologiei notelor.",
+    "include-comments": "Include comentariile",
+    "include-comments-hint": "Afișează comentariile împreună cu notele în liste."
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

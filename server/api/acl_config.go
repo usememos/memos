@@ -31,7 +31,6 @@ var PublicMethods = map[string]struct{}{
 	// Memo Service - public memos (visibility filtering done in service layer)
 	"/memos.api.MemoService/GetMemo":              {},
 	"/memos.api.MemoService/ListMemos":            {},
-	"/memos.api.MemoService/ListMemoComments":     {},
 	"/memos.api.MemoService/ListMemoAttachments":  {},
 	"/memos.api.MemoService/ListMemoReactions":    {},
 	"/memos.api.MemoService/ListMemoRelations":    {},

@@ -367,6 +367,57 @@ func TestMemoFilterPinnedEquals(t *testing.T) {
 	require.False(t, memos[0].Pinned)
 }
 
+func TestMemoFilterParent(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	top := tc.CreateMemo(NewMemoBuilder("memo-top", tc.User.ID).Content("Top-level memo"))
+	other := tc.CreateMemo(NewMemoBuilder("memo-other", tc.User.ID).Content("Another top-level memo"))
+	comment, err := tc.Store.CreateMemoComment(tc.Ctx, &store.Memo{
+		UID: "memo-comment", CreatorID: tc.User.ID, Content: "A comment", Visibility: store.Public,
+	}, top.ID, tc.User.ID)
+	require.NoError(t, err)
+	reply, err := tc.Store.CreateMemoComment(tc.Ctx, &store.Memo{
+		UID: "memo-reply", CreatorID: tc.User.ID, Content: "A reply to the comment", Visibility: store.Public,
+	}, comment.ID, tc.User.ID)
+	require.NoError(t, err)
+
+	// Test: parent == null selects top-level memos only.
+	require.ElementsMatch(t, []string{top.UID, other.UID}, uids(tc.ListWithFilter(`parent == null`)))
+
+	// Test: parent != null selects comments at any depth.
+	require.ElementsMatch(t, []string{comment.UID, reply.UID}, uids(tc.ListWithFilter(`parent != null`)))
+
+	// Test: parent == "memos/{uid}" selects the direct comments on one memo.
+	require.Equal(t, []string{comment.UID}, uids(tc.ListWithFilter(`parent == "memos/memo-top"`)))
+	require.Equal(t, []string{reply.UID}, uids(tc.ListWithFilter(`parent == "memos/memo-comment"`)))
+	require.Empty(t, tc.ListWithFilter(`parent == "memos/memo-other"`))
+
+	// Test: the term combines with other fields.
+	require.Equal(t, []string{reply.UID}, uids(tc.ListWithFilter(`parent != null && content.contains("reply")`)))
+}
+
+func TestMemoFilterName(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	first := tc.CreateMemo(NewMemoBuilder("memo-first", tc.User.ID).Content("First"))
+	second := tc.CreateMemo(NewMemoBuilder("memo-second", tc.User.ID).Content("Second"))
+	tc.CreateMemo(NewMemoBuilder("memo-third", tc.User.ID).Content("Third"))
+
+	// Test: name == selects one memo by its resource name.
+	require.Equal(t, []string{first.UID}, uids(tc.ListWithFilter(`name == "memos/memo-first"`)))
+
+	// Test: name in [...] selects a known set; an unknown name matches nothing.
+	require.ElementsMatch(t, []string{first.UID, second.UID},
+		uids(tc.ListWithFilter(`name in ["memos/memo-first", "memos/memo-second", "memos/missing"]`)))
+
+	// Test: a bare UID is not a resource name.
+	require.Empty(t, tc.ListWithFilter(`name == "memo-first"`))
+}
+
 func TestMemoFilterPinnedPredicate(t *testing.T) {
 	t.Parallel()
 	tc := NewMemoFilterTestContext(t)

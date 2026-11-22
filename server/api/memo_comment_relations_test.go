@@ -11,12 +11,12 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// TestCreateMemoComment_ReturnsParentRelation verifies that the memo returned by
-// CreateMemoComment carries the COMMENT relation to its parent memo. The comment
-// memo is converted before the relation is created, so without an explicit reload
-// the returned memo (and the memo.comment.created webhook payload built from it)
-// would have an empty Relations slice. Regression test for usememos/memos#6081.
-func TestCreateMemoComment_ReturnsParentRelation(t *testing.T) {
+// TestCreateMemo_CommentReturnsParent verifies that a memo created with a
+// parent is returned as a comment on it: the response (and the
+// memo.comment.created webhook payload built from the same memo) names the
+// parent, the link is not repeated as a relation, and the parent counts the
+// comment. Regression test for usememos/memos#6081.
+func TestCreateMemo_CommentReturnsParent(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -31,17 +31,23 @@ func TestCreateMemoComment_ReturnsParentRelation(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comment, err := svc.CreateMemoComment(authorCtx, &apipb.CreateMemoCommentRequest{
-		Parent:  parent.Name,
-		Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
+	comment, err := svc.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(parent.Name), Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
-	require.Len(t, comment.Relations, 1, "comment memo should carry its parent relation")
-	rel := comment.Relations[0]
-	assert.Equal(t, apipb.MemoRelation_COMMENT, rel.Type)
-	require.NotNil(t, rel.Memo)
-	require.NotNil(t, rel.RelatedMemo)
-	assert.Equal(t, comment.Name, rel.Memo.Name)
-	assert.Equal(t, parent.Name, rel.RelatedMemo.Name)
+	assert.Equal(t, parent.Name, comment.GetParent(), "comment memo should name its parent")
+	assert.Empty(t, comment.Relations, "the parent link is not a relation")
+	assert.Zero(t, comment.CommentCount)
+
+	reloadedComment, err := svc.GetMemo(authorCtx, &apipb.GetMemoRequest{Name: comment.Name})
+	require.NoError(t, err)
+	assert.Equal(t, parent.Name, reloadedComment.GetParent())
+	assert.Empty(t, reloadedComment.Relations)
+
+	reloadedParent, err := svc.GetMemo(authorCtx, &apipb.GetMemoRequest{Name: parent.Name})
+	require.NoError(t, err)
+	assert.Nil(t, reloadedParent.Parent)
+	assert.Empty(t, reloadedParent.Relations)
+	assert.EqualValues(t, 1, reloadedParent.CommentCount)
 }

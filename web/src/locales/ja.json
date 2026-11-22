@@ -451,9 +451,9 @@
       "updated": "タスクが更新されました"
     },
     "new-badge": "新着",
-    "parent-loading": "元のメモを読み込んでいます…",
-    "parent-load-error": "元のメモを読み込めませんでした。",
-    "parent-unavailable": "元のメモが利用できません",
+    "parent-loading": "親メモを読み込んでいます…",
+    "parent-load-error": "親メモを読み込めませんでした。",
+    "parent-unavailable": "親メモが利用できません",
     "parent-unavailable-description": "削除されたか、アクセス権がなくなった可能性があります。",
     "moved": "メモが移動されました",
     "back-to": "{{source}}に戻る",
@@ -463,7 +463,9 @@
     "add-reaction": "リアクションを追加",
     "remove-reaction": "反応を取り除く",
     "full-width": "全幅表示",
-    "full-width-hint": "メモのタイムラインを幅いっぱいに表示します。"
+    "full-width-hint": "メモのタイムラインを幅いっぱいに表示します。",
+    "include-comments": "コメントを含める",
+    "include-comments-hint": "一覧にメモと一緒にコメントを表示します。"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",

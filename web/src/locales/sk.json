@@ -482,9 +482,9 @@
       "space-description": "Všetci v {{space}}"
     },
     "new-badge": "Nové",
-    "parent-loading": "Načítava sa pôvodná poznámka…",
-    "parent-load-error": "Nepodarilo sa načítať pôvodnú poznámku.",
-    "parent-unavailable": "Pôvodná poznámka nie je k dispozícii",
+    "parent-loading": "Načítava sa nadradená poznámka…",
+    "parent-load-error": "Nepodarilo sa načítať nadradenú poznámku.",
+    "parent-unavailable": "Nadradená poznámka nie je k dispozícii",
     "parent-unavailable-description": "Možno bola odstránená alebo k nej už nemáte prístup.",
     "moved": "Poznámka presunutá",
     "back-to": "Späť na {{source}}",
@@ -503,7 +503,9 @@
     "add-reaction": "Pridajte reakciu",
     "remove-reaction": "Odstráňte reakciu",
     "full-width": "Plná šírka",
-    "full-width-hint": "Využiť celú šírku časovej osi poznámok."
+    "full-width-hint": "Využiť celú šírku časovej osi poznámok.",
+    "include-comments": "Zahrnúť komentáre",
+    "include-comments-hint": "Zobraziť komentáre v zoznamoch spolu s poznámkami."
   },
   "message": {
     "archived-successfully": "Úspešne archivované",

@@ -2,7 +2,7 @@ import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { estimateMemoCardHeight } from "@/components/PagedMemoList/memoCardHeight";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
-import { MemoRelation_MemoRefSchema, MemoRelation_Type, MemoRelationSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const buildAttachment = (overrides: MessageInitShape<typeof AttachmentSchema>) =>
   create(AttachmentSchema, {
@@ -10,13 +10,6 @@ const buildAttachment = (overrides: MessageInitShape<typeof AttachmentSchema>) =
     filename: "test.bin",
     type: "application/octet-stream",
     ...overrides,
-  });
-
-const buildCommentRelation = (memoName: string, index: number) =>
-  create(MemoRelationSchema, {
-    type: MemoRelation_Type.COMMENT,
-    memo: create(MemoRelation_MemoRefSchema, { name: `memos/comment-${index}` }),
-    relatedMemo: create(MemoRelation_MemoRefSchema, { name: memoName }),
   });
 
 const buildMemo = (overrides: MessageInitShape<typeof MemoSchema> = {}) =>
@@ -55,17 +48,28 @@ describe("estimateMemoCardHeight", () => {
   });
 
   it("estimates the visible comment preview height and caps it at three comments", () => {
-    const oneComment = buildMemo({ relations: [buildCommentRelation("memos/main", 1)] });
-    const threeComments = buildMemo({
-      relations: [1, 2, 3].map((index) => buildCommentRelation("memos/main", index)),
-    });
-    const fiveComments = buildMemo({
-      relations: [1, 2, 3, 4, 5].map((index) => buildCommentRelation("memos/main", index)),
-    });
+    const oneComment = buildMemo({ commentCount: 1 });
+    const threeComments = buildMemo({ commentCount: 3 });
+    const fiveComments = buildMemo({ commentCount: 5 });
 
     expect(estimateMemoCardHeight(threeComments, { columnWidth: 320 })).toBeGreaterThan(
       estimateMemoCardHeight(oneComment, { columnWidth: 320 }),
     );
     expect(estimateMemoCardHeight(fiveComments, { columnWidth: 320 })).toBe(estimateMemoCardHeight(threeComments, { columnWidth: 320 }));
+  });
+
+  it("reserves one strip row when the comment preview is collapsed or the card is a comment", () => {
+    const plain = estimateMemoCardHeight(buildMemo(), { columnWidth: 320 });
+    const collapsed = (commentCount: number) =>
+      estimateMemoCardHeight(buildMemo({ commentCount }), { columnWidth: 320, commentsCollapsed: true });
+
+    // While the list holds the comments themselves, a memo shows a single "View N comments" row.
+    expect(collapsed(5)).toBe(plain + 33);
+    expect(collapsed(1)).toBe(collapsed(5));
+    expect(collapsed(0)).toBe(plain);
+    expect(collapsed(5)).toBeLessThan(estimateMemoCardHeight(buildMemo({ commentCount: 5 }), { columnWidth: 320 }));
+
+    // A comment's card carries its parent strip, and no preview of its own replies.
+    expect(estimateMemoCardHeight(buildMemo({ parent: "memos/parent", commentCount: 4 }), { columnWidth: 320 })).toBe(plain + 33);
   });
 });

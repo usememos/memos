@@ -443,9 +443,9 @@
       "updated": "Tâches mises à jour"
     },
     "new-badge": "Nouveau",
-    "parent-loading": "Chargement du mémo original…",
-    "parent-load-error": "Impossible de charger le mémo original.",
-    "parent-unavailable": "Mémo original indisponible.",
+    "parent-loading": "Chargement du mémo parent…",
+    "parent-load-error": "Impossible de charger le mémo parent.",
+    "parent-unavailable": "Mémo parent indisponible.",
     "parent-unavailable-description": "Il a peut-être été supprimé ou vous n'y avez plus accès.",
     "moved": "Mémo déplacé",
     "back-to": "Retour à {{source}}",
@@ -464,7 +464,9 @@
     "add-reaction": "Ajouter une réaction",
     "remove-reaction": "Supprimer la réaction",
     "full-width": "Pleine largeur",
-    "full-width-hint": "Utiliser toute la largeur de la chronologie des mémos."
+    "full-width-hint": "Utiliser toute la largeur de la chronologie des mémos.",
+    "include-comments": "Inclure les commentaires",
+    "include-comments-hint": "Afficher les commentaires avec les mémos dans les listes."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",

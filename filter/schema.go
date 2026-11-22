@@ -118,6 +118,23 @@ func NewSchema() Schema {
 			SupportsContains: true,
 			Expressions:      map[DialectName]string{},
 		},
+		// The memo's own resource name, so a caller can fetch a known set of memos
+		// in one list call: name in ["memos/a", "memos/b"].
+		"name": {
+			Name:   "name",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeString,
+			Column: Column{Table: "memo", Name: "uid"},
+			Expressions: map[DialectName]string{
+				DialectSQLite:   "('memos/' || %s)",
+				DialectMySQL:    "CONCAT('memos/', %s)",
+				DialectPostgres: "('memos/' || %s)",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 		"creator": {
 			Name:   "creator",
 			Kind:   FieldKindScalar,
@@ -201,6 +218,23 @@ func NewSchema() Schema {
 				DialectSQLite:   "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 				DialectMySQL:    "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
 				DialectPostgres: "CASE WHEN memo.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq: true,
+			},
+		},
+		// A comment's parent lives in memo_relation, so it is read with a
+		// correlated subquery rather than a join every memo query would need.
+		// The result is NULL for a top-level memo.
+		"parent": {
+			Name:   "parent",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeString,
+			Column: Column{Table: "memo", Name: "id"},
+			Expressions: map[DialectName]string{
+				DialectSQLite:   "(SELECT ('memos/' || parent_memo.uid) FROM memo_relation AS parent_relation JOIN memo AS parent_memo ON parent_memo.id = parent_relation.related_memo_id WHERE parent_relation.memo_id = %[1]s AND parent_relation.type = 'COMMENT' ORDER BY parent_memo.id LIMIT 1)",
+				DialectMySQL:    "(SELECT CONCAT('memos/', parent_memo.uid) FROM memo_relation AS parent_relation JOIN memo AS parent_memo ON parent_memo.id = parent_relation.related_memo_id WHERE parent_relation.memo_id = %[1]s AND parent_relation.type = 'COMMENT' ORDER BY parent_memo.id LIMIT 1)",
+				DialectPostgres: "(SELECT ('memos/' || parent_memo.uid) FROM memo_relation AS parent_relation JOIN memo AS parent_memo ON parent_memo.id = parent_relation.related_memo_id WHERE parent_relation.memo_id = %[1]s AND parent_relation.type = 'COMMENT' ORDER BY parent_memo.id LIMIT 1)",
 			},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq: true,
@@ -317,6 +351,7 @@ func NewSchema() Schema {
 
 	envOptions := []cel.EnvOption{
 		cel.Variable("content", cel.StringType),
+		cel.Variable("name", cel.StringType),
 		cel.Variable("creator", cel.StringType),
 		cel.Variable("creator_id", cel.IntType),
 		cel.Variable("created_ts", cel.TimestampType),
@@ -327,6 +362,8 @@ func NewSchema() Schema {
 		cel.Variable("visibility", cel.StringType),
 		// Dyn permits the explicit null comparison used for memos without a space.
 		cel.Variable("space", cel.DynType),
+		// Dyn for the same reason: `parent == null` selects top-level memos.
+		cel.Variable("parent", cel.DynType),
 		cel.Variable("has_task_list", cel.BoolType),
 		cel.Variable("has_link", cel.BoolType),
 		cel.Variable("has_code", cel.BoolType),

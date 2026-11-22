@@ -9,14 +9,13 @@ const mocks = vi.hoisted(() => ({
   markNewMemo: vi.fn(),
   memoSave: vi.fn(),
   createMemo: vi.fn(),
-  createMemoComment: vi.fn(),
   newMemoName: null as string | null,
   timestamps: {} as { createTime?: Date; updateTime?: Date },
   saving: false,
 }));
 
 vi.mock("@/connect", () => ({
-  memoServiceClient: { createMemo: mocks.createMemo, createMemoComment: mocks.createMemoComment },
+  memoServiceClient: { createMemo: mocks.createMemo },
 }));
 
 vi.mock("@/components/MemoEditor/edit/services", () => ({
@@ -84,7 +83,7 @@ describe("useMemoSave", () => {
   });
 
   it("refreshes the parent memo total after creating a comment", async () => {
-    mocks.createMemoComment.mockResolvedValue({ name: "memos/comment", parent: "memos/parent" });
+    mocks.createMemo.mockResolvedValue({ name: "memos/comment", parent: "memos/parent" });
     mocks.memoSave.mockImplementation(async (_state, options, operations) => {
       const memo = await operations.createMemo({ name: "" }, options.parentMemoName);
       return { hasChanges: true, memoName: memo.name };

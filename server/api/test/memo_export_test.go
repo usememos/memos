@@ -82,14 +82,14 @@ func buildArchiveFixture(t *testing.T, ts *TestService, username string) *archiv
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent:    parent.Name,
-		CommentId: "comment0001",
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(parent.Name),
 			Content:    "A comment",
 			Visibility: apipb.Visibility_PRIVATE,
 			CreateTime: timestamppb.New(mustTime(t, "2026-02-28T08:00:00Z")),
 		},
+		MemoId: "comment0001",
 	})
 	require.NoError(t, err)
 

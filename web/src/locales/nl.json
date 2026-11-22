@@ -442,9 +442,9 @@
       "updated": "Taken bijgewerkt"
     },
     "new-badge": "Nieuw",
-    "parent-loading": "Originele memo laden…",
-    "parent-load-error": "De originele memo kon niet worden geladen.",
-    "parent-unavailable": "Originele memo niet beschikbaar",
+    "parent-loading": "Hoofdmemo laden…",
+    "parent-load-error": "De hoofdmemo kon niet worden geladen.",
+    "parent-unavailable": "Hoofdmemo niet beschikbaar",
     "parent-unavailable-description": "Deze is mogelijk verwijderd of je hebt er geen toegang meer toe.",
     "moved": "Memo verplaatst",
     "back-to": "Terug naar {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Reactie toevoegen",
     "remove-reaction": "Reactie verwijderen",
     "full-width": "Volledige breedte",
-    "full-width-hint": "Gebruik de volledige breedte van de memotijdlijn."
+    "full-width-hint": "Gebruik de volledige breedte van de memotijdlijn.",
+    "include-comments": "Opmerkingen opnemen",
+    "include-comments-hint": "Toon opmerkingen samen met memo's in lijsten."
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",

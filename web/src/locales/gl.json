@@ -442,9 +442,9 @@
       "updated": "Tarefas actualizadas"
     },
     "new-badge": "Novidade",
-    "parent-loading": "Cargando a nota orixinal…",
-    "parent-load-error": "Non se puido cargar a nota orixinal.",
-    "parent-unavailable": "Nota orixinal non dispoñible",
+    "parent-loading": "Cargando a nota principal…",
+    "parent-load-error": "Non se puido cargar a nota principal.",
+    "parent-unavailable": "Nota principal non dispoñible",
     "parent-unavailable-description": "Pode que se eliminase ou que xa non teñas acceso.",
     "moved": "Nota movida",
     "back-to": "Volver a {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Engadir reacción",
     "remove-reaction": "Eliminar a reacción",
     "full-width": "Largura completa",
-    "full-width-hint": "Usar toda a largura da cronoloxía dos memos."
+    "full-width-hint": "Usar toda a largura da cronoloxía dos memos.",
+    "include-comments": "Incluír comentarios",
+    "include-comments-hint": "Mostrar os comentarios xunto aos memos nas listas."
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",

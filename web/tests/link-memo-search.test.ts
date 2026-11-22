@@ -23,9 +23,9 @@ describe("useLinkMemo search filter", () => {
   });
 
   it.each([
-    ["meeting", 'creator == "users/alice" && content.contains("meeting")'],
-    ['say "hi"', 'creator == "users/alice" && content.contains("say \\"hi\\"")'],
-    ["C:\\", 'creator == "users/alice" && content.contains("C:\\\\")'],
+    ["meeting", 'parent == null && creator == "users/alice" && content.contains("meeting")'],
+    ['say "hi"', 'parent == null && creator == "users/alice" && content.contains("say \\"hi\\"")'],
+    ["C:\\", 'parent == null && creator == "users/alice" && content.contains("C:\\\\")'],
   ])("passes %j to the filter as a quoted CEL string", async (searchText, expected) => {
     const { result } = renderHook(() => useLinkMemo({ isOpen: true, existingRelations: [], onAddRelation: vi.fn() }));
 

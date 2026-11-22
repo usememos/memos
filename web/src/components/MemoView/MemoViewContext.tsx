@@ -3,7 +3,6 @@ import { createContext, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useView } from "@/contexts/ViewContext";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
-import { MemoRelation_Type } from "@/types/proto/api/memo_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import type { PreviewMediaItem } from "@/utils/media-item";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
@@ -39,16 +38,13 @@ export const useMemoViewContext = (): MemoViewContextValue => {
   return context;
 };
 
-export const computeCommentAmount = (memo: Memo): number =>
-  memo.relations.filter((r) => r.type === MemoRelation_Type.COMMENT && r.relatedMemo?.name === memo.name).length;
-
 export const useMemoViewDerived = () => {
   const { memo, isArchived, readonly } = useMemoViewContext();
   const { timeBasis } = useView();
   const location = useLocation();
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memo.name);
-  const commentAmount = computeCommentAmount(memo);
+  const commentAmount = memo.commentCount;
 
   const createTime = memo.createTime ? timestampDate(memo.createTime) : undefined;
   const updateTime = memo.updateTime ? timestampDate(memo.updateTime) : undefined;

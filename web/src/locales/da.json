@@ -480,9 +480,9 @@
       "space-description": "Alle i {{space}}"
     },
     "new-badge": "Ny",
-    "parent-loading": "Indlæser originalt notat…",
-    "parent-load-error": "Kunne ikke indlæse det originale notat.",
-    "parent-unavailable": "Originalt notat er ikke tilgængeligt",
+    "parent-loading": "Indlæser overordnet notat…",
+    "parent-load-error": "Kunne ikke indlæse det overordnede notat.",
+    "parent-unavailable": "Overordnet notat er ikke tilgængeligt",
     "parent-unavailable-description": "Det er muligvis blevet slettet, eller du har muligvis ikke længere adgang.",
     "moved": "Notat flyttet",
     "back-to": "Tilbage til {{source}}",
@@ -501,7 +501,9 @@
     "add-reaction": "Tilføj reaktion",
     "remove-reaction": "Fjern reaktion",
     "full-width": "Fuld bredde",
-    "full-width-hint": "Brug hele bredden af memoernes tidslinje."
+    "full-width-hint": "Brug hele bredden af memoernes tidslinje.",
+    "include-comments": "Medtag kommentarer",
+    "include-comments-hint": "Vis kommentarer sammen med memoer i lister."
   },
   "message": {
     "archived-successfully": "Arkiveret",

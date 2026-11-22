@@ -442,9 +442,9 @@
       "updated": "Uppgifter uppdaterade"
     },
     "new-badge": "Ny",
-    "parent-loading": "Laddar originalmemot…",
-    "parent-load-error": "Kunde inte läsa in originalmemot.",
-    "parent-unavailable": "Originalmemot är inte tillgängligt",
+    "parent-loading": "Laddar överordnat PM…",
+    "parent-load-error": "Kunde inte läsa in överordnat PM.",
+    "parent-unavailable": "Överordnat PM är inte tillgängligt",
     "parent-unavailable-description": "Det kan ha tagits bort eller så har du inte längre åtkomst.",
     "moved": "Memot flyttat",
     "back-to": "Tillbaka till {{source}}",
@@ -463,7 +463,9 @@
     "add-reaction": "Lägg till reaktion",
     "remove-reaction": "Ta bort reaktionen",
     "full-width": "Full bredd",
-    "full-width-hint": "Använd hela bredden på anteckningarnas tidslinje."
+    "full-width-hint": "Använd hela bredden på anteckningarnas tidslinje.",
+    "include-comments": "Inkludera kommentarer",
+    "include-comments-hint": "Visa kommentarer tillsammans med anteckningar i listor."
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",

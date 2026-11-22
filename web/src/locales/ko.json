@@ -429,9 +429,9 @@
       "open-image": "이미지로 공유"
     },
     "new-badge": "신규",
-    "parent-loading": "원본 메모 불러오는 중…",
-    "parent-load-error": "원본 메모를 불러올 수 없습니다.",
-    "parent-unavailable": "원본 메모를 사용할 수 없습니다.",
+    "parent-loading": "상위 메모 불러오는 중…",
+    "parent-load-error": "상위 메모를 불러올 수 없습니다.",
+    "parent-unavailable": "상위 메모를 사용할 수 없습니다.",
     "parent-unavailable-description": "메모가 삭제되었거나 더 이상 접근 권한이 없을 수 있습니다.",
     "moved": "메모가 이동되었습니다.",
     "back-to": "{{source}}으로 돌아가기",
@@ -458,7 +458,9 @@
     "add-reaction": "반응 추가",
     "remove-reaction": "반응 제거",
     "full-width": "전체 너비",
-    "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다."
+    "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다.",
+    "include-comments": "댓글 포함",
+    "include-comments-hint": "목록에 메모와 함께 댓글을 표시합니다."
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",

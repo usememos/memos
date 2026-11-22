@@ -442,9 +442,9 @@
       "updated": "Feladatok frissítve"
     },
     "new-badge": "Új",
-    "parent-loading": "Eredeti feljegyzés betöltése…",
-    "parent-load-error": "Az eredeti feljegyzés nem tölthető be.",
-    "parent-unavailable": "Az eredeti feljegyzés nem érhető el.",
+    "parent-loading": "Szülő feljegyzés betöltése…",
+    "parent-load-error": "A szülő feljegyzés nem tölthető be.",
+    "parent-unavailable": "A szülő feljegyzés nem érhető el.",
     "parent-unavailable-description": "Lehet, hogy törölték, vagy már nincs hozzáférésed.",
     "moved": "Feljegyzés áthelyezve.",
     "back-to": "Vissza a {{source}}-hez",
@@ -463,7 +463,9 @@
     "add-reaction": "Adja hozzá a reakciót",
     "remove-reaction": "Távolítsa el a reakciót",
     "full-width": "Teljes szélesség",
-    "full-width-hint": "A jegyzetek idővonalának teljes szélességét használja."
+    "full-width-hint": "A jegyzetek idővonalának teljes szélességét használja.",
+    "include-comments": "Hozzászólások belefoglalása",
+    "include-comments-hint": "A listákban a hozzászólások a jegyzetekkel együtt jelennek meg."
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",

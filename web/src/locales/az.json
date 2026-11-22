@@ -463,9 +463,9 @@
     "no-matching-memos": "Uyğun qeyd yoxdur",
     "clear-filters": "Filtrləri təmizlə",
     "pinned": "Sabitlənib",
-    "parent-loading": "İlkin memo yüklənir…",
-    "parent-load-error": "İlkin memonu yükləmək mümkün olmadı.",
-    "parent-unavailable": "İlkin memo əlçatan deyil",
+    "parent-loading": "Ana qeyd yüklənir…",
+    "parent-load-error": "Ana qeydi yükləmək mümkün olmadı.",
+    "parent-unavailable": "Ana qeyd əlçatan deyil",
     "parent-unavailable-description": "Silinmiş ola bilər və ya artıq giriş icazəniz yoxdur.",
     "moved": "Memo köçürüldü",
     "back-to": "{{source}} bölməsinə qayıt",
@@ -565,7 +565,9 @@
     "add-reaction": "Reaksiya əlavə et",
     "remove-reaction": "Reaksiyanı çıxar",
     "full-width": "Tam en",
-    "full-width-hint": "Qeydlərin zaman xəttinin bütün enindən istifadə et."
+    "full-width-hint": "Qeydlərin zaman xəttinin bütün enindən istifadə et.",
+    "include-comments": "Şərhləri daxil et",
+    "include-comments-hint": "Siyahılarda şərhləri qeydlərlə birlikdə göstər."
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",

@@ -109,6 +109,51 @@ func TestRenderSpaceFilters(t *testing.T) {
 	}
 }
 
+func TestRenderNameFilters(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		one, err := engine.CompileToStatement(context.Background(), `name == "memos/abc"`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, one.SQL, "memos/", dialect)
+		require.Equal(t, []any{"memos/abc"}, one.Args, dialect)
+
+		several, err := engine.CompileToStatement(context.Background(), `name in ["memos/abc", "memos/def"]`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, several.SQL, " IN (", dialect)
+		require.Equal(t, []any{"memos/abc", "memos/def"}, several.Args, dialect)
+	}
+}
+
+func TestRenderParentFilters(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		topLevel, err := engine.CompileToStatement(context.Background(), `parent == null`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, topLevel.SQL, "parent_relation.type = 'COMMENT'", dialect)
+		require.True(t, strings.HasSuffix(topLevel.SQL, "IS NULL"), dialect)
+		require.Empty(t, topLevel.Args, dialect)
+
+		comments, err := engine.CompileToStatement(context.Background(), `parent != null`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.True(t, strings.HasSuffix(comments.SQL, "IS NOT NULL"), dialect)
+		require.Empty(t, comments.Args, dialect)
+
+		ofMemo, err := engine.CompileToStatement(context.Background(), `parent == "memos/abc"`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, ofMemo.SQL, "memos/", dialect)
+		require.Equal(t, []any{"memos/abc"}, ofMemo.Args, dialect)
+	}
+
+	_, err = engine.Compile(context.Background(), `parent != "memos/abc"`)
+	require.ErrorContains(t, err, `operator != not allowed for field "parent"`, "NULL != value would silently drop top-level memos")
+}
+
 func TestRenderAttachmentCreatorFilter(t *testing.T) {
 	t.Parallel()
 

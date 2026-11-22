@@ -5,7 +5,6 @@ import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import MemoView, { type MemoViewHandle } from "@/components/MemoView";
-import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 import { createMemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -176,7 +175,7 @@ const MemoDetail = () => {
   } = useInfiniteMemoComments(memoName, {
     enabled: !isShareMode && !!memo,
   });
-  const commentCount = memo ? Math.max(computeCommentAmount(memo), comments.length) : 0;
+  const commentCount = memo ? Math.max(memo.commentCount, comments.length) : 0;
 
   const handleCommentsOpen = useCallback(() => {
     commentSectionRef.current?.scrollIntoView();

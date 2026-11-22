@@ -429,9 +429,9 @@
       "open-image": "Bagikan sebagai gambar"
     },
     "new-badge": "Baru",
-    "parent-loading": "Memuat memo asli…",
-    "parent-load-error": "Tidak dapat memuat memo asli.",
-    "parent-unavailable": "Memo asli tidak tersedia",
+    "parent-loading": "Memuat memo induk…",
+    "parent-load-error": "Tidak dapat memuat memo induk.",
+    "parent-unavailable": "Memo induk tidak tersedia",
     "parent-unavailable-description": "Memo tersebut mungkin telah dihapus atau Anda mungkin tidak lagi memiliki akses.",
     "moved": "Memo dipindahkan",
     "back-to": "Kembali ke {{source}}",
@@ -458,7 +458,9 @@
     "add-reaction": "Tambahkan reaksi",
     "remove-reaction": "Hapus reaksi",
     "full-width": "Lebar penuh",
-    "full-width-hint": "Gunakan seluruh lebar linimasa memo."
+    "full-width-hint": "Gunakan seluruh lebar linimasa memo.",
+    "include-comments": "Sertakan komentar",
+    "include-comments-hint": "Tampilkan komentar bersama memo dalam daftar."
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
