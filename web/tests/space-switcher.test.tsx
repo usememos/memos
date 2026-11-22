@@ -239,6 +239,24 @@ describe("SpaceSwitcher", () => {
     });
   });
 
+  it("keeps a long Space list inside the selector's own scroll box", async () => {
+    state.spaces = Array.from({ length: 10 }, (_, index) => ({
+      name: `spaces/space-${index}`,
+      title: `Space ${index}`,
+      description: "",
+    }));
+    renderAt();
+    openSwitcher();
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
+    const option = await screen.findByRole("option", { name: "Space 9" });
+    // The list clamps itself to the viewport space it inherits, so the popup has to be the box that both
+    // caps the height and scrolls; capping the popup alone renders the rows past its frame.
+    const selectPopup = option.closest(".mu-select-popup") as HTMLElement;
+    expect(selectPopup).toHaveClass("max-h-64");
+    expect(selectPopup).toHaveClass("overflow-y-auto");
+  });
+
   it("gives guests on Explore only the account panel, with no single-choice Browse control", () => {
     state.currentUser = undefined;
     renderAt("/explore");

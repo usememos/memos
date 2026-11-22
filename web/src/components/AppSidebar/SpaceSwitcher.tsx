@@ -226,8 +226,10 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                         {selectedSpaceName ? <SpaceMark icon={selectedSpace?.icon} size="sm" /> : <ScopePanelRowIcon icon={AstroidIcon} />}
                         <Select.Value />
                       </Select.Trigger>
+                      {/* The height cap and the scroll box must be the same element: the list clamps itself to
+                          `--available-height`, so capping only the popup left the extra rows outside the frame. */}
                       <Select.Popup
-                        className="max-h-64 w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]"
+                        className="max-h-64 overflow-y-auto w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]"
                         align="start"
                         positionMethod="fixed"
                       >
