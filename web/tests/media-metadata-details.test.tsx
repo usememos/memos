@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useLayoutEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import { AttachmentSchema, MediaLocationSchema, MediaMetadataSchema, PhotoMetadataSchema } from "@/types/proto/api/attachment_service_pb";
@@ -101,6 +102,28 @@ describe("MediaMetadataDetails", () => {
       vi.advanceTimersByTime(1600);
     });
     expect(screen.getByRole("button", { name: "attachment-details.actions.copy-coordinates" })).toBeInTheDocument();
+  });
+
+  it("shows copied feedback for a copy started as the next photo appears", async () => {
+    copyToClipboard.mockResolvedValue(true);
+    const first = createPhotoItem("photo-1", 37.7749, -122.4194);
+    const second = createPhotoItem("photo-2", 40.7128, -74.006);
+
+    function PhotoPreview({ item }: { item: PreviewMediaItem }) {
+      // Click after the new button commits, before passive effects run.
+      useLayoutEffect(() => {
+        if (item === second) {
+          screen.getByRole("button", { name: "attachment-details.actions.copy-coordinates" }).click();
+        }
+      }, [item]);
+      return <MediaMetadataDetails id="details" item={item} onClose={vi.fn()} />;
+    }
+
+    const { rerender } = render(<PhotoPreview item={first} />);
+    rerender(<PhotoPreview item={second} />);
+
+    expect(copyToClipboard).toHaveBeenCalledWith("40.7128, -74.006");
+    expect(await screen.findByRole("button", { name: "attachment-details.actions.copied" })).toBeInTheDocument();
   });
 
   it("ignores a copy that resolves after switching to another photo", async () => {

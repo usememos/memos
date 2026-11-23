@@ -17,7 +17,7 @@ import {
   TimerIcon,
   XIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
     ? t("attachment-details.actions.copied")
     : t("attachment-details.actions.copy-coordinates");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShowMap(false);
     setCoordinatesCopied(false);
     return () => {
