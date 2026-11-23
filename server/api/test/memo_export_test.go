@@ -720,3 +720,216 @@ func TestImportMemosChargesWriteAndUploadBudgets(t *testing.T) {
 	require.Equal(t, writeBefore-1, limiter.Allowed(ratelimit.ScopeWriteUser, key, 1).Remaining)
 	require.Equal(t, uploadBefore-1, limiter.Allowed(ratelimit.ScopeUploadUser, key, 1).Remaining)
 }
+
+type importArchiveAttachment struct {
+	uid, filename, mimeType string
+	content                 []byte
+}
+
+func buildSingleMemoImportArchive(t *testing.T, username, memoUID, memoContent string, attachments []importArchiveAttachment) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	writer := memoexport.NewWriter(&buf, mustTime(t, "2026-04-01T00:00:00Z"))
+	require.NoError(t, writer.WriteManifest(&memoexport.Manifest{
+		Format: memoexport.Format, FormatVersion: memoexport.FormatVersion,
+		Generator:  memoexport.Generator{Name: "test", Version: "1"},
+		ExportTime: "2026-04-01T00:00:00Z",
+		Scope:      memoexport.Scope{Kind: memoexport.ScopeKindUser, User: &memoexport.ScopeUser{Username: username}},
+	}))
+	record := &memoexport.Memo{
+		UID: memoUID, Creator: username, CreateTime: "2026-04-01T00:00:00Z", UpdateTime: "2026-04-01T00:00:00Z",
+		State: "NORMAL", Visibility: "PRIVATE", ContentPath: memoexport.ContentPath(memoUID),
+	}
+	for _, attachment := range attachments {
+		mimeType := attachment.mimeType
+		if mimeType == "" {
+			mimeType = "application/octet-stream"
+		}
+		path := memoexport.AttachmentPath(attachment.uid, attachment.filename)
+		digest, size, err := writer.WriteAttachment(path, bytes.NewReader(attachment.content))
+		require.NoError(t, err)
+		record.Attachments = append(record.Attachments, memoexport.Attachment{
+			UID: attachment.uid, Filename: attachment.filename, Type: mimeType, Size: size, SHA256: digest, Path: path,
+			CreateTime: "2026-04-01T00:00:00Z",
+		})
+	}
+	require.NoError(t, writer.WriteMemo(record, []byte(memoContent)))
+	require.NoError(t, writer.Close())
+	return buf.Bytes()
+}
+
+func TestImportMemoExportReplaceValidatesNewManagedImageReferences(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3, 4}
+
+	t.Run("rejects unbound managed image in replacement content and discards newly stored attachment", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		ctx := context.Background()
+		user, err := ts.CreateRegularUser(ctx, "replace-unbound")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+			MemoId: "replacememo1",
+			Memo:   &apipb.Memo{Content: "original plain text", Visibility: apipb.Visibility_PRIVATE},
+		})
+		require.NoError(t, err)
+
+		archiveBytes := buildSingleMemoImportArchive(
+			t,
+			user.Username,
+			"replacememo1",
+			"Updated ![missing](/file/attachments/missing0001)",
+			[]importArchiveAttachment{{uid: "freshimg001", filename: "fresh.png", mimeType: "image/png", content: pngBytes}},
+		)
+		report, err := ts.Service.ImportMemoExport(userCtx, user, readArchive(t, archiveBytes), apipb.ImportMemosRequest_REPLACE)
+		require.NoError(t, err)
+		require.Equal(t, int32(1), report.Failed)
+		require.Zero(t, report.Updated)
+		require.Len(t, report.Failures, 1)
+		require.Equal(t, "replacememo1", report.Failures[0].MemoUid)
+		require.Contains(t, report.Failures[0].Message, "missing0001")
+
+		memoUID := "replacememo1"
+		stored, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, err)
+		require.Equal(t, "original plain text", stored.Content)
+
+		freshUID := "freshimg001"
+		orphan, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &freshUID})
+		require.NoError(t, err)
+		require.Nil(t, orphan, "attachment stored for the failed replacement must be discarded")
+	})
+
+	t.Run("rejects invalid managed image URL in replacement content", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		ctx := context.Background()
+		user, err := ts.CreateRegularUser(ctx, "replace-invalid-url")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+			MemoId: "replacememo2",
+			Memo:   &apipb.Memo{Content: "original plain text", Visibility: apipb.Visibility_PRIVATE},
+		})
+		require.NoError(t, err)
+
+		archiveBytes := buildSingleMemoImportArchive(
+			t,
+			user.Username,
+			"replacememo2",
+			"![bad](/file/attachments/photo0001?thumbnail=true)",
+			nil,
+		)
+		report, err := ts.Service.ImportMemoExport(userCtx, user, readArchive(t, archiveBytes), apipb.ImportMemosRequest_REPLACE)
+		require.NoError(t, err)
+		require.Equal(t, int32(1), report.Failed)
+		require.Zero(t, report.Updated)
+
+		memoUID := "replacememo2"
+		stored, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, err)
+		require.Equal(t, "original plain text", stored.Content)
+	})
+
+	t.Run("accepts replacement content referencing a newly imported image attachment", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		ctx := context.Background()
+		user, err := ts.CreateRegularUser(ctx, "replace-valid-inline")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+			MemoId: "replacememo3",
+			Memo:   &apipb.Memo{Content: "original plain text", Visibility: apipb.Visibility_PRIVATE},
+		})
+		require.NoError(t, err)
+
+		archiveBytes := buildSingleMemoImportArchive(
+			t,
+			user.Username,
+			"replacememo3",
+			"See ![photo](/file/attachments/newphoto001)",
+			[]importArchiveAttachment{{uid: "newphoto001", filename: "photo.png", mimeType: "image/png", content: pngBytes}},
+		)
+		report, err := ts.Service.ImportMemoExport(userCtx, user, readArchive(t, archiveBytes), apipb.ImportMemosRequest_REPLACE)
+		require.NoError(t, err)
+		require.Equal(t, int32(1), report.Updated, "%v", report.Failures)
+		require.Zero(t, report.Failed)
+
+		memoUID := "replacememo3"
+		stored, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, err)
+		require.Equal(t, "See ![photo](/file/attachments/newphoto001)", stored.Content)
+
+		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &stored.ID})
+		require.NoError(t, err)
+		require.Len(t, attachments, 1)
+		require.Equal(t, "newphoto001", attachments[0].UID)
+	})
+}
+
+func TestImportMemosBindFailureKeepsPreexistingAttachment(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		replace bool
+	}{
+		{name: "create failure keeps preexisting unlinked attachment", replace: false},
+		{name: "replace failure keeps preexisting unlinked attachment", replace: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := NewTestService(t)
+			defer ts.Cleanup()
+			ctx := context.Background()
+			user, err := ts.CreateRegularUser(ctx, "bind-keeper")
+			require.NoError(t, err)
+			userCtx := ts.CreateUserContext(ctx, user.ID)
+
+			if tc.replace {
+				_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+					MemoId: "bindfail001",
+					Memo:   &apipb.Memo{Content: "existing memo", Visibility: apipb.Visibility_PRIVATE},
+				})
+				require.NoError(t, err)
+			}
+
+			existingContent := []byte("preexisting unlinked bytes")
+			existingAttachment, err := ts.Service.CreateAttachment(userCtx, &apipb.CreateAttachmentRequest{
+				AttachmentId: "keepbind001",
+				Attachment:   &apipb.Attachment{Filename: "keep.bin", Type: "application/octet-stream", Content: existingContent},
+			})
+			require.NoError(t, err)
+
+			archiveBytes := buildSingleMemoImportArchive(
+				t,
+				user.Username,
+				"bindfail001",
+				"Broken ![missing](/file/attachments/missing0002)",
+				[]importArchiveAttachment{
+					{uid: "keepbind001", filename: "keep.bin", mimeType: "application/octet-stream", content: existingContent},
+					{uid: "freshbind01", filename: "fresh.bin", mimeType: "application/octet-stream", content: []byte("new bytes")},
+				},
+			)
+			policy := apipb.ImportMemosRequest_SKIP
+			if tc.replace {
+				policy = apipb.ImportMemosRequest_REPLACE
+			}
+			report, err := ts.Service.ImportMemoExport(userCtx, user, readArchive(t, archiveBytes), policy)
+			require.NoError(t, err)
+			require.Equal(t, int32(1), report.Failed)
+			require.Zero(t, report.Created)
+			require.Zero(t, report.Updated)
+
+			kept, err := ts.Service.GetAttachment(userCtx, &apipb.GetAttachmentRequest{Name: existingAttachment.Name})
+			require.NoError(t, err, "preexisting unlinked attachment must survive bind failure")
+			require.Equal(t, existingAttachment.Name, kept.Name)
+
+			freshUID := "freshbind01"
+			discarded, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &freshUID})
+			require.NoError(t, err)
+			require.Nil(t, discarded, "attachment newly stored during the failed import must be discarded")
+		})
+	}
+}
