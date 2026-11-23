@@ -174,8 +174,6 @@ resolve its own user — the single allowed auth/identity operation):
 | `MemoService_GetMemo` | `memo_get_memo` |
 | `MemoService_UpdateMemo` | `memo_update_memo` |
 | `MemoService_DeleteMemo` | `memo_delete_memo` |
-| `MemoService_ListMemoComments` | `memo_list_memo_comments` |
-| `MemoService_CreateMemoComment` | `memo_create_memo_comment` |
 | `MemoService_ListMemoAttachments` | `memo_list_memo_attachments` |
 | `MemoService_SetMemoAttachments` | `memo_set_memo_attachments` |
 | `MemoService_ListMemoReactions` | `memo_list_memo_reactions` |

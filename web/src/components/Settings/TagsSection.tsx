@@ -4,7 +4,9 @@ import { isEqual } from "lodash-es";
 import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCommentScopeFilter } from "@/hooks/useMemoFilters";
 import { useTagCounts, useUpdateUserSetting, useUserStats } from "@/hooks/useUserQueries";
+import { combineCELFilters } from "@/lib/cel-filter";
 import { colorToHex } from "@/lib/color";
 import { buildUserSettingName } from "@/lib/resource-names";
 import { getTagRuleUsage, isValidTagPattern } from "@/lib/tag";
@@ -47,7 +49,9 @@ const toLocalTagMeta = (meta: {
 const TagRuleCount = ({ rule, tagCounts, userName }: { rule: string; tagCounts?: Record<string, number>; userName?: string }) => {
   const t = useTranslate();
   const usage = useMemo(() => tagCounts && getTagRuleUsage(rule, tagCounts), [rule, tagCounts]);
-  const filter = usage?.filter;
+  // The count is of what a memo list would show for the rule, so it follows the lists' comment scope.
+  const commentScopeFilter = useCommentScopeFilter();
+  const filter = usage?.filter ? combineCELFilters(usage.filter, commentScopeFilter) : undefined;
   const { data } = useUserStats(userName, { filter, enabled: !!filter });
   const count = filter ? data?.totalMemoCount : usage?.count;
   if (count === undefined) return null;
@@ -64,7 +68,7 @@ const TagsSection = () => {
   const configuredRulesId = useId();
   const { currentUser, userTagsSetting, refetchSettings } = useAuth();
   const { mutateAsync: updateUserSetting } = useUpdateUserSetting();
-  const { data: tagCounts } = useTagCounts(true);
+  const { data: tagCounts } = useTagCounts(true, { filter: useCommentScopeFilter() });
   const originalSetting = useMemo(() => userTagsSetting ?? create(UserSetting_TagsSettingSchema, {}), [userTagsSetting]);
 
   // Local state: map of tagName → { color, blur } for editing.

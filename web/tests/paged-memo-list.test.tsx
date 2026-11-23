@@ -62,6 +62,9 @@ vi.mock("@/contexts/AuthContext", () => ({
 vi.mock("@/contexts/ViewContext", () => ({
   useView: () => view,
 }));
+vi.mock("@/hooks/useDevicePreferences", () => ({
+  useDevicePreferences: () => ({ compactMode: view.compactMode }),
+}));
 
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => (key === "message.no-data" ? "No data found." : key),

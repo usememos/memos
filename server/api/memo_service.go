@@ -37,23 +37,46 @@ func (s *APIService) CreateMemo(ctx context.Context, request *apipb.CreateMemoRe
 		return nil, status.Errorf(codes.InvalidArgument, "memo is required")
 	}
 
+	// A memo that names a parent is a comment on it. The parent is resolved and
+	// authorized before anything is written.
+	var parentMemo *store.Memo
+	if parentName := request.Memo.GetParent(); parentName != "" {
+		parentMemo, err = s.resolveMemoCommentParent(ctx, parentName)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	memoUID, err := ValidateAndGenerateUID(request.MemoId)
 	if err != nil {
 		return nil, err
+	}
+	if parentMemo != nil && memoUID == parentMemo.UID {
+		return nil, status.Error(codes.InvalidArgument, "a memo cannot comment on itself")
 	}
 
 	prepared, err := s.prepareMemoCreate(ctx, user, request.Memo, memoUID)
 	if err != nil {
 		return nil, err
 	}
+	// A comment is a memo row, so it counts against the memo limit too.
 	if err := s.checkMemoQuota(ctx, user.ID); err != nil {
 		return nil, err
 	}
 
-	if err := s.createMemoWithMutation(ctx, user, prepared.memo, nil, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
-		return nil, mapMemoCreateError(err, memoUID, "failed to create memo")
+	var commentContextMemoID *int32
+	createFailure := "failed to create memo"
+	if parentMemo != nil {
+		commentContextMemoID = &parentMemo.ID
+		createFailure = "failed to create memo comment"
+	}
+	if err := s.createMemoWithMutation(ctx, user, prepared.memo, commentContextMemoID, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
+		return nil, mapMemoCreateError(err, memoUID, createFailure)
 	}
 	memo := prepared.memo
+	if parentMemo != nil {
+		memo.ParentUID = &parentMemo.UID
+	}
 
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
@@ -70,23 +93,27 @@ func (s *APIService) CreateMemo(ctx context.Context, request *apipb.CreateMemoRe
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
-	// Try to dispatch webhook when memo is created.
-	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
+	if parentMemo != nil {
+		s.createMemoCommentNotification(ctx, user.ID, memo, parentMemo)
+		if err := s.DispatchMemoCommentCreatedWebhook(ctx, memo, parentMemo, parentMemo.CreatorID); err != nil {
+			slog.Warn("Failed to dispatch memo comment created webhook", slog.Any("err", err))
+		}
+	} else if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
+		// Try to dispatch webhook when memo is created.
 		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
 
 	s.SSEHub.publishMemoChanged()
 
-	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
+	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, "")
 
 	return memoMessage, nil
 }
 
 func (s *APIService) ListMemos(ctx context.Context, request *apipb.ListMemosRequest) (*apipb.ListMemosResponse, error) {
-	memoFind := &store.FindMemo{
-		// Exclude comments by default.
-		ExcludeComments: true,
-	}
+	// Comments are memos and are listed with them; a caller narrows to
+	// top-level memos with the filter `parent == null`.
+	memoFind := &store.FindMemo{}
 	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
@@ -197,6 +224,10 @@ func (s *APIService) ListMemos(ctx context.Context, request *apipb.ListMemosRequ
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
 	}
+	commentCounts, err := s.batchCountMemoComments(ctx, memos)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to count memo comments")
+	}
 	creatorIDs := make([]int32, 0, len(memos)+len(reactions))
 	for _, memo := range memos {
 		creatorIDs = append(creatorIDs, memo.CreatorID)
@@ -225,6 +256,7 @@ func (s *APIService) ListMemos(ctx context.Context, request *apipb.ListMemosRequ
 			}
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
+		memoMessage.CommentCount = commentCounts[memo.ID]
 
 		memoMessages = append(memoMessages, memoMessage)
 	}

@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { HashIcon, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { SCOPE_PANEL_ICON_CLASSES, SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
@@ -15,8 +15,9 @@ export const SIDEBAR_ROW_BOX_CLASSES = `${sidebarSurfaceVariants({ role: "row" }
 export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} border border-transparent mu-focus focus-visible:border-mu-focus`;
 
 export const SIDEBAR_ROW_ICON_CLASSES =
-  // The md row's 16px icon at the md stroke, beside its 14px label, in the row's own muted ink.
-  "mu-icon me-auto shrink-0 group-data-checked:text-mu-primary";
+  // The md row's 16px icon at the md stroke. It sits a step behind the label at rest, so the
+  // label leads; it takes the row's ink on the current page and the accent when checked.
+  "mu-icon me-auto shrink-0 text-mu-text-secondary/70 group-data-current:text-current group-data-checked:text-mu-primary";
 const SIDEBAR_ROW_COUNT_CLASSES = "mu-caption tabular-nums text-mu-text-secondary group-data-checked:text-mu-primary";
 
 /**
@@ -36,13 +37,31 @@ export const SIDEBAR_ROW_SLOT_CLASSES = SIDEBAR_LEADING_SLOT_CLASSES;
 /** A slot that is itself a control (disclosure, row menu): same box plus the hover chip. */
 export const SIDEBAR_ROW_SLOT_BUTTON_CLASSES = `${SIDEBAR_ROW_SLOT_CLASSES} relative rounded hover:bg-mu-hover after:absolute after:-inset-0.5 after:content-[''] border border-transparent mu-focus focus-visible:border-mu-focus`;
 
-/** Trailing rail for counts, wide enough that digits align down the list. */
-export const SIDEBAR_ROW_COUNT_RAIL_CLASSES = `${SIDEBAR_ROW_COUNT_CLASSES} min-w-[3ch] shrink-0 text-end`;
+/**
+ * Trailing rail for counts, wide enough that digits align down the list. Counts stay
+ * end-aligned; the 1px end margin is optical, centring a single digit on the action axis.
+ */
+export const SIDEBAR_ROW_COUNT_RAIL_CLASSES = `${SIDEBAR_ROW_COUNT_CLASSES} me-px min-w-[3ch] shrink-0 text-end`;
 
 /** The standard icon-in-slot pairing, so every list renders its glyphs identically. */
 export const SidebarRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
   <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
     <Icon className={SIDEBAR_ROW_ICON_CLASSES} />
+  </span>
+);
+
+/**
+ * A tag row's # mark, one icon step below the row's: the same glyph repeats down the whole
+ * list, so it is texture beside the label rather than a sign to read.
+ */
+export const SidebarTagMark = ({ className }: { className?: string }) => (
+  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, "mu-icon-sm", className)} />
+);
+
+/** The tag mark in the standard leading slot. */
+export const SidebarTagMarkSlot = () => (
+  <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+    <SidebarTagMark />
   </span>
 );
 
@@ -76,8 +95,9 @@ export const sidebarRowStateClasses = (state: SidebarRowState = "idle") => {
   return `text-mu-text-secondary ${SIDEBAR_ROW_HOVER_CLASSES}`;
 };
 
-/** Goes on the row box so the icon slot and count rail inside it can take the checked colour. */
+/** Goes on the row box so the icon slot and count rail inside it can take the row's state colour. */
 export const sidebarRowStateAttributes = (state: SidebarRowState) => ({
+  "data-current": state === "current" ? "" : undefined,
   "data-checked": state === "checked" ? "" : undefined,
 });
 

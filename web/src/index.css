@@ -48,8 +48,10 @@
     background-color: color-mix(in oklch, var(--mu-text-secondary) 65%, transparent);
   }
 
+  /* Antialiased everywhere, as @usememos/ui sets on its own controls: one rendering mode for
+     the whole app, so plain text never sits heavier than the control beside it. */
   body {
-    @apply bg-mu-canvas text-mu-text;
+    @apply bg-mu-canvas text-mu-text antialiased;
   }
 
   /* Search hits in memo bodies (CSS Custom Highlight API, registered by useSearchMatchHighlight).

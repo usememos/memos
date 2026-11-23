@@ -17,10 +17,11 @@ import { memoServiceClient } from "@/connect";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoShareKeys } from "@/hooks/useMemoShareQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { buildMemoCommentsFilter, buildMemoNamesFilter } from "@/lib/cel-filter";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import { shouldRetry } from "@/lib/query-client";
 import type { ListMemosRequest, ListMemosResponse, Memo, Reaction } from "@/types/proto/api/memo_service_pb";
-import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 // Query keys factory for consistent cache management
 export const memoKeys = {
@@ -30,6 +31,7 @@ export const memoKeys = {
   details: () => [...memoKeys.all, "detail"] as const,
   detail: (name: string) => [...memoKeys.details(), name] as const,
   comments: (name: string) => [...memoKeys.all, "comments", name] as const,
+  lookup: (name: string) => [...memoKeys.all, "lookup", name] as const,
   linkMetadata: (url: string) => [...memoKeys.all, "linkMetadata", url] as const,
 };
 
@@ -72,9 +74,9 @@ function discardUnavailableMemo(client: QueryClient, name: string) {
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 
-// The shapes a memo query holds: a memo list response (`memos`), a comment list
-// response (`comments`), a bare array (the calendar month), the infinite-query
-// pages of either response, or one memo (a detail or a shared memo).
+// The shapes a memo query holds: a memo list response (`memos`, which is also what
+// a memo's comments are listed as), a bare array (the calendar month), the
+// infinite-query pages of a list response, or one memo (a detail or a shared memo).
 
 function isMemo(data: unknown): data is Memo {
   return typeof data === "object" && data !== null && typeof (data as { name?: unknown }).name === "string" && "content" in data;
@@ -84,10 +86,6 @@ function isMemoListResponse(data: unknown): data is ListMemosResponse {
   return typeof data === "object" && data !== null && Array.isArray((data as { memos?: unknown }).memos);
 }
 
-function isMemoCommentsResponse(data: unknown): data is { comments: Memo[] } {
-  return typeof data === "object" && data !== null && Array.isArray((data as { comments?: unknown }).comments);
-}
-
 function isInfiniteData(data: unknown): data is InfiniteData<unknown> {
   return typeof data === "object" && data !== null && Array.isArray((data as { pages?: unknown }).pages);
 }
@@ -95,7 +93,6 @@ function isInfiniteData(data: unknown): data is InfiniteData<unknown> {
 function memosOfPage(page: unknown): Memo[] | undefined {
   if (Array.isArray(page)) return page as Memo[];
   if (isMemoListResponse(page)) return page.memos;
-  if (isMemoCommentsResponse(page)) return page.comments;
   return undefined;
 }
 
@@ -103,8 +100,7 @@ function memosOfPage(page: unknown): Memo[] | undefined {
 function withMemos<T>(page: T, memos: Memo[]): T {
   if (memosOfPage(page) === memos) return page;
   if (Array.isArray(page)) return memos as T;
-  if (isMemoListResponse(page)) return { ...page, memos } as T;
-  return { ...(page as object), comments: memos } as T;
+  return { ...(page as object), memos } as T;
 }
 
 /** Maps every page of memos in a collection query, keeping references where nothing changed. */
@@ -252,6 +248,87 @@ export function useMemoByName(name: string, options?: { enabled?: boolean }) {
   };
 }
 
+type MemoLookupWaiter = { resolve: (memo: Memo | null) => void; reject: (error: unknown) => void };
+
+/** One request carries at most this many names; a page of comments rarely names more parents. */
+const MEMO_LOOKUP_BATCH_SIZE = 50;
+const pendingMemoLookups = new Map<string, MemoLookupWaiter[]>();
+let memoLookupScheduled = false;
+
+async function getMemoOrNull(name: string): Promise<Memo | null> {
+  try {
+    return await memoServiceClient.getMemo({ name });
+  } catch (error) {
+    if (isMemoUnavailableError(error)) return null;
+    throw error;
+  }
+}
+
+async function flushMemoLookups() {
+  memoLookupScheduled = false;
+  const lookups = new Map(pendingMemoLookups);
+  pendingMemoLookups.clear();
+  const names = [...lookups.keys()];
+  const settle = (name: string, outcome: (waiter: MemoLookupWaiter) => void) => lookups.get(name)?.forEach(outcome);
+
+  for (let start = 0; start < names.length; start += MEMO_LOOKUP_BATCH_SIZE) {
+    const batch = names.slice(start, start + MEMO_LOOKUP_BATCH_SIZE);
+    try {
+      const { memos } = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, { filter: buildMemoNamesFilter(batch), pageSize: batch.length }),
+      );
+      const listed = new Map(memos.map((memo) => [memo.name, memo]));
+      await Promise.all(
+        batch.map(async (name) => {
+          try {
+            // The list holds active memos only. One it leaves out may be archived and still
+            // readable, or gone; asking for it by name tells which.
+            const memo = listed.get(name) ?? (await getMemoOrNull(name));
+            settle(name, (waiter) => waiter.resolve(memo));
+          } catch (error) {
+            settle(name, (waiter) => waiter.reject(error));
+          }
+        }),
+      );
+    } catch (error) {
+      for (const name of batch) settle(name, (waiter) => waiter.reject(error));
+    }
+  }
+}
+
+/** Resolves a memo by name, or `null` when it is unavailable. Lookups made together share one list request. */
+function lookupMemo(name: string): Promise<Memo | null> {
+  return new Promise((resolve, reject) => {
+    pendingMemoLookups.set(name, [...(pendingMemoLookups.get(name) ?? []), { resolve, reject }]);
+    if (memoLookupScheduled) return;
+    // A timer, not a microtask: the cards of one render start their lookups in separate effects.
+    memoLookupScheduled = true;
+    setTimeout(flushMemoLookups, 0);
+  });
+}
+
+/**
+ * A memo by name for a line that only names it, such as a comment card naming its parent:
+ * the copy a query already holds, or else a lookup batched with the others made at the same
+ * time. A list of such cards costs one request for all the memos they name, not one each.
+ */
+export function useMemoLookup(name: string, options?: { enabled?: boolean }) {
+  const record = useMemoRecord(name);
+  const query = useQuery({
+    queryKey: memoKeys.lookup(name),
+    queryFn: () => lookupMemo(name),
+    enabled: (options?.enabled ?? true) && record === undefined,
+    retry: shouldRetry,
+    staleTime: 1000 * 60,
+  });
+  return {
+    data: record ?? undefined,
+    isUnavailable: record === null || (record === undefined && query.data === null),
+    isLoading: record === undefined && query.isLoading,
+    error: record === undefined ? query.error : null,
+  };
+}
+
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
   return useQuery({
     queryKey: memoKeys.list(request),
@@ -315,13 +392,13 @@ export function useLinkMetadata(url: string, options?: { enabled?: boolean }) {
   });
 }
 
-/** Creates a memo, or a comment on `parent`; the server fills the comment's parent and relation. */
+/** Creates a memo, or a comment on `parent`: a memo created with that parent. */
 export function useCreateMemo() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ memo, parent }: { memo: Memo; parent?: string }) => {
-      return parent ? await memoServiceClient.createMemoComment({ parent, comment: memo }) : await memoServiceClient.createMemo({ memo });
+      return await memoServiceClient.createMemo({ memo: parent ? { ...memo, parent } : memo });
     },
     onSuccess: (newMemo, { parent }) => {
       queryClient.setQueryData(memoKeys.detail(newMemo.name), newMemo);
@@ -385,7 +462,7 @@ export function useUpdateMemo(name: string | undefined) {
   const invalidateAround = (memo: Memo) => {
     queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
     if (memo.parent) {
-      // The parent's comment list, and the parent itself, which carries the comment relation.
+      // The parent's comment list, and the parent itself, which carries the comment count.
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.parent) });
     }
@@ -494,13 +571,14 @@ export function useDeleteMemo() {
   });
 }
 
+/** The comments directly on memo `name`, newest first: the memos whose parent it is. */
 export function useMemoComments(name: string, options?: { enabled?: boolean; pageSize?: number }) {
   return useQuery({
     queryKey: [...memoKeys.comments(name), options?.pageSize ?? 0],
     queryFn: async () => {
-      const response = await memoServiceClient.listMemoComments(
-        create(ListMemoCommentsRequestSchema, {
-          parent: name,
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          filter: buildMemoCommentsFilter(name),
           pageSize: options?.pageSize ?? 0,
         }),
       );
@@ -518,9 +596,9 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
   return useInfiniteQuery({
     queryKey: [...memoKeys.comments(name), "infinite", pageSize],
     queryFn: async ({ pageParam }) => {
-      const response = await memoServiceClient.listMemoComments(
-        create(ListMemoCommentsRequestSchema, {
-          parent: name,
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          filter: buildMemoCommentsFilter(name),
           pageSize,
           pageToken: pageParam || "",
         }),
@@ -529,7 +607,7 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
-    select: (data) => data.pages.flatMap((page) => page.comments),
+    select: (data) => data.pages.flatMap((page) => page.memos),
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 60, // 1 minute
   });

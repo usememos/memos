@@ -56,12 +56,6 @@ const (
 	// MemoServiceSetMemoRelationsProcedure is the fully-qualified name of the MemoService's
 	// SetMemoRelations RPC.
 	MemoServiceSetMemoRelationsProcedure = "/memos.api.MemoService/SetMemoRelations"
-	// MemoServiceListMemoCommentsProcedure is the fully-qualified name of the MemoService's
-	// ListMemoComments RPC.
-	MemoServiceListMemoCommentsProcedure = "/memos.api.MemoService/ListMemoComments"
-	// MemoServiceCreateMemoCommentProcedure is the fully-qualified name of the MemoService's
-	// CreateMemoComment RPC.
-	MemoServiceCreateMemoCommentProcedure = "/memos.api.MemoService/CreateMemoComment"
 	// MemoServiceListMemoReactionsProcedure is the fully-qualified name of the MemoService's
 	// ListMemoReactions RPC.
 	MemoServiceListMemoReactionsProcedure = "/memos.api.MemoService/ListMemoReactions"
@@ -93,14 +87,16 @@ const (
 
 // MemoServiceClient is a client for the memos.api.MemoService service.
 type MemoServiceClient interface {
-	// ListMemos lists the memos the caller can read, excluding comments.
-	// Anonymous callers can list only when the instance allows public access.
+	// ListMemos lists the memos the caller can read, comments included. Narrow
+	// to top-level memos with the filter `parent == null`. Anonymous callers can
+	// list only when the instance allows public access.
 	ListMemos(context.Context, *connect.Request[api.ListMemosRequest]) (*connect.Response[api.ListMemosResponse], error)
 	// GetMemo gets a memo. Requires read access to the memo.
 	GetMemo(context.Context, *connect.Request[api.GetMemoRequest]) (*connect.Response[api.Memo], error)
 	// CreateMemo creates a memo owned by the authenticated user. The request body
 	// is a Memo; set its Markdown content and visibility (defaults to PRIVATE).
-	// Requires authentication.
+	// Set memo.parent to create a comment on that memo, which must be readable by
+	// the caller and not archived. Requires authentication.
 	CreateMemo(context.Context, *connect.Request[api.CreateMemoRequest]) (*connect.Response[api.Memo], error)
 	// UpdateMemo updates the memo fields listed in update_mask. Requires the memo
 	// creator or an instance administrator.
@@ -120,19 +116,10 @@ type MemoServiceClient interface {
 	// ListMemoRelations lists the relations of a memo in both directions.
 	// Requires read access to the memo.
 	ListMemoRelations(context.Context, *connect.Request[api.ListMemoRelationsRequest]) (*connect.Response[api.ListMemoRelationsResponse], error)
-	// SetMemoRelations replaces the full set of mutable REFERENCE relations on a
-	// memo. COMMENT relations are immutable creation context and are rejected by
-	// this RPC. An empty list clears references without changing COMMENT.
-	// Requires the memo creator or an instance administrator.
+	// SetMemoRelations replaces the full set of relations on a memo with the
+	// provided list. An empty list clears them. Requires the memo creator or an
+	// instance administrator.
 	SetMemoRelations(context.Context, *connect.Request[api.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error)
-	// ListMemoComments lists the active comments on a memo that the caller can
-	// read. Requires read access to the memo.
-	ListMemoComments(context.Context, *connect.Request[api.ListMemoCommentsRequest]) (*connect.Response[api.ListMemoCommentsResponse], error)
-	// CreateMemoComment atomically creates an independent memo plus one immutable
-	// COMMENT context relation to the named memo. The new memo keeps its own
-	// placement, visibility, authorship, and lifecycle. The named memo must be
-	// readable by the caller and not archived.
-	CreateMemoComment(context.Context, *connect.Request[api.CreateMemoCommentRequest]) (*connect.Response[api.Memo], error)
 	// ListMemoReactions lists the reactions on a memo. Requires read access to
 	// the memo.
 	ListMemoReactions(context.Context, *connect.Request[api.ListMemoReactionsRequest]) (*connect.Response[api.ListMemoReactionsResponse], error)
@@ -226,18 +213,6 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceMethods.ByName("SetMemoRelations")),
 			connect.WithClientOptions(opts...),
 		),
-		listMemoComments: connect.NewClient[api.ListMemoCommentsRequest, api.ListMemoCommentsResponse](
-			httpClient,
-			baseURL+MemoServiceListMemoCommentsProcedure,
-			connect.WithSchema(memoServiceMethods.ByName("ListMemoComments")),
-			connect.WithClientOptions(opts...),
-		),
-		createMemoComment: connect.NewClient[api.CreateMemoCommentRequest, api.Memo](
-			httpClient,
-			baseURL+MemoServiceCreateMemoCommentProcedure,
-			connect.WithSchema(memoServiceMethods.ByName("CreateMemoComment")),
-			connect.WithClientOptions(opts...),
-		),
 		listMemoReactions: connect.NewClient[api.ListMemoReactionsRequest, api.ListMemoReactionsResponse](
 			httpClient,
 			baseURL+MemoServiceListMemoReactionsProcedure,
@@ -306,8 +281,6 @@ type memoServiceClient struct {
 	setMemoAttachments   *connect.Client[api.SetMemoAttachmentsRequest, emptypb.Empty]
 	listMemoRelations    *connect.Client[api.ListMemoRelationsRequest, api.ListMemoRelationsResponse]
 	setMemoRelations     *connect.Client[api.SetMemoRelationsRequest, emptypb.Empty]
-	listMemoComments     *connect.Client[api.ListMemoCommentsRequest, api.ListMemoCommentsResponse]
-	createMemoComment    *connect.Client[api.CreateMemoCommentRequest, api.Memo]
 	listMemoReactions    *connect.Client[api.ListMemoReactionsRequest, api.ListMemoReactionsResponse]
 	deleteMemoReaction   *connect.Client[api.DeleteMemoReactionRequest, emptypb.Empty]
 	upsertMemoReaction   *connect.Client[api.UpsertMemoReactionRequest, api.Reaction]
@@ -364,16 +337,6 @@ func (c *memoServiceClient) SetMemoRelations(ctx context.Context, req *connect.R
 	return c.setMemoRelations.CallUnary(ctx, req)
 }
 
-// ListMemoComments calls memos.api.MemoService.ListMemoComments.
-func (c *memoServiceClient) ListMemoComments(ctx context.Context, req *connect.Request[api.ListMemoCommentsRequest]) (*connect.Response[api.ListMemoCommentsResponse], error) {
-	return c.listMemoComments.CallUnary(ctx, req)
-}
-
-// CreateMemoComment calls memos.api.MemoService.CreateMemoComment.
-func (c *memoServiceClient) CreateMemoComment(ctx context.Context, req *connect.Request[api.CreateMemoCommentRequest]) (*connect.Response[api.Memo], error) {
-	return c.createMemoComment.CallUnary(ctx, req)
-}
-
 // ListMemoReactions calls memos.api.MemoService.ListMemoReactions.
 func (c *memoServiceClient) ListMemoReactions(ctx context.Context, req *connect.Request[api.ListMemoReactionsRequest]) (*connect.Response[api.ListMemoReactionsResponse], error) {
 	return c.listMemoReactions.CallUnary(ctx, req)
@@ -421,14 +384,16 @@ func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, req *conne
 
 // MemoServiceHandler is an implementation of the memos.api.MemoService service.
 type MemoServiceHandler interface {
-	// ListMemos lists the memos the caller can read, excluding comments.
-	// Anonymous callers can list only when the instance allows public access.
+	// ListMemos lists the memos the caller can read, comments included. Narrow
+	// to top-level memos with the filter `parent == null`. Anonymous callers can
+	// list only when the instance allows public access.
 	ListMemos(context.Context, *connect.Request[api.ListMemosRequest]) (*connect.Response[api.ListMemosResponse], error)
 	// GetMemo gets a memo. Requires read access to the memo.
 	GetMemo(context.Context, *connect.Request[api.GetMemoRequest]) (*connect.Response[api.Memo], error)
 	// CreateMemo creates a memo owned by the authenticated user. The request body
 	// is a Memo; set its Markdown content and visibility (defaults to PRIVATE).
-	// Requires authentication.
+	// Set memo.parent to create a comment on that memo, which must be readable by
+	// the caller and not archived. Requires authentication.
 	CreateMemo(context.Context, *connect.Request[api.CreateMemoRequest]) (*connect.Response[api.Memo], error)
 	// UpdateMemo updates the memo fields listed in update_mask. Requires the memo
 	// creator or an instance administrator.
@@ -448,19 +413,10 @@ type MemoServiceHandler interface {
 	// ListMemoRelations lists the relations of a memo in both directions.
 	// Requires read access to the memo.
 	ListMemoRelations(context.Context, *connect.Request[api.ListMemoRelationsRequest]) (*connect.Response[api.ListMemoRelationsResponse], error)
-	// SetMemoRelations replaces the full set of mutable REFERENCE relations on a
-	// memo. COMMENT relations are immutable creation context and are rejected by
-	// this RPC. An empty list clears references without changing COMMENT.
-	// Requires the memo creator or an instance administrator.
+	// SetMemoRelations replaces the full set of relations on a memo with the
+	// provided list. An empty list clears them. Requires the memo creator or an
+	// instance administrator.
 	SetMemoRelations(context.Context, *connect.Request[api.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error)
-	// ListMemoComments lists the active comments on a memo that the caller can
-	// read. Requires read access to the memo.
-	ListMemoComments(context.Context, *connect.Request[api.ListMemoCommentsRequest]) (*connect.Response[api.ListMemoCommentsResponse], error)
-	// CreateMemoComment atomically creates an independent memo plus one immutable
-	// COMMENT context relation to the named memo. The new memo keeps its own
-	// placement, visibility, authorship, and lifecycle. The named memo must be
-	// readable by the caller and not archived.
-	CreateMemoComment(context.Context, *connect.Request[api.CreateMemoCommentRequest]) (*connect.Response[api.Memo], error)
 	// ListMemoReactions lists the reactions on a memo. Requires read access to
 	// the memo.
 	ListMemoReactions(context.Context, *connect.Request[api.ListMemoReactionsRequest]) (*connect.Response[api.ListMemoReactionsResponse], error)
@@ -550,18 +506,6 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceMethods.ByName("SetMemoRelations")),
 		connect.WithHandlerOptions(opts...),
 	)
-	memoServiceListMemoCommentsHandler := connect.NewUnaryHandler(
-		MemoServiceListMemoCommentsProcedure,
-		svc.ListMemoComments,
-		connect.WithSchema(memoServiceMethods.ByName("ListMemoComments")),
-		connect.WithHandlerOptions(opts...),
-	)
-	memoServiceCreateMemoCommentHandler := connect.NewUnaryHandler(
-		MemoServiceCreateMemoCommentProcedure,
-		svc.CreateMemoComment,
-		connect.WithSchema(memoServiceMethods.ByName("CreateMemoComment")),
-		connect.WithHandlerOptions(opts...),
-	)
 	memoServiceListMemoReactionsHandler := connect.NewUnaryHandler(
 		MemoServiceListMemoReactionsProcedure,
 		svc.ListMemoReactions,
@@ -636,10 +580,6 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceListMemoRelationsHandler.ServeHTTP(w, r)
 		case MemoServiceSetMemoRelationsProcedure:
 			memoServiceSetMemoRelationsHandler.ServeHTTP(w, r)
-		case MemoServiceListMemoCommentsProcedure:
-			memoServiceListMemoCommentsHandler.ServeHTTP(w, r)
-		case MemoServiceCreateMemoCommentProcedure:
-			memoServiceCreateMemoCommentHandler.ServeHTTP(w, r)
 		case MemoServiceListMemoReactionsProcedure:
 			memoServiceListMemoReactionsHandler.ServeHTTP(w, r)
 		case MemoServiceDeleteMemoReactionProcedure:
@@ -701,14 +641,6 @@ func (UnimplementedMemoServiceHandler) ListMemoRelations(context.Context, *conne
 
 func (UnimplementedMemoServiceHandler) SetMemoRelations(context.Context, *connect.Request[api.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.MemoService.SetMemoRelations is not implemented"))
-}
-
-func (UnimplementedMemoServiceHandler) ListMemoComments(context.Context, *connect.Request[api.ListMemoCommentsRequest]) (*connect.Response[api.ListMemoCommentsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.MemoService.ListMemoComments is not implemented"))
-}
-
-func (UnimplementedMemoServiceHandler) CreateMemoComment(context.Context, *connect.Request[api.CreateMemoCommentRequest]) (*connect.Response[api.Memo], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.MemoService.CreateMemoComment is not implemented"))
 }
 
 func (UnimplementedMemoServiceHandler) ListMemoReactions(context.Context, *connect.Request[api.ListMemoReactionsRequest]) (*connect.Response[api.ListMemoReactionsResponse], error) {

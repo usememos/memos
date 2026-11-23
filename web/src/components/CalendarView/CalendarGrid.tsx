@@ -1,7 +1,7 @@
 import { useDirection } from "@base-ui/react/direction-provider";
 import dayjs from "dayjs";
 import { type KeyboardEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { type CalendarData, calculateMaxCount, useMonthDays, useWeekdayLabels, WEEKDAY_LABEL_CLASSES } from "@/components/ActivityCalendar";
+import { type CalendarData, calculateMaxCount, useMonthDays, useWeekdayLabels } from "@/components/ActivityCalendar";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useView } from "@/contexts/ViewContext";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
@@ -11,6 +11,8 @@ import type { CalendarMonthModel } from "./dayModel";
 import { getDefaultDate } from "./paths";
 
 const DAYS_IN_WEEK = 7;
+/** A step under the 13px dates they head, so the column labels read as labels rather than as a row of dates. */
+const WEEKDAY_LABEL_CLASSES = "mu-caption-xs leading-none text-mu-text-secondary";
 
 export interface CalendarGridProps {
   /** `YYYY-MM` */
@@ -104,19 +106,20 @@ export const CalendarGrid = ({
 
   return (
     <div ref={containerRef} role="group" aria-label={monthLabel} className="flex min-h-0 w-full flex-1 flex-col" onKeyDown={handleKeyDown}>
-      {/* Labels start on the cell's text axis (its padding); px-px offsets the grid's border. */}
+      {/* Labels start on the cell's text axis: px-px offsets the grid's border, and each label
+          pads by the cell's own border and padding, which narrow below sm and in slim columns. */}
       <div className="grid grid-cols-7 px-px" aria-hidden="true">
         {weekdayLabels.map((label) => (
-          <div key={label} className="flex h-8 items-end px-3 pb-1.5">
-            <span className={cn("leading-none", WEEKDAY_LABEL_CLASSES)}>{label}</span>
+          <div key={label} className={cn("flex h-8 items-end pb-1.5 ps-[7px]", layout.slim ? "sm:ps-[9px]" : "sm:ps-[13px]")}>
+            <span className={WEEKDAY_LABEL_CLASSES}>{label}</span>
           </div>
         ))}
       </div>
-      {/* From xl the grid fills the sticky section, so the rows share its height evenly with a
-          floor that keeps the date and a short excerpt visible on short windows. */}
+      {/* From md the grid fills the viewport-tall section, so the rows share its height evenly
+          with a floor that keeps the date and a short excerpt visible on short windows. */}
       <div
         ref={cellsRef}
-        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-mu-lg border border-mu-line/70 bg-mu-surface md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
+        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-mu-lg border border-mu-line/70 bg-mu-surface md:min-h-0 md:flex-1 md:[grid-auto-rows:minmax(5.5rem,1fr)]"
       >
         {days.map((day, index) => (
           <CalendarDayCell

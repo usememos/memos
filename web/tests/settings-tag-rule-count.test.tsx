@@ -15,13 +15,14 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 it("shows distinct totals from filtered stats and omits oversized rules without a request", async () => {
+  // Comments are left out of lists by default, so the counts leave them out too.
   const totals = new Map([
-    ['tags.exists(t, t.startsWith("a/"))', 1],
-    ['tag in ["a","a+","aaa"]', 3],
+    ['(tags.exists(t, t.startsWith("a/"))) && (parent == null)', 1],
+    ['(tag in ["a","a+","aaa"]) && (parent == null)', 3],
   ]);
   getUserStats.mockImplementation(async ({ name, filter }) => {
     expect(name).toBe("users/test");
-    if (filter === undefined) return { tagCounts: { a: 1, "a/x": 1, "a/y": 1, "a+": 1, aaa: 2, ["z".repeat(8192)]: 1 } };
+    if (filter === "parent == null") return { tagCounts: { a: 1, "a/x": 1, "a/y": 1, "a+": 1, aaa: 2, ["z".repeat(8192)]: 1 } };
     expect(totals.has(filter)).toBe(true);
     return { totalMemoCount: totals.get(filter) };
   });

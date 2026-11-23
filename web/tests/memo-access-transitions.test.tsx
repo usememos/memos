@@ -31,7 +31,7 @@ describe("memo access transitions", () => {
       content: "my comment",
       relations: [
         create(MemoRelationSchema, {
-          type: MemoRelation_Type.COMMENT,
+          type: MemoRelation_Type.REFERENCE,
           memo: { name: "memos/comment" },
           relatedMemo: { name: parent.name, snippet: "secret" },
         }),

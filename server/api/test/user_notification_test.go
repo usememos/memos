@@ -38,9 +38,9 @@ func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	comment, err := ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -87,9 +87,9 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -155,9 +155,9 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "public comment visible to removed owner",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -180,9 +180,9 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	}, commenter.ID)
 	require.NoError(t, err)
 	sentMessage = nil
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "comment visible while owner is a member",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -199,7 +199,7 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	require.Len(t, response.Notifications, 2, "both PUBLIC endpoints remain readable after membership revocation")
 }
 
-func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
+func TestCreateCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -247,9 +247,9 @@ func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	comment, err := ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Email comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -325,7 +325,7 @@ func TestCreateMemoMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
 	require.NotContains(t, sentMessage.Body, fmt.Sprintf("Hello @%s from email", target.Username))
 }
 
-func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T) {
+func TestCreateCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -367,9 +367,9 @@ func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T)
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Comment without instance URL",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -399,9 +399,9 @@ func TestListUserNotificationsOmitsNotificationWhenMemoDeleted(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -441,9 +441,9 @@ func TestListUserNotificationsSkipsNotificationsWithMissingUsers(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -477,9 +477,8 @@ func TestUpdateUserNotificationRequiresUpdateMask(t *testing.T) {
 		Memo: &apipb.Memo{Content: "Base memo", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent:  memo.Name,
-		Comment: &apipb.Memo{Content: "Comment content", Visibility: apipb.Visibility_PUBLIC},
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(memo.Name), Content: "Comment content", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -551,7 +550,7 @@ func TestListUserNotificationsIncludesMemoMentionPayload(t *testing.T) {
 	require.Equal(t, "Hello", resp.Notifications[0].GetMemoMention().MemoSnippet)
 }
 
-func TestCreateMemoCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T) {
+func TestCreateCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -572,9 +571,9 @@ func TestCreateMemoCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T)
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(memo.Name),
 			Content:    fmt.Sprintf("Hi @%s", owner.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},

@@ -173,6 +173,22 @@ const PreferencesSection = () => {
               onCheckedChange={(doubleClickEdit) => updateDevicePreferences({ doubleClickEdit })}
             />
           </SettingListItem>
+
+          <SettingListItem label={t("memo.compact-mode")} description={t("memo.grid-compact-hint")}>
+            <Switch
+              aria-label={t("memo.compact-mode")}
+              checked={devicePreferences.compactMode}
+              onCheckedChange={(compactMode) => updateDevicePreferences({ compactMode })}
+            />
+          </SettingListItem>
+
+          <SettingListItem label={t("memo.include-comments")} description={t("memo.include-comments-hint")}>
+            <Switch
+              aria-label={t("memo.include-comments")}
+              checked={devicePreferences.includeComments}
+              onCheckedChange={(includeComments) => updateDevicePreferences({ includeComments })}
+            />
+          </SettingListItem>
         </SettingList>
       </SettingGroup>
     </SettingSection>

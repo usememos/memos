@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -192,6 +194,54 @@ func TestTranscribe(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, "gemini transcript", resp.Text)
+	})
+
+	t.Run("rejects audio the Gemini provider cannot take as InvalidArgument", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "gemini-unsupported")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		geminiServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			t.Error("Gemini must not be called for audio it cannot take")
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer geminiServer.Close()
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_AI,
+			Value: &storepb.InstanceSetting_AiSetting{
+				AiSetting: &storepb.InstanceAISetting{
+					Providers: []*storepb.AIProviderConfig{
+						{
+							Id:       "gemini-main",
+							Title:    "Gemini",
+							Type:     storepb.AIProviderType_GEMINI,
+							Endpoint: geminiServer.URL + "/v1beta",
+							ApiKey:   "gemini-key",
+						},
+					},
+					Transcription: &storepb.TranscriptionConfig{
+						ProviderId: "gemini-main",
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		for _, audio := range []*apipb.TranscriptionAudio{
+			// Accepted by the API (OpenAI's format list), not by Gemini.
+			{Source: &apipb.TranscriptionAudio_Content{Content: []byte("m4a bytes")}, Filename: "memo.m4a", ContentType: "audio/x-m4a"},
+			{Source: &apipb.TranscriptionAudio_Content{Content: []byte("mp4 bytes")}, Filename: "recording.mp4", ContentType: "audio/mp4"},
+			// Within the API's 25 MiB limit, over Gemini's inline limit.
+			{Source: &apipb.TranscriptionAudio_Content{Content: make([]byte, 15<<20)}, Filename: "long.wav", ContentType: "audio/wav"},
+		} {
+			_, err := ts.Service.Transcribe(userCtx, &apipb.TranscribeRequest{Audio: audio})
+			require.Error(t, err, audio.Filename)
+			require.Equal(t, codes.InvalidArgument, status.Code(err), "%s: %v", audio.Filename, err)
+		}
 	})
 
 	t.Run("falls back to engine default model when transcription model is empty", func(t *testing.T) {

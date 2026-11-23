@@ -5,7 +5,6 @@ import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import MemoView, { type MemoViewHandle } from "@/components/MemoView";
-import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 import { createMemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -176,7 +175,7 @@ const MemoDetail = () => {
   } = useInfiniteMemoComments(memoName, {
     enabled: !isShareMode && !!memo,
   });
-  const commentCount = memo ? Math.max(computeCommentAmount(memo), comments.length) : 0;
+  const commentCount = memo ? Math.max(memo.commentCount, comments.length) : 0;
 
   const handleCommentsOpen = useCallback(() => {
     commentSectionRef.current?.scrollIntoView();
@@ -235,7 +234,7 @@ const MemoDetail = () => {
     new Set([displayMemo, ...comments].flatMap((item) => [item.creator, ...(item.reactions ?? []).map((reaction) => reaction.creator)])),
   );
   return (
-    <section className="@container flex min-h-full w-full flex-col items-center pb-8 pt-3 md:pt-6">
+    <div className="mx-auto w-full max-w-2xl">
       <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
         <MemoSidebarRegistration
           memo={displayMemo}
@@ -251,57 +250,53 @@ const MemoDetail = () => {
           onCommentCreate={handleCommentCreate}
           onShareImageOpen={handleShareImageOpen}
         />
-        <div className="w-full max-w-2xl px-4 sm:px-6">
-          <div className="w-full">
-            {!isShareMode && parentStatus && (
-              <div className="mb-2 md:hidden">
-                <MemoParentPlaceholder status={parentStatus} onRetry={handleParentRetry} />
-              </div>
-            )}
-            {!isShareMode && parentMemo && (
-              <div className="w-auto inline-block mb-2 md:hidden">
-                <Link
-                  className="px-3 py-1 border border-mu-line rounded-mu-lg max-w-xs w-auto mu-body flex flex-row justify-start items-center flex-nowrap text-mu-text-secondary hover:shadow hover:opacity-80"
-                  to={`/${parentMemo.name}`}
-                  state={createMemoNavigationState(parentPage)}
-                  viewTransition
-                >
-                  <ArrowUpLeftFromCircleIcon className="mu-icon shrink-0 opacity-60 mr-2" />
-                  <span className="truncate">{parentBlurred ? t("memo.parent-memo") : parentMemo.content}</span>
-                </Link>
-              </div>
-            )}
-            <MemoView
-              ref={memoViewRef}
-              key={displayMemo.name}
-              memo={displayMemo}
-              compact={false}
-              parentPage={parentPage}
-              shareImageDialogOpen={shareImageDialogOpen}
-              showBlurredContent={showBlurredContent}
-              onShowBlurredContentChange={handleShowBlurredContentChange}
-              showCreator
-              showVisibility
-              showPinned
-              showSpace
-              onShareImageDialogOpenChange={setShareImageDialogOpen}
-            />
-            {!isShareMode && (
-              <MemoCommentSection
-                ref={commentSectionRef}
-                memo={displayMemo}
-                comments={comments}
-                commentCount={commentCount}
-                parentPage={parentPage}
-                hasMoreComments={hasNextComments}
-                isFetchingMoreComments={isFetchingNextComments}
-                onLoadMoreComments={fetchNextComments}
-              />
-            )}
+        {!isShareMode && parentStatus && (
+          <div className="mb-2 md:hidden">
+            <MemoParentPlaceholder status={parentStatus} onRetry={handleParentRetry} />
           </div>
-        </div>
+        )}
+        {!isShareMode && parentMemo && (
+          <div className="w-auto inline-block mb-2 md:hidden">
+            <Link
+              className="px-3 py-1 border border-mu-line rounded-mu-lg max-w-xs w-auto mu-body flex flex-row justify-start items-center flex-nowrap text-mu-text-secondary hover:shadow hover:opacity-80"
+              to={`/${parentMemo.name}`}
+              state={createMemoNavigationState(parentPage)}
+              viewTransition
+            >
+              <ArrowUpLeftFromCircleIcon className="mu-icon shrink-0 opacity-60 mr-2" />
+              <span className="truncate">{parentBlurred ? t("memo.parent-memo") : parentMemo.content}</span>
+            </Link>
+          </div>
+        )}
+        <MemoView
+          ref={memoViewRef}
+          key={displayMemo.name}
+          memo={displayMemo}
+          compact={false}
+          parentPage={parentPage}
+          shareImageDialogOpen={shareImageDialogOpen}
+          showBlurredContent={showBlurredContent}
+          onShowBlurredContentChange={handleShowBlurredContentChange}
+          showCreator
+          showVisibility
+          showPinned
+          showSpace
+          onShareImageDialogOpenChange={setShareImageDialogOpen}
+        />
+        {!isShareMode && (
+          <MemoCommentSection
+            ref={commentSectionRef}
+            memo={displayMemo}
+            comments={comments}
+            commentCount={commentCount}
+            parentPage={parentPage}
+            hasMoreComments={hasNextComments}
+            isFetchingMoreComments={isFetchingNextComments}
+            onLoadMoreComments={fetchNextComments}
+          />
+        )}
       </MentionResolutionProvider>
-    </section>
+    </div>
   );
 };
 

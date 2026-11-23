@@ -168,23 +168,28 @@ export function useDeleteNotification() {
   });
 }
 
-export function useTagCounts(forCurrentUser = false) {
+/**
+ * Tag counts over the memos `filter` selects. A caller whose counts sit beside a memo list
+ * passes the list's comment scope, so a tag never counts comments the list leaves out.
+ */
+export function useTagCounts(forCurrentUser = false, options?: { filter?: string }) {
   const currentUser = useCurrentUser();
+  const filter = options?.filter;
 
   return useQuery<UserStats | Record<string, number>, Error, Record<string, number>>({
     queryKey:
       forCurrentUser && currentUser?.name
-        ? userKeys.userStats(currentUser.name)
-        : [...userKeys.stats(), "tagCounts", forCurrentUser ? "current" : "all"],
+        ? userKeys.userStats(currentUser.name, filter)
+        : [...userKeys.stats(), "tagCounts", forCurrentUser ? "current" : "all", filter ?? ""],
     queryFn: async (): Promise<UserStats | Record<string, number>> => {
       if (forCurrentUser) {
         if (!currentUser?.name) {
           return {};
         }
-        return userServiceClient.getUserStats({ name: currentUser.name });
+        return userServiceClient.getUserStats({ name: currentUser.name, filter });
       } else {
         // Fetch all user stats
-        const { userStats } = await userServiceClient.listUserStats({ parent: ALL_USERS_PARENT });
+        const { userStats } = await userServiceClient.listUserStats({ parent: ALL_USERS_PARENT, filter });
 
         // Aggregate tag counts from all users
         return mergeTagCounts(...userStats.map((stats) => stats.tagCounts));

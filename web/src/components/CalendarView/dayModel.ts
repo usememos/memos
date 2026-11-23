@@ -36,7 +36,10 @@ export interface CalendarDaySummary {
   memos: Memo[];
   /** Each creator once, in the order they first wrote that day; a hidden memo still names its author. */
   creators: string[];
-  excerpt?: CalendarDayExcerpt;
+  /** One per memo that has something to read, in the day panel's order: its text, else its file's name. */
+  excerpts: CalendarDayExcerpt[];
+  /** Memos a blurred tag hides: no excerpt, but the cell still says the day holds more. */
+  hiddenCount: number;
   /** At most one image per memo, from the first two eligible image-bearing memos. */
   images: CalendarDayImage[];
 }
@@ -184,6 +187,12 @@ export const getMemoThumbnail = (memo: Memo): string | undefined => {
   return getImageCandidates(memo, parseMemoAst(memo.content))[0];
 };
 
+/** The name of a memo's first file, which stands for a memo that has no text of its own. */
+const getFileExcerpt = (memo: Memo): CalendarDayExcerpt | undefined => {
+  const file = memo.attachments.find((attachment) => !isImage(attachment.type) && !attachment.motionMedia?.groupId);
+  return file?.filename ? { memoName: memo.name, creator: memo.creator, text: file.filename, isCode: false } : undefined;
+};
+
 /** Fold the month into stable day snapshots, independent of API pagination/order. */
 export const buildCalendarMonthModel = (
   memos: Memo[],
@@ -196,26 +205,22 @@ export const buildCalendarMonthModel = (
     .sort((a, b) => a.time.getTime() - b.time.getTime() || a.memo.name.localeCompare(b.memo.name));
 
   const model: CalendarMonthModel = {};
-  const fileFallbacks = new Map<string, CalendarDayExcerpt>();
   for (const { memo, time } of dated) {
     const date = dayjs(time).format(ISO_DATE_FORMAT);
-    const summary = (model[date] ??= { memos: [], creators: [], images: [] });
+    const summary = (model[date] ??= { memos: [], creators: [], excerpts: [], hiddenCount: 0, images: [] });
     summary.memos.push(memo);
     if (!summary.creators.includes(memo.creator)) summary.creators.push(memo.creator);
-    if (isRedacted?.(memo)) continue;
-    const tree = !summary.excerpt || summary.images.length < 2 ? parseMemoAst(memo.content) : undefined;
-    if (!summary.excerpt && tree) summary.excerpt = getExcerpt(memo, tree);
-    if (!fileFallbacks.has(date)) {
-      const file = memo.attachments.find((attachment) => !isImage(attachment.type) && !attachment.motionMedia?.groupId);
-      if (file?.filename) fileFallbacks.set(date, { memoName: memo.name, creator: memo.creator, text: file.filename, isCode: false });
+    if (isRedacted?.(memo)) {
+      summary.hiddenCount += 1;
+      continue;
     }
-    if (summary.images.length >= 2 || !tree) continue;
+    const tree = parseMemoAst(memo.content);
+    const excerpt = getExcerpt(memo, tree) ?? getFileExcerpt(memo);
+    if (excerpt) summary.excerpts.push(excerpt);
+    if (summary.images.length >= 2) continue;
     const usedImages = new Set(summary.images.map((image) => imageKey(image.thumbnailUrl)));
     const thumbnailUrl = getImageCandidates(memo, tree).find((source) => !usedImages.has(imageKey(source)));
     if (thumbnailUrl) summary.images.push({ memoName: memo.name, thumbnailUrl });
-  }
-  for (const [date, summary] of Object.entries(model)) {
-    summary.excerpt ??= fileFallbacks.get(date);
   }
   return model;
 };

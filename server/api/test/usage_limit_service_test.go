@@ -228,7 +228,9 @@ func TestMemoLimitEnforcement(t *testing.T) {
 	require.Equal(t, int64(2), count, "a refused create writes no memo")
 
 	// A comment is a memo row: it is refused at the limit and writes nothing.
-	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: first.Name, Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC}})
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(first.Name), Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
+	})
 	requireQuotaExceeded(t, err, "MEMO_COUNT", userName)
 	count, err = ts.Store.CountUserMemos(ctx, user.ID)
 	require.NoError(t, err)
@@ -305,7 +307,9 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	got, err := ts.Service.GetMemo(userCtx, &apipb.GetMemoRequest{Name: memo.Name})
 	require.NoError(t, err)
 	require.Equal(t, memo.Content, got.Content, "a refused edit leaves content unchanged")
-	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: memo.Name, Comment: &apipb.Memo{Content: strings.Repeat("a", 8193), Visibility: apipb.Visibility_PRIVATE}})
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(memo.Name), Content: strings.Repeat("a", 8193), Visibility: apipb.Visibility_PRIVATE},
+	})
 	requireQuotaExceeded(t, err, "MEMO_CONTENT_BYTES", subject)
 
 	setUsageLimits(adminCtx, t, ts,

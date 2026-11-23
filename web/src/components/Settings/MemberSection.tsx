@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { Badge, Button, List, Menu, Tooltip } from "@usememos/ui";
 import { sortBy } from "lodash-es";
-import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { EllipsisIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import InfoChip from "@/components/Settings/InfoChip";
@@ -164,9 +164,7 @@ const MemberSection = () => {
                       <Tooltip.Trigger
                         render={
                           <Menu.Trigger
-                            render={
-                              <Button variant="ghost" aria-label={`${t("common.more")}: ${user.username}`} icon={<MoreVerticalIcon />} />
-                            }
+                            render={<Button variant="ghost" aria-label={`${t("common.more")}: ${user.username}`} icon={<EllipsisIcon />} />}
                           />
                         }
                       />

@@ -15,8 +15,6 @@ var curatedOperationIDs = []string{
 	"MemoService_GetMemo",
 	"MemoService_UpdateMemo",
 	"MemoService_DeleteMemo",
-	"MemoService_ListMemoComments",
-	"MemoService_CreateMemoComment",
 	"MemoService_ListMemoAttachments",
 	"MemoService_SetMemoAttachments",
 	"MemoService_ListMemoReactions",
@@ -90,9 +88,6 @@ var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
 		clearRequired:     true,
 		omittedProperties: []string{"name"},
 		minProperties:     1,
-	},
-	"MemoService_CreateMemoComment": {
-		required: []string{"content"},
 	},
 	"MemoService_SetMemoAttachments": {
 		required:          []string{"attachments"},

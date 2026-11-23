@@ -34,6 +34,15 @@ describe("memo scopes", () => {
   });
 });
 
+describe("comment scope", () => {
+  it("leaves comments in a list unless the list asks for top-level memos only", () => {
+    const filters = [{ factor: "tagSearch" as const, value: "work" }];
+    expect(buildMemoFilter({ filters, includePinned: false })).toBe('(tag in ["work"])');
+    expect(buildMemoFilter({ filters, includePinned: false, topLevelOnly: true })).toBe('(parent == null) && (tag in ["work"])');
+    expect(buildMemoFilter({ filters: [], includePinned: false, topLevelOnly: true })).toBe("(parent == null)");
+  });
+});
+
 describe("memo views", () => {
   it("keeps OR expressions inside the author, Space, view, and facet constraints", () => {
     const query = 'content.contains("plan") || pinned';

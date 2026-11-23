@@ -69,11 +69,9 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 
 	rowStatus := convertStateToStore(request.State)
 	memoFind := &store.FindMemo{
-		CreatorID: creatorID,
-		// Exclude comments by default.
-		ExcludeComments: true,
-		ExcludeContent:  true,
-		RowStatus:       &rowStatus,
+		CreatorID:      creatorID,
+		ExcludeContent: true,
+		RowStatus:      &rowStatus,
 	}
 
 	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
@@ -211,11 +209,9 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 
 	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
-		CreatorID: &userID,
-		// Exclude comments by default.
-		ExcludeComments: true,
-		ExcludeContent:  true,
-		RowStatus:       &normalStatus,
+		CreatorID:      &userID,
+		ExcludeContent: true,
+		RowStatus:      &normalStatus,
 	}
 
 	if request.Filter != "" {

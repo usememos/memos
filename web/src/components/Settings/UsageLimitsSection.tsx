@@ -1,5 +1,5 @@
 import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
-import { ArrowDownIcon, ArrowUpIcon, MoreVerticalIcon, PlusIcon, UsersIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, EllipsisIcon, PlusIcon, UsersIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import UserAvatar from "@/components/UserAvatar";
@@ -198,7 +198,7 @@ const UsageLimitsSection = () => {
                               variant="ghost"
                               disabled={locked || isLoading || save.isPending}
                               aria-label={t("setting.usage-limits.row-actions", { name })}
-                              icon={<MoreVerticalIcon />}
+                              icon={<EllipsisIcon />}
                             />
                           }
                         />

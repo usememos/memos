@@ -541,3 +541,43 @@ func TestListUserStatsParent(t *testing.T) {
 	_, err = ts.Service.ListUserStats(aliceCtx, &apipb.ListUserStatsRequest{})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
+
+func TestUserStats_CommentsFollowTheFilter(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateHostUser(ctx, "comment-stats-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	userName := fmt.Sprintf("users/%s", user.Username)
+
+	parent, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Content: "A memo #plan", Visibility: apipb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(parent.Name), Content: "A comment #plan", Visibility: apipb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+
+	// With no filter a comment counts like any other memo.
+	all, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{Name: userName})
+	require.NoError(t, err)
+	require.Equal(t, int32(2), all.TagCounts["plan"])
+
+	// A caller that lists top-level memos only asks for the matching counts.
+	topLevel, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{Name: userName, Filter: "parent == null"})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), topLevel.TagCounts["plan"])
+
+	listed, err := ts.Service.ListUserStats(userCtx, &apipb.ListUserStatsRequest{Parent: userName, Filter: "parent == null"})
+	require.NoError(t, err)
+	require.Len(t, listed.UserStats, 1)
+	require.Equal(t, int32(1), listed.UserStats[0].TagCounts["plan"])
+
+	listedAll, err := ts.Service.ListUserStats(userCtx, &apipb.ListUserStatsRequest{Parent: userName})
+	require.NoError(t, err)
+	require.Len(t, listedAll.UserStats, 1)
+	require.Equal(t, int32(2), listedAll.UserStats[0].TagCounts["plan"])
+}

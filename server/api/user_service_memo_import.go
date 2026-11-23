@@ -229,14 +229,14 @@ func (i *memoImporter) createMemo(record *memoexport.Memo, targetUID string, con
 			parentID = &parent.ID
 		}
 	}
-	added, err := i.importAttachments(record, nil)
+	toBind, created, err := i.importAttachments(record, nil)
 	if err != nil {
 		return err
 	}
 	// Creation never sets pinned or the lifecycle state; they follow in a
 	// second write, as they do for a memo created through the API.
 	wantPinned, wantRowStatus := memo.Pinned, memo.RowStatus
-	err = i.bindAttachments(memo, added, added, func(prepared *preparedMemoAttachments, required []int32) error {
+	err = i.bindAttachments(memo, memo.Content, toBind, created, func(prepared *preparedMemoAttachments, required []int32) error {
 		if err := i.service.createMemoWithMutation(i.ctx, i.user, memo, parentID, prepared, required, nil); err != nil {
 			return mapMemoCreateError(err, targetUID, "failed to create memo")
 		}
@@ -292,11 +292,11 @@ func (i *memoImporter) replaceMemo(record *memoexport.Memo, existing *store.Memo
 	for _, attachment := range current {
 		names = append(names, &apipb.Attachment{Name: AttachmentNamePrefix + attachment.UID})
 	}
-	added, err := i.importAttachments(record, current)
+	toBind, created, err := i.importAttachments(record, current)
 	if err != nil {
 		return err
 	}
-	err = i.bindAttachments(existing, append(names, added...), added, func(prepared *preparedMemoAttachments, required []int32) error {
+	err = i.bindAttachments(existing, next.Content, append(names, toBind...), created, func(prepared *preparedMemoAttachments, required []int32) error {
 		return i.service.applyMemoMutation(i.ctx, existing, prepared, update, required, nil)
 	})
 	if err != nil {
@@ -309,22 +309,22 @@ func (i *memoImporter) replaceMemo(record *memoexport.Memo, existing *store.Memo
 }
 
 // bindAttachments prepares the memo's attachment set, resolves the managed
-// references in its content, and runs write. When any step fails, the
-// attachments this run created for the memo are removed again.
-func (i *memoImporter) bindAttachments(memo *store.Memo, names, added []*apipb.Attachment, write func(*preparedMemoAttachments, []int32) error) error {
+// references in content, and runs write. When any step fails, the attachments
+// this run created for the memo are removed again.
+func (i *memoImporter) bindAttachments(memo *store.Memo, content string, names, created []*apipb.Attachment, write func(*preparedMemoAttachments, []int32) error) error {
 	err := func() error {
 		prepared, err := i.service.prepareMemoAttachments(i.ctx, i.user, memo, names)
 		if err != nil {
 			return err
 		}
-		required, err := i.service.resolveMemoAttachmentReferences(memo.Content, prepared.normalized)
+		required, err := i.service.resolveMemoAttachmentReferences(content, prepared.normalized)
 		if err != nil {
 			return err
 		}
 		return write(prepared, required)
 	}()
 	if err != nil {
-		i.discardAttachments(added)
+		i.discardAttachments(created)
 	}
 	return err
 }
@@ -423,8 +423,9 @@ func (i *memoImporter) resolveMemo(uid string) (*store.Memo, error) {
 }
 
 // importAttachments creates the attachments of a record that the memo does
-// not already hold and returns their names for binding.
-func (i *memoImporter) importAttachments(record *memoexport.Memo, current []*store.Attachment) ([]*apipb.Attachment, error) {
+// not already hold and returns both the names to bind and the subset newly
+// stored by this run.
+func (i *memoImporter) importAttachments(record *memoexport.Memo, current []*store.Attachment) ([]*apipb.Attachment, []*apipb.Attachment, error) {
 	bound := make(map[string]struct{}, len(current))
 	for _, attachment := range current {
 		bound[attachment.UID] = struct{}{}
@@ -441,7 +442,7 @@ func (i *memoImporter) importAttachments(record *memoexport.Memo, current []*sto
 		name, stored, err := i.importAttachment(entry)
 		if err != nil {
 			i.discardAttachments(created)
-			return nil, errors.Wrapf(err, "attachment %s", entry.UID)
+			return nil, nil, errors.Wrapf(err, "attachment %s", entry.UID)
 		}
 		attachment := &apipb.Attachment{Name: name}
 		toBind = append(toBind, attachment)
@@ -451,7 +452,7 @@ func (i *memoImporter) importAttachments(record *memoexport.Memo, current []*sto
 			i.service.charge(ratelimit.ScopeUploadUser, userKey(i.user.ID), 1)
 		}
 	}
-	return toBind, nil
+	return toBind, created, nil
 }
 
 // importAttachment stores one attachment entry and returns the resource name

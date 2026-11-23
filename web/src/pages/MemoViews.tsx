@@ -9,12 +9,12 @@ import {
   CheckCircle2Icon,
   ClipboardCheckIcon,
   Clock3Icon,
+  EllipsisIcon,
   ExternalLinkIcon,
   FilterIcon,
   ImageIcon,
   type LucideIcon,
   MapPinIcon,
-  MoreVerticalIcon,
   PaperclipIcon,
   ParenthesesIcon,
   PencilIcon,
@@ -673,7 +673,7 @@ const MemoViews = () => {
                                     variant="ghost"
                                     className="justify-self-end"
                                     aria-label={`${t("common.more")}: ${memoView.title}`}
-                                    icon={<MoreVerticalIcon />}
+                                    icon={<EllipsisIcon />}
                                   />
                                 }
                               />

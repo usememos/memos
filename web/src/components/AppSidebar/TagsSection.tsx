@@ -1,5 +1,5 @@
 import { Button, Menu, Tooltip } from "@usememos/ui";
-import { HashIcon, ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
+import { ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
@@ -9,7 +9,7 @@ import TagTree, { tagRowAriaLabel } from "../TagTree";
 import {
   SIDEBAR_ROW_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
-  SidebarRowIconSlot,
+  SidebarTagMarkSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
@@ -62,7 +62,7 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
       onClick={onClick}
     >
       {/* Same leading slot as the tree, so the # marks hold their line when switching modes. */}
-      <SidebarRowIconSlot icon={HashIcon} />
+      <SidebarTagMarkSlot />
       <TagPath ref={ref} tag={tag} />
       <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{amount}</span>
     </button>

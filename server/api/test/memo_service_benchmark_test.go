@@ -276,25 +276,22 @@ func BenchmarkListMemos(b *testing.B) {
 	}
 }
 
-func BenchmarkListMemoCommentsPreview(b *testing.B) {
+func BenchmarkListCommentsPreview(b *testing.B) {
 	bench := newBenchmarkService(b)
 	if bench.commentParentName == "" {
 		b.Fatal("expected seeded memo with comments")
 	}
 
-	req := &apipb.ListMemoCommentsRequest{
-		Parent:   bench.commentParentName,
-		PageSize: 3,
-	}
+	req := &apipb.ListMemosRequest{Filter: "parent == \"" + bench.commentParentName + "\"", PageSize: 3}
 
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		resp, err := bench.Service.ListMemoComments(bench.authenticatedCtx, req)
+		resp, err := bench.Service.ListMemos(bench.authenticatedCtx, req)
 		if err != nil {
-			b.Fatalf("ListMemoComments failed: %v", err)
+			b.Fatalf("ListMemos failed: %v", err)
 		}
-		if len(resp.Comments) == 0 {
+		if len(resp.Memos) == 0 {
 			b.Fatal("expected comments in benchmark response")
 		}
 	}

@@ -52,8 +52,8 @@ func TestMoveMemoPreservesIndependentConversation(t *testing.T) {
 		Relations:   []*apipb.MemoRelation{{Type: apipb.MemoRelation_REFERENCE, RelatedMemo: &apipb.MemoRelation_MemoRef{Name: reference.Name}}},
 	}})
 	require.NoError(t, err)
-	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: original.Name, Comment: &apipb.Memo{Content: "source comment", Space: &sourceName, Visibility: apipb.Visibility_SPACE},
+	comment, err := ts.Service.CreateMemo(commenterCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(original.Name), Content: "source comment", Space: &sourceName, Visibility: apipb.Visibility_SPACE},
 	})
 	require.NoError(t, err)
 	reaction, err := ts.Service.UpsertMemoReaction(commenterCtx, &apipb.UpsertMemoReactionRequest{
@@ -73,7 +73,8 @@ func TestMoveMemoPreservesIndependentConversation(t *testing.T) {
 	require.Equal(t, original.Content, moved.Content)
 	require.Len(t, moved.Attachments, 1)
 	require.Equal(t, original.Attachments, moved.Attachments)
-	require.Len(t, moved.Relations, 2, "the author in both Spaces retains references and comments")
+	require.Len(t, moved.Relations, 1, "the author in both Spaces retains references")
+	require.EqualValues(t, 1, moved.CommentCount, "and still counts the comment")
 	require.Len(t, moved.Reactions, 1)
 	require.Equal(t, reaction.Name, moved.Reactions[0].Name)
 
@@ -88,12 +89,12 @@ func TestMoveMemoPreservesIndependentConversation(t *testing.T) {
 	require.Empty(t, readableComment.Relations, "the inaccessible parent must not appear in relation previews")
 
 	for _, viewer := range []context.Context{authorCtx, readerCtx} {
-		comments, err := ts.Service.ListMemoComments(viewer, &apipb.ListMemoCommentsRequest{Parent: original.Name})
+		comments, err := ts.Service.ListMemos(viewer, &apipb.ListMemosRequest{Filter: "parent == \"" + original.Name + "\""})
 		require.NoError(t, err)
 		if viewer == authorCtx {
-			require.Len(t, comments.Comments, 1)
+			require.Len(t, comments.Memos, 1)
 		} else {
-			require.Empty(t, comments.Comments)
+			require.Empty(t, comments.Memos)
 		}
 	}
 	destinationMemo, err := ts.Service.GetMemo(readerCtx, &apipb.GetMemoRequest{Name: original.Name})

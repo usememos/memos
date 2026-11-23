@@ -13,7 +13,6 @@ import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
 const clients = vi.hoisted(() => ({
   createMemo: vi.fn(),
-  createMemoComment: vi.fn(),
   getMemo: vi.fn(),
   updateMemo: vi.fn(),
 }));
@@ -24,7 +23,6 @@ vi.mock("@/connect", () => ({
   },
   memoServiceClient: {
     createMemo: clients.createMemo,
-    createMemoComment: clients.createMemoComment,
     getMemo: clients.getMemo,
     updateMemo: clients.updateMemo,
   },
@@ -51,9 +49,6 @@ const createEditorState = (memo: Memo): EditorState => ({
 describe("memo editor relation updates", () => {
   beforeEach(() => {
     clients.createMemo.mockReset().mockImplementation(async ({ memo }: { memo: Memo }) => ({ ...memo, name: "memos/created" }));
-    clients.createMemoComment
-      .mockReset()
-      .mockImplementation(async ({ comment }: { comment: Memo }) => ({ ...comment, name: "memos/comment" }));
     clients.getMemo.mockReset();
     clients.updateMemo.mockReset();
     clients.updateMemo.mockImplementation(async ({ memo }: { memo: Memo }) => memo);
@@ -87,22 +82,22 @@ describe("memo editor relation updates", () => {
 
     await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" }, ops);
 
-    expect(clients.createMemoComment).toHaveBeenCalledOnce();
-    const request = clients.createMemoComment.mock.calls[0][0];
-    expect(request.parent).toBe("memos/parent");
-    expect(request.comment.content).toBe("Reply");
-    expect(request.comment.space).toBeUndefined();
+    expect(clients.createMemo).toHaveBeenCalledOnce();
+    const request = clients.createMemo.mock.calls[0][0];
+    expect(request.memo.parent).toBe("memos/parent");
+    expect(request.memo.content).toBe("Reply");
+    expect(request.memo.space).toBeUndefined();
   });
 
-  it("sends only mutable references when editing a comment", async () => {
+  it("sends only its own references when editing a comment", async () => {
     const commentName = "memos/comment";
-    const parentRelation = createRelation(MemoRelation_Type.COMMENT, commentName, "memos/parent");
     const existingReference = createRelation(MemoRelation_Type.REFERENCE, commentName, "memos/existing-reference");
     const incomingReference = createRelation(MemoRelation_Type.REFERENCE, "memos/referencing-comment", commentName);
     const comment = create(MemoSchema, {
       name: commentName,
+      parent: "memos/parent",
       content: "Comment",
-      relations: [parentRelation, existingReference, incomingReference],
+      relations: [existingReference, incomingReference],
     });
     const addedReference = createReference("memos/added-reference");
     const state = createEditorState(comment);
@@ -120,7 +115,7 @@ describe("memo editor relation updates", () => {
     );
   });
 
-  it("ignores a new incoming comment when comparing a parent memo's relations", async () => {
+  it("ignores a new comment when comparing a parent memo's relations", async () => {
     const parentName = "memos/parent";
     const outgoingReference = createRelation(MemoRelation_Type.REFERENCE, parentName, "memos/reference");
     const editorMemo = create(MemoSchema, {
@@ -131,7 +126,8 @@ describe("memo editor relation updates", () => {
     const freshMemo = create(MemoSchema, {
       name: parentName,
       content: editorMemo.content,
-      relations: [outgoingReference, createRelation(MemoRelation_Type.COMMENT, "memos/new-comment", parentName)],
+      relations: [outgoingReference],
+      commentCount: 1,
     });
     const state = createEditorState(editorMemo);
     clients.getMemo.mockResolvedValue(freshMemo);

@@ -27,7 +27,7 @@ vi.mock("@/components/MemoEditor", () => ({ MemoEditor: () => <div data-testid="
 vi.mock("@/contexts/NewMemoContext", () => ({ NewMemoProvider: ({ children }: { children: ReactNode }) => children }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ isUserSettingsInitialized: true }) }));
 vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ creatorUsername: mocks.creatorUsername }) }));
-vi.mock("@/contexts/ViewContext", () => ({ useView: () => ({ compactMode: false }) }));
+vi.mock("@/hooks/useDevicePreferences", () => ({ useDevicePreferences: () => ({ compactMode: false }) }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 const memos = [

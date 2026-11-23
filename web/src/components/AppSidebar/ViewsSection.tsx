@@ -98,7 +98,8 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
           <div
             key={memoView.name}
             {...sidebarRowStateAttributes(state)}
-            className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(state))}
+            // `pe-1` puts the 20px row menu on the action axis, under the section's own action.
+            className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view pe-1", sidebarRowStateClasses(state))}
           >
             <button type="button" onClick={() => handleView(id)} aria-pressed={active || undefined} className={SIDEBAR_ROW_LABEL_CLASSES}>
               <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">

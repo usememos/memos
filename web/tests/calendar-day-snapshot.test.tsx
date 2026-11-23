@@ -18,11 +18,23 @@ vi.mock("@/contexts/MentionResolutionContext", () => ({
 
 const summary: CalendarDaySummary = {
   memos: [create(MemoSchema), create(MemoSchema)],
-  excerpt: { memoName: "memos/a", creator: "users/bob", text: "A memorable afternoon", isCode: false },
+  excerpts: [{ memoName: "memos/a", creator: "users/bob", text: "A memorable afternoon", isCode: false }],
+  hiddenCount: 0,
   creators: ["users/bob", "users/carol", "users/dan"],
   images: [{ memoName: "memos/b", thumbnailUrl: "/photo.jpg" }],
 };
 const textOnly: CalendarDaySummary = { ...summary, images: [] };
+const several: CalendarDaySummary = {
+  ...textOnly,
+  excerpts: [
+    { memoName: "memos/a", creator: "users/bob", text: "Morning pages\nsecond line", isCode: false },
+    { memoName: "memos/b", creator: "users/carol", text: "Call the landlord", isCode: false },
+    { memoName: "memos/c", creator: "users/bob", text: "const x = 1;", isCode: true },
+    { memoName: "memos/d", creator: "users/dan", text: "Renew passport", isCode: false },
+    { memoName: "memos/e", creator: "users/bob", text: "Sleep earlier", isCode: false },
+  ],
+};
+const rowTexts = () => [...document.querySelectorAll(".mu-caption")].slice(1).map((row) => row.textContent);
 interface CellOptions {
   width?: number;
   height?: number;
@@ -71,7 +83,7 @@ describe("calendar daily snapshot cell", () => {
     // Today's badge is a 22px rounded square that starts on the text axis, not a centred disc.
     expect(screen.getByText("7")).toHaveClass("text-mu-on-primary", "bg-mu-primary", "rounded-mu-md", "h-[22px]", "mu-caption");
     expect(screen.getByText("7")).not.toHaveClass("size-6", "before:rounded-full");
-    expect(link).toHaveAccessibleName("2 memos in 2026-08-07");
+    expect(link).toHaveAccessibleName("2 memos in friday, august 7");
     expect(link).toHaveAttribute("href", "/spaces/work/calendar/2026/08/07?filter=test");
     expect(link).toHaveAttribute("aria-current", "page");
     expect(screen.getAllByRole("link")).toHaveLength(1);
@@ -95,12 +107,12 @@ describe("calendar daily snapshot cell", () => {
   it("tints the background by the day's share of the busiest day, like a heatmap", () => {
     cell(summary, { isSelected: false });
     // Two of a max of four memos is the second of four levels.
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.getByRole("link")).not.toHaveClass("bg-mu-surface", "bg-mu-hover");
   });
   it("keeps the heat tint under the open day and marks it with a quiet badge on the numeral", () => {
     cell(summary, { isToday: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.getByRole("link")).not.toHaveClass("bg-mu-hover");
     expect(screen.getByText("7")).toHaveClass("bg-mu-text/10", "text-mu-text", "rounded-mu-md");
     expect(screen.getByText("7")).not.toHaveClass("font-medium");
@@ -137,7 +149,7 @@ describe("calendar daily snapshot cell", () => {
     expect(screen.getByText("A memorable afternoon")).toBeInTheDocument();
   });
   it("keeps image-only days visible in short cells", () => {
-    cell({ ...summary, excerpt: undefined }, { width: 106, height: 88 });
+    cell({ ...summary, excerpts: [] }, { width: 106, height: 88 });
     expect(document.querySelector("img")).toHaveAttribute("src", "/photo.jpg");
   });
   it("keeps a slim preview with tighter padding under preview width", () => {
@@ -148,7 +160,7 @@ describe("calendar daily snapshot cell", () => {
   });
   it("trades the preview for a mark on the tinted date when very narrow", () => {
     cell(summary, { width: 56, isSelected: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/10");
     expect(screen.queryByText("A memorable afternoon")).toBeNull();
     expect(document.querySelectorAll("img")).toHaveLength(1);
     expect(document.querySelector("img")).toHaveClass("size-4");
@@ -170,6 +182,63 @@ describe("calendar daily snapshot cell", () => {
   it("shows no avatar when the cell is too narrow for an excerpt", () => {
     cell(summary, { width: 56, showAuthor: true });
     expect(document.querySelector('img[src="/bob.png"]')).toBeNull();
+  });
+
+  describe("a day with several memos", () => {
+    it("gives each memo one row of its first line, marked by a dot in the cell's padding", () => {
+      cell(several, { isSelected: false });
+      expect(rowTexts()).toEqual(["Morning pages", "Call the landlord", "const x = 1;", "Renew passport", "Sleep earlier"]);
+      const row = screen.getByText("Call the landlord");
+      expect(row).toHaveClass("mu-caption", "block", "truncate");
+      expect(row).not.toHaveStyle({ WebkitLineClamp: "1" });
+      expect(row.parentElement).toHaveClass("relative", "before:absolute", "before:size-1", "before:rounded-full", "before:-start-2");
+      expect(screen.getByText("const x = 1;")).toHaveClass("font-mono");
+      expect(screen.getByRole("link")).toHaveAccessibleName("2 memos in friday, august 7");
+    });
+    it("counts the memos that do not fit on the last row", () => {
+      // 102px under the date and its paddings is three 18px rows.
+      cell(several, { height: 102, isSelected: false });
+      expect(rowTexts()).toEqual(["Morning pages", "Call the landlord", "+3 more"]);
+      expect(screen.getByText("+3 more")).toHaveClass("tabular-nums");
+      expect(screen.getByText("+3 more").parentElement).not.toHaveClass("before:absolute");
+    });
+    it("spends a single line on the first memo, not on a count", () => {
+      cell(several, { height: 66, isSelected: false });
+      expect(rowTexts()).toEqual(["Morning pages"]);
+    });
+    it("counts memos a blurred tag hides without giving them a row", () => {
+      cell({ ...textOnly, hiddenCount: 2 }, { isSelected: false });
+      expect(rowTexts()).toEqual(["A memorable afternoon", "+2 more"]);
+      expect(screen.getByText("A memorable afternoon")).toHaveClass("truncate");
+      cleanup();
+      cell({ ...textOnly, excerpts: [], hiddenCount: 2 }, { isSelected: false });
+      expect(rowTexts()).toEqual([]);
+    });
+    it("lists rows above the photo strip in the lines it leaves", () => {
+      // 48px of date and paddings, then 40px of strip, leaves two rows of 124px.
+      cell({ ...several, images: summary.images }, { height: 124, isSelected: false });
+      expect(rowTexts()).toEqual(["Morning pages", "+4 more"]);
+      expect(document.querySelector("img")).toHaveAttribute("src", "/photo.jpg");
+    });
+    it("leads each row with its author's avatar instead of a dot when several creators share the grid", () => {
+      cell(several, { height: 102, showAuthor: true, isSelected: false });
+      const row = screen.getByText("Call the landlord");
+      expect(row.firstElementChild?.querySelector("img")).toHaveAttribute("src", "/carol.png");
+      expect(row.parentElement).not.toHaveClass("before:absolute");
+      expect(screen.getByText("+3 more").querySelector("img")).toBeNull();
+    });
+    it("pulls the dot in where a slim column narrows the padding", () => {
+      cell(several, { width: 92, height: 140, isSelected: false });
+      expect(screen.getByText("Call the landlord").parentElement).toHaveClass("before:-start-1.5");
+      expect(screen.getByText("Call the landlord").parentElement).not.toHaveClass("before:-start-2");
+    });
+    it("lets a day's only memo run on, with the same dot", () => {
+      cell(textOnly, { isSelected: false });
+      const excerpt = screen.getByText("A memorable afternoon");
+      expect(excerpt).toHaveStyle({ WebkitLineClamp: "3" });
+      expect(excerpt).not.toHaveClass("truncate");
+      expect(excerpt.parentElement).toHaveClass("before:absolute", "before:-start-2");
+    });
   });
 
   describe("phone mark", () => {

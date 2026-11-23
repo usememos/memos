@@ -28,8 +28,20 @@ func (s *APIService) convertMemoFromStore(ctx context.Context, memo *store.Memo,
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list memo creators")
 	}
-	return s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+	memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+	if err != nil {
+		return nil, err
+	}
+	commentCounts, err := s.batchCountMemoComments(ctx, []*store.Memo{memo})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to count memo comments")
+	}
+	memoMessage.CommentCount = commentCounts[memo.ID]
+	return memoMessage, nil
 }
+
+// convertMemoFromStoreWithCreators converts a memo without its comment count;
+// a caller converting many memos sets it from one batchCountMemoComments call.
 
 func (s *APIService) convertMemoFromStoreWithCreators(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*apipb.MemoRelation, creatorMap map[int32]*store.User) (*apipb.Memo, error) {
 	name := buildMemoName(memo.UID)
@@ -222,8 +234,10 @@ func convertReactionFromStoreWithCreators(reaction *store.Reaction, creatorsByID
 	}, nil
 }
 
-// batchConvertMemoRelations batch-loads relations for a list of memos and returns
-// a map from memo ID to its converted relations. This avoids N+1 queries when listing memos.
+// batchConvertMemoRelations batch-loads the reference relations for a list of
+// memos and returns a map from memo ID to its converted relations. This avoids
+// N+1 queries when listing memos. A comment's link to its parent is stored as a
+// relation too, but the API exposes it as Memo.parent and Memo.comment_count.
 func (s *APIService) batchConvertMemoRelations(ctx context.Context, memos []*store.Memo, includeSnippets bool) (map[int32][]*apipb.MemoRelation, error) {
 	if len(memos) == 0 {
 		return map[int32][]*apipb.MemoRelation{}, nil
@@ -241,14 +255,17 @@ func (s *APIService) batchConvertMemoRelations(ctx context.Context, memos []*sto
 		memoIDSet[m.ID] = true
 	}
 
+	referenceType := store.MemoRelationReference
 	outgoingRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		SourceMemoIDList: memoIDs,
+		Type:             &referenceType,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to batch list outgoing memo relations")
 	}
 	incomingRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		RelatedMemoIDList: memoIDs,
+		Type:              &referenceType,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to batch list incoming memo relations")
@@ -318,7 +335,7 @@ func (s *APIService) batchConvertMemoRelations(ctx context.Context, memos []*sto
 				Name:    fmt.Sprintf("%s%s", MemoNamePrefix, relatedUID),
 				Snippet: memoIDToSnippet[r.RelatedMemoID],
 			},
-			Type: convertMemoRelationTypeFromStore(r.Type),
+			Type: apipb.MemoRelation_REFERENCE,
 		}
 
 		// Add to the memo that owns this relation (both directions).

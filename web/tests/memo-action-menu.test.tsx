@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createRef } from "react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoActionMenu from "@/components/MemoActionMenu";
@@ -127,6 +128,62 @@ describe("MemoActionMenu", () => {
     expect(menuItemLabels()).toEqual(["common.open", "common.copy"]);
   });
 
+  it("opens the card's own actions on secondary click and returns focus to the card on Escape", async () => {
+    const cardRef = createRef<HTMLElement>();
+    render(
+      <MemoryRouter>
+        <article ref={cardRef} tabIndex={-1}>
+          <MemoActionMenu memo={memoOf()} readonly cardRef={cardRef} />
+          <p>Memo body</p>
+          <a href="/explore">Explore</a>
+        </article>
+      </MemoryRouter>,
+    );
+    const body = screen.getByText("Memo body");
+    const link = screen.getByRole("link");
+    fireEvent.pointerDown(link, { pointerType: "mouse", button: 2 });
+    expect(fireEvent.contextMenu(link)).toBe(true);
+    fireEvent.pointerDown(body, { pointerType: "touch", button: 0 });
+    expect(fireEvent.contextMenu(body)).toBe(true);
+    expect(screen.queryByRole("menu")).toBeNull();
+
+    fireEvent.pointerDown(body, { pointerType: "mouse", button: 2 });
+    expect(fireEvent.contextMenu(body, { button: 2, clientX: 90, clientY: 120 })).toBe(false);
+    const menu = await screen.findByRole("menu");
+    expect(menuItemLabels()).toEqual(["common.open", "common.copy"]);
+    fireEvent.keyDown(menu, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+    expect(cardRef.current).toHaveFocus();
+  });
+
+  it("preserves the browser menu over selected text and opens the memo menu beside the selection", async () => {
+    const cardRef = createRef<HTMLElement>();
+    render(
+      <MemoryRouter>
+        <article ref={cardRef}>
+          <MemoActionMenu memo={memoOf()} cardRef={cardRef} />
+          <p>First line</p>
+          <p>Second line</p>
+        </article>
+      </MemoryRouter>,
+    );
+    const first = screen.getByText("First line");
+    const range = document.createRange();
+    range.selectNodeContents(first);
+    Object.assign(range, { getClientRects: () => [new DOMRect(10, 10, 80, 20)] });
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(range);
+    expect(document.getSelection()?.toString()).toBe("First line");
+
+    fireEvent.pointerDown(first, { button: 2, pointerType: "mouse", clientX: 15, clientY: 18 });
+    expect(fireEvent.contextMenu(first)).toBe(true);
+    expect(document.getSelection()?.toString()).toBe("First line");
+    const second = screen.getByText("Second line");
+    fireEvent.pointerDown(second, { button: 0, ctrlKey: true, pointerType: "mouse", clientX: 15, clientY: 48 });
+    expect(fireEvent.contextMenu(second, { ctrlKey: true, clientX: 15, clientY: 48 })).toBe(false);
+    expect(await screen.findByRole("menuitem", { name: "common.edit" })).toBeVisible();
+  });
+
   it.each([
     [false, ["common.edit", "common.copy", "common.delete"]],
     [true, ["common.edit", "memo.task-actions.check-all", "common.copy", "common.delete"]],
@@ -157,7 +214,7 @@ describe("MemoActionMenu", () => {
     expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(trigger.querySelector(".lucide-ellipsis-vertical")).not.toBeNull();
+    expect(trigger.querySelector(".lucide-ellipsis")).not.toBeNull();
 
     fireEvent.click(trigger);
 

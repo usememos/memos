@@ -1,4 +1,5 @@
 import { Button } from "@usememos/ui";
+import copy from "copy-to-clipboard";
 import {
   ApertureIcon,
   CalendarArrowUpIcon,
@@ -16,7 +17,7 @@ import {
   TimerIcon,
   XIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -62,6 +63,7 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
   const t = useTranslate();
   const [showMap, setShowMap] = useState(false);
   const [coordinatesCopied, setCoordinatesCopied] = useState(false);
+  const copyAttemptId = useRef(0);
   const copyResetTimer = useRef<number | undefined>(undefined);
   const locale = i18n.language;
   const details = useMemo(() => buildMediaMetadataDisplay(item.attachments, locale), [item.attachments, locale]);
@@ -69,34 +71,40 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
     ? t("attachment-details.actions.copied")
     : t("attachment-details.actions.copy-coordinates");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShowMap(false);
     setCoordinatesCopied(false);
-  }, [item.id]);
-
-  useEffect(
-    () => () => {
+    return () => {
+      copyAttemptId.current += 1;
       if (copyResetTimer.current !== undefined) {
         window.clearTimeout(copyResetTimer.current);
+        copyResetTimer.current = undefined;
       }
-    },
-    [],
-  );
+    };
+  }, [item.id]);
 
   const copyCoordinates = async () => {
-    if (!details.location || !navigator.clipboard) {
+    if (!details.location) {
       return;
     }
+    const attemptId = ++copyAttemptId.current;
+    let copied = false;
     try {
-      await navigator.clipboard.writeText(`${details.location.latitude}, ${details.location.longitude}`);
+      copied = await copy(`${details.location.latitude}, ${details.location.longitude}`);
     } catch {
+      return;
+    }
+    if (!copied || attemptId !== copyAttemptId.current) {
       return;
     }
     setCoordinatesCopied(true);
     if (copyResetTimer.current !== undefined) {
       window.clearTimeout(copyResetTimer.current);
     }
-    copyResetTimer.current = window.setTimeout(() => setCoordinatesCopied(false), 1600);
+    copyResetTimer.current = window.setTimeout(() => {
+      copyResetTimer.current = undefined;
+      setCoordinatesCopied(false);
+    }, 1600);
   };
 
   const hasFileDetails = Boolean(details.file || details.dimensions || details.duration || details.uploaded);

@@ -27,7 +27,10 @@ describe("sidebar row grammar", () => {
       </SidebarSection>,
     );
 
-    expect(screen.getByRole("heading", { name: "Statistics", level: 2 })).toHaveClass("mu-label-sm");
+    const heading = screen.getByRole("heading", { name: "Statistics", level: 2 });
+    // The header is one type step below the 13px rows it labels, on the same 28px box as a row.
+    expect(heading).toHaveClass("mu-label-xs");
+    expect(heading.parentElement).toHaveClass("h-7", "pe-1");
     expect(screen.getByRole("button", { name: "August 2026" }).parentElement).toHaveClass(...SIDEBAR_SECTION_CONTENT_CLASSES.split(" "));
   });
 
@@ -36,7 +39,7 @@ describe("sidebar row grammar", () => {
 
     const row = screen.getByRole("button", { name: "Tasks3" });
     expect(row).toHaveClass(...boxClasses);
-    expect(row).toHaveClass("mu-s-md", "h-(--mu-row-height)", "w-full", "gap-1", "rounded-(--mu-row-radius)", "px-2", "mu-body");
+    expect(row).toHaveClass("mu-s-md", "h-(--mu-row-height)", "w-full", "gap-1", "rounded-(--mu-row-radius)", "px-2", "mu-label-sm");
     expect(row).not.toHaveClass("-mx-1");
     // Icon in the shared slot and count in the shared rail, so every list — nav rows,
     // views, tags in both modes — keeps its icons and digits on the same vertical lines.

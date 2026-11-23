@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
-import { useView } from "@/contexts/ViewContext";
+import { useDevicePreferences } from "@/hooks/useDevicePreferences";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -48,7 +48,7 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
   const { selectedSpaceName, creatorUsername } = useSpaceContext();
-  const { compactMode } = useView();
+  const { compactMode } = useDevicePreferences();
   const [composingFor, setComposingFor] = useState<string>();
   const composing = composingFor === selectionKey;
   const onComposingChange = compose?.onComposingChange;

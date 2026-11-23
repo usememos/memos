@@ -1336,7 +1336,8 @@ func (x *UpdateUserSettingRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// UserStats is a summary of a user's memos. Comments are not counted.
+// UserStats is a summary of a user's memos. Comments are counted unless the
+// filter excludes them with `parent == null`.
 type UserStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The resource name of the user statistics singleton.
@@ -1572,8 +1573,8 @@ type GetUserStatsRequest struct {
 	// Required. The resource name of the user.
 	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. A CEL expression selecting the readable non-comment memos to
-	// count. Supports the same fields as ListMemos, including `space`.
+	// Optional. A CEL expression selecting the readable memos to count.
+	// Supports the same fields as ListMemos, including `space` and `parent`.
 	Filter        string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

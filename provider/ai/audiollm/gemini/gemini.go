@@ -103,7 +103,7 @@ func (m *Model) GenerateFromAudio(ctx context.Context, req audiollm.Request) (*a
 	}
 
 	if len(audioBytes) > maxInlineSize {
-		return nil, errors.Errorf("audio is too large for Gemini inline request; maximum size is %d bytes", maxInlineSize)
+		return nil, errors.Wrapf(audiollm.ErrUnsupportedAudio, "audio is too large for Gemini inline request; maximum size is %d bytes", maxInlineSize)
 	}
 
 	contentType, err = normalizeContentType(contentType)
@@ -192,7 +192,7 @@ func normalizeContentType(contentType string) (string, error) {
 	mediaType = strings.ToLower(mediaType)
 	normalized, ok := supportedContentTypes[mediaType]
 	if !ok {
-		return "", errors.Errorf("audio content type %q is not supported by Gemini", mediaType)
+		return "", errors.Wrapf(audiollm.ErrUnsupportedAudio, "audio content type %q is not supported by Gemini", mediaType)
 	}
 	return normalized, nil
 }
