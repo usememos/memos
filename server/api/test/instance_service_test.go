@@ -1168,7 +1168,7 @@ func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
 	require.NoError(t, update([]*apipb.InstanceSetting_Storage{local, archive}, "local"))
 }
 
-func settingREST(t *testing.T, ts *TestService, ctx context.Context, method, path, body string, wantStatus int) *apipb.InstanceSetting {
+func settingREST(ctx context.Context, t *testing.T, ts *TestService, method, path, body string, wantStatus int) *apipb.InstanceSetting {
 	t.Helper()
 	mux := runtime.NewServeMux()
 	require.NoError(t, apipb.RegisterInstanceServiceHandlerServer(ctx, mux, ts.Service))
@@ -1292,7 +1292,7 @@ func TestUpdateInstanceSettingUpdateMask(t *testing.T) {
 	t.Run("REST accepts a nested JSON field name in an explicit mask", func(t *testing.T) {
 		ts, adminCtx := setup(t)
 		seedGeneral(t, ts, adminCtx)
-		resp := settingREST(t, ts, adminCtx, http.MethodPatch, "GENERAL?updateMask=generalSetting.customProfile.title",
+		resp := settingREST(adminCtx, t, ts, http.MethodPatch, "GENERAL?updateMask=generalSetting.customProfile.title",
 			`{"generalSetting":{"customProfile":{"title":"Renamed","description":"ignored"}}}`, http.StatusOK)
 		require.Equal(t, "Renamed", resp.GetGeneralSetting().GetCustomProfile().GetTitle())
 		require.Equal(t, "Kept", resp.GetGeneralSetting().GetCustomProfile().GetDescription())
@@ -1514,11 +1514,11 @@ func TestUpdateInstanceSettingUpdateMaskStorage(t *testing.T) {
 	t.Run("REST accepts a GET response with an edited template", func(t *testing.T) {
 		ts, adminCtx, archiveID := setup(t)
 		update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{DefaultStorageId: archiveID}, "default_storage_id")
-		setting := settingREST(t, ts, adminCtx, http.MethodGet, "STORAGE", "", http.StatusOK)
+		setting := settingREST(adminCtx, t, ts, http.MethodGet, "STORAGE", "", http.StatusOK)
 		setting.GetStorageSetting().FilepathTemplate = "files/{filename}"
 		body, err := protojson.Marshal(setting)
 		require.NoError(t, err)
-		saved := settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", string(body), http.StatusOK)
+		saved := settingREST(adminCtx, t, ts, http.MethodPatch, "STORAGE", string(body), http.StatusOK)
 		require.Equal(t, archiveID, saved.GetStorageSetting().GetDefaultStorageId())
 		require.Equal(t, "files/{filename}", saved.GetStorageSetting().GetFilepathTemplate())
 		stored, err := ts.Store.GetInstanceStorageSetting(ctx)
@@ -1534,9 +1534,9 @@ func TestUpdateInstanceSettingUpdateMaskStorage(t *testing.T) {
 		adminCtx := ts.CreateUserContext(ctx, admin.ID)
 		_, err = ts.Store.GetDriver().UpsertInstanceSetting(ctx, &store.InstanceSetting{Name: "STORAGE", Value: "{"})
 		require.NoError(t, err)
-		settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", `{"storageSetting":{"filepathTemplate":"files/{filename}"}}`, http.StatusInternalServerError)
+		settingREST(adminCtx, t, ts, http.MethodPatch, "STORAGE", `{"storageSetting":{"filepathTemplate":"files/{filename}"}}`, http.StatusInternalServerError)
 		body := `{"storageSetting":{"storages":[{"id":"local","type":"LOCAL"}],"defaultStorageId":"local","filepathTemplate":"files/{filename}"}}`
-		repaired := settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", body, http.StatusOK)
+		repaired := settingREST(adminCtx, t, ts, http.MethodPatch, "STORAGE", body, http.StatusOK)
 		require.Equal(t, "local", repaired.GetStorageSetting().GetDefaultStorageId())
 		require.Equal(t, "files/{filename}", repaired.GetStorageSetting().GetFilepathTemplate())
 	})
