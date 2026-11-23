@@ -53,3 +53,45 @@ func TestGeneralSettingRejectsStaleMergeBase(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "first", stored.GetGeneralSetting().GetAdditionalStyle())
 }
+
+type pausedGeneralRead struct {
+	store.Driver
+	read    chan struct{}
+	release chan struct{}
+}
+
+func (d *pausedGeneralRead) ListInstanceSettings(ctx context.Context, find *store.FindInstanceSetting) ([]*store.InstanceSetting, error) {
+	rows, err := d.Driver.ListInstanceSettings(ctx, find)
+	close(d.read)
+	<-d.release
+	return rows, err
+}
+
+func TestGeneralMergeBaseReadCannotOverwriteNewerCacheEntry(t *testing.T) {
+	ctx := context.Background()
+	db := NewTestingStore(ctx, t)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+	driver := &pausedGeneralRead{Driver: db.GetDriver(), read: make(chan struct{}), release: make(chan struct{})}
+	s := store.New(driver, nil)
+	setting := &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{AdditionalStyle: "first"}},
+	}
+	_, err := s.UpsertInstanceGeneralSettingSafely(ctx, setting)
+	require.NoError(t, err)
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := s.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "GENERAL"})
+		done <- err
+	}()
+	<-driver.read
+	setting.GetGeneralSetting().AdditionalStyle = "second"
+	_, err = s.UpsertInstanceGeneralSettingSafely(ctx, setting)
+	close(driver.release)
+	require.NoError(t, err)
+	require.NoError(t, <-done)
+	cached, err := s.GetInstanceGeneralSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "second", cached.GetAdditionalStyle())
+}
