@@ -23,7 +23,7 @@ import MemoSpaceBadge from "./MemoSpaceBadge";
 /** The card's trailing actions are the package's 24px ghost squares (`sm`), whether or not they are package buttons. */
 const MEMO_HEADER_ACTION_CLASSES = buttonClasses({ variant: "ghost", size: "sm", iconOnly: true });
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
+const MemoHeader: React.FC<MemoHeaderProps> = ({ cardRef, timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
   const t = useTranslate();
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, isEditing, openEditor } = useMemoViewContext();
@@ -112,7 +112,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           </Popover.Root>
         )}
 
-        <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />
+        <MemoActionMenu cardRef={cardRef} memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />
       </div>
     </div>
   );

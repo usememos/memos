@@ -23,6 +23,7 @@ import { useTranslate } from "@/utils/i18n";
 import { createMemoNavigationState } from "../MemoView/navigation";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
+import { useMemoContextMenu } from "./useMemoContextMenu";
 
 /**
  * The memo's action menu, grouped by what each action does to the card:
@@ -37,6 +38,7 @@ const MENU_ROW_CLASSES = menuClasses();
 const MemoActionMenu = (props: MemoActionMenuProps) => {
   const { memo, parentPage, readonly } = props;
   const t = useTranslate();
+  const { open, onOpenChange, anchor } = useMemoContextMenu(props.cardRef);
 
   // Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -163,14 +165,16 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
   };
 
   return (
-    <Menu.Root modal={false}>
+    <Menu.Root modal={false} open={open} onOpenChange={onOpenChange}>
       <Tooltip.Root>
         <Tooltip.Trigger
           render={<Menu.Trigger render={<Button variant="ghost" size="sm" aria-label={t("common.more")} icon={<EllipsisIcon />} />} />}
         />
         <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
       </Tooltip.Root>
-      <Menu.Popup align="end">{renderItems()}</Menu.Popup>
+      <Menu.Popup anchor={anchor} align={anchor ? "start" : "end"} finalFocus={anchor ? false : undefined} aria-label={t("common.more")}>
+        {renderItems()}
+      </Menu.Popup>
 
       {/* Delete confirmation dialog */}
       <ConfirmDialog
