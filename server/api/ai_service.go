@@ -119,6 +119,9 @@ func (s *APIService) Transcribe(ctx context.Context, request *apipb.TranscribeRe
 			"provider type %q is not supported for transcription", provider.Type)
 	}
 	if err != nil {
+		if errors.Is(err, audiollm.ErrUnsupportedAudio) {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to transcribe audio: %v", err)
+		}
 		return nil, status.Errorf(codes.Internal, "failed to transcribe audio: %v", err)
 	}
 	return &apipb.TranscribeResponse{Text: text}, nil
