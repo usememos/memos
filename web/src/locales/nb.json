@@ -1299,6 +1299,7 @@
     "place-placeholder": "Velg et punkt først."
   },
   "calendar": {
+    "more-memos": "+{{count}} til",
     "new-memo-on-day": "Nytt notat denne dagen",
     "next-year": "Neste år",
     "no-memos-in-month": "Ingen notater i {{month}}",

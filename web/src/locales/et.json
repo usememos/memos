@@ -1299,6 +1299,7 @@
     "place-placeholder": "Valige kõigepealt asukoht."
   },
   "calendar": {
+    "more-memos": "+{{count}} veel",
     "new-memo-on-day": "Uus memo sel päeval",
     "next-year": "Järgmisel aastal",
     "no-memos-in-month": "Memosid pole {{month}}",

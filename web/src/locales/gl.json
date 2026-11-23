@@ -1299,6 +1299,7 @@
     "place-placeholder": "Primeiro escolle unha posición."
   },
   "calendar": {
+    "more-memos": "+{{count}} máis",
     "new-memo-on-day": "Nova nota neste día",
     "next-year": "O ano que vén",
     "no-memos-in-month": "Non hai notas en {{month}}",

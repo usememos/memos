@@ -1299,6 +1299,7 @@
     "place-placeholder": "בחרו נקודה תחילה."
   },
   "calendar": {
+    "more-memos": "עוד {{count}}",
     "new-memo-on-day": "תזכיר חדש ביום זה",
     "next-year": "בשנה הבאה",
     "no-memos-in-month": "אין תזכירים ב-{{month}}",

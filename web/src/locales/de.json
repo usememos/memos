@@ -1299,6 +1299,7 @@
     "place-placeholder": "Wählen Sie zuerst eine Position aus."
   },
   "calendar": {
+    "more-memos": "+{{count}} weitere",
     "new-memo-on-day": "Neue Notiz an diesem Tag",
     "next-year": "Nächstes Jahr",
     "no-memos-in-month": "Keine Notizen in {{month}}",

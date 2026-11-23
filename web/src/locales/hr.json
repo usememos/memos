@@ -1300,6 +1300,7 @@
     "place-placeholder": "Najprije odaberite položaj."
   },
   "calendar": {
+    "more-memos": "još {{count}}",
     "new-memo-on-day": "Nova bilješka na današnji dan",
     "next-year": "Sljedeća godina",
     "no-memos-in-month": "Nema bilješki u {{month}}",

@@ -1300,6 +1300,7 @@
     "place-placeholder": "Vispirms izvēlieties punktu."
   },
   "calendar": {
+    "more-memos": "vēl {{count}}",
     "new-memo-on-day": "Jauna piezīme šajā dienā",
     "next-year": "Nākamgad",
     "no-memos-in-month": "Nav piezīmju {{month}}",

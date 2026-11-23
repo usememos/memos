@@ -66,6 +66,7 @@
     "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。"
   },
   "calendar": {
+    "more-memos": "还有 {{count}} 条",
     "new-memo-on-day": "在这一天新建备忘录",
     "next-year": "下一年",
     "no-memos-in-month": "{{month}} 没有备忘录",

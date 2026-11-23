@@ -1300,6 +1300,7 @@
     "place-placeholder": "Primer tria una posició."
   },
   "calendar": {
+    "more-memos": "+{{count}} més",
     "new-memo-on-day": "Nova nota en aquest dia",
     "next-year": "L'any que ve",
     "no-memos-in-month": "No hi ha notes a {{month}}",

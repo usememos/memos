@@ -1299,6 +1299,7 @@
     "place-placeholder": "Välj en position först."
   },
   "calendar": {
+    "more-memos": "+{{count}} till",
     "new-memo-on-day": "Nytt PM denna dag",
     "next-year": "Nästa år",
     "no-memos-in-month": "Inga PM i {{month}}",

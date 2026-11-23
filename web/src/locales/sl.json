@@ -1301,6 +1301,7 @@
     "place-placeholder": "Najprej izberite položaj."
   },
   "calendar": {
+    "more-memos": "še {{count}}",
     "new-memo-on-day": "Nova beležka na ta dan",
     "next-year": "Naslednje leto",
     "no-memos-in-month": "Ni beležk v {{month}}",

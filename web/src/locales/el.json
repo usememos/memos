@@ -1299,6 +1299,7 @@
     "place-placeholder": "Επιλέξτε πρώτα μια θέση."
   },
   "calendar": {
+    "more-memos": "+{{count}} ακόμη",
     "new-memo-on-day": "Νέο σημείωμα αυτήν την ημέρα",
     "next-year": "Επόμενο έτος",
     "no-memos-in-month": "Δεν υπάρχουν σημειώματα στο {{month}}",

@@ -1299,6 +1299,7 @@
     "place-placeholder": "ჯერ აირჩიეთ წერტილი."
   },
   "calendar": {
+    "more-memos": "კიდევ {{count}}",
     "new-memo-on-day": "ახალი შენიშვნა ამ დღეს",
     "next-year": "შემდეგი წელი",
     "no-memos-in-month": "შეტყობინებები არ არის {{month}}-ში",

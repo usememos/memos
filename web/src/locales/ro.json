@@ -1300,6 +1300,7 @@
     "place-placeholder": "Alegeți mai întâi o poziție."
   },
   "calendar": {
+    "more-memos": "încă {{count}}",
     "new-memo-on-day": "Memo nou în această zi",
     "next-year": "Anul viitor",
     "no-memos-in-month": "Niciun memento în {{month}}",

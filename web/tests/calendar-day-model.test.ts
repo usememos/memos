@@ -22,14 +22,15 @@ describe("calendar day snapshots", () => {
     const summary = day(memos);
     expect(summary.memos).toHaveLength(24);
     expect(summary.memos[0].name).toBe("memos/0");
-    expect(summary.excerpt?.text).toBe("memo 0");
+    expect(summary.excerpts.map((excerpt) => excerpt.text)).toEqual(memos.map((_, i) => `memo ${i}`));
+    expect(summary.hiddenCount).toBe(0);
   });
 
-  it("uses memo identity to choose the same sample when timestamps tie", () => {
+  it("uses memo identity to keep the same order when timestamps tie", () => {
     const a = memoAt(9, { name: "memos/a", content: "first" });
     const b = memoAt(9, { name: "memos/b", content: "second" });
-    expect(day([b, a]).excerpt).toEqual(day([a, b]).excerpt);
-    expect(day([b, a]).excerpt?.text).toBe("first");
+    expect(day([b, a]).excerpts).toEqual(day([a, b]).excerpts);
+    expect(day([b, a]).excerpts.map((excerpt) => excerpt.text)).toEqual(["first", "second"]);
   });
 
   it("uses full Markdown content instead of a truncated snippet, without markup or image captions", () => {
@@ -39,22 +40,22 @@ describe("calendar day snapshots", () => {
         snippet: "Morning…",
       }),
     ]);
-    expect(summary.excerpt?.text).toBe("Morning\nA quiet walk with a friend.");
-    expect(summary.excerpt?.isCode).toBe(false);
+    expect(summary.excerpts[0]?.text).toBe("Morning\nA quiet walk with a friend.");
+    expect(summary.excerpts[0]?.isCode).toBe(false);
   });
 
   it("preserves readable code and checklist text without fences or active checkboxes", () => {
-    expect(day([memoAt(9, { content: "```js\nconst x = 1;\nconsole.log(x);\n```" })]).excerpt).toMatchObject({
+    expect(day([memoAt(9, { content: "```js\nconst x = 1;\nconsole.log(x);\n```" })]).excerpts[0]).toMatchObject({
       text: "const x = 1;\nconsole.log(x);",
       isCode: true,
     });
-    expect(day([memoAt(9, { content: "- [x] Ship release\n- [ ] Write notes" })]).excerpt?.text).toBe("Ship release\nWrite notes");
+    expect(day([memoAt(9, { content: "- [x] Ship release\n- [ ] Write notes" })]).excerpts[0]?.text).toBe("Ship release\nWrite notes");
   });
 
   it("reads a callout without its type marker, as the memo shows it", () => {
-    expect(day([memoAt(9, { content: "> [!WARNING]\n> Back up first." })]).excerpt?.text).toBe("Back up first.");
-    expect(day([memoAt(9, { content: "> [!NOTE] inline\n> text" })]).excerpt?.text).toBe("[!NOTE] inline\ntext");
-    expect(day([memoAt(9, { content: "> `[!NOTE]`\n> text" })]).excerpt?.text).toBe("[!NOTE]\ntext");
+    expect(day([memoAt(9, { content: "> [!WARNING]\n> Back up first." })]).excerpts[0]?.text).toBe("Back up first.");
+    expect(day([memoAt(9, { content: "> [!NOTE] inline\n> text" })]).excerpts[0]?.text).toBe("[!NOTE] inline\ntext");
+    expect(day([memoAt(9, { content: "> `[!NOTE]`\n> text" })]).excerpts[0]?.text).toBe("[!NOTE]\ntext");
   });
 
   it("skips empty and image-only memos when choosing text and keeps photos from distinct memos", () => {
@@ -64,7 +65,7 @@ describe("calendar day snapshots", () => {
       memoAt(10, { content: "The day's writing", attachments: [image("c")] }),
       memoAt(11, { attachments: [image("d")] }),
     ]);
-    expect(summary.excerpt?.text).toBe("The day's writing");
+    expect(summary.excerpts.map((excerpt) => excerpt.text)).toEqual(["The day's writing"]);
     expect(summary.images.map((entry) => entry.memoName)).toEqual(["memos/9", "memos/10"]);
     expect(summary.images[0].thumbnailUrl).toContain("attachments/a/a.jpg?thumbnail=true");
     expect(summary.memos).toHaveLength(4);
@@ -156,29 +157,35 @@ describe("calendar day snapshots", () => {
   });
 
   it("reads a footnote's text, not its reference label, into the excerpt", () => {
-    expect(day([memoAt(9, { content: "Test[^1]\n\n[^1]: very **important**\n\n    second paragraph" })]).excerpt?.text).toBe(
+    expect(day([memoAt(9, { content: "Test[^1]\n\n[^1]: very **important**\n\n    second paragraph" })]).excerpts[0]?.text).toBe(
       "Test\nvery important\nsecond paragraph",
     );
   });
 
   it("does not turn an image-only memo's alt text into an excerpt", () => {
     const result = day([memoAt(9, { content: "![caption](https://example.com/a.jpg)", snippet: "caption" })]);
-    expect(result.excerpt).toBeUndefined();
+    expect(result.excerpts).toEqual([]);
     expect(result.images).toHaveLength(1);
   });
 
-  it("uses a filename only when the day has no readable text", () => {
-    expect(day([memoAt(9, { attachments: [pdf] })]).excerpt?.text).toBe("doc.pdf");
-    expect(day([memoAt(9, { attachments: [pdf] }), memoAt(10, { content: "Notes" })]).excerpt?.text).toBe("Notes");
+  it("names a memo by its file only when the memo has no readable text", () => {
+    const texts = (memos: Memo[]) => day(memos).excerpts.map((excerpt) => excerpt.text);
+    expect(texts([memoAt(9, { attachments: [pdf] })])).toEqual(["doc.pdf"]);
+    expect(texts([memoAt(9, { attachments: [pdf] }), memoAt(10, { content: "Notes" })])).toEqual(["doc.pdf", "Notes"]);
+    expect(texts([memoAt(9, { content: "Notes", attachments: [pdf] })])).toEqual(["Notes"]);
+    expect(texts([memoAt(9, { content: "Notes" }), memoAt(10, { attachments: [image("only")] })])).toEqual(["Notes"]);
   });
 
-  it("attributes the excerpt to the memo it came from, filename fallback included", () => {
+  it("attributes each excerpt to the memo it came from, filename fallback included", () => {
     const text = day([
       memoAt(9, { creator: "users/bob", content: "Morning run" }),
       memoAt(10, { creator: "users/alice", content: "Lunch" }),
     ]);
-    expect(text.excerpt).toMatchObject({ memoName: "memos/9", creator: "users/bob", text: "Morning run" });
-    expect(day([memoAt(9, { creator: "users/carol", attachments: [pdf] })]).excerpt).toMatchObject({
+    expect(text.excerpts).toMatchObject([
+      { memoName: "memos/9", creator: "users/bob", text: "Morning run" },
+      { memoName: "memos/10", creator: "users/alice", text: "Lunch" },
+    ]);
+    expect(day([memoAt(9, { creator: "users/carol", attachments: [pdf] })]).excerpts[0]).toMatchObject({
       creator: "users/carol",
       text: "doc.pdf",
     });
@@ -208,7 +215,8 @@ describe("calendar day snapshots", () => {
       { isRedacted: (memo) => memo.tags.includes("private") },
     )["2026-08-02"];
     expect(summary.memos).toHaveLength(2);
-    expect(summary.excerpt?.text).toBe("visible");
+    expect(summary.excerpts.map((excerpt) => excerpt.text)).toEqual(["visible"]);
+    expect(summary.hiddenCount).toBe(1);
     expect(summary.images).toEqual([]);
   });
 

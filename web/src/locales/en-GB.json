@@ -1252,6 +1252,7 @@
     "place-placeholder": "Choose a position first."
   },
   "calendar": {
+    "more-memos": "+{{count}} more",
     "new-memo-on-day": "New memo on this day",
     "next-year": "Next year",
     "no-memos-in-month": "No memos in {{month}}",
