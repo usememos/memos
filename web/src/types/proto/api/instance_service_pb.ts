@@ -778,8 +778,9 @@ export type InstanceSetting_AISetting = Message<"memos.api.InstanceSetting.AISet
 
   /**
    * The speech-to-text feature configuration.
-   * When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-   * stored configuration.
+   * Transcription is disabled when provider_id is empty. Omitting transcription in an update preserves the stored
+   * configuration unless the update mask selects a transcription field. Selecting ai_setting or
+   * ai_setting.transcription and omitting transcription clears the configuration.
    *
    * @generated from field: memos.api.InstanceSetting.TranscriptionConfig transcription = 2;
    */

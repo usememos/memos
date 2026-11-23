@@ -3968,8 +3968,9 @@ components:
                         - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
                     description: |-
                         The speech-to-text feature configuration.
-                         When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-                         stored configuration.
+                         Transcription is disabled when provider_id is empty. Omitting transcription in an update preserves the stored
+                         configuration unless the update mask selects a transcription field. Selecting ai_setting or
+                         ai_setting.transcription and omitting transcription clears the configuration.
             description: AISetting is the AI provider configuration.
         InstanceSetting_AccessSetting:
             type: object

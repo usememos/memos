@@ -17,6 +17,7 @@ import (
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -1170,12 +1171,18 @@ func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
 
 func settingREST(ctx context.Context, t *testing.T, ts *TestService, method, path, body string, wantStatus int) *apipb.InstanceSetting {
 	t.Helper()
-	mux := runtime.NewServeMux()
-	require.NoError(t, apipb.RegisterInstanceServiceHandlerServer(ctx, mux, ts.Service))
+	handler, err := ts.Service.NewHandler(ctx)
+	require.NoError(t, err)
+	userID := auth.GetUserID(ctx)
+	user, err := ts.Store.GetUser(ctx, &store.FindUser{ID: &userID})
+	require.NoError(t, err)
+	token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), user.PasswordHash, []byte(ts.Secret))
+	require.NoError(t, err)
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequestWithContext(ctx, method, "/api/instance/settings/"+path, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
-	mux.ServeHTTP(rec, req)
+	req.Header.Set("Authorization", "Bearer "+token)
+	handler.ServeHTTP(rec, req)
 	require.Equal(t, wantStatus, rec.Code, rec.Body.String())
 	if wantStatus != http.StatusOK {
 		return nil
@@ -1255,6 +1262,34 @@ func TestUpdateInstanceSettingUpdateMask(t *testing.T) {
 		require.Equal(t, "Only title", resp.GetGeneralSetting().GetCustomProfile().GetTitle())
 		require.Empty(t, resp.GetGeneralSetting().GetCustomProfile().GetDescription())
 		require.Equal(t, "body { color: red; }", resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("a parent mask clears an omitted message in either path order", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		for _, paths := range [][]string{
+			{"custom_profile", "generalSetting.customProfile.title"},
+			{"generalSetting.customProfile.title", "custom_profile"},
+		} {
+			seedGeneral(t, ts, adminCtx)
+			resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+				InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{}),
+				UpdateMask:      &fieldmaskpb.FieldMask{Paths: paths},
+			})
+			require.NoError(t, err)
+			require.Nil(t, resp.GetGeneralSetting().GetCustomProfile(), "paths %v", paths)
+		}
+	})
+
+	t.Run("REST derives an empty query mask from the body", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		const body = `{"generalSetting":{"weekStartDayOffset":4}}`
+		for _, query := range []string{"updateMask=", "update_mask="} {
+			seedGeneral(t, ts, adminCtx)
+			saved := settingREST(adminCtx, t, ts, http.MethodPatch, "GENERAL?"+query, body, http.StatusOK)
+			require.Equal(t, int32(4), saved.GetGeneralSetting().GetWeekStartDayOffset())
+			require.Equal(t, "Seeded", saved.GetGeneralSetting().GetCustomProfile().GetTitle())
+		}
+		settingREST(adminCtx, t, ts, http.MethodPatch, "GENERAL?updateMask=weekStartDayOffset,", body, http.StatusBadRequest)
 	})
 
 	t.Run("paths may be relative to the setting value", func(t *testing.T) {

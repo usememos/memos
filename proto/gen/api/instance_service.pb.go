@@ -1638,8 +1638,9 @@ type InstanceSetting_AISetting struct {
 	// The AI provider configurations available instance-wide.
 	Providers []*InstanceSetting_AIProviderConfig `protobuf:"bytes,1,rep,name=providers,proto3" json:"providers,omitempty"`
 	// The speech-to-text feature configuration.
-	// When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-	// stored configuration.
+	// Transcription is disabled when provider_id is empty. Omitting transcription in an update preserves the stored
+	// configuration unless the update mask selects a transcription field. Selecting ai_setting or
+	// ai_setting.transcription and omitting transcription clears the configuration.
 	Transcription *InstanceSetting_TranscriptionConfig `protobuf:"bytes,2,opt,name=transcription,proto3" json:"transcription,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

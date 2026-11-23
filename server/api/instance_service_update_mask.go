@@ -1,14 +1,32 @@
 package api
 
 import (
+	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 )
+
+// omitEmptyInstanceSettingMask lets the REST gateway keep the mask it derives
+// from the JSON body when the explicit query parameter has no value.
+func omitEmptyInstanceSettingMask(r *http.Request) {
+	query, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil {
+		return // Let the gateway report the malformed query.
+	}
+	for _, key := range []string{"updateMask", "update_mask"} {
+		if values := query[key]; len(values) == 1 && values[0] == "" {
+			query.Del(key)
+			r.URL.RawQuery = query.Encode()
+		}
+	}
+}
 
 // instanceSettingMask holds validated, fully qualified proto field paths.
 type instanceSettingMask struct {
@@ -27,7 +45,7 @@ func parseInstanceSettingMask(key string, patch *apipb.InstanceSetting, paths []
 		return nil, errors.Errorf("instance setting %s cannot be updated with %s", key, supplied.Name())
 	}
 
-	mask := &instanceSettingMask{branchFields: make(map[string]bool)}
+	canonical := &fieldmaskpb.FieldMask{}
 	for _, path := range paths {
 		if path == "name" {
 			continue
@@ -52,11 +70,16 @@ func parseInstanceSettingMask(key string, patch *apipb.InstanceSetting, paths []
 				fields = field.Message().Fields()
 			}
 		}
-		mask.paths = append(mask.paths, strings.Join(parts, "."))
-		if len(parts) == 1 {
-			mask.wholeBranch = true
+		canonical.Paths = append(canonical.Paths, strings.Join(parts, "."))
+	}
+	canonical.Normalize()
+	mask := &instanceSettingMask{paths: canonical.Paths, branchFields: make(map[string]bool)}
+	for _, path := range canonical.Paths {
+		if _, rest, ok := strings.Cut(path, "."); ok {
+			field, _, _ := strings.Cut(rest, ".")
+			mask.branchFields[field] = true
 		} else {
-			mask.branchFields[parts[1]] = true
+			mask.wholeBranch = true
 		}
 	}
 	return mask, nil
