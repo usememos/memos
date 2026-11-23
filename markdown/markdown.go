@@ -325,7 +325,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 			// Add space before block elements (except first)
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
+			case gast.KindParagraph, gast.KindTextBlock, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				if buf.Len() > 0 && lastNodeWasBlock {
 					writeByte(' ')
 				}
@@ -338,7 +338,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		if !entering {
 			// Mark that we just exited a block element
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
+			case gast.KindParagraph, gast.KindTextBlock, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				lastNodeWasBlock = true
 			default:
 				// Not a block element
