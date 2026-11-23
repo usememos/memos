@@ -26,6 +26,11 @@ func TestAuthenticateNoCredentials(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Nil(t, user)
 	})
+	t.Run("AuthenticateToUser marks a malformed refresh token cookie as invalid", func(t *testing.T) {
+		user, err := a.AuthenticateToUser(ctx, "", RefreshTokenCookieName+"=not-a-valid-jwt")
+		assert.ErrorIs(t, err, ErrInvalidRefreshToken)
+		assert.Nil(t, user)
+	})
 	t.Run("AuthenticateToUser returns nil for a malformed bearer and no cookie", func(t *testing.T) {
 		user, err := a.AuthenticateToUser(ctx, "Bearer not-a-valid-jwt", "")
 		assert.NoError(t, err)

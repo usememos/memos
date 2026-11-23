@@ -83,16 +83,23 @@ func (a *Authenticator) resolveAccessToken(ctx context.Context, accessToken stri
 	}, nil
 }
 
-// AuthenticateByRefreshToken validates a refresh token against the database.
+// ErrInvalidRefreshToken marks a refresh token that cannot authenticate: it is
+// malformed, revoked, expired, or belongs to a missing or archived user. Any
+// other error from AuthenticateByRefreshToken means the lookup itself failed.
+var ErrInvalidRefreshToken = errors.New("invalid refresh token")
+
+// AuthenticateByRefreshToken validates a refresh token against the database. A
+// rejected token yields an error wrapping ErrInvalidRefreshToken; a store failure
+// yields any other error.
 func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshToken string) (*store.User, string, error) {
 	claims, err := ParseRefreshToken(refreshToken, []byte(a.secret))
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid refresh token")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, err.Error())
 	}
 
 	userID, err := parseInt32(claims.Subject)
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid user ID in token")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "invalid user ID in token")
 	}
 
 	// Check token exists in database (revocation check)
@@ -101,12 +108,12 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get refresh token")
 	}
 	if token == nil {
-		return nil, "", errors.New("refresh token revoked")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "refresh token revoked")
 	}
 
 	// Check token not expired
 	if token.ExpiresAt != nil && token.ExpiresAt.AsTime().Before(time.Now()) {
-		return nil, "", errors.New("refresh token expired")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "refresh token expired")
 	}
 
 	// Get user
@@ -115,10 +122,10 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return nil, "", errors.New("user not found")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "user not found")
 	}
 	if user.RowStatus == store.Archived {
-		return nil, "", errors.New("user is archived")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "user is archived")
 	}
 
 	return user, claims.TokenID, nil
@@ -214,7 +221,8 @@ func (a *Authenticator) recordPATUsage(userID int32, tokenID string) {
 
 // AuthenticateToUser resolves the current request to a *store.User, checking the
 // Authorization header first (access token or PAT), then falling back to the
-// refresh token cookie. Returns (nil, nil) when no valid credentials are present.
+// refresh token cookie. Returns (nil, nil) when no credentials are present. A
+// rejected refresh token cookie yields an error wrapping ErrInvalidRefreshToken.
 func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cookieHeader string) (*store.User, error) {
 	bearer, err := a.resolveBearer(ctx, ExtractBearerToken(authHeader))
 	if err != nil {

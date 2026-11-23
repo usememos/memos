@@ -887,6 +887,13 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	// Private instance: the same anonymous request is denied.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
 	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+
+	// A stale browser session is treated as anonymous, not as a server error.
+	req = httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
 }
 
 // TestServeUserAvatar_PrivateInstanceRequiresAuth verifies that avatars are exposed
@@ -932,6 +939,13 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	// Private instance: anonymous avatar access is denied.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
 	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// A stale browser session is treated as anonymous, not as a server error.
+	req = httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, owner.ID, svc.Secret))
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
 
 	// An authenticated private-instance response must not be stored by shared
 	// or browser caches.
