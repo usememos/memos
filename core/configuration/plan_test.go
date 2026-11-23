@@ -380,6 +380,27 @@ func TestPlanLinkedIdentities(t *testing.T) {
 	require.Equal(t, apipb.ResourceChange_RELEASE, changeFor(t, removed, "users/admin/linkedIdentities/kept").Action)
 }
 
+func TestPlanLinkedIdentityRejectsDestroyedProvider(t *testing.T) {
+	reader := newFakeReader()
+	reader.providers = []*storepb.IdentityProvider{{Id: 1, Uid: "sso"}}
+	reader.state = &storepb.InstanceConfigurationState{Resources: []*storepb.InstanceConfigurationState_ManagedResource{
+		{Name: "identity-providers/sso", Kind: "IdentityProvider", ManagedFields: []string{"*"}},
+	}}
+
+	destroying := planFor(t, loadDesired(t, map[string]string{"all.json": `{
+		"users":[{"name":"users/admin","username":"admin","role":"ADMIN","password":"pw"}],
+		"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}],
+		"removed":[{"resource":"identity-providers/sso","destroy":true}]}`}), reader)
+	require.False(t, destroying.Valid())
+	require.Contains(t, strings.Join(destroying.Message.Errors, "\n"), "users/admin/linkedIdentities/sso: names identity-providers/sso, which would not exist after apply")
+
+	releasing := planFor(t, loadDesired(t, map[string]string{"all.json": `{
+		"users":[{"name":"users/admin","username":"admin","role":"ADMIN","password":"pw"}],
+		"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}],
+		"removed":[{"resource":"identity-providers/sso"}]}`}), reader)
+	require.True(t, releasing.Valid(), releasing.Message.Errors)
+}
+
 func TestPlanUsers(t *testing.T) {
 	reader := newFakeReader()
 	require.Contains(t, strings.Join(planFor(t, loadDesired(t, map[string]string{"u.json": `{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}]}`}), reader).Message.Errors, ""),
@@ -446,6 +467,33 @@ func TestPlanAuthenticationInvariant(t *testing.T) {
 	unrelated := planFor(t, loadDesired(t, map[string]string{"a.json": `{"instanceSettings":[{"name":"instance/settings/ACCESS","accessSetting":{"accessMode":"INSTANCE_ACCESS_MODE_PRIVATE"}}]}`}), reader)
 	require.True(t, unrelated.Valid(), "an unrelated plan does not fail on an existing condition")
 	require.Contains(t, strings.Join(unrelated.Message.Warnings, ""), "already has")
+}
+
+func TestPlanAuthenticationInvariantUsesIgnoredGeneralSetting(t *testing.T) {
+	reader := newFakeReader()
+	reader.settings[storepb.InstanceSettingKey_GENERAL] = &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_GENERAL, Value: &storepb.InstanceSetting_GeneralSetting{
+		GeneralSetting: &storepb.InstanceGeneralSetting{DisallowPasswordAuth: false},
+	}}
+	ignoredTrue := planFor(t, loadDesired(t, map[string]string{"g.json": `{
+		"instanceSettings":[{"name":"instance/settings/GENERAL","generalSetting":{"disallowPasswordAuth":true}}],
+		"lifecycle":[{"resource":"instance/settings/GENERAL","ignoreChanges":["generalSetting.disallowPasswordAuth"]}]}`}), reader)
+	require.True(t, ignoredTrue.Valid(), ignoredTrue.Message.Errors)
+
+	reader.settings[storepb.InstanceSettingKey_GENERAL] = &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_GENERAL, Value: &storepb.InstanceSetting_GeneralSetting{
+		GeneralSetting: &storepb.InstanceGeneralSetting{DisallowPasswordAuth: true},
+	}}
+	reader.providers = []*storepb.IdentityProvider{{Id: 1, Uid: "last"}}
+	reader.state = &storepb.InstanceConfigurationState{Resources: []*storepb.InstanceConfigurationState_ManagedResource{
+		{Name: "identity-providers/last", Kind: "IdentityProvider", ManagedFields: []string{"*"}},
+	}}
+	for _, ignorePath := range []string{"generalSetting.disallowPasswordAuth", "generalSetting"} {
+		ignoredFalse := planFor(t, loadDesired(t, map[string]string{"g.json": `{
+			"instanceSettings":[{"name":"instance/settings/GENERAL","generalSetting":{"disallowPasswordAuth":false}}],
+			"lifecycle":[{"resource":"instance/settings/GENERAL","ignoreChanges":["` + ignorePath + `"]}],
+			"removed":[{"resource":"identity-providers/last","destroy":true}]}`}), reader)
+		require.False(t, ignoredFalse.Valid(), ignorePath)
+		require.Contains(t, strings.Join(ignoredFalse.Message.Errors, "\n"), "no identity provider would remain")
+	}
 }
 
 func TestPlanUsageLimitsResolveUsers(t *testing.T) {

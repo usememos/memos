@@ -211,6 +211,33 @@ func TestApplyLinkedIdentities(t *testing.T) {
 	require.Nil(t, linked(), "a destroyed link is deleted")
 }
 
+func TestApplyRefusesDestroyingProviderUsedByLinkedIdentity(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+
+	plan, state := applyFor(t, loadDesired(t, map[string]string{"all.json": `{
+		"identityProviders":[` + validIDP + `],
+		"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],
+		"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}]}`}), s)
+	require.True(t, plan.Valid(), plan.Message.Errors)
+	require.Equal(t, int64(1), state.Serial)
+
+	rejected, nextState := applyFor(t, loadDesired(t, map[string]string{"all.json": `{
+		"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],
+		"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}],
+		"removed":[{"resource":"identity-providers/sso","destroy":true}]}`}), s)
+	require.False(t, rejected.Valid())
+	require.Nil(t, nextState)
+	require.Contains(t, rejected.Message.Errors, "users/admin/linkedIdentities/sso: names identity-providers/sso, which would not exist after apply")
+
+	providers, err := s.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
+	require.NoError(t, err)
+	require.Len(t, providers, 1)
+	record, err := s.GetConfigurationState(ctx)
+	require.NoError(t, err)
+	require.Equal(t, int64(1), record.Serial)
+}
+
 func TestApplyFailureRollsBack(t *testing.T) {
 	ctx := context.Background()
 	s := newTestStore(t)
