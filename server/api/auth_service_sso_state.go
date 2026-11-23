@@ -280,10 +280,12 @@ func (s *APIService) ssoAuthStates() *ssoAuthorizationStateStore {
 // token exchange. It must be absolute http(s), and it must sit on an origin
 // the instance trusts: the configured instance URL when one is set, and
 // otherwise the host the request itself was sent to, which is the origin a
-// browser-driven flow always comes from. The URI recorded here is what
-// redemption later names to the identity provider, so an anonymous caller
-// must not pin a flow to a callback the instance does not control. The host
-// comparison mirrors server/cors.go.
+// browser-driven flow always comes from. When neither is available there is
+// no trusted origin to compare against, so the callback is rejected rather
+// than letting a client that withheld its Host pin any origin it likes.
+// The URI recorded here is what redemption later names to the identity
+// provider, so an anonymous caller must not pin a flow to a callback the
+// instance does not control. The host comparison mirrors server/cors.go.
 func validateSSORedirectURI(p *profile.Profile, requestHost, rawURI string) error {
 	redirectURI, err := url.Parse(rawURI)
 	if err != nil || !redirectURI.IsAbs() || redirectURI.Host == "" || (redirectURI.Scheme != "https" && redirectURI.Scheme != "http") {
@@ -301,7 +303,13 @@ func validateSSORedirectURI(p *profile.Profile, requestHost, rawURI string) erro
 		// callback: fall through to the request-host check, the same way
 		// isAllowedCORSOrigin treats an unparseable instance URL as absent.
 	}
-	if requestHost != "" && !strings.EqualFold(redirectURI.Host, requestHost) {
+	if requestHost == "" {
+		// Reachable with an HTTP/1.0 request without a Host header or an
+		// HTTP/2 request without :authority: skip the comparison here and
+		// every absolute http(s) callback would pass.
+		return status.Errorf(codes.InvalidArgument, "redirect_uri cannot be validated without an instance URL or a request host")
+	}
+	if !strings.EqualFold(redirectURI.Host, requestHost) {
 		return status.Errorf(codes.InvalidArgument, "redirect_uri must match the host the request was sent to")
 	}
 	return nil

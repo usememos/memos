@@ -275,7 +275,7 @@ func TestValidateSSORedirectURI(t *testing.T) {
 		uri         string
 		wantErr     bool
 	}{
-		{name: "absolute https allowed without instance URL", uri: "https://memos.example.com/auth/callback"},
+		{name: "absolute https rejected without instance URL or request host", uri: "https://memos.example.com/auth/callback", wantErr: true},
 		{name: "relative URI rejected", uri: "/auth/callback", wantErr: true},
 		{name: "non-http scheme rejected", uri: "ftp://memos.example.com/auth/callback", wantErr: true},
 		{name: "empty host rejected", uri: "https:///auth/callback", wantErr: true},
@@ -302,9 +302,10 @@ func TestValidateSSORedirectURI(t *testing.T) {
 			wantErr:     true,
 		},
 		{
-			name:        "unparseable instance URL falls back to the absolute check",
+			name:        "unparseable instance URL rejects when the request host is unknown",
 			instanceURL: "://not-a-url",
 			uri:         "https://memos.example.com/auth/callback",
+			wantErr:     true,
 		},
 		{
 			name:        "unparseable instance URL still vets against the request host",
