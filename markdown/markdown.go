@@ -205,20 +205,36 @@ func extractHeadingText(n gast.Node, source []byte) string {
 
 // extractTextFromNode recursively extracts plain text from a node and its children.
 func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
-	if textNode, ok := n.(*gast.Text); ok {
-		buf.Write(textNode.Segment.Value(source))
-		return
-	}
-	if mathNode, ok := n.(*mast.InlineMathNode); ok {
-		buf.Write(mathNode.Source)
-		return
-	}
-	if emailNode, ok := n.(*mast.GFMEmailNode); ok {
-		buf.Write(emailNode.Address)
-		return
-	}
-	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
-		extractTextFromNode(child, source, buf)
+	switch node := n.(type) {
+	case *gast.Text:
+		buf.Write(node.Segment.Value(source))
+		if node.SoftLineBreak() || node.HardLineBreak() {
+			buf.WriteByte(' ')
+		}
+	case *gast.AutoLink:
+		buf.Write(node.Label(source))
+	case *mast.TagNode:
+		if len(node.Source) > 0 {
+			buf.Write(node.Source)
+		} else {
+			buf.WriteByte('#')
+			buf.Write(node.Tag)
+		}
+	case *mast.MentionNode:
+		if len(node.Source) > 0 {
+			buf.Write(node.Source)
+		} else {
+			buf.WriteByte('@')
+			buf.Write(node.Username)
+		}
+	case *mast.InlineMathNode:
+		buf.Write(node.Source)
+	case *mast.GFMEmailNode:
+		buf.Write(node.Address)
+	default:
+		for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+			extractTextFromNode(child, source, buf)
+		}
 	}
 }
 
@@ -376,6 +392,13 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			} else {
 				writeByte('#')
 				writeBytes(node.Tag)
+			}
+		case *mast.MentionNode:
+			if len(node.Source) > 0 {
+				writeBytes(node.Source)
+			} else {
+				writeByte('@')
+				writeBytes(node.Username)
 			}
 		case *mast.GFMEmailNode:
 			writeBytes(node.Address)
