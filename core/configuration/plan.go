@@ -121,7 +121,7 @@ func ComputePlan(ctx context.Context, desired *Desired, reader Reader) (*Plan, e
 		p.removed[removed.Resource] = removed
 	}
 
-	steps := []func() error{p.planIdentityProviders, p.planInstanceSettings, p.planUsers, p.planLinkedIdentities, p.planUndeclared, p.checkAuthentication}
+	steps := []func() error{p.planIdentityProviders, p.planInstanceSettings, p.planUsers, p.planUndeclared, p.planLinkedIdentities, p.checkAuthentication}
 	for _, step := range steps {
 		if err := step(); err != nil {
 			return nil, err
@@ -272,7 +272,7 @@ func (p *planner) planInstanceSettings() error {
 		}
 		p.declared(rankInstanceSetting, declared.Name, KindInstanceSetting, actual != nil, changes, entry, op)
 		if desiredStore.Key == storepb.InstanceSettingKey_GENERAL {
-			p.generalAfter = desiredStore.GetGeneralSetting()
+			p.generalAfter = op.setting.GetGeneralSetting()
 			p.generalPlanned = true
 		}
 	}
