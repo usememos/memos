@@ -32,7 +32,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     showPinned,
     showSpace,
   } = props;
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
 
@@ -198,7 +198,13 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     >
       {/* The pinned mark steps aside while the memo is edited in place. */}
       {showPinned && memoData.pinned && !isEditing && <MemoPinnedMark />}
-      <MemoHeader timeDisplay={timeDisplay} showCreator={showCreator} showVisibility={showVisibility} showSpace={showSpace} />
+      <MemoHeader
+        cardRef={cardRef}
+        timeDisplay={timeDisplay}
+        showCreator={showCreator}
+        showVisibility={showVisibility}
+        showSpace={showSpace}
+      />
 
       <MemoBody compact={compact} showCreator={showCreator} />
 
