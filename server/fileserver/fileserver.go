@@ -787,10 +787,16 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, r *ht
 
 // getCurrentUser retrieves the current authenticated user from the request.
 // Authentication priority: Bearer token (Access Token V2 or PAT) > Refresh token cookie.
+// A stale, revoked or malformed session cookie counts as anonymous, so the caller
+// answers with its normal unauthenticated response instead of a server error.
 func (s *FileServerService) getCurrentUser(ctx context.Context, r *http.Request) (*store.User, error) {
 	authHeader := r.Header.Get("Authorization")
 	cookieHeader := r.Header.Get("Cookie")
-	return s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
+	user, err := s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
+	if errors.Is(err, auth.ErrInvalidRefreshToken) {
+		return nil, nil
+	}
+	return user, err
 }
 
 // =============================================================================
