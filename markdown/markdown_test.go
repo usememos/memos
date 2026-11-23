@@ -98,6 +98,30 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Item 1 Item 2 Item 3",
 		},
 		{
+			name:      "nested tight list items",
+			content:   "- a\n  - b",
+			maxLength: 100,
+			expected:  "a b",
+		},
+		{
+			name:      "nested ordered list items",
+			content:   "1. one\n   1. two",
+			maxLength: 100,
+			expected:  "one two",
+		},
+		{
+			name:      "nested task list items",
+			content:   "- [ ] buy milk\n  - [ ] oat",
+			maxLength: 100,
+			expected:  "buy milk oat",
+		},
+		{
+			name:      "quote inside a tight list item",
+			content:   "- a\n  > b",
+			maxLength: 100,
+			expected:  "a b",
+		},
+		{
 			name:      "hard line break with trailing spaces",
 			content:   "first line  \nsecond line",
 			maxLength: 100,
