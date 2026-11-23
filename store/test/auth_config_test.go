@@ -33,3 +33,23 @@ func TestAuthenticationConfigurationMutation(t *testing.T) {
 	err = ts.DeleteIdentityProviderSafely(ctx, &store.DeleteIdentityProvider{ID: provider.Id})
 	require.ErrorIs(t, err, store.ErrUnsafeAuthenticationConfiguration)
 }
+
+func TestGeneralSettingRejectsStaleMergeBase(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	t.Cleanup(func() { require.NoError(t, ts.Close()) })
+	expected, err := ts.GetInstanceGeneralSetting(ctx)
+	require.NoError(t, err)
+	setting := &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{AdditionalStyle: "first"}},
+	}
+	_, err = ts.UpsertInstanceGeneralSettingSafely(ctx, setting)
+	require.NoError(t, err)
+	setting.GetGeneralSetting().AdditionalStyle = "stale"
+	_, err = ts.UpdateInstanceGeneralSettingIfUnchanged(ctx, setting, expected)
+	require.ErrorIs(t, err, store.ErrInstanceSettingChanged)
+	stored, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "GENERAL"})
+	require.NoError(t, err)
+	require.Equal(t, "first", stored.GetGeneralSetting().GetAdditionalStyle())
+}

@@ -6,56 +6,79 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 )
 
-// applyInstanceSettingUpdateMask returns a copy of current with the fields
-// named by paths taken from patch. A path is relative to InstanceSetting and
-// must lie within the oneof branch for key, such as
-// "general_setting.disallow_user_registration" for GENERAL. A path whose first
-// segment is not an InstanceSetting field is relative to that branch instead,
-// so "disallow_user_registration" names the same field. A path naming a
-// message replaces that whole message; a field unset in patch is cleared.
-// The "name" path is ignored: the name identifies the setting and cannot
-// change, and the REST gateway adds it when it derives a mask from the body.
-func applyInstanceSettingUpdateMask(key string, current, patch *apipb.InstanceSetting, paths []string) (*apipb.InstanceSetting, error) {
-	descriptor := current.ProtoReflect().Descriptor()
-	fields := descriptor.Fields()
-	branch := instanceSettingBranchName(key)
-	if fields.ByName(branch) == nil {
+// instanceSettingMask holds validated, fully qualified proto field paths.
+type instanceSettingMask struct {
+	paths        []string
+	branchFields map[string]bool
+	wholeBranch  bool
+}
+
+func parseInstanceSettingMask(key string, patch *apipb.InstanceSetting, paths []string) (*instanceSettingMask, error) {
+	desc := patch.ProtoReflect().Descriptor()
+	branch := desc.Fields().ByName(instanceSettingBranchName(key))
+	if branch == nil {
 		return nil, errors.Errorf("instance setting %s does not support update_mask", key)
 	}
-	if patchBranch := patch.ProtoReflect().WhichOneof(descriptor.Oneofs().ByName("value")); patchBranch != nil && patchBranch.Name() != branch {
-		return nil, errors.Errorf("instance setting %s cannot be updated with %s", key, patchBranch.Name())
+	if supplied := patch.ProtoReflect().WhichOneof(desc.Oneofs().ByName("value")); supplied != nil && supplied != branch {
+		return nil, errors.Errorf("instance setting %s cannot be updated with %s", key, supplied.Name())
 	}
 
-	merged := proto.CloneOf(current)
-	branchFields := map[string]bool{}
-	wholeBranch := false
+	mask := &instanceSettingMask{branchFields: make(map[string]bool)}
 	for _, path := range paths {
 		if path == "name" {
 			continue
 		}
-		if first, _, _ := strings.Cut(path, "."); fields.ByName(protoreflect.Name(first)) == nil {
-			path = string(branch) + "." + path
+		parts := strings.Split(path, ".")
+		fields := desc.Fields()
+		if field := maskField(fields, parts[0]); field == nil {
+			parts = append([]string{string(branch.Name())}, parts...)
+		} else if field != branch {
+			return nil, errors.Errorf("update_mask path %q must be within %s", path, branch.Name())
 		}
-		if path != string(branch) && !strings.HasPrefix(path, string(branch)+".") {
-			return nil, errors.Errorf("update_mask path %q must be %q or start with %q", path, branch, branch+".")
+		for index, part := range parts {
+			field := maskField(fields, part)
+			if field == nil {
+				return nil, errors.Errorf("invalid update_mask path %q", path)
+			}
+			parts[index] = string(field.Name())
+			if index < len(parts)-1 {
+				if field.Message() == nil || field.IsList() || field.IsMap() {
+					return nil, errors.Errorf("invalid update_mask path %q", path)
+				}
+				fields = field.Message().Fields()
+			}
 		}
-		if _, err := fieldmaskpb.New(patch, path); err != nil {
-			return nil, errors.Errorf("invalid update_mask path %q", path)
-		}
-		copyMaskedField(merged.ProtoReflect(), patch.ProtoReflect(), strings.Split(path, "."))
-		if _, rest, ok := strings.Cut(path, "."); ok {
-			field, _, _ := strings.Cut(rest, ".")
-			branchFields[field] = true
+		mask.paths = append(mask.paths, strings.Join(parts, "."))
+		if len(parts) == 1 {
+			mask.wholeBranch = true
 		} else {
-			wholeBranch = true
+			mask.branchFields[parts[1]] = true
 		}
 	}
-	if ai := merged.GetAiSetting(); ai != nil && ai.Transcription == nil && (wholeBranch || branchFields["transcription"]) {
+	return mask, nil
+}
+
+func maskField(fields protoreflect.FieldDescriptors, name string) protoreflect.FieldDescriptor {
+	if field := fields.ByName(protoreflect.Name(name)); field != nil {
+		return field
+	}
+	return fields.ByJSONName(name)
+}
+
+func (m *instanceSettingMask) replacesStorage() bool {
+	return m.wholeBranch || (m.branchFields["storages"] && m.branchFields["default_storage_id"] && m.branchFields["filepath_template"])
+}
+
+func (m *instanceSettingMask) apply(current, patch *apipb.InstanceSetting) (*apipb.InstanceSetting, error) {
+	merged := proto.CloneOf(current)
+	for _, path := range m.paths {
+		copyMaskedField(merged.ProtoReflect(), patch.ProtoReflect(), strings.Split(path, "."))
+	}
+	if ai := merged.GetAiSetting(); ai != nil && ai.Transcription == nil && (m.wholeBranch || m.branchFields["transcription"]) {
 		// Without a mask an omitted transcription means "keep the stored
 		// config", and the update restores it. A masked, unset transcription
 		// is a request to clear it, so store an empty config, which disables
@@ -63,7 +86,7 @@ func applyInstanceSettingUpdateMask(key string, current, patch *apipb.InstanceSe
 		ai.Transcription = &apipb.InstanceSetting_TranscriptionConfig{}
 	}
 	if storage := merged.GetStorageSetting(); storage != nil {
-		if err := applyLegacyStorageUpdateMask(storage, branchFields); err != nil {
+		if err := applyLegacyStorageUpdateMask(storage, m.branchFields); err != nil {
 			return nil, err
 		}
 	}
@@ -80,8 +103,15 @@ func applyLegacyStorageUpdateMask(storage *apipb.InstanceSetting_StorageSetting,
 	if !legacy {
 		return nil
 	}
+	if maskedFields["storages"] && maskedFields["default_storage_id"] {
+		// GET returns legacy projections alongside the canonical registry.
+		// Recompute those projections from the registry supplied by the client.
+		storage.StorageType = apipb.InstanceSetting_StorageSetting_STORAGE_TYPE_UNSPECIFIED
+		storage.S3Config = nil
+		return nil
+	}
 	if maskedFields["storages"] || maskedFields["default_storage_id"] {
-		return errors.New("update_mask cannot combine storage_type or s3_config with storages or default_storage_id")
+		return errors.New("a storage mask with legacy fields must include both storages and default_storage_id or neither")
 	}
 	storage.Storages = nil
 	storage.DefaultStorageId = ""

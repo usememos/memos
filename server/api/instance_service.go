@@ -218,12 +218,36 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	// masked fields change; the rest come from the stored setting in the same
 	// redacted form a client reads, so credentials are preserved below.
 	setting := request.InstanceSetting
+	var expectedGeneral *storepb.InstanceGeneralSetting
 	if paths := request.GetUpdateMask().GetPaths(); len(paths) > 0 {
-		current, err := s.getInstanceSettingByName(ctx, setting.Name, &instanceSettingCaller{user: user, loaded: true})
+		mask, err := parseInstanceSettingMask(key, setting, paths)
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update mask: %v", err)
 		}
-		setting, err = applyInstanceSettingUpdateMask(key, current, setting, paths)
+		var current *apipb.InstanceSetting
+		switch {
+		case key == storepb.InstanceSettingKey_GENERAL.String():
+			stored, err := s.Store.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: key})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to read GENERAL setting: %v", err)
+			}
+			expectedGeneral = stored.GetGeneralSetting()
+			if expectedGeneral == nil {
+				expectedGeneral = &storepb.InstanceGeneralSetting{}
+			}
+			current = convertInstanceSettingFromStore(&storepb.InstanceSetting{Key: storepb.InstanceSettingKey_GENERAL,
+				Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: expectedGeneral}})
+		case key == storepb.InstanceSettingKey_STORAGE.String() && mask.replacesStorage():
+			// A complete replacement needs no merge base. Credential preservation
+			// and recovery from a corrupt old storage setting run below.
+			current = &apipb.InstanceSetting{Name: setting.Name}
+		default:
+			current, err = s.getInstanceSettingByName(ctx, setting.Name, &instanceSettingCaller{user: user, loaded: true})
+			if err != nil {
+				return nil, err
+			}
+		}
+		setting, err = mask.apply(current, setting)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update mask: %v", err)
 		}
@@ -287,11 +311,14 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 
 	var instanceSetting *storepb.InstanceSetting
 	if updateSetting.Key == storepb.InstanceSettingKey_GENERAL {
-		instanceSetting, err = s.Store.UpsertInstanceGeneralSettingSafely(ctx, updateSetting)
+		instanceSetting, err = s.Store.UpdateInstanceGeneralSettingIfUnchanged(ctx, updateSetting, expectedGeneral)
 	} else {
 		instanceSetting, err = s.Store.UpsertInstanceSetting(ctx, updateSetting)
 	}
 	if err != nil {
+		if errors.Is(err, store.ErrInstanceSettingChanged) {
+			return nil, status.Error(codes.Aborted, err.Error())
+		}
 		if errors.Is(err, store.ErrUnsafeAuthenticationConfiguration) {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}

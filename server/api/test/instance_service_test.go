@@ -2,6 +2,8 @@ package test
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -1166,6 +1168,23 @@ func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
 	require.NoError(t, update([]*apipb.InstanceSetting_Storage{local, archive}, "local"))
 }
 
+func settingREST(t *testing.T, ts *TestService, ctx context.Context, method, path, body string, wantStatus int) *apipb.InstanceSetting {
+	t.Helper()
+	mux := runtime.NewServeMux()
+	require.NoError(t, apipb.RegisterInstanceServiceHandlerServer(ctx, mux, ts.Service))
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequestWithContext(ctx, method, "/api/instance/settings/"+path, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	mux.ServeHTTP(rec, req)
+	require.Equal(t, wantStatus, rec.Code, rec.Body.String())
+	if wantStatus != http.StatusOK {
+		return nil
+	}
+	result := &apipb.InstanceSetting{}
+	require.NoError(t, protojson.Unmarshal(rec.Body.Bytes(), result))
+	return result
+}
+
 func TestUpdateInstanceSettingUpdateMask(t *testing.T) {
 	ctx := context.Background()
 
@@ -1249,6 +1268,34 @@ func TestUpdateInstanceSettingUpdateMask(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, int32(6), resp.GetGeneralSetting().GetWeekStartDayOffset())
 		require.Equal(t, "body { color: red; }", resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("a masked update reads the latest GENERAL across stores", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+		other := store.New(ts.Store.GetDriver(), ts.Profile)
+		_, err := other.UpsertInstanceGeneralSettingSafely(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{
+				AdditionalStyle: "written on another replica",
+			}},
+		})
+		require.NoError(t, err)
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: general(&apipb.InstanceSetting_GeneralSetting{WeekStartDayOffset: 6}),
+			UpdateMask:      &fieldmaskpb.FieldMask{Paths: []string{"week_start_day_offset"}},
+		})
+		require.NoError(t, err)
+		require.Equal(t, "written on another replica", resp.GetGeneralSetting().GetAdditionalStyle())
+	})
+
+	t.Run("REST accepts a nested JSON field name in an explicit mask", func(t *testing.T) {
+		ts, adminCtx := setup(t)
+		seedGeneral(t, ts, adminCtx)
+		resp := settingREST(t, ts, adminCtx, http.MethodPatch, "GENERAL?updateMask=generalSetting.customProfile.title",
+			`{"generalSetting":{"customProfile":{"title":"Renamed","description":"ignored"}}}`, http.StatusOK)
+		require.Equal(t, "Renamed", resp.GetGeneralSetting().GetCustomProfile().GetTitle())
+		require.Equal(t, "Kept", resp.GetGeneralSetting().GetCustomProfile().GetDescription())
 	})
 
 	t.Run("a REST PATCH body keeps unsent fields", func(t *testing.T) {
@@ -1464,7 +1511,37 @@ func TestUpdateInstanceSettingUpdateMaskStorage(t *testing.T) {
 		require.Equal(t, secret, s3Storage(t, stored, "memos").GetS3Config().GetAccessKeySecret())
 	})
 
-	t.Run("legacy and current fields together are rejected", func(t *testing.T) {
+	t.Run("REST accepts a GET response with an edited template", func(t *testing.T) {
+		ts, adminCtx, archiveID := setup(t)
+		update(t, ts, adminCtx, &apipb.InstanceSetting_StorageSetting{DefaultStorageId: archiveID}, "default_storage_id")
+		setting := settingREST(t, ts, adminCtx, http.MethodGet, "STORAGE", "", http.StatusOK)
+		setting.GetStorageSetting().FilepathTemplate = "files/{filename}"
+		body, err := protojson.Marshal(setting)
+		require.NoError(t, err)
+		saved := settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", string(body), http.StatusOK)
+		require.Equal(t, archiveID, saved.GetStorageSetting().GetDefaultStorageId())
+		require.Equal(t, "files/{filename}", saved.GetStorageSetting().GetFilepathTemplate())
+		stored, err := ts.Store.GetInstanceStorageSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, secret, s3Storage(t, stored, "memos").GetS3Config().GetAccessKeySecret())
+	})
+
+	t.Run("only a complete REST replacement can repair corrupt storage", func(t *testing.T) {
+		ts := NewTestService(t)
+		t.Cleanup(ts.Cleanup)
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		_, err = ts.Store.GetDriver().UpsertInstanceSetting(ctx, &store.InstanceSetting{Name: "STORAGE", Value: "{"})
+		require.NoError(t, err)
+		settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", `{"storageSetting":{"filepathTemplate":"files/{filename}"}}`, http.StatusInternalServerError)
+		body := `{"storageSetting":{"storages":[{"id":"local","type":"LOCAL"}],"defaultStorageId":"local","filepathTemplate":"files/{filename}"}}`
+		repaired := settingREST(t, ts, adminCtx, http.MethodPatch, "STORAGE", body, http.StatusOK)
+		require.Equal(t, "local", repaired.GetStorageSetting().GetDefaultStorageId())
+		require.Equal(t, "files/{filename}", repaired.GetStorageSetting().GetFilepathTemplate())
+	})
+
+	t.Run("legacy fields mixed with only the default ID are rejected", func(t *testing.T) {
 		ts, adminCtx, archiveID := setup(t)
 		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
 			InstanceSetting: &apipb.InstanceSetting{
