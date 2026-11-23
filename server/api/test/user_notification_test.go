@@ -547,7 +547,7 @@ func TestListUserNotificationsIncludesMemoMentionPayload(t *testing.T) {
 	require.Equal(t, memo.Name, resp.Notifications[0].GetMemoMention().Memo)
 	require.Empty(t, resp.Notifications[0].GetMemoMention().RelatedMemo)
 	require.Equal(t, author.Username, resp.Notifications[0].SenderUser.Username)
-	require.Equal(t, "Hello", resp.Notifications[0].GetMemoMention().MemoSnippet)
+	require.Equal(t, fmt.Sprintf("Hello @%s", target.Username), resp.Notifications[0].GetMemoMention().MemoSnippet)
 }
 
 func TestCreateCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T) {
