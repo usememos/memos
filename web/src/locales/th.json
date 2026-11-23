@@ -1280,6 +1280,7 @@
     "place-placeholder": "เลือกตำแหน่งก่อน"
   },
   "calendar": {
+    "more-memos": "อีก {{count}} รายการ",
     "new-memo-on-day": "บันทึกช่วยจำใหม่ในวันนี้",
     "next-year": "ปีหน้า",
     "no-memos-in-month": "ไม่มีบันทึกช่วยจำใน {{month}}",

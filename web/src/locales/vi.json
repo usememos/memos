@@ -1280,6 +1280,7 @@
     "place-placeholder": "Hãy chọn một vị trí trước."
   },
   "calendar": {
+    "more-memos": "{{count}} mục nữa",
     "new-memo-on-day": "Ghi chú mới trong ngày này",
     "next-year": "Năm tới",
     "no-memos-in-month": "Không có ghi chú nào trong {{month}}",

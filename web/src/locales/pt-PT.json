@@ -1300,6 +1300,7 @@
     "place-placeholder": "Escolha primeiro uma posição."
   },
   "calendar": {
+    "more-memos": "mais {{count}}",
     "new-memo-on-day": "Novo memorando neste dia",
     "next-year": "Próximo ano",
     "no-memos-in-month": "Nenhum memorando em {{month}}",

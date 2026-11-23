@@ -1299,6 +1299,7 @@
     "place-placeholder": "Първо изберете позиция."
   },
   "calendar": {
+    "more-memos": "още {{count}}",
     "new-memo-on-day": "Нова бележка на този ден",
     "next-year": "Следващата година",
     "no-memos-in-month": "Няма бележки в {{month}}",

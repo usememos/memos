@@ -1299,6 +1299,7 @@
     "place-placeholder": "Valitse ensin sijainti."
   },
   "calendar": {
+    "more-memos": "+{{count}} lisää",
     "new-memo-on-day": "Uusi muistio tänä päivänä",
     "next-year": "Ensi vuonna",
     "no-memos-in-month": "Ei muistioita {{month}}",

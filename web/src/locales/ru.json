@@ -1287,6 +1287,7 @@
     "place-placeholder": "Сначала выберите точку."
   },
   "calendar": {
+    "more-memos": "ещё {{count}}",
     "new-memo-on-day": "Новая заметка в этот день",
     "next-year": "В следующем году",
     "no-memos-in-month": "Нет заметок в {{month}}",

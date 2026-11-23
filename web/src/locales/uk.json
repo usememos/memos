@@ -1301,6 +1301,7 @@
     "place-placeholder": "Спочатку виберіть точку."
   },
   "calendar": {
+    "more-memos": "ще {{count}}",
     "new-memo-on-day": "Нова нотатка цього дня",
     "next-year": "Наступного року",
     "no-memos-in-month": "Немає нотаток у {{month}}",

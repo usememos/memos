@@ -1302,6 +1302,7 @@
     "place-placeholder": "Nejprve vyberte polohu."
   },
   "calendar": {
+    "more-memos": "+{{count}} další",
     "new-memo-on-day": "Nová poznámka z tohoto dne",
     "next-year": "Příští rok",
     "no-memos-in-month": "Žádné poznámky v {{month}}",

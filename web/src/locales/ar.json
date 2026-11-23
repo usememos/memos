@@ -1284,6 +1284,7 @@
     "place-placeholder": "اختر موضعًا أولًا."
   },
   "calendar": {
+    "more-memos": "+{{count}} أخرى",
     "new-memo-on-day": "مذكرة جديدة في هذا اليوم",
     "next-year": "العام القادم",
     "no-memos-in-month": "لا توجد مذكرات في {{month}}",

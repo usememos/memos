@@ -109,6 +109,7 @@
     "signups-closed-description": "Nye kontoar er ikkje tillatne på denne instansen. Ta kontakt med administratoren din dersom du treng åtgang."
   },
   "calendar": {
+    "more-memos": "+{{count}} til",
     "new-memo-on-day": "Nytt notat på denne dagen",
     "next-year": "Neste år",
     "no-memos-in-month": "Ingen notat i {{month}}",

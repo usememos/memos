@@ -66,6 +66,7 @@
     "signups-closed-description": "Bu sunucuda yeni kayıtlar kapalı. Erişime ihtiyacın varsa yöneticinle iletişime geç."
   },
   "calendar": {
+    "more-memos": "+{{count}} daha",
     "new-memo-on-day": "Bu güne yeni not ekle",
     "next-year": "Sonraki yıl",
     "no-memos-in-month": "{{month}} ayında hiç not yok",

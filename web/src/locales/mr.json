@@ -1280,6 +1280,7 @@
     "place-placeholder": "आधी एक ठिकाण निवडा."
   },
   "calendar": {
+    "more-memos": "आणखी {{count}}",
     "new-memo-on-day": "आजच्या दिवशी नवीन मेमो",
     "next-year": "पुढील वर्षी",
     "no-memos-in-month": "{{month}} मध्ये कोणतेही मेमो नाहीत",

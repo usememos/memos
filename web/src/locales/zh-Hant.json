@@ -43,6 +43,7 @@
     "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。"
   },
   "calendar": {
+    "more-memos": "還有 {{count}} 則",
     "new-memo-on-day": "在這一天新增備忘錄",
     "next-year": "下一年",
     "no-memos-in-month": "{{month}} 沒有備忘錄",
