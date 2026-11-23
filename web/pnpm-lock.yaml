@@ -45,8 +45,8 @@ importers:
         specifier: 26.11.6
         version: 26.11.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@usememos/ui':
-        specifier: 26.11.25
-        version: 26.11.25(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.11.26
+        version: 26.11.26(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -981,8 +981,8 @@ packages:
       react-dom:
         optional: true
 
-  '@usememos/ui@26.11.25':
-    resolution: {integrity: sha512-kD0v47wcZVRrOdDHvTN5EanGiOi7Vlo9i+TcjVirFBA4whUgPt14H38r9Q0cXCThngVwfWoYfeDWiMqg4PpkSA==}
+  '@usememos/ui@26.11.26':
+    resolution: {integrity: sha512-Ah3SA179h0Pnm25LhzqTHwz1U4JOxUufX1teWC4bpdmKnVzMy2DlVsMdP/vAumrTnqcPvmTbq2k4daThFeSdWw==}
     peerDependencies:
       '@base-ui/react': 1.9.0
       lucide-react: '>=1.0.0'
@@ -2414,7 +2414,7 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@usememos/ui@26.11.25(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/ui@26.11.26(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       lucide-react: 1.34.0(react@19.2.6)
