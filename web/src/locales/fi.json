@@ -1079,7 +1079,8 @@
       "tag-already-exists": "Tunniste on jo olemassa.",
       "tag-pattern-hint": "Tunnisteen nimi tai säännöllinen lausekemalli (esim. projekti/.* vastaa kaikkia projekteja/tageja)",
       "invalid-regex": "Virheellinen tai vaarallinen regex-malli.",
-      "used-count": "{{count}} muistiot"
+      "used-count_one": "{{count}} muistiot",
+      "used-count_other": "{{count}} muistiot"
     },
     "resource-stats": {
       "label": "Resurssit",

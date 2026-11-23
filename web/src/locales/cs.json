@@ -966,7 +966,10 @@
       "configured-rules": "Nastavená pravidla",
       "default-color": "Výchozí",
       "matching-rule": "Ukotvený regulární výraz",
-      "used-count": "poznámky {{count}}"
+      "used-count_one": "poznámky {{count}}",
+      "used-count_few": "poznámky {{count}}",
+      "used-count_many": "poznámky {{count}}",
+      "used-count_other": "poznámky {{count}}"
     },
     "ai": {
       "add-provider": "Přidat poskytovatele",

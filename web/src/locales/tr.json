@@ -1132,7 +1132,8 @@
       "configured-rules": "Tanımlı kurallar",
       "default-color": "Varsayılan",
       "matching-rule": "Tam eşleşen regex",
-      "used-count": "{{count}} not"
+      "used-count_one": "{{count}} not",
+      "used-count_other": "{{count}} not"
     },
     "ai": {
       "add-provider": "Sağlayıcı ekle",

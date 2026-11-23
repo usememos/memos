@@ -963,7 +963,8 @@
       "configured-rules": "Konfigurierte Regeln",
       "default-color": "Standard",
       "matching-rule": "Verankerter regulärer Ausdruck",
-      "used-count": "{{count}}-Memos"
+      "used-count_one": "{{count}}-Memos",
+      "used-count_other": "{{count}}-Memos"
     },
     "ai": {
       "add-provider": "Anbieter hinzufügen",

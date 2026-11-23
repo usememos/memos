@@ -963,7 +963,8 @@
       "configured-rules": "Konfigurált szabályok",
       "default-color": "Alapértelmezett",
       "matching-rule": "Horgonyzott regex",
-      "used-count": "{{count}} feljegyzések"
+      "used-count_one": "{{count}} feljegyzések",
+      "used-count_other": "{{count}} feljegyzések"
     },
     "ai": {
       "add-provider": "Szolgáltató hozzáadása",

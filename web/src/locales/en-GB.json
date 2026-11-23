@@ -963,7 +963,8 @@
       "configured-rules": "Configured rules",
       "default-color": "Default",
       "matching-rule": "Anchored regex",
-      "used-count": "{{count}} memos"
+      "used-count_one": "{{count}} memo",
+      "used-count_other": "{{count}} memos"
     },
     "ai": {
       "add-provider": "Add provider",

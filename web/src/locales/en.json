@@ -1281,7 +1281,8 @@
       "tag-already-exists": "Tag already exists.",
       "tag-pattern-hint": "Tag name or regex pattern (e.g. project/.* matches all project/ tags)",
       "invalid-regex": "Invalid or unsafe regex pattern.",
-      "used-count": "{{count}} memos"
+      "used-count_one": "{{count}} memo",
+      "used-count_other": "{{count}} memos"
     },
     "resource-stats": {
       "label": "Resources",

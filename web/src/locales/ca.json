@@ -964,7 +964,9 @@
       "configured-rules": "Regles configurades",
       "default-color": "Per defecte",
       "matching-rule": "Expressió regular ancorada",
-      "used-count": "Memòries {{count}}"
+      "used-count_one": "Memòries {{count}}",
+      "used-count_many": "Memòries {{count}}",
+      "used-count_other": "Memòries {{count}}"
     },
     "ai": {
       "add-provider": "Afegeix un proveïdor",

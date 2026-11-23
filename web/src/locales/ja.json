@@ -963,7 +963,7 @@
       "configured-rules": "設定されたルール",
       "default-color": "デフォルト",
       "matching-rule": "アンカー付き正規表現",
-      "used-count": "{{count}}メモ"
+      "used-count_other": "{{count}}メモ"
     },
     "ai": {
       "add-provider": "プロバイダーの追加",

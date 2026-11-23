@@ -1112,7 +1112,9 @@
       "tag-already-exists": "התגית כבר קיימת.",
       "tag-pattern-hint": "שם תגית או דפוס ביטוי רגולרי (לדוגמה, project/.* תואם לכל תגיות project/)",
       "invalid-regex": "דפוס הביטוי הרגולרי אינו תקין או אינו בטוח.",
-      "used-count": "{{count}} פתקים"
+      "used-count_one": "{{count}} פתקים",
+      "used-count_two": "{{count}} פתקים",
+      "used-count_other": "{{count}} פתקים"
     },
     "resource-stats": {
       "label": "משאבים",

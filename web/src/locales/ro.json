@@ -1080,7 +1080,9 @@
       "tag-already-exists": "Eticheta există deja.",
       "tag-pattern-hint": "Numele etichetei sau modelul regex (de exemplu, proiect/.* se potrivește cu toate etichetele/proiectul)",
       "invalid-regex": "Model regex nevalid sau nesigur.",
-      "used-count": "note {{count}}"
+      "used-count_one": "note {{count}}",
+      "used-count_few": "note {{count}}",
+      "used-count_other": "note {{count}}"
     },
     "resource-stats": {
       "label": "Resurse",

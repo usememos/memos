@@ -958,7 +958,8 @@
       "configured-rules": "قوانین پیکربندی شده",
       "default-color": "پیش‌فرض",
       "matching-rule": "عبارت منظم لنگر انداخته شده",
-      "used-count": "{{count}} یادداشت"
+      "used-count_one": "{{count}} یادداشت",
+      "used-count_other": "{{count}} یادداشت"
     },
     "ai": {
       "endpoint": "نقطه پایانی",

@@ -1079,7 +1079,8 @@
       "tag-already-exists": "Η ετικέτα υπάρχει ήδη.",
       "tag-pattern-hint": "Όνομα ετικέτας ή μοτίβο regex (π.χ. έργο/.* αντιστοιχεί σε όλα τα έργα/ετικέτες)",
       "invalid-regex": "Μη έγκυρο ή μη ασφαλές regex μοτίβο.",
-      "used-count": "{{count}} σημειώματα"
+      "used-count_one": "{{count}} σημειώματα",
+      "used-count_other": "{{count}} σημειώματα"
     },
     "resource-stats": {
       "label": "Πόροι",

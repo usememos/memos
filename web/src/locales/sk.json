@@ -1081,7 +1081,10 @@
       "tag-already-exists": "Značka už existuje.",
       "tag-pattern-hint": "Názov značky alebo vzor regulárneho výrazu (napr. projekt/.* zodpovedá všetkým projektom/značkám)",
       "invalid-regex": "Neplatný alebo nebezpečný vzor regulárneho výrazu.",
-      "used-count": "poznámky {{count}}"
+      "used-count_one": "poznámky {{count}}",
+      "used-count_few": "poznámky {{count}}",
+      "used-count_many": "poznámky {{count}}",
+      "used-count_other": "poznámky {{count}}"
     },
     "resource-stats": {
       "label": "Zdroje",

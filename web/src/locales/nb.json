@@ -963,7 +963,8 @@
       "configured-rules": "Konfigurerte regler",
       "default-color": "Misligholde",
       "matching-rule": "Forankret regex",
-      "used-count": "{{count}}-memoer"
+      "used-count_one": "{{count}}-memoer",
+      "used-count_other": "{{count}}-memoer"
     },
     "ai": {
       "add-provider": "Legg til leverandør",

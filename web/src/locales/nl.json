@@ -963,7 +963,8 @@
       "configured-rules": "Geconfigureerde regels",
       "default-color": "Standaard",
       "matching-rule": "Verankerde regex",
-      "used-count": "{{count}}-memo's"
+      "used-count_one": "{{count}}-memo's",
+      "used-count_other": "{{count}}-memo's"
     },
     "ai": {
       "add-provider": "Aanbieder toevoegen",

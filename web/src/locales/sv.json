@@ -963,7 +963,8 @@
       "configured-rules": "Konfigurerade regler",
       "default-color": "Standard",
       "matching-rule": "Förankrat regex",
-      "used-count": "{{count}}-memon"
+      "used-count_one": "{{count}}-memon",
+      "used-count_other": "{{count}}-memon"
     },
     "ai": {
       "add-provider": "Lägg till leverantör",

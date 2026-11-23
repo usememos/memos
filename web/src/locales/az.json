@@ -1281,7 +1281,8 @@
       "tag-already-exists": "Etiket artıq mövcuddur.",
       "tag-pattern-hint": "Etiket adı və ya regex şablonu (məs. project/.* bütün project/ etiketlərinə uyğun gəlir)",
       "invalid-regex": "Yanlış və ya təhlükəsiz olmayan regex şablonu.",
-      "used-count": "{{count}} qeyd"
+      "used-count_one": "{{count}} qeyd",
+      "used-count_other": "{{count}} qeyd"
     },
     "resource-stats": {
       "label": "Resurslar",

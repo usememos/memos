@@ -964,7 +964,9 @@
       "configured-rules": "Reglas configuradas",
       "default-color": "Por defecto",
       "matching-rule": "expresión regular anclada",
-      "used-count": "notas {{count}}"
+      "used-count_one": "notas {{count}}",
+      "used-count_many": "notas {{count}}",
+      "used-count_other": "notas {{count}}"
     },
     "ai": {
       "add-provider": "Agregar proveedor",

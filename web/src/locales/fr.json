@@ -964,7 +964,9 @@
       "configured-rules": "Règles configurées",
       "default-color": "Défaut",
       "matching-rule": "Regex ancrée",
-      "used-count": "Mémos {{count}}"
+      "used-count_one": "Mémos {{count}}",
+      "used-count_many": "Mémos {{count}}",
+      "used-count_other": "Mémos {{count}}"
     },
     "ai": {
       "add-provider": "Ajouter un fournisseur",

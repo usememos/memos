@@ -964,7 +964,9 @@
       "configured-rules": "Regras configuradas",
       "default-color": "Padrão",
       "matching-rule": "Regex ancorado",
-      "used-count": "Memorandos {{count}}"
+      "used-count_one": "Memorandos {{count}}",
+      "used-count_many": "Memorandos {{count}}",
+      "used-count_other": "Memorandos {{count}}"
     },
     "ai": {
       "add-provider": "Adicionar provedor",
