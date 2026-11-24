@@ -24,9 +24,10 @@ Memos is a self-hosted note-taking app.
 ## Documentation
 
 - ADRs and their companion glossary have been retired. Do not recreate them unless explicitly requested.
-- Design documents in `docs/design/` stay editable until the feature ships in a tagged release; keep a merged-but-unreleased design in step
-  with its implementation. After release the body is frozen: record later design changes in a dated `## Amendments` section at the end, never by
-  rewriting the body. See `docs/design/README.md`. Verify current behavior in source code and tests, not in design documents.
+- Keep designs in `docs/design/` aligned with the implementation until release. Record the first stable tag as
+  `Status: Implemented in <tag>` and freeze the body. Append later decisions and their rationale under `## Amendments`.
+  Date each entry and label it with the first stable tag that includes it, or `Unreleased` until it ships.
+  Verify current behavior in source code and tests.
 - Brand copy (tagline, descriptions, README intro) comes verbatim from [`BRAND.md`](https://github.com/usememos/.github/blob/main/BRAND.md) in `usememos/.github`. Change it there first; do not keep brand guidelines in this repo.
 - Keep contributor guidance in this file and package-local `README.md` or `doc.go` files current when relevant code changes.
 

@@ -1790,7 +1790,7 @@ type InstanceSetting_TranscriptionConfig struct {
 	// Empty means transcription is disabled.
 	ProviderId string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
 	// The provider-specific model identifier. Hidden from non-admins.
-	// Empty falls back to the engine default (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+	// Empty selects gpt-transcribe on OpenAI, whisper-1 on custom OpenAI-compatible endpoints, or gemini-2.5-flash on Gemini.
 	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	// The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
 	// Empty lets the provider auto-detect.

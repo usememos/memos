@@ -1,6 +1,6 @@
 # User Usage Limits Design
 
-Status: Implemented
+Status: Implemented in 26.10.0
 
 Date: 2026-10-11, revised 2026-10-14
 
@@ -128,7 +128,7 @@ Migration `26.10/00` adds an index on `attachment.creator_id` on every driver, a
 
 ## Amendments
 
-### 2026-11-21: comments are created by `CreateMemo`
+### 2026-11-21 (26.11.2) — comments are created by `CreateMemo`
 
 `CreateMemoComment` is removed; a comment is a memo created by `CreateMemo` with `memo.parent` set. `memo_count` and `memo_content_bytes`
 are enforced there for comments, unchanged.

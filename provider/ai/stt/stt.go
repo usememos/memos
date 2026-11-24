@@ -20,15 +20,15 @@ type Request struct {
 	Size        int64
 	Filename    string
 	ContentType string // IANA media type, e.g. "audio/wav"
-	Model       string // provider-specific model id (e.g. "whisper-1", "gpt-4o-transcribe")
-	Prompt      string // soft spelling/vocabulary hint (Whisper "prompt" parameter)
+	Model       string // provider-specific model identifier
+	Prompt      string // context and spelling hints for the recording
 	Language    string // ISO 639-1, optional
 }
 
 // Response is the output of a transcription call.
 type Response struct {
 	Text     string
-	Language string    // empty if provider did not return it
+	Language string    // empty if the provider did not identify a single language
 	Segments []Segment // empty unless provider returned timestamps
 }
 

@@ -178,7 +178,7 @@ describe("locale resources", () => {
       for (const key of ["transcription-model-placeholder-openai", "transcription-model-placeholder-gemini"]) {
         expect(messages[`setting.ai.${key}`]).toBe(source[`setting.ai.${key}`]);
       }
-      for (const model of ["whisper-1", "gpt-4o-transcribe", "whisper-large-v3-turbo"]) {
+      for (const model of ["gpt-transcribe", "whisper-large-v3-turbo"]) {
         expect(messages["setting.ai.transcription-model-help"]).toContain(model);
       }
     });

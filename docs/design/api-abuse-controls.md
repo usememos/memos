@@ -1,6 +1,6 @@
 # API Abuse Controls Design
 
-Status: Implemented
+Status: Implemented in v0.31.0
 
 Date: 2026-09-12
 

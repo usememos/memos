@@ -1,6 +1,6 @@
 # Multi-Spaces Design
 
-Status: Implemented
+Status: Implemented in v0.31.0
 
 Date: 2026-08-23
 
@@ -226,7 +226,7 @@ Email and external-user invitations, invitation expiration, inviter attribution,
 
 ## Amendments
 
-### 2026-11-21: a comment is a memo with a parent
+### 2026-11-21 (26.11.2) — a comment is a memo with a parent
 
 The comment's link to its context memo stays one immutable `COMMENT` row in `memo_relation`, and a comment remains an independent memo
 with its own author, audience, placement, and lifecycle. Three things in the body above no longer describe the product:
@@ -244,7 +244,7 @@ with its own author, audience, placement, and lifecycle. Three things in the bod
 
 The change was made so that text search and tag filters can reach comments (usememos/memos#6354) without a comment-specific list flag.
 
-### 2026-11-23: a Space has one timeline, and what is written there starts shared
+### 2026-11-23 (Unreleased) — a Space has one timeline, and what is written there starts shared
 
 The API and the read policy are unchanged. Two defaults in the web client made a shared Space look empty to its members
 (usememos/memos#6431), and both are now the other way round:
@@ -260,7 +260,7 @@ The API and the read policy are unchanged. Two defaults in the web client made a
   allowed. These are starting values only: the author can still choose any audience, placement and audience stay independent as the
   core model says, and editing or moving an existing memo does not change its audience.
 
-### 2026-11-24: the sidebar title lists places, and the account sits in the footer
+### 2026-11-24 (Unreleased) — the sidebar title lists places, and the account sits in the footer
 
 With one timeline per Space, the title's menu lost Home and Explore inside a Space and looked like a different menu there. The menu
 and the account are now two things in two places:

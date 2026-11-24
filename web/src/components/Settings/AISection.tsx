@@ -104,14 +104,10 @@ const AISection = () => {
   const transcriptionLocked = isFieldManaged(managed, "aiSetting.transcription");
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { aiSetting: originalSetting } = useInstance();
-  const [providers, setProviders] = useState<LocalAIProvider[]>(() => originalSetting.providers.map(toLocalProvider));
+  const providers = useMemo(() => originalSetting.providers.map(toLocalProvider), [originalSetting.providers]);
   const [transcription, setTranscription] = useState<LocalTranscription>(() => toLocalTranscription(originalSetting.transcription));
   const [editingProvider, setEditingProvider] = useState<LocalAIProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<LocalAIProvider | undefined>();
-
-  useEffect(() => {
-    setProviders(originalSetting.providers.map(toLocalProvider));
-  }, [originalSetting.providers]);
 
   // Only re-sync the transcription draft when the server-side content actually
   // changes — not on every originalSetting identity change. This prevents
@@ -178,7 +174,6 @@ const AISection = () => {
 
     const ok = await persistAISetting(nextProviders, originalSetting.transcription, "Update AI provider");
     if (!ok) return;
-    setProviders(nextProviders);
     setEditingProvider(undefined);
   };
 
@@ -198,7 +193,6 @@ const AISection = () => {
 
     const ok = await persistAISetting(nextProviders, nextTranscription, "Delete AI provider");
     if (!ok) return;
-    setProviders(nextProviders);
     if (transcription.providerId === target.id) {
       setTranscription((prev) => ({ ...prev, providerId: "" }));
     }
