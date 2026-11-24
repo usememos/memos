@@ -19,10 +19,14 @@ export interface EditSessionProps {
   /** Existing memo to edit; the session starts from it and persists no draft. */
   memo?: Memo;
   parentMemoName?: string;
+  /** The parent's Space, when the commenter is given it: a comment shared with a Space is filed there. */
+  parentSpace?: string;
   /** Context-derived suggestions for a new top-level memo. */
   suggestions?: readonly MemoSuggestion[];
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
+  /** The audience a new memo or comment starts with, and returns to after each save; see `defaultVisibilityFor`. */
+  defaultVisibility?: Visibility;
   /** A callback can decide whether focus is still appropriate after draft restoration. */
   autoFocus?: boolean | (() => boolean);
   /**
@@ -84,6 +88,8 @@ export interface EditorToolbarProps {
   space?: string;
   /** Only unscoped, new top-level memos can choose a destination. */
   canChooseSpace?: boolean;
+  /** The audience the draft started with: a new memo placed in a Space leaves it for the Space's members, and returns to it. */
+  defaultVisibility?: Visibility;
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
   sourceMode: EditorSourceModeToggle;

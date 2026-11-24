@@ -90,7 +90,6 @@
     "attachments": "Liitteet",
     "avatar": "Avatar",
     "basic": "Perus",
-    "browse": "Selaa",
     "calendar": "Kalenteri",
     "cancel": "Peruuttaa",
     "clear": "Selkeä",
@@ -485,7 +484,6 @@
     "parent-unavailable": "Ylämuistio ei ole käytettävissä",
     "parent-unavailable-description": "Se on ehkä poistettu tai sinulla ei ehkä enää ole siihen pääsyä.",
     "moved": "Muistio siirretty",
-    "back-to": "Takaisin kohtaan {{source}}",
     "connections": "Yhteydet",
     "grid-compact-hint": "Kutista pidemmät muistiot. Aina käytössä ruudukkoasetteluissa.",
     "layout": "Asettelu",
@@ -1308,7 +1306,6 @@
     "select-month": "Valitse kuukausi"
   },
   "space": {
-    "all-spaces": "Kaikki tilat",
     "icon": {
       "change": "Vaihda tilan kuvaketta",
       "kind": "Kuvakkeen tyyppi",

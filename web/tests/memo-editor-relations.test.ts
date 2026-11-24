@@ -8,6 +8,7 @@ import {
   MemoRelation_Type,
   MemoRelationSchema,
   MemoSchema,
+  Visibility,
 } from "@/types/proto/api/memo_service_pb";
 import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
@@ -87,6 +88,18 @@ describe("memo editor relation updates", () => {
     expect(request.memo.parent).toBe("memos/parent");
     expect(request.memo.content).toBe("Reply");
     expect(request.memo.space).toBeUndefined();
+  });
+
+  it("files a comment in its parent's Space only when it takes the Space audience", async () => {
+    const state = createInitialState();
+    state.content = "Reply";
+    const comment = { parentMemoName: "memos/parent", parentSpace: "spaces/product" };
+
+    await memoService.save({ ...state, metadata: { ...state.metadata, visibility: Visibility.SPACE } }, comment, ops);
+    expect(clients.createMemo.mock.calls[0][0].memo).toMatchObject({ visibility: Visibility.SPACE, space: "spaces/product" });
+
+    await memoService.save({ ...state, metadata: { ...state.metadata, visibility: Visibility.PRIVATE } }, comment, ops);
+    expect(clients.createMemo.mock.calls[1][0].memo.space).toBeUndefined();
   });
 
   it("sends only its own references when editing a comment", async () => {

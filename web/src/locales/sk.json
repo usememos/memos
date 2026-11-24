@@ -90,7 +90,6 @@
     "attachments": "Prílohy",
     "avatar": "Avatar",
     "basic": "Základné",
-    "browse": "Prehliadať",
     "calendar": "Kalendár",
     "cancel": "Zrušiť",
     "clear": "Jasné",
@@ -487,7 +486,6 @@
     "parent-unavailable": "Nadradená poznámka nie je k dispozícii",
     "parent-unavailable-description": "Možno bola odstránená alebo k nej už nemáte prístup.",
     "moved": "Poznámka presunutá",
-    "back-to": "Späť na {{source}}",
     "connections": "Pripojenia",
     "grid-compact-hint": "Zbaliť dlhšie poznámky. Pri rozložení do mriežky je vždy zapnuté.",
     "layout": "Rozloženie",
@@ -1310,7 +1308,6 @@
     "select-month": "Vyberte mesiac"
   },
   "space": {
-    "all-spaces": "Všetky priestory",
     "icon": {
       "change": "Zmeniť ikonu priestoru",
       "kind": "Typ ikony",

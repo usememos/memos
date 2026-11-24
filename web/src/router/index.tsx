@@ -138,8 +138,8 @@ export const routeConfig: RouteObject[] = [
                           {
                             element: <MainLayout />,
                             children: [
-                              { index: true, element: <HomeRoute /> },
-                              { path: "explore", element: <ExploreRoute /> },
+                              // A Space has one timeline, every member's memos: no personal Home, no Explore page.
+                              { index: true, element: <ExploreRoute /> },
                               { path: "calendar/:year?/:month?/:day?", element: <Calendar /> },
                             ],
                           },

@@ -52,7 +52,6 @@
     "attachments": "Allegati",
     "avatar": "Avatar",
     "basic": "Base",
-    "browse": "Sfoglia",
     "calendar": "Calendario",
     "cancel": "Annulla",
     "clear": "Pulisci",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Memo principale non disponibile",
     "parent-unavailable-description": "Potrebbe essere stato eliminato o potresti non avere più accesso.",
     "moved": "Memo spostato",
-    "back-to": "Torna a {{source}}",
     "connections": "Connessioni",
     "grid-compact-hint": "Comprimi i memo lunghi. Sempre attivo nei layout a griglia.",
     "layout": "Layout",
@@ -1309,7 +1307,6 @@
     "select-month": "Seleziona il mese"
   },
   "space": {
-    "all-spaces": "Tutti gli spazi",
     "icon": {
       "change": "Cambia icona dello spazio",
       "kind": "Tipo di icona",

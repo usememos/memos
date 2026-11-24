@@ -124,7 +124,6 @@
     "attachments": "קבצים מצורפים",
     "avatar": "תמונת פרופיל",
     "basic": "בסיסי",
-    "browse": "עיון",
     "calendar": "לוח שנה",
     "cancel": "ביטול",
     "clear": "נקה",
@@ -527,7 +526,6 @@
     "parent-unavailable": "תזכיר האב אינו זמין",
     "parent-unavailable-description": "ייתכן שהוא נמחק או שאין לך עוד גישה.",
     "moved": "התזכיר הועבר",
-    "back-to": "חזרה אל {{source}}",
     "connections": "חיבורים",
     "on-this-memo": "על תזכיר זה",
     "parent-memo": "תזכיר אב",
@@ -1308,7 +1306,6 @@
     "select-month": "בחר חודש"
   },
   "space": {
-    "all-spaces": "כל המרחבים",
     "icon": {
       "change": "שינוי סמל המרחב",
       "kind": "סוג סמל",

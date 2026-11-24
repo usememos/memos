@@ -9,7 +9,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
-import { getCollectionCreator, withCollectionCreator } from "@/router/routes";
+import { getCollectionCreator, resolveCollectionRoute, withCollectionCreator } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
 
@@ -69,7 +69,8 @@ export const resolveQuickFindSubmission = (
 const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => {
   const routeKind = getSidebarRouteKind(pathname);
   if (routeKind === "archived") return t("common.archived");
-  if (routeKind === "explore") return t("common.explore");
+  // A Space's timeline shares Explore's scope but is not the Explore page.
+  if (routeKind === "explore" && !resolveCollectionRoute(pathname).spaceName) return t("common.explore");
   return t("common.memos");
 };
 

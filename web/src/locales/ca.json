@@ -52,7 +52,6 @@
     "attachments": "Adjunts",
     "avatar": "Avatar",
     "basic": "Bàsic",
-    "browse": "Navega",
     "calendar": "Calendari",
     "cancel": "Cancel·lar",
     "clear": "Netejar",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Nota principal no disponible",
     "parent-unavailable-description": "Potser s'ha suprimit o ja no hi tens accés.",
     "moved": "Nota moguda",
-    "back-to": "Torna a {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Redueix els memos llargs. Sempre activat en dissenys de quadrícula.",
     "layout": "Disseny",
@@ -1309,7 +1307,6 @@
     "select-month": "Selecciona el mes"
   },
   "space": {
-    "all-spaces": "Tots els espais",
     "icon": {
       "change": "Canvia la icona de l'espai",
       "kind": "Tipus d'icona",

@@ -35,14 +35,7 @@ const settings = () => JSON.parse(screen.getByRole("status").textContent ?? "{}"
 describe("Timeline display settings scope", () => {
   beforeEach(() => localStorage.setItem(storageKey, JSON.stringify(saved)));
 
-  it.each([
-    "/",
-    "/explore",
-    "/?creator=alice",
-    "/spaces/test",
-    "/spaces/test/explore",
-    "/Spaces/test/Explore/",
-  ])("applies saved preferences to %s", (path) => {
+  it.each(["/", "/explore", "/?creator=alice", "/spaces/test", "/Spaces/test/"])("applies saved preferences to %s", (path) => {
     renderRoute(path);
     expect(settings()).toEqual(saved);
   });

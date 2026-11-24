@@ -52,7 +52,6 @@
     "attachments": "Pièces jointes",
     "avatar": "Avatar",
     "basic": "Basique",
-    "browse": "Parcourir",
     "calendar": "Calendrier",
     "cancel": "Annuler",
     "clear": "Effacer",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Mémo parent indisponible.",
     "parent-unavailable-description": "Il a peut-être été supprimé ou vous n'y avez plus accès.",
     "moved": "Mémo déplacé",
-    "back-to": "Retour à {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Réduire les mémos longs. Toujours activé pour les mises en page en grille.",
     "layout": "Mise en page",
@@ -1309,7 +1307,6 @@
     "select-month": "Sélectionner un mois"
   },
   "space": {
-    "all-spaces": "Tous les espaces",
     "icon": {
       "change": "Changer l'icône de l'espace",
       "kind": "Type d'icône",

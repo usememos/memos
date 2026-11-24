@@ -52,7 +52,6 @@
     "attachments": "Bilagor",
     "avatar": "Profilbild",
     "basic": "Grundläggande",
-    "browse": "Bläddra",
     "calendar": "Kalender",
     "cancel": "Avbryt",
     "clear": "Rensa",
@@ -447,7 +446,6 @@
     "parent-unavailable": "Överordnat PM är inte tillgängligt",
     "parent-unavailable-description": "Det kan ha tagits bort eller så har du inte längre åtkomst.",
     "moved": "Memot flyttat",
-    "back-to": "Tillbaka till {{source}}",
     "connections": "Anslutningar",
     "grid-compact-hint": "Fäll ihop längre anteckningar. Alltid aktiverat i rutnätslayouter.",
     "layout": "Layout",
@@ -1308,7 +1306,6 @@
     "select-month": "Välj månad"
   },
   "space": {
-    "all-spaces": "Alla utrymmen",
     "icon": {
       "change": "Ändra utrymmesikon",
       "kind": "Ikontyp",

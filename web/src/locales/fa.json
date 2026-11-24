@@ -52,7 +52,6 @@
     "attachments": "پیوست‌ها",
     "avatar": "آواتار",
     "basic": "ساده",
-    "browse": "مرور",
     "calendar": "تقویم",
     "cancel": "لغو",
     "clear": "پاکسازی",
@@ -434,7 +433,6 @@
     "parent-unavailable": "یادداشت والد در دسترس نیست",
     "parent-unavailable-description": "ممکن است حذف شده باشد یا دیگر دسترسی نداشته باشید.",
     "moved": "یادداشت منتقل شد",
-    "back-to": "بازگشت به {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} به‌روزرسانی شده در {{date}}",
     "connections": "اتصالات",
     "grid-compact-hint": "یادداشت‌های طولانی را جمع کنید. در طرح‌بندی‌های شبکه‌ای همیشه فعال است.",
@@ -1308,7 +1306,6 @@
     "text": "متن"
   },
   "space": {
-    "all-spaces": "همه فضاها",
     "icon": {
       "change": "تغییر آیکون فضا",
       "kind": "نوع آیکون",

@@ -1,15 +1,15 @@
 import { type ReactNode, Suspense, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoByName, useUpdateMemo } from "@/hooks/useMemoQueries";
+import { useMemoByName, useMemoRecord, useUpdateMemo } from "@/hooks/useMemoQueries";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import { cn } from "@/lib/utils";
-import type { Location } from "@/types/proto/api/memo_service_pb";
+import type { Location, Memo } from "@/types/proto/api/memo_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { canManageMemo } from "@/utils/user";
 import { draftKeyFor, type MemoEditIdentity, migrateLegacyDraft } from "./edit/draftKey";
-import { canChooseSpaceFor, initialEditorState } from "./edit/initialState";
+import { canChooseSpaceFor, defaultVisibilityFor, initialEditorState } from "./edit/initialState";
 import { cacheService } from "./edit/services/cacheService";
 import { EditorProvider } from "./edit/state";
 import { MemoContentView } from "./view/MemoContentView";
@@ -49,14 +49,17 @@ export interface MemoEditorViewProps {
 
 /** What a new memo or comment starts from. */
 export interface MemoDraftSeed {
-  /** The memo this draft comments on. A comment has no scope, Space or timestamps of its own. */
+  /**
+   * The memo this draft comments on. A comment has no scope or timestamps of its own; it
+   * starts with its parent's audience, and one shared with a Space is filed in the parent's.
+   */
   parent?: string;
   /**
    * Where a new memo is composed, such as `home`, `global`, `calendar:<date>` or
    * `map:<key>`. Each scope keeps its own draft, per Space.
    */
   scope?: string;
-  /** Fixes the new memo's Space; the Space chooser is then off. */
+  /** Fixes the new memo's Space; the Space chooser is then off, and the memo starts shared with the Space's members. */
   space?: string;
   /** Seeds the location once; a restored draft wins. */
   location?: Location;
@@ -178,23 +181,34 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
   );
   return (
     <Suspense fallback={fallback}>
-      <EditingSession
-        key={draftKeyFor(identity)}
-        identity={identity}
-        parentMemoName={draft.parent}
-        defaultSpace={draft.space}
-        defaultLocation={draft.location}
-        defaultCreateTime={draft.createTime}
-        {...editing}
-      />
+      {draft.parent ? (
+        <CommentEditingSession key={draftKeyFor(identity)} identity={identity} parentMemoName={draft.parent} {...editing} />
+      ) : (
+        <EditingSession
+          key={draftKeyFor(identity)}
+          identity={identity}
+          defaultSpace={draft.space}
+          defaultLocation={draft.location}
+          defaultCreateTime={draft.createTime}
+          {...editing}
+        />
+      )}
     </Suspense>
   );
+};
+
+/** A comment's session over its parent as any query holds it: the comment starts from the parent's audience and Space. */
+const CommentEditingSession = ({ parentMemoName, ...session }: EditingSessionProps & { parentMemoName: string }) => {
+  const parentMemo = useMemoRecord(parentMemoName) ?? undefined;
+  return <EditingSession parentMemoName={parentMemoName} parentMemo={parentMemo} {...session} />;
 };
 
 interface EditingSessionProps extends MemoEditingProps {
   identity: MemoEditIdentity;
   memo?: Parameters<typeof initialEditorState>[0]["memo"];
   parentMemoName?: string;
+  /** The parent of a new comment, when a query holds it. */
+  parentMemo?: Pick<Memo, "visibility" | "space">;
   defaultSpace?: string;
   defaultLocation?: Location;
   defaultCreateTime?: Date;
@@ -205,6 +219,7 @@ const EditingSession = ({
   identity,
   memo,
   parentMemoName,
+  parentMemo,
   defaultSpace,
   defaultLocation,
   defaultCreateTime,
@@ -214,6 +229,11 @@ const EditingSession = ({
   const { userGeneralSetting } = useAuth();
   const username = currentUser?.name ?? "";
   const draftKey = cacheService.key(username, draftKeyFor(identity));
+  const defaultVisibility = defaultVisibilityFor({
+    userDefault: userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined,
+    space: defaultSpace,
+    parent: parentMemo,
+  });
   const [initialState] = useState(() => {
     migrateLegacyDraft(username, identity);
     return initialEditorState({
@@ -221,7 +241,7 @@ const EditingSession = ({
       draftKey,
       // A hosted editor starts in focus mode and stays there.
       initialFocusMode: Boolean(editing.onFocusModeExit),
-      defaultVisibility: userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined,
+      defaultVisibility,
       defaultCreateTime,
       defaultLocation,
       canChooseSpace: canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace }),
@@ -233,7 +253,9 @@ const EditingSession = ({
       <EditSession
         memo={memo}
         parentMemoName={parentMemoName}
+        parentSpace={parentMemo?.space}
         defaultSpace={defaultSpace}
+        defaultVisibility={defaultVisibility}
         defaultCreateTime={defaultCreateTime}
         draftKey={draftKey}
         {...editing}

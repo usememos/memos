@@ -52,7 +52,6 @@
     "attachments": "Anexos",
     "avatar": "Avatar",
     "basic": "Básico",
-    "browse": "Navegar",
     "calendar": "Calendário",
     "cancel": "Cancelar",
     "clear": "Limpar",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Memorando pai indisponível",
     "parent-unavailable-description": "Pode ter sido eliminado ou pode já não ter acesso a ele.",
     "moved": "Memorando movido",
-    "back-to": "Voltar para {{source}}",
     "connections": "Ligações",
     "grid-compact-hint": "Recolher memos longos. Sempre ativado nos layouts em grelha.",
     "layout": "Layout",
@@ -1309,7 +1307,6 @@
     "select-month": "Selecione o mês"
   },
   "space": {
-    "all-spaces": "Todos os espaços",
     "icon": {
       "change": "Alterar ícone do espaço",
       "kind": "Tipo de ícone",

@@ -12,6 +12,7 @@ import {
   collectionNavigationPath,
   getCreatorHomePath,
   getCreatorSwitchPath,
+  getPlaceSwitchPath,
   getSpaceSwitchPath,
   resolveCollectionRoute,
 } from "@/router/routes";
@@ -37,8 +38,8 @@ beforeEach(() => {
 });
 describe("Space route contract", () => {
   it.each([
-    ["/spaces/a", "home"],
-    ["/spaces/a/explore", "explore"],
+    ["/spaces/a", "explore"],
+    ["/spaces/a/explore", "common"],
     ["/spaces/a/calendar/2026/09/06", "calendar"],
     ["/spaces/a/attachments", "attachments"],
     ["/spaces/a/archived", "common"],
@@ -52,10 +53,28 @@ describe("Space route contract", () => {
     expect(buildCollectionPath("/calendar/2026/09", "spaces/A")).toBe("/spaces/A/calendar/2026/09");
   });
   it("preserves collection parameters but drops unrelated global page parameters on switching", () => {
-    expect(getSpaceSwitchPath({ pathname: "/spaces/a/explore", search: "?filter=tagSearch%3Ax" }, "spaces/b")).toBe(
-      "/spaces/b/explore?filter=tagSearch%3Ax",
+    expect(getSpaceSwitchPath({ pathname: "/spaces/a", search: "?filter=tagSearch%3Ax" }, "spaces/b")).toBe(
+      "/spaces/b?filter=tagSearch%3Ax",
     );
     expect(getSpaceSwitchPath({ pathname: "/setting", search: "?section=spaces" }, "spaces/b")).toBe("/spaces/b");
+  });
+  it("gives a Space one timeline for every member", () => {
+    expect(resolveCollectionRoute("/spaces/a")).toEqual({ spaceName: "spaces/a", pathname: "/explore", isCollection: true });
+    expect(resolveCollectionRoute("/spaces/a/explore").isCollection).toBe(false);
+    expect(resolveCollectionRoute("/spaces/a/Explore/").isCollection).toBe(false);
+    for (const pathname of ["/", "/explore"]) {
+      expect(buildCollectionPath(pathname, "spaces/a")).toBe("/spaces/a");
+      expect(getSpaceSwitchPath({ pathname, search: "" }, "spaces/a")).toBe("/spaces/a");
+    }
+    // Leaving the Space returns to the personal Home, not to Explore.
+    expect(getSpaceSwitchPath({ pathname: "/spaces/a", search: "" })).toBe("/");
+    // Entering it from a creator's timeline drops the creator and keeps the filters.
+    expect(getSpaceSwitchPath({ pathname: "/", search: "?creator=bob&filter=tagSearch%3Ax" }, "spaces/a")).toBe(
+      "/spaces/a?filter=tagSearch%3Ax",
+    );
+    // No creator is carried out of or back into the timeline.
+    expect(collectionNavigationPath("/calendar", { pathname: "/spaces/a", search: "" }, "alice")).toBe("/spaces/a/calendar");
+    expect(collectionNavigationPath("/", { pathname: "/spaces/a/calendar", search: "" }, "alice")).toBe("/spaces/a");
   });
   it("combines creator and Space independently across collection views", () => {
     const location = { pathname: "/spaces/a/calendar/2026/09", search: "?creator=alice&filter=tagSearch%3Awork" };
@@ -66,9 +85,19 @@ describe("Space route contract", () => {
     expect(getCreatorHomePath("alice")).toBe("/?creator=alice");
     expect(getCreatorHomePath("júlia")).toBe("/?creator=j%C3%BAlia");
   });
+  it("leaves the Space for Home or Explore, keeping the collection view", () => {
+    expect(getPlaceSwitchPath({ pathname: "/spaces/a", search: "" }, "steven")).toBe("/");
+    expect(getPlaceSwitchPath({ pathname: "/spaces/a", search: "" })).toBe("/explore");
+    const calendar = { pathname: "/spaces/a/calendar/2026/09", search: "?creator=alice&filter=tagSearch%3Awork" };
+    expect(getPlaceSwitchPath(calendar, "steven")).toBe("/calendar/2026/09?creator=steven&filter=tagSearch%3Awork");
+    expect(getPlaceSwitchPath(calendar)).toBe("/calendar/2026/09?filter=tagSearch%3Awork");
+    expect(getPlaceSwitchPath({ pathname: "/", search: "?creator=alice" }, "steven")).toBe("/");
+    // Pages outside the collections start at the place's timeline and carry nothing over.
+    expect(getPlaceSwitchPath({ pathname: "/setting", search: "?tab=x", hash: "#account" }, "steven")).toBe("/");
+    expect(getPlaceSwitchPath({ pathname: "/memos/123", search: "" })).toBe("/explore");
+  });
   it("keeps personal Home and all-creator Explore distinct while changing views", () => {
     expect(getCreatorSwitchPath({ pathname: "/", search: "?filter=tagSearch%3Awork" })).toBe("/explore?filter=tagSearch%3Awork");
-    expect(getCreatorSwitchPath({ pathname: "/spaces/a/explore", search: "" }, "alice", "alice")).toBe("/spaces/a");
     expect(collectionNavigationPath("/calendar", { pathname: "/", search: "" }, "alice")).toBe("/calendar?creator=alice");
     expect(collectionNavigationPath("/calendar", { pathname: "/explore", search: "" }, "alice")).toBe("/calendar");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "" }, "alice")).toBe("/explore");
@@ -100,9 +129,9 @@ describe("Space route contract", () => {
       "/calendar?creator=alice",
     );
   });
-  it("searches from All calendar and attachments into Space Explore", () => {
+  it("searches from a Space's calendar and attachments into its timeline", () => {
     for (const path of ["/spaces/a/calendar/2026/09", "/spaces/a/attachments"]) {
-      expect(resolveQuickFindSubmission(path, "roadmap", [], "text").destination).toBe("/spaces/a/explore?filter=contentSearch%3Aroadmap");
+      expect(resolveQuickFindSubmission(path, "roadmap", [], "text").destination).toBe("/spaces/a?filter=contentSearch%3Aroadmap");
     }
     expect(getRouteActionPolicy("/memos/a").searchDestination).toBe("/explore");
     expect(resolveQuickFindSubmission("/spaces/a/calendar", "roadmap", [], "text", "?creator=alice").destination).toBe(

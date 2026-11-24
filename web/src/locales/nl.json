@@ -52,7 +52,6 @@
     "attachments": "Bijlagen",
     "avatar": "Avatar",
     "basic": "Simpel",
-    "browse": "Bladeren",
     "calendar": "Kalender",
     "cancel": "Annuleren",
     "clear": "Leegmaken",
@@ -447,7 +446,6 @@
     "parent-unavailable": "Hoofdmemo niet beschikbaar",
     "parent-unavailable-description": "Deze is mogelijk verwijderd of je hebt er geen toegang meer toe.",
     "moved": "Memo verplaatst",
-    "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
     "grid-compact-hint": "Vouw langere memo’s samen. Altijd ingeschakeld bij rasterindelingen.",
     "layout": "Indeling",
@@ -1308,7 +1306,6 @@
     "select-month": "Selecteer maand"
   },
   "space": {
-    "all-spaces": "Alle ruimtes",
     "icon": {
       "change": "Pictogram van de ruimte wijzigen",
       "kind": "Type pictogram",

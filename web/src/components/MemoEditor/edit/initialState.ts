@@ -1,4 +1,4 @@
-import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
+import { type Location, type Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { canManageMemo } from "@/utils/user";
 import { cacheService } from "./services/cacheService";
@@ -22,6 +22,28 @@ export const canChooseSpaceFor = ({
   parentMemoName?: string;
   defaultSpace?: string;
 }): boolean => (memo ? !memo.parent && canManageMemo(memo, currentUser) : !parentMemoName && !defaultSpace);
+
+/**
+ * The audience a new memo starts with, taken from where it is written: a comment takes
+ * its parent's, a memo composed into a Space is for the Space's members, and anything
+ * else takes the author's own default. The Space audience needs the parent's Space, which
+ * only its members are given: without it the comment falls back to the author's default.
+ */
+export const defaultVisibilityFor = ({
+  userDefault,
+  space,
+  parent,
+}: {
+  userDefault?: Visibility;
+  /** The Space a new top-level memo is composed into. */
+  space?: string;
+  /** The memo a comment is written on, when a query holds it. */
+  parent?: Pick<Memo, "visibility" | "space">;
+}): Visibility | undefined => {
+  if (!parent) return space ? Visibility.SPACE : userDefault;
+  if (parent.visibility === Visibility.SPACE) return parent.space ? Visibility.SPACE : userDefault;
+  return parent.visibility === Visibility.VISIBILITY_UNSPECIFIED ? userDefault : parent.visibility;
+};
 
 export interface InitialEditorStateOptions {
   /** The memo being edited; its draft is never restored from the cache. */

@@ -90,7 +90,6 @@
     "attachments": "Vedhæftede filer",
     "avatar": "Avatar",
     "basic": "Grundlæggende",
-    "browse": "Gennemse",
     "calendar": "Kalender",
     "cancel": "Ophæve",
     "clear": "Klar",
@@ -485,7 +484,6 @@
     "parent-unavailable": "Overordnet notat er ikke tilgængeligt",
     "parent-unavailable-description": "Det er muligvis blevet slettet, eller du har muligvis ikke længere adgang.",
     "moved": "Notat flyttet",
-    "back-to": "Tilbage til {{source}}",
     "connections": "Forbindelser",
     "grid-compact-hint": "Fold længere memoer sammen. Altid aktiveret i gitterlayout.",
     "layout": "Layout",
@@ -1308,7 +1306,6 @@
     "select-month": "Vælg måned"
   },
   "space": {
-    "all-spaces": "Alle rum",
     "icon": {
       "change": "Skift ikon for rum",
       "kind": "Ikontype",

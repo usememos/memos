@@ -90,7 +90,6 @@
     "attachments": "Pielikumi",
     "avatar": "Iemiesojums",
     "basic": "Pamata",
-    "browse": "Pārlūkot",
     "calendar": "Kalendārs",
     "cancel": "Atcelt",
     "clear": "Skaidrs",
@@ -486,7 +485,6 @@
     "parent-unavailable": "Galvenā piezīme nav pieejama",
     "parent-unavailable-description": "Iespējams, tā ir izdzēsta vai jums vairs nav piekļuves.",
     "moved": "Piezīme pārvietota",
-    "back-to": "Atpakaļ uz {{source}}",
     "connections": "Savienojumi",
     "grid-compact-hint": "Sakļaut garākas piezīmes. Režģa izkārtojumos vienmēr ieslēgts.",
     "layout": "Izkārtojums",
@@ -1309,7 +1307,6 @@
     "select-month": "Atlasīt mēnesi"
   },
   "space": {
-    "all-spaces": "Visas telpas",
     "icon": {
       "change": "Mainīt telpas ikonu",
       "kind": "Ikonas veids",

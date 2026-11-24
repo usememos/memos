@@ -21,7 +21,7 @@ describe("map navigation", () => {
     expect(getRouteActionPolicy("/map", "?creator=steven")).toEqual({ searchScope: "route-collection", searchDestination: "/" });
     expect(getRouteActionPolicy("/spaces/travel/map")).toEqual({
       searchScope: "route-collection",
-      searchDestination: "/spaces/travel/explore",
+      searchDestination: "/spaces/travel",
     });
     expect(getRouteActionPolicy("/spaces/travel/map", "?creator=steven")).toEqual({
       searchScope: "route-collection",

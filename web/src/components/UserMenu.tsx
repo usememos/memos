@@ -1,4 +1,4 @@
-import { badgeClasses, Menu, menuClasses } from "@usememos/ui";
+import { Menu, menuClasses } from "@usememos/ui";
 import {
   ArchiveIcon,
   BellIcon,
@@ -13,17 +13,15 @@ import {
 import { type ReactNode, useState } from "react";
 import { Link, matchPath, useLocation } from "react-router-dom";
 import { ScopePanelRowIcon } from "@/components/AppSidebar/SidebarRow";
-import { SCOPE_PANEL_ICON_CLASSES, SCOPE_PANEL_ROW_CLASSES, SIDEBAR_LEADING_SLOT_CLASSES } from "@/components/AppSidebar/sidebar-layout";
-import UserAvatar from "@/components/UserAvatar";
+import { SCOPE_PANEL_ICON_CLASSES, SCOPE_PANEL_ROW_CLASSES, SCOPE_PANEL_STACK_CLASSES } from "@/components/AppSidebar/sidebar-layout";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
-import { useNotifications, useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
+import { useUnreadInbox } from "@/hooks/useUnreadInbox";
+import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { buildAuthRoute } from "@/utils/auth-redirect";
 import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
@@ -99,7 +97,7 @@ const UserPreferenceMenu = () => {
   };
 
   return (
-    <section aria-label={t("setting.preference.label")}>
+    <section aria-label={t("setting.preference.label")} className={SCOPE_PANEL_STACK_CLASSES}>
       <PreferenceSubmenu
         icon={PaletteIcon}
         label={t("setting.preference.theme")}
@@ -124,35 +122,46 @@ const NavRow = ({
   to,
   icon,
   current,
+  label,
   onNavigate,
+  trailing,
   children,
 }: {
   to: string;
   icon: LucideIcon;
   current?: boolean;
+  /** The accessible name when it says more than the visible text. */
+  label?: string;
   onNavigate: () => void;
+  trailing?: ReactNode;
   children: ReactNode;
 }) => (
-  <Link to={to} viewTransition aria-current={current ? "page" : undefined} className={SCOPE_PANEL_ROW_CLASSES} onClick={onNavigate}>
+  <Link
+    to={to}
+    viewTransition
+    aria-label={label}
+    aria-current={current ? "page" : undefined}
+    className={SCOPE_PANEL_ROW_CLASSES}
+    onClick={onNavigate}
+  >
     <ScopePanelRowIcon icon={icon} />
     <span className="min-w-0 flex-1 truncate">{children}</span>
+    {trailing}
   </Link>
 );
 
-/** The account half of the scope menu: preferences for everyone, then the user's own pages. */
+/**
+ * The account menu behind the sidebar's footer row: the user's own pages, then preferences, then
+ * About and Sign out. Guests get the preferences and About; they sign in from the footer row itself.
+ */
 const UserMenu = ({ onClose }: { onClose: () => void }) => {
   const t = useTranslate();
   const location = useLocation();
   const { setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
-  const sseStatus = useSSEConnectionStatus();
   const { logout } = useAuth();
-  const { data: notifications = [] } = useNotifications();
-  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
-  const inboxLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} ${t("inbox.unread")}` : t("common.inbox");
-  const accountLabel = currentUser?.displayName || currentUser?.username || t("common.profile");
-  const inboxActive = Boolean(matchPath(Routes.INBOX, location.pathname));
-  const archivedActive = Boolean(matchPath(Routes.ARCHIVED, location.pathname));
+  const unread = useUnreadInbox();
+  const isAt = (path: string) => Boolean(matchPath(path, location.pathname));
 
   const closePanel = () => {
     onClose();
@@ -177,52 +186,35 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <>
-      <UserPreferenceMenu />
-      <div role="separator" className={menuClasses().separator} />
-      <section aria-label={t("setting.sso.account")}>
-        {currentUser && (
-          <>
-            <div className="flex h-(--mu-row-height) items-center gap-2 px-(--mu-row-padding)">
-              <span className={cn(SIDEBAR_LEADING_SLOT_CLASSES, "relative")}>
-                <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5" />
-                {sseStatus !== "connected" && (
-                  <span
-                    role="img"
-                    aria-label={t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}
-                    className={cn(
-                      "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-mu-surface",
-                      sseStatus === "connecting" ? "animate-pulse bg-mu-text-secondary" : "bg-mu-danger-key",
-                    )}
-                  />
-                )}
-              </span>
-              <span className="min-w-0 flex-1 truncate mu-label">{accountLabel}</span>
-              {/* A quiet chip beside the name: the package's badge look on a link. */}
-              <Link
-                to={Routes.INBOX}
-                viewTransition
-                aria-label={inboxLabel}
-                aria-current={inboxActive ? "page" : undefined}
-                className={cn(badgeClasses({ tone: "neutral" }), "border border-transparent mu-focus focus-visible:border-mu-focus")}
-                onClick={closePanel}
-              >
-                <BellIcon aria-hidden="true" className="mu-icon-xs" />
-                {t("common.inbox")}
-                {unreadCount > 0 && <span className="tabular-nums text-mu-primary">{unreadCount > 99 ? "99+" : unreadCount}</span>}
-              </Link>
-            </div>
-            <NavRow to={Routes.ARCHIVED} current={archivedActive} icon={ArchiveIcon} onNavigate={closePanel}>
+      {currentUser && (
+        <>
+          <nav aria-label={t("setting.sso.account")} className={SCOPE_PANEL_STACK_CLASSES}>
+            <NavRow
+              to={Routes.INBOX}
+              current={isAt(Routes.INBOX)}
+              icon={BellIcon}
+              label={unread.label}
+              onNavigate={closePanel}
+              trailing={unread.count > 0 && <span className="mu-caption tabular-nums text-mu-accent">{unread.text}</span>}
+            >
+              {t("common.inbox")}
+            </NavRow>
+            <NavRow to={Routes.ARCHIVED} current={isAt(Routes.ARCHIVED)} icon={ArchiveIcon} onNavigate={closePanel}>
               {t("common.archived")}
             </NavRow>
-            <NavRow to={Routes.SETTING} icon={SettingsIcon} onNavigate={closePanel}>
+            <NavRow to={Routes.SETTING} current={isAt(Routes.SETTING)} icon={SettingsIcon} onNavigate={closePanel}>
               {t("common.settings")}
             </NavRow>
-          </>
-        )}
-        <NavRow to={Routes.ABOUT} icon={InfoIcon} onNavigate={closePanel}>
+          </nav>
+          <div role="separator" className={menuClasses().separator} />
+        </>
+      )}
+      <UserPreferenceMenu />
+      <div role="separator" className={menuClasses().separator} />
+      <div className={SCOPE_PANEL_STACK_CLASSES}>
+        <NavRow to={Routes.ABOUT} current={isAt(Routes.ABOUT)} icon={InfoIcon} onNavigate={closePanel}>
           {t("common.about")}
         </NavRow>
-        {/* Guests sign in from the sidebar footer, which is always in view. */}
         {currentUser && (
           // Leaving is secondary to the pages above it, so it reads quieter.
           <button type="button" className={cn(SCOPE_PANEL_ROW_CLASSES, "text-mu-text-secondary")} onClick={() => void handleSignOut()}>
@@ -230,7 +222,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
             <span className="min-w-0 flex-1 truncate">{t("common.sign-out")}</span>
           </button>
         )}
-      </section>
+      </div>
     </>
   );
 };

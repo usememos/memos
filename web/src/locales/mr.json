@@ -52,7 +52,6 @@
     "attachments": "संलग्नक",
     "avatar": "अवतार",
     "basic": "मूलभूत",
-    "browse": "ब्राउझ करा",
     "calendar": "दिनदर्शिका",
     "cancel": "रद्द करा",
     "clear": "साफ",
@@ -434,7 +433,6 @@
     "parent-unavailable": "पालक मेमो अनुपलब्ध",
     "parent-unavailable-description": "तो कदाचित हटवला गेला असेल किंवा तुमचा प्रवेश आता नसेल.",
     "moved": "ज्ञापन हलवले",
-    "back-to": "{{source}} कडे परत",
     "count-memos-updated-in-date": "{{count}} {{memos}} हे {{date}} वर अद्यतनित केले",
     "connections": "जोडण्या",
     "grid-compact-hint": "लांब मेमो संकुचित करा. ग्रिड लेआउटमध्ये हा पर्याय नेहमी सक्षम असतो.",
@@ -1308,7 +1306,6 @@
     "text": "मजकूर"
   },
   "space": {
-    "all-spaces": "सर्व स्पेस",
     "icon": {
       "change": "स्पेस आयकॉन बदला",
       "kind": "आयकॉनचा प्रकार",

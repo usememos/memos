@@ -52,7 +52,6 @@
     "attachments": "Přílohy",
     "avatar": "Avatar",
     "basic": "Základní",
-    "browse": "Procházet",
     "calendar": "Kalendář",
     "cancel": "Zrušit",
     "clear": "Vymazat",
@@ -449,7 +448,6 @@
     "parent-unavailable": "Nadřazená poznámka není k dispozici",
     "parent-unavailable-description": "Možná byla smazána nebo k ní již nemáte přístup.",
     "moved": "Poznámka přesunuta",
-    "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
     "grid-compact-hint": "Sbalit delší poznámky. V rozvržení mřížky je vždy zapnuto.",
     "layout": "Rozvržení",
@@ -1311,7 +1309,6 @@
     "select-month": "Vyberte měsíc"
   },
   "space": {
-    "all-spaces": "Všechny prostory",
     "icon": {
       "change": "Změnit ikonu prostoru",
       "kind": "Typ ikony",

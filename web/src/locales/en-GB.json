@@ -52,7 +52,6 @@
     "attachments": "Attachments",
     "avatar": "Avatar",
     "basic": "Basic",
-    "browse": "Browse",
     "calendar": "Calendar",
     "cancel": "Cancel",
     "clear": "Clear",
@@ -446,7 +445,6 @@
     "parent-unavailable": "Parent memo unavailable",
     "parent-unavailable-description": "It may have been deleted or you may no longer have access.",
     "moved": "Memo moved",
-    "back-to": "Back to {{source}}",
     "connections": "Connections",
     "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
     "layout": "Layout",
@@ -1308,7 +1306,6 @@
     "text": "Text"
   },
   "space": {
-    "all-spaces": "All spaces",
     "icon": {
       "change": "Change space icon",
       "kind": "Icon type",

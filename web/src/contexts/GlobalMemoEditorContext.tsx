@@ -46,7 +46,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const { isUserSettingsInitialized } = useAuth();
   const desktop = useMediaQuery("md");
   const [initialHome] = useState(() => ({ location, user: currentUserName, space: selectedSpaceName }));
-  const homeAutoFocusPending = useRef(desktop && getSidebarRouteKind(location.pathname) === "home" && Boolean(currentUserName));
+  const routeKind = getSidebarRouteKind(location.pathname);
+  // The timeline a signed-in user writes into: the personal Home, or a Space's.
+  const onComposingTimeline = routeKind === "home" || (routeKind === "explore" && Boolean(selectedSpaceName));
+  const homeAutoFocusPending = useRef(desktop && onComposingTimeline && Boolean(currentUserName));
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
   // One snapshot taken when the composer opens: keyed by the user who opened it, so
   // signing out closes the composer in the same render and a different user signing

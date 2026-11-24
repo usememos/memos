@@ -52,7 +52,6 @@
     "attachments": "Anexos",
     "avatar": "Avatar",
     "basic": "Básico",
-    "browse": "Navegar",
     "calendar": "Calendario",
     "cancel": "Cancelar",
     "clear": "Limpar",
@@ -447,7 +446,6 @@
     "parent-unavailable": "Nota principal non dispoñible",
     "parent-unavailable-description": "Pode que se eliminase ou que xa non teñas acceso.",
     "moved": "Nota movida",
-    "back-to": "Volver a {{source}}",
     "connections": "Conexións",
     "grid-compact-hint": "Pregar os memos longos. Sempre activado nos deseños de cuadrícula.",
     "layout": "Deseño",
@@ -1308,7 +1306,6 @@
     "select-month": "Seleccionar mes"
   },
   "space": {
-    "all-spaces": "Todos os espazos",
     "icon": {
       "change": "Cambiar icona do espazo",
       "kind": "Tipo de icona",

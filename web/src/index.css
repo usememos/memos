@@ -15,6 +15,15 @@
 @custom-variant rich (&:not(.mbe-source-mode *));
 /* The package switches themes with data-theme, so `dark:` follows the app's choice, not the OS. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* Forced colors drop background images and some people ask for less transparency: a blurred or faded layer becomes a plain one. */
+@custom-variant opaque {
+  @media (forced-colors: active) {
+    @slot;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    @slot;
+  }
+}
 
 @layer base {
   .memos-theme-changing,

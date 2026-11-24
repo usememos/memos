@@ -90,7 +90,6 @@
     "attachments": "Manused",
     "avatar": "Avatar",
     "basic": "Põhiline",
-    "browse": "Sirvi",
     "calendar": "Kalender",
     "cancel": "Tühista",
     "clear": "Selge",
@@ -485,7 +484,6 @@
     "parent-unavailable": "Ülemmemo pole saadaval",
     "parent-unavailable-description": "See võib olla kustutatud või teil pole enam juurdepääsu.",
     "moved": "Memo teisaldatud",
-    "back-to": "Tagasi {{source}} juurde",
     "connections": "Ühendused",
     "grid-compact-hint": "Ahenda pikemad memod. Ruudustikupaigutustes alati sisse lülitatud.",
     "layout": "Paigutus",
@@ -1308,7 +1306,6 @@
     "select-month": "Valige kuu"
   },
   "space": {
-    "all-spaces": "Kõik ruumid",
     "icon": {
       "change": "Muuda ruumi ikooni",
       "kind": "Ikooni tüüp",

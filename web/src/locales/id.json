@@ -52,7 +52,6 @@
     "attachments": "Lampiran",
     "avatar": "Avatar",
     "basic": "Dasar",
-    "browse": "Telusuri",
     "calendar": "Kalender",
     "cancel": "Batal",
     "clear": "Bersihkan",
@@ -434,7 +433,6 @@
     "parent-unavailable": "Memo induk tidak tersedia",
     "parent-unavailable-description": "Memo tersebut mungkin telah dihapus atau Anda mungkin tidak lagi memiliki akses.",
     "moved": "Memo dipindahkan",
-    "back-to": "Kembali ke {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
     "connections": "Koneksi",
     "grid-compact-hint": "Ciutkan memo yang panjang. Selalu aktif pada tata letak kisi.",
@@ -1308,7 +1306,6 @@
     "text": "Teks"
   },
   "space": {
-    "all-spaces": "Semua ruang",
     "icon": {
       "change": "Ubah ikon ruang",
       "kind": "Jenis ikon",
