@@ -308,6 +308,46 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
 }
 
+// TestPostAcceptsSuccessResponsesWithoutJSONBody covers receivers that answer
+// 2xx with an empty or plain-text body, and checks that a JSON error code in a
+// 2xx response is still reported.
+func TestPostAcceptsSuccessResponsesWithoutJSONBody(t *testing.T) {
+	prev := AllowPrivateIPs
+	AllowPrivateIPs = true
+	defer func() { AllowPrivateIPs = prev }()
+
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr bool
+	}{
+		{name: "no content", status: http.StatusNoContent},
+		{name: "empty body", status: http.StatusOK},
+		{name: "plain text", status: http.StatusOK, body: "ok"},
+		{name: "json without code", status: http.StatusOK, body: `{"id":"abc"}`},
+		{name: "json success code", status: http.StatusOK, body: `{"code":0}`},
+		{name: "json error code", status: http.StatusOK, body: `{"code":1,"message":"bad"}`, wantErr: true},
+		{name: "server error", status: http.StatusInternalServerError, body: "ok", wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.WriteHeader(tt.status)
+				_, _ = w.Write([]byte(tt.body))
+			}))
+			defer server.Close()
+
+			err := Post(&Request{URL: server.URL, Label: "memos.memo.created"})
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestIsReservedIP(t *testing.T) {
 	tests := []struct {
 		name     string

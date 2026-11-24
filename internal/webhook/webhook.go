@@ -185,12 +185,15 @@ func Post(requestPayload *Request) error {
 		return errors.Errorf("failed to post webhook %s, status code: %d", requestPayload.URL, resp.StatusCode)
 	}
 
+	// Any 2xx counts as delivered. Many receivers answer with 204 No Content
+	// or a plain-text body, so the body is only checked when it is JSON that
+	// carries a non-zero error code.
 	response := &struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	}{}
 	if err := json.Unmarshal(b, response); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.URL)
+		return nil
 	}
 
 	if response.Code != 0 {
