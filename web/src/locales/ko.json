@@ -958,6 +958,7 @@
       "configured-rules": "구성된 규칙",
       "default-color": "기본값",
       "matching-rule": "고정된 정규식",
+      "used-count_one": "{{count}} 메모",
       "used-count_other": "{{count}} 메모"
     },
     "ai": {

@@ -1038,6 +1038,7 @@
       "tag-already-exists": "标签已经存在。",
       "tag-pattern-hint": "标签名称或正则表达式模式（例如 project/.* 匹配所有 project/ 标签）",
       "invalid-regex": "无效或不安全的正则表达式模式。",
+      "used-count_one": "{{count}} 条备忘录",
       "used-count_other": "{{count}} 条备忘录"
     },
     "notification": {

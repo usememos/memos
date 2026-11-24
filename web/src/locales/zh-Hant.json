@@ -1202,6 +1202,7 @@
       "tag-already-exists": "標籤已經存在。",
       "tag-pattern-hint": "標籤名稱或正規表示式模式（例如 project/.* 符合所有 project/ 標籤）",
       "invalid-regex": "無效或不安全的正規表示式模式。",
+      "used-count_one": "{{count}} 篇備忘錄",
       "used-count_other": "{{count}} 篇備忘錄"
     },
     "resource-stats": {

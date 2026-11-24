@@ -958,6 +958,7 @@
       "configured-rules": "กฎที่กำหนดค่าแล้ว",
       "default-color": "ค่าเริ่มต้น",
       "matching-rule": "regex ที่ยึดตรึง",
+      "used-count_one": "{{count}} บันทึกช่วยจำ",
       "used-count_other": "{{count}} บันทึกช่วยจำ"
     },
     "ai": {
