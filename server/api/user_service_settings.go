@@ -51,6 +51,10 @@ func (s *APIService) GetUserSetting(ctx context.Context, request *apipb.GetUserS
 }
 
 func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.UpdateUserSettingRequest) (*apipb.UserSetting, error) {
+	if request.UserSetting == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "user setting is required")
+	}
+
 	// Parse resource name: users/{user}/settings/{setting}
 	user, settingKey, err := s.resolveUserAndSettingKeyFromName(ctx, request.UserSetting.Name)
 	if err != nil {

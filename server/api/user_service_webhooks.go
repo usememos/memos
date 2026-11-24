@@ -52,6 +52,10 @@ func (s *APIService) ListUserWebhooks(ctx context.Context, request *apipb.ListUs
 }
 
 func (s *APIService) CreateUserWebhook(ctx context.Context, request *apipb.CreateUserWebhookRequest) (*apipb.UserWebhook, error) {
+	if request.Webhook == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
+	}
+
 	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
