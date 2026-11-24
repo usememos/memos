@@ -52,7 +52,6 @@
     "attachments": "ไฟล์แนบ",
     "avatar": "สัญลักษณ์",
     "basic": "ทั่วไป",
-    "browse": "เรียกดู",
     "calendar": "ปฏิทิน",
     "cancel": "ยกเลิก",
     "clear": "ล้าง",
@@ -434,7 +433,6 @@
     "parent-unavailable": "บันทึกหลักไม่พร้อมใช้งาน",
     "parent-unavailable-description": "อาจถูกลบไปแล้วหรือคุณอาจไม่สามารถเข้าถึงได้อีกต่อไป",
     "moved": "ย้ายบันทึกแล้ว",
-    "back-to": "กลับไปที่ {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} อัปเดตเมื่อ {{date}}",
     "connections": "การเชื่อมต่อ",
     "grid-compact-hint": "ย่อบันทึกช่วยจำที่ยาว เปิดใช้งานเสมอในรูปแบบตาราง",
@@ -1308,7 +1306,6 @@
     "text": "ข้อความ"
   },
   "space": {
-    "all-spaces": "พื้นที่ทั้งหมด",
     "icon": {
       "change": "เปลี่ยนไอคอนพื้นที่",
       "kind": "ประเภทไอคอน",

@@ -90,7 +90,6 @@
     "attachments": "Atasamente",
     "avatar": "Avatar",
     "basic": "De bază",
-    "browse": "Răsfoiește",
     "calendar": "Calendaristic",
     "cancel": "Anula",
     "clear": "Clar",
@@ -486,7 +485,6 @@
     "parent-unavailable": "Nota părinte nu este disponibilă",
     "parent-unavailable-description": "Este posibil să fi fost ștersă sau să nu mai ai acces.",
     "moved": "Nota mutată",
-    "back-to": "Înapoi la {{source}}",
     "connections": "Conexiuni",
     "grid-compact-hint": "Restrânge notele lungi. Mereu activat în aspectele de tip grilă.",
     "layout": "Aspect",
@@ -1309,7 +1307,6 @@
     "select-month": "Selectați luna"
   },
   "space": {
-    "all-spaces": "Toate spațiile",
     "icon": {
       "change": "Schimbă pictograma spațiului",
       "kind": "Tip pictogramă",

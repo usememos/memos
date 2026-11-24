@@ -52,7 +52,6 @@
     "attachments": "Załączniki",
     "avatar": "Awatar",
     "basic": "Podstawowy",
-    "browse": "Przeglądaj",
     "calendar": "Kalendarz",
     "cancel": "Anuluj",
     "clear": "Wyczyść",
@@ -449,7 +448,6 @@
     "parent-unavailable": "Notatka nadrzędna jest niedostępna",
     "parent-unavailable-description": "Mogła zostać usunięta lub nie masz już do niej dostępu.",
     "moved": "Notatka przeniesiona",
-    "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
     "grid-compact-hint": "Zwijaj dłuższe notatki. Zawsze włączone w układzie siatki.",
     "layout": "Układ",
@@ -1310,7 +1308,6 @@
     "select-month": "Wybierz miesiąc"
   },
   "space": {
-    "all-spaces": "Wszystkie przestrzenie",
     "icon": {
       "change": "Zmień ikonę przestrzeni",
       "kind": "Typ ikony",

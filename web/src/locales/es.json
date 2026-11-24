@@ -52,7 +52,6 @@
     "attachments": "Adjuntos",
     "avatar": "Avatar",
     "basic": "Básico",
-    "browse": "Navegar",
     "calendar": "Calendario",
     "cancel": "Cancelar",
     "clear": "Borrar",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Memo principal no disponible.",
     "parent-unavailable-description": "Es posible que se haya eliminado o que ya no tengas acceso.",
     "moved": "Memorándum movido.",
-    "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
     "grid-compact-hint": "Contraer los memos largos. Siempre activado en los diseños de cuadrícula.",
     "layout": "Diseño",
@@ -1309,7 +1307,6 @@
     "select-month": "Seleccionar mes"
   },
   "space": {
-    "all-spaces": "Todos los espacios",
     "icon": {
       "change": "Cambiar icono del espacio",
       "kind": "Tipo de icono",

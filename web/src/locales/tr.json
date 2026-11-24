@@ -85,7 +85,6 @@
     "attachments": "Ekler",
     "avatar": "Profil fotoğrafı",
     "basic": "Temel",
-    "browse": "Göz at",
     "calendar": "Takvim",
     "cancel": "İptal",
     "clear": "Temizle",
@@ -398,7 +397,6 @@
     "parent-unavailable": "Üst nota ulaşılamıyor",
     "parent-unavailable-description": "Silinmiş olabilir ya da artık erişim iznin kalmamış olabilir.",
     "moved": "Not taşındı",
-    "back-to": "{{source}} görünümüne dön",
     "click-to-show-sensitive-content": "Hassas içeriği görmek için tıkla",
     "comment": {
       "self": "Yorumlar",
@@ -1232,7 +1230,6 @@
     }
   },
   "space": {
-    "all-spaces": "Tüm alanlar",
     "icon": {
       "change": "Alan simgesini değiştir",
       "kind": "Simge türü",

@@ -17,6 +17,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   parentMemoName,
   space,
   canChooseSpace,
+  defaultVisibility,
   onAudioRecorderClick,
   viewToggles,
   sourceMode,
@@ -57,7 +58,15 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   };
 
   const handleSpaceChange = (next?: string) => {
-    dispatch(actions.setMetadata({ space: next, ...(!next && visibility === Visibility.SPACE ? { visibility: Visibility.PRIVATE } : {}) }));
+    // A new memo placed in a Space is shared with its members, unless its audience was
+    // already changed; an existing memo is moved without touching its audience. Leaving
+    // the Space takes the Space audience with it: back to the author's default for a new
+    // memo, and to the narrowest audience for an existing one.
+    const unplacedVisibility = memoName ? Visibility.PRIVATE : (defaultVisibility ?? Visibility.PRIVATE);
+    let nextVisibility: Visibility | undefined;
+    if (!next && visibility === Visibility.SPACE) nextVisibility = unplacedVisibility;
+    if (next && !memoName && visibility === unplacedVisibility) nextVisibility = Visibility.SPACE;
+    dispatch(actions.setMetadata({ space: next, ...(nextVisibility === undefined ? {} : { visibility: nextVisibility }) }));
   };
 
   const blockedReasonId = useId();

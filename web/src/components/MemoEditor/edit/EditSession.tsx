@@ -8,7 +8,6 @@ import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityFromString } from "@/utils/memo";
 
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
@@ -50,8 +49,10 @@ export const EditSession: React.FC<EditSessionProps> = ({
   timestampLead,
   memo,
   parentMemoName,
+  parentSpace,
   suggestions = [],
   defaultSpace,
+  defaultVisibility,
   autoFocus,
   onFocusModeExit,
   onFocusModeChange,
@@ -90,21 +91,19 @@ export const EditSession: React.FC<EditSessionProps> = ({
 
   const memoName = memo?.name;
   const showTimestamp = Boolean(memoName || (!memo && hasTimestamp));
-  // Replies are never placed independently: a comment's Space is its parent's.
-  // An edited top-level memo can change its Space; a new one can unless its
-  // host fixes the target (e.g. composing inside a Space).
+  // Replies are never placed independently: a comment's Space is its parent's,
+  // which also makes the Space audience available to it. An edited top-level memo
+  // can change its Space; a new one can unless its host fixes the target (e.g.
+  // composing inside a Space).
   const draftSpace = useEditorSelector((s) => s.metadata.space);
   const canChooseSpace = canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace });
-  const editorSpace = memo ? draftSpace : parentMemoName ? undefined : (defaultSpace ?? draftSpace);
+  const editorSpace = memo ? draftSpace : parentMemoName ? parentSpace : (defaultSpace ?? draftSpace);
   const canTranscribe = useMemo(() => {
     const providerId = aiSetting.transcription?.providerId ?? "";
     if (!providerId) return false;
     const provider = aiSetting.providers.find((p) => p.id === providerId);
     return Boolean(provider?.apiKeySet);
   }, [aiSetting.providers, aiSetting.transcription?.providerId]);
-
-  // Get default visibility from user settings
-  const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
   // Source mode only changes how the text is edited, so every composer offers it.
   const [editorMode, setEditorMode] = useSourceMode();
@@ -321,6 +320,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const handleSave = useMemoSave({
     memoName,
     parentMemoName,
+    parentSpace,
     defaultSpace,
     defaultVisibility,
     defaultCreateTime,
@@ -415,6 +415,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
             parentMemoName={parentMemoName}
             space={editorSpace}
             canChooseSpace={canChooseSpace}
+            defaultVisibility={defaultVisibility}
             onAudioRecorderClick={handleAudioRecorderClick}
             viewToggles={viewToggles}
             sourceMode={sourceMode}

@@ -52,7 +52,6 @@
     "attachments": "Tệp đính kèm",
     "avatar": "Ảnh đại diện",
     "basic": "Cơ bản",
-    "browse": "Duyệt xem",
     "calendar": "Lịch",
     "cancel": "Hủy",
     "clear": "Xóa",
@@ -434,7 +433,6 @@
     "parent-unavailable": "Ghi chú cha không khả dụng",
     "parent-unavailable-description": "Có thể bản ghi nhớ đã bị xóa hoặc bạn không còn quyền truy cập nữa.",
     "moved": "Bản ghi nhớ đã được di chuyển",
-    "back-to": "Quay lại {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
     "grid-compact-hint": "Thu gọn các ghi chú dài. Luôn bật trong bố cục dạng lưới.",
@@ -1308,7 +1306,6 @@
     "text": "Văn bản"
   },
   "space": {
-    "all-spaces": "Tất cả không gian",
     "icon": {
       "change": "Thay đổi biểu tượng không gian",
       "kind": "Loại biểu tượng",

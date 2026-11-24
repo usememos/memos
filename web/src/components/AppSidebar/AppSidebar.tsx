@@ -1,7 +1,6 @@
 import { Button, Drawer, Tooltip } from "@usememos/ui";
 import {
   ArchiveIcon,
-  ArrowRightIcon,
   BellIcon,
   CalendarDaysIcon,
   FileAudioIcon,
@@ -16,7 +15,6 @@ import {
   SearchIcon,
   SquarePenIcon,
   Trash2Icon,
-  UserRoundIcon,
 } from "lucide-react";
 import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -43,15 +41,11 @@ import { User_Role, UserNotification_Status } from "@/types/proto/api/user_servi
 import { useTranslate } from "@/utils/i18n";
 import CommonSidebarContent from "./CommonSidebarContent";
 import { getSidebarRouteKind } from "./routes";
+import SidebarAccount from "./SidebarAccount";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, sidebarRowStateAttributes, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
-import {
-  SIDEBAR_LEADING_SLOT_CLASSES,
-  SIDEBAR_NAV_LEADING_SLOT_CLASSES,
-  SIDEBAR_RAIL_CLASSES,
-  sidebarSurfaceVariants,
-} from "./sidebar-layout";
+import { SIDEBAR_NAV_LEADING_SLOT_CLASSES, SIDEBAR_RAIL_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
 import TagsSection from "./TagsSection";
 import ViewsSection from "./ViewsSection";
 
@@ -395,9 +389,6 @@ const GlobalNavigation = () => {
 };
 
 const AppSidebar = ({ className }: { className?: string }) => {
-  const t = useTranslate();
-  const currentUser = useCurrentUser();
-  const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
     <aside className={cn("mu-compact flex h-full w-full select-none flex-col bg-mu-canvas text-mu-text-secondary", className)}>
@@ -407,32 +398,22 @@ const AppSidebar = ({ className }: { className?: string }) => {
       </div>
       <GlobalNavigation />
       <div className="mx-3 mt-2 border-t border-mu-line/70" />
-      <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
-        <RouteSidebarContent />
+      {/* The account row is the scroller's own sticky foot, not a layer over it: the scrollbar stays
+          above it and a wheel or drag on the row still scrolls the list. The scroll padding keeps a
+          focused row clear of it. */}
+      <div
+        data-sidebar-scroller
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden pt-2 scroll-pb-16 [scrollbar-width:thin]",
+          SIDEBAR_RAIL_CLASSES,
+        )}
+      >
+        {/* The end padding lets the last row stop clear of the account row's soft edge. */}
+        <div className="shrink-0 grow pb-5">
+          <RouteSidebarContent />
+        </div>
+        <SidebarAccount />
       </div>
-      {!currentUser && (
-        <footer className="shrink-0 border-t border-mu-line/70">
-          <Link
-            to={ROUTES.AUTH}
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              sidebarSurfaceVariants({ role: "account" }),
-              "group mu-label text-mu-text transition-colors hover:bg-mu-hover border border-transparent mu-focus focus-visible:border-mu-focus",
-            )}
-          >
-            <span className={SIDEBAR_LEADING_SLOT_CLASSES}>
-              <UserRoundIcon className="mu-icon me-auto text-mu-text-secondary" />
-            </span>
-            <span data-sidebar-label className="min-w-0 flex-1 truncate">
-              {t("common.sign-in-to-memos")}
-            </span>
-            <ArrowRightIcon
-              data-sidebar-trailing
-              className="mu-icon-sm shrink-0 text-mu-text-secondary/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
-            />
-          </Link>
-        </footer>
-      )}
     </aside>
   );
 };

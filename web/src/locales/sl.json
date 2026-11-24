@@ -52,7 +52,6 @@
     "attachments": "Priloge",
     "avatar": "Avatar",
     "basic": "Osnovni",
-    "browse": "Brskaj",
     "calendar": "Koledar",
     "cancel": "Prekliči",
     "clear": "Počisti",
@@ -449,7 +448,6 @@
     "parent-unavailable": "Nadrejeni zapisek ni na voljo",
     "parent-unavailable-description": "Morda je bil izbrisan ali pa nimate več dostopa.",
     "moved": "Zapisek premaknjen",
-    "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
     "grid-compact-hint": "Strni daljše beležke. Vedno omogočeno v mrežnih postavitvah.",
     "layout": "Postavitev",
@@ -1310,7 +1308,6 @@
     "select-month": "Izberite mesec"
   },
   "space": {
-    "all-spaces": "Vsi prostori",
     "icon": {
       "change": "Spremeni ikono prostora",
       "kind": "Vrsta ikone",

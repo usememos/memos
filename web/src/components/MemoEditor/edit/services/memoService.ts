@@ -5,7 +5,7 @@ import { getEditorReferenceRelations } from "@/components/MemoMetadata/Relation/
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
-import { MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { EditorState } from "../state";
 import type { LocalFile } from "../types/attachment";
 import { orderAttachments } from "../utils/attachmentOrder";
@@ -130,6 +130,8 @@ export const memoService = {
     options: {
       memoName?: string;
       parentMemoName?: string;
+      /** The parent's Space: a comment is filed there when it takes the Space audience. */
+      parentSpace?: string;
       space?: string;
       /** Runs as each local file finishes uploading, before the memo is saved. */
       onFileUploaded?: (localFile: LocalFile, attachment: Attachment) => void;
@@ -193,7 +195,12 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
-      space: options.parentMemoName ? undefined : (options.space ?? state.metadata.space),
+      // A comment is placed only to carry the Space audience, and then in its parent's Space.
+      space: options.parentMemoName
+        ? state.metadata.visibility === Visibility.SPACE
+          ? options.parentSpace
+          : undefined
+        : (options.space ?? state.metadata.space),
     });
 
     const memo = await operations.createMemo(memoData, options.parentMemoName);

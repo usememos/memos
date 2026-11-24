@@ -52,7 +52,6 @@
     "attachments": "Anhänge",
     "avatar": "Avatar",
     "basic": "Allgemeines",
-    "browse": "Durchsuchen",
     "calendar": "Kalender",
     "cancel": "Abbrechen",
     "clear": "Leeren",
@@ -447,7 +446,6 @@
     "parent-unavailable": "Übergeordnetes Memo nicht verfügbar",
     "parent-unavailable-description": "Es wurde möglicherweise gelöscht oder Sie haben keinen Zugriff mehr darauf.",
     "moved": "Memo verschoben",
-    "back-to": "Zurück zu {{source}}",
     "connections": "Verbindungen",
     "grid-compact-hint": "Längere Notizen einklappen. Bei Rasterlayouts immer aktiviert.",
     "layout": "Layout",
@@ -1308,7 +1306,6 @@
     "select-month": "Monat auswählen"
   },
   "space": {
-    "all-spaces": "Alle Bereiche",
     "icon": {
       "change": "Bereichssymbol ändern",
       "kind": "Symboltyp",

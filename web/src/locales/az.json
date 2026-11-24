@@ -156,7 +156,6 @@
     "attachments": "Qoşmalar",
     "avatar": "Avatar",
     "basic": "Əsas",
-    "browse": "Baxış",
     "calendar": "Təqvim",
     "cancel": "Ləğv et",
     "clear": "Təmizlə",
@@ -469,7 +468,6 @@
     "parent-unavailable": "Ana qeyd əlçatan deyil",
     "parent-unavailable-description": "Silinmiş ola bilər və ya artıq giriş icazəniz yoxdur.",
     "moved": "Memo köçürüldü",
-    "back-to": "{{source}} bölməsinə qayıt",
     "click-to-show-sensitive-content": "Həssas məzmunu göstərmək üçün klikləyin",
     "comment": {
       "self": "Şərhlər",
@@ -1303,7 +1301,6 @@
     }
   },
   "space": {
-    "all-spaces": "Bütün məkanlar",
     "icon": {
       "change": "Sahə ikonunu dəyiş",
       "kind": "İkon növü",

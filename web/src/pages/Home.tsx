@@ -36,7 +36,7 @@ const Home = () => {
   const onOwnHome = Boolean(user && creatorUsername === user.username);
   const welcomeGuide = useWelcomeGuide(onOwnHome);
   // Pinning is the owner's arrangement of their own memos, so it only shapes a single
-  // creator's feed; a mixed-author feed like Explore stays purely chronological.
+  // creator's feed; a mixed-author feed like Explore or a Space stays purely chronological.
   const honorPinned = Boolean(creatorUsername);
 
   const { listSort, orderBy } = useMemoSorting({
@@ -76,7 +76,7 @@ const Home = () => {
 
             return (
               <MemoEditor
-                // Each Space keeps its own Home draft; the editor restarts when the Space changes.
+                // Each Space keeps its own timeline draft; the editor restarts when the Space changes.
                 draft={{ scope: "home", space: selectedSpaceName, createTime: defaultCreateTime }}
                 autoFocus={claimHomeAutoFocus}
                 className={useGrid ? undefined : "mb-2"}

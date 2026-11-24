@@ -25,6 +25,10 @@ function MemosLogo({ collapsed, size = "md", as: Component = "div", className }:
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const title = instanceGeneralSetting.customProfile?.title || "Memos";
   const logoUrl = getCustomLogoUrl(instanceGeneralSetting.customProfile?.logoUrl);
+  // The bird is narrower than it is tall, so its name lands on the sidebar's label rail. A custom
+  // logo is square: in the header it takes a row's 20px slot and 4px gap to land there too.
+  const railLogo = Boolean(logoUrl) && size === "header";
+  const logoSize = railLogo ? 20 : scale.mark;
 
   return (
     <Component className={cn("memos-logo w-fit min-w-0 max-w-full", className)}>
@@ -32,14 +36,15 @@ function MemosLogo({ collapsed, size = "md", as: Component = "div", className }:
         label={title}
         size={scale.text}
         collapsed={collapsed}
+        className={railLogo ? "gap-1" : undefined}
         wrap={size === "lg" || size === "hero"}
         mark={
           logoUrl ? (
             <img
               src={logoUrl}
-              width={scale.mark}
-              height={scale.mark}
-              style={{ width: scale.mark, height: scale.mark }}
+              width={logoSize}
+              height={logoSize}
+              style={{ width: logoSize, height: logoSize }}
               className="shrink-0 select-none object-contain"
               alt={collapsed ? title : ""}
               draggable={false}

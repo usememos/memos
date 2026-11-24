@@ -53,7 +53,6 @@
     "attachments": "添付ファイル",
     "avatar": "アイコン",
     "basic": "基本設定",
-    "browse": "閲覧",
     "calendar": "カレンダー",
     "cancel": "キャンセル",
     "clear": "クリア",
@@ -456,7 +455,6 @@
     "parent-unavailable": "親メモが利用できません",
     "parent-unavailable-description": "削除されたか、アクセス権がなくなった可能性があります。",
     "moved": "メモが移動されました",
-    "back-to": "{{source}}に戻る",
     "connections": "接続",
     "on-this-memo": "このメモについて",
     "parent-memo": "親メモ",
@@ -1308,7 +1306,6 @@
     "select-month": "月を選択"
   },
   "space": {
-    "all-spaces": "すべてのスペース",
     "icon": {
       "change": "スペースアイコンの変更",
       "kind": "アイコンの種類",

@@ -90,7 +90,6 @@
     "attachments": "附件",
     "avatar": "头像",
     "basic": "基础",
-    "browse": "浏览",
     "calendar": "日历",
     "cancel": "取消",
     "clear": "清除",
@@ -393,7 +392,6 @@
     "no-matching-memos": "没有符合条件的 Memo",
     "clear-filters": "清除筛选",
     "pinned": "已置顶",
-    "back-to": "返回{{source}}",
     "click-to-show-sensitive-content": "点击显示敏感内容",
     "comment": {
       "self": "评论",
@@ -1294,7 +1292,6 @@
     }
   },
   "space": {
-    "all-spaces": "所有空间",
     "icon": {
       "change": "更改空间图标",
       "kind": "图标类型",

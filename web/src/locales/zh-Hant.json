@@ -133,7 +133,6 @@
     "attachments": "附件",
     "avatar": "頭像",
     "basic": "基礎",
-    "browse": "瀏覽",
     "calendar": "日曆",
     "cancel": "取消",
     "clear": "清除",
@@ -536,7 +535,6 @@
     "parent-unavailable": "父備忘錄不可用",
     "parent-unavailable-description": "它可能已被刪除，或者您可能已失去存取權限。",
     "moved": "備忘錄已移動",
-    "back-to": "返回 {{source}}",
     "connections": "關聯",
     "on-this-memo": "在此備忘錄中",
     "parent-memo": "父備忘錄",
@@ -1266,7 +1264,6 @@
     }
   },
   "space": {
-    "all-spaces": "所有空間",
     "unavailable": "空間不存在或你沒有存取權限。",
     "back-to-memos": "返回 Memos",
     "create": "建立空間",

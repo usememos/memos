@@ -50,7 +50,6 @@ describe("router configuration", () => {
 
   it.each([
     "/spaces/product",
-    "/spaces/product/explore",
     "/spaces/product/calendar/2026/09",
     "/spaces/product/attachments",
   ])("gates %s with authentication and Space access", (path) => {
@@ -59,8 +58,9 @@ describe("router configuration", () => {
     expect(types).toContain(SpaceRoute);
     expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
   });
-  it("keeps unknown Space subroutes outside collection pages", () => {
-    const matches = matchRoutes(routeConfig, "/spaces/product/unknown");
+  // A Space has one timeline, so it has no Explore page of its own.
+  it.each(["/spaces/product/unknown", "/spaces/product/explore"])("keeps %s outside collection pages", (path) => {
+    const matches = matchRoutes(routeConfig, path);
     expect(matches?.at(-1)?.route.path).toBe("*");
     expect(matches?.map(({ route }) => elementType(route))).not.toContain(SpaceRoute);
   });

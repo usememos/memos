@@ -52,7 +52,6 @@
     "attachments": "Vedlegg",
     "avatar": "Avatar",
     "basic": "Grunnleggende",
-    "browse": "Bla gjennom",
     "calendar": "Kalender",
     "cancel": "Avbryt",
     "clear": "Tøm",
@@ -447,7 +446,6 @@
     "parent-unavailable": "Overordnet notat er ikke tilgjengelig",
     "parent-unavailable-description": "Det kan ha blitt slettet, eller du har kanskje ikke lenger tilgang.",
     "moved": "Notat flyttet",
-    "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
     "grid-compact-hint": "Fold sammen lange memoer. Alltid aktivert i rutenettoppsett.",
     "layout": "Oppsett",
@@ -1308,7 +1306,6 @@
     "select-month": "Velg måned"
   },
   "space": {
-    "all-spaces": "Alle rom",
     "icon": {
       "change": "Endre romikon",
       "kind": "Ikontype",

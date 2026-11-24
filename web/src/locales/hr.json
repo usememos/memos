@@ -52,7 +52,6 @@
     "attachments": "Privici",
     "avatar": "Avatar",
     "basic": "Osnovno",
-    "browse": "Pregledaj",
     "calendar": "Kalendar",
     "cancel": "Otkaži",
     "clear": "Očisti",
@@ -448,7 +447,6 @@
     "parent-unavailable": "Nadređeni podsjetnik nije dostupan",
     "parent-unavailable-description": "Možda je izbrisana ili više nemate pristup.",
     "moved": "Bilješka je premještena",
-    "back-to": "Natrag na {{source}}",
     "connections": "Veze",
     "grid-compact-hint": "Sažmi dulje memoe. Uvijek omogućeno u mrežnim rasporedima.",
     "layout": "Raspored",
@@ -1309,7 +1307,6 @@
     "select-month": "Odaberite mjesec"
   },
   "space": {
-    "all-spaces": "Svi prostori",
     "icon": {
       "change": "Promijeni ikonu prostora",
       "kind": "Vrsta ikone",

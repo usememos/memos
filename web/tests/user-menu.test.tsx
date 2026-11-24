@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { badgeClasses } from "@usememos/ui";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SCOPE_PANEL_ROW_CLASSES } from "@/components/AppSidebar/sidebar-layout";
@@ -23,7 +22,6 @@ vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => ({ setMobi
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ userGeneralSetting: undefined, refetchSettings: mocks.refetchSettings, logout: mocks.logout }),
 }));
-vi.mock("@/hooks/useLiveMemoRefresh", () => ({ useSSEConnectionStatus: () => "connected" }));
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => mocks.currentUser,
 }));
@@ -78,20 +76,31 @@ describe("User menu panel", () => {
     }
   });
 
-  it("places Inbox beside the account and Archived directly above Settings", () => {
+  it("opens with the user's own pages: Inbox, then Archived, then Settings", () => {
     renderMenu("/archived");
-    const accountHeader = screen.getByText("Steven").parentElement!;
-    const inbox = within(accountHeader).getByRole("link", { name: "common.inbox" });
+    const pages = within(screen.getByRole("navigation", { name: "setting.sso.account" })).getAllByRole("link");
+    expect(pages.map((link) => link.getAttribute("href"))).toEqual(["/inbox", "/archived", "/setting"]);
+    // The account's name and avatar are the sidebar's footer row, which opens this menu.
+    expect(screen.queryByText("Steven")).not.toBeInTheDocument();
     const archived = screen.getByRole("link", { name: "common.archived" });
-    expect(screen.queryByText("setting.sso.account")).not.toBeInTheDocument();
-    expect(inbox).toHaveClass(...badgeClasses({ tone: "neutral" }).split(" "));
-    expect(inbox.compareDocumentPosition(archived) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(archived.nextElementSibling).toBe(screen.getByRole("link", { name: "common.settings" }));
     expect(archived).toHaveAttribute("aria-current", "page");
-    expect(archived).toHaveAttribute("href", "/archived");
+    // Pages, then preferences, then About and Sign out.
+    const theme = screen.getByRole("button", { name: /setting.preference.theme/ });
+    const about = screen.getByRole("link", { name: "common.about" });
+    expect(archived.compareDocumentPosition(theme) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(theme.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(archived);
     expect(mocks.onClose).toHaveBeenCalledOnce();
     expect(mocks.setMobileOpen).toHaveBeenCalledWith(false);
+  });
+
+  it.each([
+    ["/setting", "common.settings"],
+    ["/about", "common.about"],
+  ])("marks the row of the current page on %s", (path, name) => {
+    renderMenu(path);
+    expect(screen.getByRole("link", { name })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "common.archived" })).not.toHaveAttribute("aria-current");
   });
 
   it("draws every row on one panel row grammar so icons share one column", () => {
@@ -99,6 +108,7 @@ describe("User menu panel", () => {
     const rows = [
       screen.getByRole("button", { name: /setting.preference.theme/ }),
       screen.getByRole("button", { name: /common.language/ }),
+      screen.getByRole("link", { name: "common.inbox" }),
       screen.getByRole("link", { name: "common.archived" }),
       screen.getByRole("link", { name: "common.settings" }),
       screen.getByRole("link", { name: "common.about" }),
@@ -116,6 +126,7 @@ describe("User menu panel", () => {
     renderMenu("/Inbox/");
     const inbox = screen.getByRole("link", { name: "common.inbox, 2 inbox.unread" });
     expect(inbox).toHaveAttribute("aria-current", "page");
+    expect(inbox).toHaveClass("mu-menu-item");
     expect(inbox).toHaveTextContent("2");
     expect(inbox).toHaveAttribute("href", "/inbox");
   });

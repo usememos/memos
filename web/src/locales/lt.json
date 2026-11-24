@@ -90,7 +90,6 @@
     "attachments": "Priedai",
     "avatar": "Avataras",
     "basic": "Pagrindinis",
-    "browse": "Peržiūra",
     "calendar": "Kalendorius",
     "cancel": "Atšaukti",
     "clear": "Aišku",
@@ -487,7 +486,6 @@
     "parent-unavailable": "Pagrindinis priminimas nepasiekiamas",
     "parent-unavailable-description": "Jis galėjo būti ištrintas arba jūs nebeturite prieigos.",
     "moved": "Priminimas perkeltas",
-    "back-to": "Atgal į {{source}}",
     "connections": "Ryšiai",
     "grid-compact-hint": "Sutraukti ilgesnes atmintines. Tinklelio išdėstymuose visada įjungta.",
     "layout": "Išdėstymas",
@@ -1310,7 +1308,6 @@
     "select-month": "Pasirinkite mėnesį"
   },
   "space": {
-    "all-spaces": "Visos erdvės",
     "icon": {
       "change": "Keisti erdvės piktogramą",
       "kind": "Piktogramos tipas",

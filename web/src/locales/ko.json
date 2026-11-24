@@ -52,7 +52,6 @@
     "attachments": "첨부파일",
     "avatar": "아바타",
     "basic": "기본",
-    "browse": "둘러보기",
     "calendar": "달력",
     "cancel": "취소",
     "clear": "정리하기",
@@ -434,7 +433,6 @@
     "parent-unavailable": "상위 메모를 사용할 수 없습니다.",
     "parent-unavailable-description": "메모가 삭제되었거나 더 이상 접근 권한이 없을 수 있습니다.",
     "moved": "메모가 이동되었습니다.",
-    "back-to": "{{source}}으로 돌아가기",
     "count-memos-updated-in-date": "{{count}} {{memos}}이 {{date}}에 업데이트되었습니다.",
     "connections": "연결",
     "grid-compact-hint": "긴 메모를 접습니다. 그리드 레이아웃에서는 항상 활성화됩니다.",
@@ -1308,7 +1306,6 @@
     "text": "텍스트"
   },
   "space": {
-    "all-spaces": "모든 스페이스",
     "icon": {
       "change": "공간 아이콘 변경",
       "kind": "아이콘 유형",

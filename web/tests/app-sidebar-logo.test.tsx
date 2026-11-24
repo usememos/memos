@@ -231,18 +231,20 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    const switcher = screen.getByRole("button", { name: "space.switch: common.memos" });
+    // Signed in with no creator chosen, every collection view is Explore, and the title says so.
+    const switcher = screen.getByRole("button", { name: "space.switch: common.explore" });
     const header = switcher.closest("[data-sidebar-header]");
     const compose = screen.getByRole("button", { name: "editor.new-memo" });
     const primaryNavigation = screen.getByRole("navigation", { name: "common.primary-navigation" });
     const search = within(primaryNavigation).getByRole("button", { name: "common.search" });
 
     expect(header).toHaveClass("h-13", "px-3");
-    expect(switcher).toHaveTextContent("Memos logo");
+    expect(switcher).toHaveTextContent("common.explore");
+    expect(within(switcher).queryByText("Memos logo")).not.toBeInTheDocument();
+    expect(switcher.querySelector(".lucide-compass")).toHaveClass("size-5");
     expect(switcher).toHaveClass("min-w-0", "h-9", "gap-2", "px-2");
     expect(switcher).not.toHaveClass("px-1");
     expect(switcher.firstElementChild).not.toHaveClass("flex-1");
-    expect(within(switcher).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
     expect(switcher.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
     expect(switcher.querySelector(".lucide-chevron-down")).toBeNull();
     expect(compose).toHaveClass("mu-button", "mu-button-neutral", "mu-button-icon", "mu-s-md");
@@ -264,9 +266,8 @@ describe("App sidebar logo", () => {
 
   it.each([
     "/spaces/product",
-    "/spaces/product/explore",
+    "/spaces/product/",
     "/spaces/product/attachments",
-    "/spaces/product/Explore/",
     "/spaces/product/Attachments/",
   ])("shows the selected Space only on collection route %s", (path) => {
     const product = { name: "spaces/product", title: "Product", description: "" };
@@ -309,7 +310,7 @@ describe("App sidebar logo", () => {
 
   it("scopes collection statistics to the selected Space", () => {
     render(
-      <MemoryRouter initialEntries={["/spaces/product/explore"]}>
+      <MemoryRouter initialEntries={["/spaces/product"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
@@ -340,15 +341,71 @@ describe("App sidebar logo", () => {
     expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "archived" }));
   });
 
-  it("shows signed-in account actions in the top switcher", () => {
+  it("keeps the signed-in account in a one-row footer that opens its menu", () => {
+    authState.currentUser = { name: "users/test", username: "test", displayName: "Tess" } as typeof authState.currentUser;
     render(
       <MemoryRouter initialEntries={["/inbox"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
-    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByText("Tess")).toBeInTheDocument();
+    const row = footer.getByText("Tess").parentElement as HTMLElement;
+    expect(row).toHaveClass(
+      "h-(--mu-row-height)",
+      "rounded-(--mu-row-radius)",
+      "px-2",
+      "pe-[3px]",
+      "mu-label-sm",
+      "text-mu-text-secondary",
+    );
+    expect(row.querySelector(".rounded-full")).toHaveClass("size-[18px]");
+    // Nothing unread: the row carries no Inbox mark.
+    expect(footer.queryByRole("link")).not.toBeInTheDocument();
+    // The title's list holds places only.
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+    expect(screen.queryByRole("button", { name: "User menu" })).not.toBeInTheDocument();
+    fireEvent.click(footer.getByRole("button", { name: "setting.sso.account: Tess" }));
     expect(screen.getByRole("button", { name: "User menu" })).toBeInTheDocument();
+  });
+
+  it("marks the account row with the unread Inbox count only while something is unread", () => {
+    authState.notifications = [{ status: 1 }, { status: 1 }, { status: 2 }];
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+    const inbox = within(screen.getByRole("contentinfo")).getByRole("link", { name: "common.inbox, 2 inbox.unread" });
+    expect(inbox).toHaveAttribute("href", "/inbox");
+    // It draws 20px tall but takes the footer's 44px, and hovering it clears the row's own fill.
+    expect(inbox).toHaveClass("after:-top-[9px]", "after:-bottom-[17px]", "hover:bg-mu-hover");
+    expect(inbox.parentElement).toHaveClass("has-[[data-row-control]:hover]:bg-transparent");
+    expect(inbox).toHaveTextContent("2");
+    // A link of its own beside the row's trigger, never nested inside it.
+    expect(inbox.closest("button")).toBeNull();
+    fireEvent.click(inbox);
+    expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
+  });
+
+  it("keeps the account row as the scroller's sticky foot and softens the list under it, with no line", () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+    const footer = screen.getByRole("contentinfo");
+    const scroller = document.querySelector("[data-sidebar-scroller]") as HTMLElement;
+    // Inside the scroller, so its scrollbar stays above the row and a wheel on the row scrolls the list.
+    expect(footer.parentElement).toBe(scroller);
+    expect(scroller).toHaveClass("overflow-y-auto", "flex-col", "scroll-pb-16");
+    expect(footer).toHaveClass("sticky", "bottom-0", "opaque:border-t");
+    expect(footer.className).not.toMatch(/(^| )border-t/);
+    // The last row stops clear of the row's soft edge.
+    expect(footer.previousElementSibling).toHaveClass("grow", "pb-5");
+    const veil = footer.querySelector("[data-sidebar-veil]") as HTMLElement;
+    expect(veil).toHaveClass("pointer-events-none", "absolute", "bottom-0", "backdrop-blur-[5px]", "opaque:hidden");
+    expect(veil).toHaveAttribute("aria-hidden", "true");
   });
 
   it("keeps Attachments active after route normalization", () => {
@@ -409,9 +466,28 @@ describe("App sidebar logo", () => {
     expect(navigation.queryByRole("link", { name: "common.about" })).not.toBeInTheDocument();
     expect(navigation.queryByRole("link", { name: "common.attachments" })).not.toBeInTheDocument();
     const signIn = screen.getByRole("link", { name: "common.sign-in-to-memos" });
-    expect(signIn).toHaveClass("w-full", "px-5");
-    expect(signIn).not.toHaveClass("rounded-mu-md");
-    expect(signIn.closest("footer")).not.toBeNull();
+    const footer = within(signIn.closest("footer") as HTMLElement);
+    expect(signIn).toHaveAttribute("href", "/auth");
+    // The guest's row is the user's row with nobody in it: same box, a blank avatar, the label where the name goes.
+    const row = signIn.parentElement as HTMLElement;
+    expect(row).toHaveClass(
+      "h-(--mu-row-height)",
+      "rounded-(--mu-row-radius)",
+      "px-2",
+      "pe-[3px]",
+      "mu-label-sm",
+      "text-mu-text-secondary",
+    );
+    expect(footer.getByText("common.sign-in-to-memos")).toHaveAttribute("data-sidebar-label");
+    expect(row.querySelector(".rounded-full")).toHaveClass("size-[18px]", "bg-mu-well");
+    // Guests keep preferences and About behind the row's ⋯, a control of its own beside the sign-in link.
+    const more = footer.getByRole("button", { name: "common.more" });
+    expect(more.closest("a")).toBeNull();
+    expect(more).toHaveClass("size-5", "after:-top-[9px]", "after:-bottom-[17px]", "after:-end-[17px]");
+    // The visible label is decoration: the link under the row carries the words once.
+    expect(footer.getByText("common.sign-in-to-memos")).toHaveAttribute("aria-hidden", "true");
+    fireEvent.click(more);
+    expect(screen.getByRole("button", { name: "User menu" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "editor.new-memo" })).not.toBeInTheDocument();
   });
 
@@ -475,7 +551,6 @@ describe("App sidebar logo", () => {
     expect(attachments).toHaveAttribute("href", "/attachments");
     expectCollapsedNavPill(attachments, "common.attachments");
     expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
   });
 
   it.each(["/about", "/About/"])("marks the common About link active on %s", (path) => {
@@ -559,12 +634,7 @@ describe("App sidebar logo", () => {
     expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
   });
 
-  it.each([
-    "/explore",
-    "/?creator=alice",
-    "/spaces/test",
-    "/spaces/test/explore",
-  ])("shows Timeline display settings in every Timeline scope: %s", (path) => {
+  it.each(["/explore", "/?creator=alice", "/spaces/test"])("shows Timeline display settings in every Timeline scope: %s", (path) => {
     render(
       <MemoryRouter initialEntries={[path]}>
         <AppSidebar />
@@ -635,7 +705,6 @@ describe("App sidebar logo", () => {
     const home = screen.getByRole("link", { name: "common.timeline" });
     expectCollapsedNavPill(home, "common.timeline");
     expect(home).toHaveAttribute("href", "/explore");
-    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
     expectActiveNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
   });
 

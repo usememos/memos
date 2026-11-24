@@ -6,8 +6,6 @@ const MARK_SCALE = {
   xl: { mark: "size-11 rounded-mu-lg", icon: 24, emoji: "text-2xl" },
   lg: { mark: "size-9 rounded-[7px]", icon: 20, emoji: "text-xl" },
   md: { mark: "size-7 rounded-[7px]", icon: 16, emoji: "text-base" },
-  /** Primary chrome: kept in step with MemosLogo's header scale. */
-  header: { mark: "size-6 rounded-[6px]", icon: 14, emoji: "text-base" },
   toolbar: { mark: "size-5 rounded-[5px]", icon: 16, emoji: "text-base" },
   sm: { mark: "size-5 rounded-[5px]", icon: 12, emoji: "text-sm" },
 } as const;

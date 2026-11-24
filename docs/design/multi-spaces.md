@@ -243,3 +243,33 @@ with its own author, audience, placement, and lifecycle. Three things in the bod
   read of it already allowed.
 
 The change was made so that text search and tag filters can reach comments (usememos/memos#6354) without a comment-specific list flag.
+
+### 2026-11-23: a Space has one timeline, and what is written there starts shared
+
+The API and the read policy are unchanged. Two defaults in the web client made a shared Space look empty to its members
+(usememos/memos#6431), and both are now the other way round:
+
+- **A Space has one timeline.** The body's "The active Space scopes collaborative resource browsing and creation, including Home,
+  Explore" gave a Space a personal Home, limited to the viewer's own memos, and a separate Explore for everyone's. A Space now has a single
+  timeline at `/spaces/{space}` with every member's readable memos; `/spaces/{space}/explore` is removed, and the timeline is never
+  narrowed to one creator. Home and Explore remain the two timelines outside a Space, and leaving a Space returns to Home. Like
+  Explore, the Space's timeline is chronological: pinned memos lead only a single creator's timeline.
+- **A new memo starts with the audience of where it is written.** A memo composed in a Space, or placed in one from the composer
+  before its audience was changed, starts with the `SPACE` audience instead of the author's default, which could not name a Space. A
+  comment starts with its parent's audience; one that takes the `SPACE` audience is placed in its parent's Space, which the API already
+  allowed. These are starting values only: the author can still choose any audience, placement and audience stay independent as the
+  core model says, and editing or moving an existing memo does not change its audience.
+
+### 2026-11-24: the sidebar title lists places, and the account sits in the footer
+
+With one timeline per Space, the title's menu lost Home and Explore inside a Space and looked like a different menu there. The menu
+and the account are now two things in two places:
+
+- **The title names where you are and lists the places.** Home (your own memos), Explore (everyone's readable memos), then every Space
+  the user belongs to, as rows of one list with the current place filled. The separate Home/Explore control, the collapsed Space picker
+  and its "All spaces" entry are gone: Home and Explore are the entries outside every Space, and choosing one leaves the Space while
+  keeping the current collection view. On another person's memos the title is that person and no place is marked. The list has no
+  scroll area of its own; many Spaces make it taller.
+- **The account is the sidebar's last row.** One row with the user's avatar and name opens the account menu (Inbox, Archived, Settings,
+  theme and language, About, Sign out). The row shows an Inbox mark with the unread count only while something is unread, so an
+  invitation to a Space is visible without opening a menu. Guests get a sign-in row whose menu holds the preferences and About.

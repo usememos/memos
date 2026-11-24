@@ -52,7 +52,6 @@
     "attachments": "مرفقات",
     "avatar": "الصورة الشخصية",
     "basic": "بسيط",
-    "browse": "تصفح",
     "calendar": "التقويم",
     "cancel": "ألغِ",
     "clear": "مسح",
@@ -438,7 +437,6 @@
     "parent-unavailable": "المذكرة الأم غير متوفرة",
     "parent-unavailable-description": "ربما تم حذفها أو ربما لم يعد لديك صلاحية الوصول إليها.",
     "moved": "تم نقل المذكرة",
-    "back-to": "العودة إلى {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} تم التحديث في {{date}}",
     "connections": "الاتصالات",
     "grid-compact-hint": "طيّ المذكرات الطويلة. مفعّل دائمًا في تخطيطات الشبكة.",
@@ -1312,7 +1310,6 @@
     "text": "نص"
   },
   "space": {
-    "all-spaces": "جميع المساحات",
     "icon": {
       "change": "تغيير رمز المساحة",
       "kind": "نوع الرمز",

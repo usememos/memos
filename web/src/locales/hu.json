@@ -52,7 +52,6 @@
     "attachments": "Mellékletek",
     "avatar": "Avatar",
     "basic": "Általános",
-    "browse": "Böngészés",
     "calendar": "Naptár",
     "cancel": "Mégsem",
     "clear": "Törlés",
@@ -447,7 +446,6 @@
     "parent-unavailable": "A szülő feljegyzés nem érhető el.",
     "parent-unavailable-description": "Lehet, hogy törölték, vagy már nincs hozzáférésed.",
     "moved": "Feljegyzés áthelyezve.",
-    "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
     "grid-compact-hint": "Hosszabb jegyzetek összecsukása. Rácsos elrendezésben mindig bekapcsolva.",
     "layout": "Elrendezés",
@@ -1308,7 +1306,6 @@
     "select-month": "Hónap kiválasztása."
   },
   "space": {
-    "all-spaces": "Összes tér",
     "icon": {
       "change": "Tér ikonjának módosítása",
       "kind": "Ikontípus",

@@ -19,9 +19,6 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ generalSetting: {} }) }));
-vi.mock("@/components/UserMenu", () => ({
-  default: () => <button type="button">Steven account</button>,
-}));
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => state.currentUser,
 }));
@@ -58,7 +55,7 @@ vi.mock("@/contexts/SpaceContext", () => ({
 }));
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
-  useTranslate: () => (key: string, options?: { source: string }) => (options?.source ? `Back to ${options.source}` : key),
+  useTranslate: () => (key: string) => key,
 }));
 
 const renderAt = (path = "/", size: "md" | "header" = "md") => {
@@ -94,117 +91,200 @@ describe("SpaceSwitcher", () => {
     state.setMobileOpen.mockClear();
   });
 
-  it("shows an independent creator choice, a collapsed Space selector, and an icon create action", () => {
+  it("names Home in the title and lists Home, Explore and every Space as one list of places", () => {
     renderAt();
+    const trigger = screen.getByRole("button", { name: "space.switch: common.home" });
+    expect(trigger).toHaveAttribute("title", "common.home");
+    // The title's mark is a bare 20px glyph, like the wordmark's bird: no tile behind it.
+    const glyph = trigger.querySelector("svg.lucide-house") as SVGElement;
+    expect(glyph).toHaveClass("size-5");
+    expect(glyph.parentElement?.className).not.toMatch(/\bbg-/);
     openSwitcher();
-    const userButton = screen.getByRole("link", { name: "common.home" });
-    const exploreButton = screen.getByRole("link", { name: "common.explore" });
-    expect(screen.getByRole("navigation", { name: "common.browse" })).toBeInTheDocument();
-    expect(exploreButton).not.toHaveAttribute("aria-current");
-    expect(userButton).toHaveAttribute("aria-current", "page");
-    expect(userButton.compareDocumentPosition(exploreButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByRole("combobox", { name: "space.switch" })).toHaveTextContent("space.all-spaces");
-    expect(screen.queryByText("Product")).not.toBeInTheDocument();
+    const places = within(screen.getByRole("navigation", { name: "space.switch" }));
+    expect(places.getAllByRole("link").map((link) => link.textContent)).toEqual(["common.home", "common.explore", "Product", "Research"]);
+    expect(places.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
+    expect(places.getByRole("link", { name: "common.explore" })).not.toHaveAttribute("aria-current");
+    expect(places.getByRole("link", { name: "Product" })).toHaveAttribute("href", "/spaces/product");
+    expect(places.getByRole("link", { name: "Product" })).not.toHaveAttribute("aria-current");
+    // Fixed labels carry no tooltip repeating them; a Space's name, which a row may cut off, does.
+    expect(places.getByRole("link", { name: "common.home" })).not.toHaveAttribute("title");
+    expect(places.getByRole("link", { name: "Product" })).toHaveAttribute("title", "Product");
+    // The current row is filled and a hovered one is paler, with 2px between rows, so the two never fuse.
+    expect(places.getByRole("link", { name: "common.home" })).toHaveClass("aria-[current=page]:bg-mu-hover", "hover:bg-mu-hover/65");
+    expect(screen.getByRole("navigation", { name: "space.switch" })).toHaveClass("flex-col", "gap-0.5");
+    // The Spaces are rows of the list itself: no picker to open, no "all spaces" entry.
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "space.create" })).toHaveClass("mu-button-icon", "mu-s-xs");
-    expect(screen.getByRole("button", { name: "Steven account" })).toBeInTheDocument();
   });
 
-  it("switches Home to Explore without closing the menu", () => {
+  it("walks the places with the arrow keys", () => {
+    renderAt();
+    openSwitcher();
+    const places = screen.getByRole("navigation", { name: "space.switch" });
+    const links = within(places).getAllByRole("link");
+    links[0].focus();
+    fireEvent.keyDown(links[0], { key: "ArrowDown" });
+    expect(links[1]).toHaveFocus();
+    fireEvent.keyDown(links[1], { key: "End" });
+    expect(links[3]).toHaveFocus();
+    fireEvent.keyDown(links[3], { key: "ArrowDown" });
+    expect(links[0]).toHaveFocus();
+    fireEvent.keyDown(links[0], { key: "ArrowUp" });
+    expect(links[3]).toHaveFocus();
+  });
+
+  it("drops the Spaces heading when it would name nothing", () => {
+    state.spaces = [];
+    renderAt("/?creator=alice");
+    openSwitcher();
+    expect(screen.queryByText("space.spaces")).not.toBeInTheDocument();
+  });
+
+  it("holds places only: the account menu lives in the sidebar footer", () => {
+    renderAt();
+    openSwitcher();
+    const panel = within(screen.getByRole("dialog"));
+    for (const name of ["common.settings", "common.archived", "common.about", "common.inbox"]) {
+      expect(panel.queryByRole("link", { name })).not.toBeInTheDocument();
+    }
+    expect(panel.queryByRole("button", { name: "common.sign-out" })).not.toBeInTheDocument();
+  });
+
+  it("goes to the chosen place and closes the list", async () => {
     const router = renderAt("/");
     openSwitcher();
     fireEvent.click(screen.getByRole("link", { name: "common.explore" }));
     expect(router.state.location.pathname).toBe("/explore");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    openSwitcher();
     expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
     fireEvent.click(screen.getByRole("link", { name: "common.home" }));
     expect(router.state.location.pathname).toBe("/");
     expect(router.state.location.search).toBe("");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-  });
-
-  it("changes creator while preserving the Space and other query parameters", () => {
-    state.selectedSpaceName = "spaces/product";
-    state.selectedSpace = state.spaces[0];
-    const router = renderAt("/spaces/product/calendar/2026/09?filter=tag%3Awork");
-    openSwitcher();
-    fireEvent.click(screen.getByRole("link", { name: "common.home" }));
-    expect(router.state.location.pathname).toBe("/spaces/product/calendar/2026/09");
-    expect(new URLSearchParams(router.state.location.search).get("creator")).toBe("steven");
-    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
-
-    fireEvent.click(screen.getByRole("link", { name: "common.explore" }));
-    expect(new URLSearchParams(router.state.location.search).get("creator")).toBeNull();
-    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
-  });
-
-  it("opens Space choices on demand and preserves creator when choosing one", async () => {
-    const router = renderAt("/?creator=alice");
-    openSwitcher();
-    expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
-    expect(screen.queryByText("Product")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
-    const product = await screen.findByRole("option", { name: "Product" });
-    fireEvent.pointerDown(product, { pointerType: "mouse" });
-    fireEvent.click(product, { pointerType: "mouse" });
-    await waitFor(() => expect(router.state.location.pathname).toBe("/spaces/product"));
-    expect(new URLSearchParams(router.state.location.search).get("creator")).toBe("alice");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(state.setMobileOpen).not.toHaveBeenCalled();
   });
 
-  it("uses the selected author in the user slot and trigger", () => {
+  it("changes place while preserving the view and other query parameters", () => {
+    const router = renderAt("/calendar/2026/09?filter=tag%3Awork");
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(screen.getByRole("link", { name: "common.home" }));
+    expect(router.state.location.pathname).toBe("/calendar/2026/09");
+    expect(new URLSearchParams(router.state.location.search).get("creator")).toBe("steven");
+    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
+
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(screen.getByRole("link", { name: "common.explore" }));
+    expect(new URLSearchParams(router.state.location.search).get("creator")).toBeNull();
+    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
+  });
+
+  it("enters a Space's timeline without the creator", async () => {
+    const router = renderAt("/?creator=alice");
+    openSwitcher();
+    expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Product" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/spaces/product"));
+    expect(router.state.location.search).toBe("");
+    expect(state.setMobileOpen).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { path: "/spaces/product", home: "/", explore: "/explore" },
+    { path: "/spaces/product/calendar/2026/09", home: "/calendar/2026/09?creator=steven", explore: "/calendar/2026/09" },
+  ])("keeps Home and Explore inside a Space as the ways out of it: $path", ({ path, home, explore }) => {
     state.selectedSpaceName = "spaces/product";
     state.selectedSpace = state.spaces[0];
-    renderAt("/spaces/product?creator=alice", "header");
+    renderAt(path);
+    expect(screen.getByRole("button", { name: "space.switch: Product" })).toBeInTheDocument();
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("href", home);
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("href", explore);
+    expect(screen.getByRole("link", { name: "common.home" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: "common.explore" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: "Product" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "space.create" })).toBeInTheDocument();
+  });
+
+  it("uses the selected author in the trigger and marks no place on another person's memos", () => {
+    state.selectedSpaceName = "spaces/product";
+    state.selectedSpace = state.spaces[0];
+    renderAt("/spaces/product/map?creator=alice", "header");
     const trigger = screen.getByRole("button", { name: "space.switch: Alice / Product" });
     // With a Space selected, the creator shows as an avatar only; its name stays in the tooltip.
     expect(trigger).toHaveAttribute("title", "Alice / Product");
     expect(within(trigger).queryByText("Alice")).not.toBeInTheDocument();
     expect(within(trigger).getByText("Product")).toHaveClass("truncate");
     expect(trigger).toHaveClass("h-9", "gap-2", "px-2");
+    // The mark fills a row's 20px slot and the name follows 4px on, so the title starts on the rows' label rail.
+    expect(within(trigger).getByText("Product").parentElement).toHaveClass("gap-1");
+    expect(trigger.querySelector(".rounded-full")).toHaveClass("size-[18px]");
+    expect(trigger.querySelector(".rounded-full")?.parentElement).toHaveClass("size-5");
     openSwitcher();
-    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to common.home" })).toHaveAttribute("href", "/spaces/product");
+    const places = within(screen.getByRole("navigation", { name: "space.switch" }));
+    for (const link of places.getAllByRole("link")) expect(link).not.toHaveAttribute("aria-current");
+    expect(places.getByRole("link", { name: "common.home" })).toHaveAttribute("href", "/map?creator=steven");
+    expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
   });
 
-  it("returns from another creator to the selected Space Home without closing the menu", () => {
-    state.selectedSpaceName = "spaces/product";
-    state.selectedSpace = state.spaces[0];
-    const router = renderAt("/spaces/product/map?creator=alice");
+  it("lists a Space the user is viewing without being a member of", () => {
+    state.selectedSpaceName = "spaces/guestbook";
+    state.selectedSpace = { name: "spaces/guestbook", title: "Guestbook", description: "" };
+    renderAt("/spaces/guestbook");
     openSwitcher();
-    fireEvent.click(screen.getByRole("link", { name: "Back to common.home" }));
-    expect(router.state.location.pathname).toBe("/spaces/product");
-    expect(router.state.location.search).toBe("");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "space.create" })).toBeInTheDocument();
-    expect(state.setMobileOpen).not.toHaveBeenCalled();
+    expect(screen.getByRole("link", { name: "Guestbook" })).toHaveAttribute("aria-current", "page");
   });
 
   it("treats an explicit current creator as Home", () => {
     renderAt("/calendar/2026/09?creator=steven");
+    expect(screen.getByRole("button", { name: "space.switch: common.home" })).toBeInTheDocument();
     openSwitcher();
     expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
-    expect(screen.queryByRole("link", { name: /Back to/ })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "space.create" })).toBeInTheDocument();
   });
 
-  it("returns guests from a creator to Explore without showing private actions", () => {
+  it.each(["/setting", "/inbox", "/memos/123"])("marks no place on a page outside the collections: %s", (path) => {
+    renderAt(path);
+    // No place to name there either, so the title stays the brand.
+    expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toBeInTheDocument();
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("href", "/explore");
+    for (const link of within(screen.getByRole("navigation", { name: "space.switch" })).getAllByRole("link")) {
+      expect(link).not.toHaveAttribute("aria-current");
+    }
+  });
+
+  it("returns guests from a creator to Explore without showing private places", () => {
     state.currentUser = undefined;
     const router = renderAt("/?creator=alice");
     openSwitcher();
-    expect(screen.getByRole("link", { name: "Back to common.explore" })).toHaveAttribute("href", "/explore");
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    const places = within(screen.getByRole("navigation", { name: "space.switch" }));
+    expect(places.getAllByRole("link").map((link) => link.textContent)).toEqual(["common.explore"]);
+    expect(screen.queryByText("space.spaces")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("link", { name: "Back to common.explore" }));
+    fireEvent.click(places.getByRole("link", { name: "common.explore" }));
     expect(router.state.location.pathname).toBe("/explore");
     expect(router.state.location.search).toBe("");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
+  });
+
+  it("names Explore in the title for a signed-in user, with its compass", () => {
+    renderAt("/explore");
+    const trigger = screen.getByRole("button", { name: "space.switch: common.explore" });
+    expect(trigger).toHaveTextContent("common.explore");
+    expect(trigger.querySelector("svg.lucide-compass")).toHaveClass("size-5");
+  });
+
+  it("gives guests on Explore their one place, under the instance's own name", () => {
+    state.currentUser = undefined;
+    renderAt("/explore");
+    // A guest has nowhere else to be, so the title is the brand, not a place.
+    expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toBeInTheDocument();
+    openSwitcher();
+    const links = within(screen.getByRole("navigation", { name: "space.switch" })).getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAttribute("aria-current", "page");
   });
 
   it("keeps the popup aligned to the sidebar rail and opens Space creation", () => {
@@ -220,7 +300,7 @@ describe("SpaceSwitcher", () => {
     expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
   });
 
-  it.each(["md", "header"] as const)("keeps the %s scope popup and its Space selector fixed after positioning", async (size) => {
+  it.each(["md", "header"] as const)("keeps the %s places popup fixed after positioning, with no scroll area of its own", async (size) => {
     renderAt("/", size);
     openSwitcher();
     const popup = await screen.findByRole("dialog");
@@ -229,23 +309,6 @@ describe("SpaceSwitcher", () => {
       expect(positioner.style.opacity).not.toBe("0");
       expect(positioner.style.position).toBe("fixed");
     });
-
-    fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
-    const option = await screen.findByRole("option", { name: "Product" });
-    const selectPositioner = option.closest(".mu-select-popup")?.parentElement as HTMLElement;
-    await waitFor(() => {
-      expect(selectPositioner.style.opacity).not.toBe("0");
-      expect(selectPositioner.style.position).toBe("fixed");
-    });
-  });
-
-  it("gives guests on Explore only the account panel, with no single-choice Browse control", () => {
-    state.currentUser = undefined;
-    renderAt("/explore");
-    openSwitcher();
-    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Back to/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Steven account" })).toBeInTheDocument();
+    expect(popup.querySelector("[class*=overflow-y-auto]")).toBeNull();
   });
 });
