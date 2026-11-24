@@ -40,7 +40,9 @@ describe("locale search helpers", () => {
   });
 
   it("keeps Hebrew keys within the current English catalog", () => {
-    expect(flattenTranslationKeys(enTranslation).sort()).toEqual(expect.arrayContaining(flattenTranslationKeys(heTranslation).sort()));
+    // Hebrew has a dual plural form, so a `_two` key stands for the English `_other` message.
+    const heKeys = flattenTranslationKeys(heTranslation).map((key) => key.replace(/_two$/, "_other"));
+    expect(flattenTranslationKeys(enTranslation).sort()).toEqual(expect.arrayContaining(heKeys.sort()));
     expect(heTranslation.setting).toHaveProperty("ai");
     expect(heTranslation.setting).toHaveProperty("notification");
     expect(heTranslation.auth).not.toHaveProperty("host-tip");

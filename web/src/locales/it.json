@@ -962,7 +962,9 @@
       "configured-rules": "Regole configurate",
       "default-color": "Predefinita",
       "matching-rule": "Regex ancorata",
-      "used-count": "promemoria {{count}}"
+      "used-count_one": "promemoria {{count}}",
+      "used-count_many": "promemoria {{count}}",
+      "used-count_other": "promemoria {{count}}"
     },
     "ai": {
       "add-provider": "Aggiungi fornitore",

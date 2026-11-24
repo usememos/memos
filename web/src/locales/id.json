@@ -956,7 +956,8 @@
       "configured-rules": "Aturan yang dikonfigurasi",
       "default-color": "Default",
       "matching-rule": "Regex yang dijangkar",
-      "used-count": "{{count}} memo"
+      "used-count_one": "{{count}} memo",
+      "used-count_other": "{{count}} memo"
     },
     "ai": {
       "endpoint": "Akhir",

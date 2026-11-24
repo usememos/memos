@@ -1078,7 +1078,9 @@
       "tag-already-exists": "Ознака већ постоји.",
       "tag-pattern-hint": "Име ознаке или образац регуларног израза (нпр. пројекат/.* одговара свим пројектима/ ознакама)",
       "invalid-regex": "Неважећи или небезбедни образац регуларног израза.",
-      "used-count": "{{count}} мемос"
+      "used-count_one": "{{count}} мемос",
+      "used-count_few": "{{count}} мемос",
+      "used-count_other": "{{count}} мемос"
     },
     "resource-stats": {
       "label": "Ресурси",

@@ -961,7 +961,8 @@
       "configured-rules": "Regras configuradas",
       "default-color": "Por defecto",
       "matching-rule": "expresión regular ancorada",
-      "used-count": "Notas {{count}}"
+      "used-count_one": "Notas {{count}}",
+      "used-count_other": "Notas {{count}}"
     },
     "ai": {
       "add-provider": "Engadir provedor",

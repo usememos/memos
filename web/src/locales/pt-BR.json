@@ -957,7 +957,9 @@
       "configured-rules": "Regras configuradas",
       "default-color": "Padrão",
       "matching-rule": "Expressão regular ancorada",
-      "used-count": "{{count}} memos"
+      "used-count_one": "{{count}} memos",
+      "used-count_many": "{{count}} memos",
+      "used-count_other": "{{count}} memos"
     },
     "ai": {
       "endpoint": "Ponto de extremidade (endpoint)",

@@ -956,7 +956,8 @@
       "configured-rules": "Các quy tắc đã cấu hình",
       "default-color": "Mặc định",
       "matching-rule": "Biểu thức chính quy được neo",
-      "used-count": "Bản ghi nhớ {{count}}"
+      "used-count_one": "Bản ghi nhớ {{count}}",
+      "used-count_other": "Bản ghi nhớ {{count}}"
     },
     "ai": {
       "endpoint": "Điểm cuối",

@@ -963,7 +963,10 @@
       "configured-rules": "Konfigurirana pravila",
       "default-color": "Privzeto",
       "matching-rule": "Zasidran regularni izraz",
-      "used-count": "Beležke {{count}}"
+      "used-count_one": "Beležke {{count}}",
+      "used-count_two": "Beležke {{count}}",
+      "used-count_few": "Beležke {{count}}",
+      "used-count_other": "Beležke {{count}}"
     },
     "ai": {
       "add-provider": "Dodajte ponudnika",

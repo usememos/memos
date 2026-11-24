@@ -963,7 +963,10 @@
       "configured-rules": "Налаштовані правила",
       "default-color": "За замовчуванням",
       "matching-rule": "Прив’язаний регулярний вираз",
-      "used-count": "Пам'ятки {{count}}"
+      "used-count_one": "Пам'ятки {{count}}",
+      "used-count_few": "Пам'ятки {{count}}",
+      "used-count_many": "Пам'ятки {{count}}",
+      "used-count_other": "Пам'ятки {{count}}"
     },
     "ai": {
       "add-provider": "Додати провайдера",

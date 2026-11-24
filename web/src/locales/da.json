@@ -1077,7 +1077,8 @@
       "tag-already-exists": "Taget findes allerede.",
       "tag-pattern-hint": "Tagnavn eller regex-mønster (f.eks. project/.* matcher alle projekt/ tags)",
       "invalid-regex": "Ugyldigt eller usikkert regex-mønster.",
-      "used-count": "{{count}}-memoer"
+      "used-count_one": "{{count}}-memoer",
+      "used-count_other": "{{count}}-memoer"
     },
     "resource-stats": {
       "label": "Ressourcer",

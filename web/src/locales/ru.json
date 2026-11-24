@@ -963,7 +963,10 @@
       "configured-rules": "Настроенные правила",
       "default-color": "По умолчанию",
       "matching-rule": "Закрепленное регулярное выражение",
-      "used-count": "{{count}} заметки"
+      "used-count_one": "{{count}} заметки",
+      "used-count_few": "{{count}} заметки",
+      "used-count_many": "{{count}} заметки",
+      "used-count_other": "{{count}} заметки"
     },
     "ai": {
       "add-provider": "Добавить провайдера",

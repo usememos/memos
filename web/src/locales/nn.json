@@ -1270,7 +1270,8 @@
       "tag-name-placeholder": "t.d. arbeid eller prosjekt/.*",
       "tag-pattern-hint": "Emneknaggnamn eller regulært uttrykk (t.d. prosjekt/.* samsvarar med alle prosjekt/-emneknaggar)",
       "title": "Emneknaggmetadata",
-      "used-count": "{{count}} notat"
+      "used-count_one": "{{count}} notat",
+      "used-count_other": "{{count}} notat"
     },
     "webhook": {
       "create-dialog": {

@@ -1077,7 +1077,8 @@
       "tag-already-exists": "Етикетът вече съществува.",
       "tag-pattern-hint": "Име на етикет или модел на регулярен израз (напр. project/.* съответства на всички project/ тагове)",
       "invalid-regex": "Невалиден или опасен модел на регулярен израз.",
-      "used-count": "Бележки {{count}}"
+      "used-count_one": "Бележки {{count}}",
+      "used-count_other": "Бележки {{count}}"
     },
     "resource-stats": {
       "label": "Ресурси",

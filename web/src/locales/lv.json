@@ -1078,7 +1078,9 @@
       "tag-already-exists": "Tags jau pastāv.",
       "tag-pattern-hint": "Taga nosaukums vai regulārā izteiksmes modelis (piem., projekts/.* atbilst visiem projektiem/tagiem)",
       "invalid-regex": "Nederīgs vai nedrošs regulārās izteiksmes modelis.",
-      "used-count": "{{count}} piezīmes"
+      "used-count_zero": "{{count}} piezīmes",
+      "used-count_one": "{{count}} piezīmes",
+      "used-count_other": "{{count}} piezīmes"
     },
     "resource-stats": {
       "label": "Resursi",

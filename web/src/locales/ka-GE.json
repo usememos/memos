@@ -961,7 +961,8 @@
       "configured-rules": "კონფიგურირებული წესები",
       "default-color": "ნაგულისხმევი",
       "matching-rule": "ანკორირებული რეგექსი",
-      "used-count": "{{count}} შენიშვნები"
+      "used-count_one": "{{count}} შენიშვნები",
+      "used-count_other": "{{count}} შენიშვნები"
     },
     "ai": {
       "add-provider": "პროვაიდერის დამატება",

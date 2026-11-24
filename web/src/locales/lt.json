@@ -1079,7 +1079,10 @@
       "tag-already-exists": "Žyma jau yra.",
       "tag-pattern-hint": "Žymos pavadinimas arba reguliariojo reiškinio šablonas (pvz., projektas/.* atitinka visus projektus/žymas)",
       "invalid-regex": "Netinkamas arba nesaugus reguliariojo reiškinio šablonas.",
-      "used-count": "{{count}} atmintinės"
+      "used-count_one": "{{count}} atmintinės",
+      "used-count_few": "{{count}} atmintinės",
+      "used-count_many": "{{count}} atmintinės",
+      "used-count_other": "{{count}} atmintinės"
     },
     "resource-stats": {
       "label": "Ištekliai",

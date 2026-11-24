@@ -956,7 +956,8 @@
       "configured-rules": "कॉन्फ़िगर किए गए नियम",
       "default-color": "डिफ़ॉल्ट",
       "matching-rule": "एंकर्ड रेगेक्स",
-      "used-count": "{{count}} मेमो"
+      "used-count_one": "{{count}} मेमो",
+      "used-count_other": "{{count}} मेमो"
     },
     "ai": {
       "endpoint": "एंडपॉइंट",

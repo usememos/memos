@@ -960,7 +960,12 @@
       "configured-rules": "القواعد المُهيأة",
       "default-color": "افتراضي",
       "matching-rule": "تعبير نمطي مُثبت",
-      "used-count": "مذكرات {{count}}"
+      "used-count_zero": "مذكرات {{count}}",
+      "used-count_one": "مذكرات {{count}}",
+      "used-count_two": "مذكرات {{count}}",
+      "used-count_few": "مذكرات {{count}}",
+      "used-count_many": "مذكرات {{count}}",
+      "used-count_other": "مذكرات {{count}}"
     },
     "ai": {
       "endpoint": "نقطة النهاية",

@@ -963,7 +963,10 @@
       "configured-rules": "Skonfigurowane reguły",
       "default-color": "Domyślny",
       "matching-rule": "Zakotwiczone wyrażenie regularne",
-      "used-count": "Notatki {{count}}"
+      "used-count_one": "Notatki {{count}}",
+      "used-count_few": "Notatki {{count}}",
+      "used-count_many": "Notatki {{count}}",
+      "used-count_other": "Notatki {{count}}"
     },
     "ai": {
       "add-provider": "Dodaj dostawcę",

@@ -962,7 +962,9 @@
       "configured-rules": "Konfigurirana pravila",
       "default-color": "Zadano",
       "matching-rule": "Usidren regularni izraz",
-      "used-count": "{{count}} bilješke"
+      "used-count_one": "{{count}} bilješke",
+      "used-count_few": "{{count}} bilješke",
+      "used-count_other": "{{count}} bilješke"
     },
     "ai": {
       "add-provider": "Dodajte davatelja usluga",

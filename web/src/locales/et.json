@@ -1077,7 +1077,8 @@
       "tag-already-exists": "Silt on juba olemas.",
       "tag-pattern-hint": "Märgendi nimi või regex-muster (nt projekt/.* vastab kõigile projektile/märgenditele)",
       "invalid-regex": "Kehtetu või ebaturvaline regex-muster.",
-      "used-count": "{{count}} memod"
+      "used-count_one": "{{count}} memod",
+      "used-count_other": "{{count}} memod"
     },
     "resource-stats": {
       "label": "Vahendid",
