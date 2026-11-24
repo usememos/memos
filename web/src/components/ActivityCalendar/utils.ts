@@ -26,9 +26,10 @@ export const getTooltipText = (count: number, date: string, t: TranslateFunction
   }
 
   const key = timeBasis === "update_time" ? "memo.count-memos-updated-in-date" : "memo.count-memos-in-date";
+  // Lowercase only the noun: `date` is often a localized label ("Monday, November 2") whose case must be kept.
   return t(key, {
     count,
-    memos: count === 1 ? t("common.memo") : t("common.memos"),
+    memos: (count === 1 ? t("common.memo") : t("common.memos")).toLowerCase(),
     date,
-  }).toLowerCase();
+  });
 };
