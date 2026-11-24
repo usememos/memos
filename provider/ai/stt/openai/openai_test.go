@@ -28,6 +28,7 @@ func TestTranscribe(t *testing.T) {
 		require.Equal(t, "json", r.FormValue("response_format"))
 		require.Equal(t, "domain words", r.FormValue("prompt"))
 		require.Equal(t, "en", r.FormValue("language"))
+		require.NotContains(t, r.MultipartForm.Value, "languages[]")
 
 		file, header, err := r.FormFile("file")
 		require.NoError(t, err)
@@ -64,5 +65,47 @@ func TestTranscribe(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "hello world", response.Text)
 	require.Equal(t, "en", response.Language)
-	// Note: Duration intentionally omitted from stt.Response — not exposed in the new contract.
+}
+
+func TestGPTTranscribe(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		hint         string
+		detected     string
+		wantLanguage string
+	}{
+		{"language hint", "fr", `[{"code":"fr"}]`, "fr"},
+		{"auto detect", "", `[]`, ""},
+		{"multilingual recording", "", `[{"code":"en"},{"code":"fr"}]`, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				require.NoError(t, r.ParseMultipartForm(10<<20))
+				require.Equal(t, "gpt-transcribe", r.FormValue("model"))
+				require.Equal(t, "Memos", r.FormValue("prompt"))
+				require.NotContains(t, r.MultipartForm.Value, "language")
+				if tc.hint == "" {
+					require.NotContains(t, r.MultipartForm.Value, "languages[]")
+				} else {
+					require.Equal(t, []string{tc.hint}, r.MultipartForm.Value["languages[]"])
+				}
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = w.Write([]byte(`{"text":"Bonjour","languages":` + tc.detected + `}`))
+			}))
+			defer server.Close()
+			transcriber, err := sttopenai.New(ai.ProviderConfig{Endpoint: server.URL, APIKey: "test-key"}, stt.ApplyOptions(nil))
+			require.NoError(t, err)
+			response, err := transcriber.Transcribe(t.Context(), stt.Request{
+				Model:       "gpt-transcribe",
+				Filename:    "voice.wav",
+				ContentType: "audio/wav",
+				Audio:       strings.NewReader("RIFF"),
+				Prompt:      "Memos",
+				Language:    tc.hint,
+			})
+			require.NoError(t, err)
+			require.Equal(t, "Bonjour", response.Text)
+			require.Equal(t, tc.wantLanguage, response.Language)
+		})
+	}
 }

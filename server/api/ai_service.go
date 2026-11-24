@@ -101,7 +101,7 @@ func (s *APIService) Transcribe(ctx context.Context, request *apipb.TranscribeRe
 
 	model := persisted.GetModel()
 	if model == "" {
-		defaultModel, err := ai.DefaultTranscriptionModel(provider.Type)
+		defaultModel, err := ai.DefaultTranscriptionModel(provider)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 		}

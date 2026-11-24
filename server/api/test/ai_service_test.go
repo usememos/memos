@@ -244,7 +244,7 @@ func TestTranscribe(t *testing.T) {
 		}
 	})
 
-	t.Run("falls back to engine default model when transcription model is empty", func(t *testing.T) {
+	t.Run("keeps the Whisper default for a custom OpenAI-compatible endpoint", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 

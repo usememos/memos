@@ -872,7 +872,7 @@ export type InstanceSetting_TranscriptionConfig = Message<"memos.api.InstanceSet
 
   /**
    * The provider-specific model identifier. Hidden from non-admins.
-   * Empty falls back to the engine default (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+   * Empty selects gpt-transcribe on OpenAI, whisper-1 on custom OpenAI-compatible endpoints, or gemini-2.5-flash on Gemini.
    *
    * @generated from field: string model = 2;
    */

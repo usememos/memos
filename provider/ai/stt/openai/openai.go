@@ -57,24 +57,34 @@ func (t *Transcriber) Transcribe(ctx context.Context, req stt.Request) (*stt.Res
 	}
 
 	params := openaisdk.AudioTranscriptionNewParams{
-		File:           openaisdk.File(req.Audio, filename, contentType),
-		Model:          openaisdk.AudioModel(req.Model),
-		ResponseFormat: openaisdk.AudioResponseFormatJSON,
+		File:  openaisdk.File(req.Audio, filename, contentType),
+		Model: openaisdk.AudioModel(req.Model),
 	}
 	if req.Prompt != "" {
 		params.Prompt = openaisdk.String(req.Prompt)
 	}
-	if req.Language != "" {
-		params.Language = openaisdk.String(req.Language)
+	if params.Model == openaisdk.AudioModelGPTTranscribe {
+		if req.Language != "" {
+			params.Languages = []string{req.Language}
+		}
+	} else {
+		params.ResponseFormat = openaisdk.AudioResponseFormatJSON
+		if req.Language != "" {
+			params.Language = openaisdk.String(req.Language)
+		}
 	}
 
 	resp, err := t.client.Audio.Transcriptions.New(ctx, params)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to send OpenAI transcription request")
 	}
+	language := resp.Language
+	if len(resp.Languages) == 1 {
+		language = resp.Languages[0].Code
+	}
 	return &stt.Response{
 		Text:     resp.Text,
-		Language: resp.Language,
+		Language: language,
 	}, nil
 }
 
