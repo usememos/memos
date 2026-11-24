@@ -396,12 +396,25 @@ func (s *Store) GetUserWebhooks(ctx context.Context, userID int32) ([]*storepb.W
 		return []*storepb.WebhooksUserSetting_Webhook{}, nil
 	}
 
-	webhooksUserSetting := userSetting.GetWebhooks()
-	return webhooksUserSetting.Webhooks, nil
+	webhooks := userSetting.GetWebhooks().GetWebhooks()
+	clonedWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, len(webhooks))
+	for i, webhook := range webhooks {
+		if webhook != nil {
+			clonedWebhook, ok := proto.Clone(webhook).(*storepb.WebhooksUserSetting_Webhook)
+			if !ok {
+				return nil, errors.New("failed to clone webhook")
+			}
+			clonedWebhooks[i] = clonedWebhook
+		}
+	}
+	return clonedWebhooks, nil
 }
 
 // AddUserWebhook adds a new webhook for the user.
 func (s *Store) AddUserWebhook(ctx context.Context, userID int32, webhook *storepb.WebhooksUserSetting_Webhook) error {
+	s.webhookMu.Lock()
+	defer s.webhookMu.Unlock()
+
 	existingWebhooks, err := s.GetUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
@@ -439,6 +452,9 @@ func (s *Store) AddUserWebhook(ctx context.Context, userID int32, webhook *store
 
 // RemoveUserWebhook removes the webhook of the user.
 func (s *Store) RemoveUserWebhook(ctx context.Context, userID int32, webhookID string) error {
+	s.webhookMu.Lock()
+	defer s.webhookMu.Unlock()
+
 	oldWebhooks, err := s.GetUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
@@ -466,14 +482,20 @@ func (s *Store) RemoveUserWebhook(ctx context.Context, userID int32, webhookID s
 
 // UpdateUserWebhook updates an existing webhook for the user.
 func (s *Store) UpdateUserWebhook(ctx context.Context, userID int32, webhook *storepb.WebhooksUserSetting_Webhook) error {
+	s.webhookMu.Lock()
+	defer s.webhookMu.Unlock()
+
 	webhooks, err := s.GetUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	for i, existing := range webhooks {
+	// Build a fresh slice so the cached setting is never mutated in place.
+	updatedWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, len(webhooks))
+	copy(updatedWebhooks, webhooks)
+	for i, existing := range updatedWebhooks {
 		if existing.Id == webhook.Id {
-			webhooks[i] = webhook
+			updatedWebhooks[i] = webhook
 			break
 		}
 	}
@@ -483,7 +505,7 @@ func (s *Store) UpdateUserWebhook(ctx context.Context, userID int32, webhook *st
 		Key:    storepb.UserSetting_WEBHOOKS,
 		Value: &storepb.UserSetting_Webhooks{
 			Webhooks: &storepb.WebhooksUserSetting{
-				Webhooks: webhooks,
+				Webhooks: updatedWebhooks,
 			},
 		},
 	})
