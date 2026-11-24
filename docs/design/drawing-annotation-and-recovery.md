@@ -1,6 +1,6 @@
 # Markup: first release
 
-Status: Implemented; awaiting a tagged release.
+Status: Implemented in 26.11.1
 
 Date: 2026-11-15
 

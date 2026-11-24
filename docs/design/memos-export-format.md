@@ -1,6 +1,6 @@
 # Memos Export Format
 
-Status: Implemented
+Status: Implemented in v0.31.0
 
 Date: 2026-09-16
 
@@ -9,6 +9,10 @@ Existing domain language: [Memos context](../../CONTEXT.md)
 Related: [Multi-Spaces Design](multi-spaces.md)
 
 Normative schemas: [`memo-export/1.0/manifest.schema.json`](memo-export/1.0/manifest.schema.json), [`memo-export/1.0/memo.schema.json`](memo-export/1.0/memo.schema.json)
+
+CI coverage as of 2026-11-24: the [reader tests](../../core/memoexport/memoexport_test.go) read the golden archives and the
+[import tests](../../server/api/test/memo_export_test.go) import both 1.0 fixtures. Direct validation of those fixtures against
+the two schemas described under [Versioning and evolution](#versioning-and-evolution) is still pending.
 
 ## Summary
 
@@ -299,7 +303,7 @@ Each version has its own schema directory, `docs/design/memo-export/<MAJOR.MINOR
 
 ## Amendments
 
-### 2026-10-31: export is an administrator download
+### 2026-10-31 (26.10.0) — export is an administrator download
 
 Export left `UserService`. `ExportMemos` and `ExportMemosRequest` are removed; `ImportMemos` is unchanged and every
 member still imports into their own account.

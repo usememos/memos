@@ -1,11 +1,13 @@
 # MariaDB compatibility testing
 
-Status: Implemented; awaiting a tagged release.
+Status: Implemented in 26.11.2
 
 Date: 2026-11-16
 
-Related: [PR #6571](https://github.com/usememos/memos/pull/6571), [store tests](../../store/test/README.md),
-[migration procedure](../../store/migration/README.md).
+Related: [PR #6571](https://github.com/usememos/memos/pull/6571), [migration procedure](../../store/migration/README.md).
+
+The [MariaDB upgrade check](https://github.com/usememos/memos/actions/runs/43883500298/job/133355326419) passed before release.
+For current test commands and coverage, see the [store test guide](../../store/test/README.md).
 
 ## Decision and scope
 

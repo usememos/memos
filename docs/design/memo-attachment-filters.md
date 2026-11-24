@@ -1,6 +1,6 @@
 # Memo Attachment and Image Filters Design
 
-Status: Implemented
+Status: Implemented in 26.10.0
 
 Date: 2026-10-22
 
@@ -253,7 +253,7 @@ and a `has_title` presence flag; it is a content fact and belongs in the payload
 
 ## Amendments
 
-### 2026-11-15: Attachment lookup indexes
+### 2026-11-15 (26.11.1) — Attachment lookup indexes
 
 The deferred lookup index is added in schema 26.11.1 after measurements showed
 that SQLite attachment filters repeatedly scan blob overflow pages. SQLite and
@@ -266,7 +266,7 @@ all instances and other writers, migrating once, then restarting, as described i
 The migrations reject conflicting index definitions; MySQL also accepts a
 completed index when retrying after an implicit DDL commit.
 
-### 2026-11-16: Simplify index migration scripts
+### 2026-11-16 (26.11.2) — Simplify index migration scripts
 
 The attachment lookup index migration adds a performance index without auditing
 existing definitions. MySQL uses ordinary `CREATE INDEX`, matching its 26.10

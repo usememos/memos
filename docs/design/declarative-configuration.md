@@ -1,6 +1,6 @@
 # Declarative Configuration
 
-Status: Implemented
+Status: Implemented in 26.10.0
 
 ## Summary
 
@@ -828,14 +828,14 @@ comments and less quoting. Protobuf JSON is already the API's wire format and ne
 
 ## Amendments
 
-### 2026-11-01: startup warns about leftover `/etc/secrets` files
+### 2026-11-01 (26.11.0) — startup warns about leftover `/etc/secrets` files
 
 The v0.31 deployment configuration files (`/etc/secrets/memos-idp-*.json` and `memos-instance-setting-*.json`) stopped being read in
 26.10.0 without a migration, and an instance that kept them through the upgrade gave no sign of it beyond the settings that had silently
 reverted (usememos/memos#6515). Startup now logs one warning naming any such files still present, without reading them, and points at the
 configuration directory. A missing `/etc/secrets` stays silent.
 
-### 2026-11-14 — Reaction picker
+### 2026-11-14 (26.11.1) — Reaction picker
 
 `MEMO_RELATED` is retired. Reactions use the full Unicode emoji picker; remove this setting and its lifecycle references from
 declarative configuration files. The next apply releases its old ownership record automatically. Existing reactions are preserved.
