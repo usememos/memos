@@ -83,7 +83,7 @@ describe("calendar daily snapshot cell", () => {
     // Today's badge is a 22px rounded square that starts on the text axis, not a centred disc.
     expect(screen.getByText("7")).toHaveClass("text-mu-on-primary", "bg-mu-primary", "rounded-mu-md", "h-[22px]", "mu-caption");
     expect(screen.getByText("7")).not.toHaveClass("size-6", "before:rounded-full");
-    expect(link).toHaveAccessibleName("2 memos in friday, august 7");
+    expect(link).toHaveAccessibleName("2 memos in Friday, August 7");
     expect(link).toHaveAttribute("href", "/spaces/work/calendar/2026/08/07?filter=test");
     expect(link).toHaveAttribute("aria-current", "page");
     expect(screen.getAllByRole("link")).toHaveLength(1);
@@ -193,7 +193,7 @@ describe("calendar daily snapshot cell", () => {
       expect(row).not.toHaveStyle({ WebkitLineClamp: "1" });
       expect(row.parentElement).toHaveClass("relative", "before:absolute", "before:size-1", "before:rounded-full", "before:-start-2");
       expect(screen.getByText("const x = 1;")).toHaveClass("font-mono");
-      expect(screen.getByRole("link")).toHaveAccessibleName("2 memos in friday, august 7");
+      expect(screen.getByRole("link")).toHaveAccessibleName("2 memos in Friday, August 7");
     });
     it("counts the memos that do not fit on the last row", () => {
       // 102px under the date and its paddings is three 18px rows.

@@ -23,4 +23,15 @@ describe("getTooltipText", () => {
     const out = getTooltipText(3, "2026-05-02", t, "update_time");
     expect(out.toLowerCase()).toContain("memo.count-memos-updated-in-date");
   });
+
+  it("lowercases the memo noun but keeps the case of a localized date label", () => {
+    const english = ((key: string, vars?: Record<string, unknown>) => {
+      if (key === "common.memo") return "Memo";
+      if (key === "common.memos") return "Memos";
+      return `${vars?.count} ${vars?.memos} in ${vars?.date}`;
+    }) as Parameters<typeof getTooltipText>[2];
+
+    expect(getTooltipText(1, "Monday, November 2", english)).toBe("1 memo in Monday, November 2");
+    expect(getTooltipText(3, "November 2026", english)).toBe("3 memos in November 2026");
+  });
 });
