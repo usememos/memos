@@ -1278,3 +1278,55 @@ func TestServeAttachmentFile_MissingLocalFileIsAJSONError(t *testing.T) {
 	require.Equal(t, "application/json", rec.Header().Get("Content-Type"))
 	require.JSONEq(t, `{"message":"attachment file not found"}`, rec.Body.String())
 }
+
+func TestServeAttachmentFile_LocalIndexHTML(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+	configureLocalStorage(ctx, t, svc.Store)
+
+	htmlBody := []byte("<!doctype html><html><body>hello</body></html>")
+	htmlAttachment := createPublicImageMemo(ctx, t, svc, "local-index-owner", "index.html", "text/html", htmlBody)
+	audioBody := []byte("ID3-local-audio-bytes")
+	audioAttachment := createPublicImageMemo(ctx, t, svc, "local-audio-owner", "index.html", "audio/mpeg", audioBody)
+
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
+
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/index.html", htmlAttachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Empty(t, rec.Header().Get("Location"))
+	require.Equal(t, htmlBody, rec.Body.Bytes())
+	require.Equal(t, "application/octet-stream", rec.Header().Get("Content-Type"))
+	require.Equal(t, `attachment; filename="index.html"`, rec.Header().Get("Content-Disposition"))
+	require.Equal(t, "nosniff", rec.Header().Get("X-Content-Type-Options"))
+
+	rangeReq := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/index.html", htmlAttachment.Name), nil)
+	rangeReq.Header.Set("Range", "bytes=0-14")
+	rangeRec := httptest.NewRecorder()
+	e.ServeHTTP(rangeRec, rangeReq)
+	require.Equal(t, http.StatusPartialContent, rangeRec.Code)
+	require.Equal(t, htmlBody[:15], rangeRec.Body.Bytes())
+	require.Equal(t, fmt.Sprintf("bytes 0-14/%d", len(htmlBody)), rangeRec.Header().Get("Content-Range"))
+
+	audioRec := httptest.NewRecorder()
+	e.ServeHTTP(audioRec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/index.html", audioAttachment.Name), nil))
+	require.Equal(t, http.StatusOK, audioRec.Code)
+	require.Empty(t, audioRec.Header().Get("Location"))
+	require.Equal(t, audioBody, audioRec.Body.Bytes())
+	require.Equal(t, "audio/mpeg", audioRec.Header().Get("Content-Type"))
+
+	uid := strings.TrimPrefix(htmlAttachment.Name, "attachments/")
+	stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+	localPath := fs.resolveLocalPath(stored.Reference)
+	require.NoError(t, os.Remove(localPath))
+	require.NoError(t, os.Mkdir(localPath, 0o755))
+
+	dirRec := httptest.NewRecorder()
+	e.ServeHTTP(dirRec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/index.html", htmlAttachment.Name), nil))
+	require.Equal(t, http.StatusNotFound, dirRec.Code)
+	require.Equal(t, "application/json", dirRec.Header().Get("Content-Type"))
+	require.JSONEq(t, `{"message":"attachment file not found"}`, dirRec.Body.String())
+}

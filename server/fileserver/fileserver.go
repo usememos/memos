@@ -388,17 +388,22 @@ func (s *FileServerService) resolveLocalPath(reference string) string {
 // instead of the plain-text page net/http would write for it.
 func (s *FileServerService) serveLocalFile(w http.ResponseWriter, r *http.Request, attachment *store.Attachment) error {
 	path := s.resolveLocalPath(attachment.Reference)
-	info, err := os.Stat(path)
+	file, err := os.Open(path)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return &httphandler.Error{Code: http.StatusNotFound, Message: "attachment file not found", Cause: err}
 		}
 		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to read attachment file", Cause: err}
 	}
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to read attachment file", Cause: err}
+	}
 	if info.IsDir() {
 		return &httphandler.Error{Code: http.StatusNotFound, Message: "attachment file not found"}
 	}
-	http.ServeFile(w, r, path)
+	http.ServeContent(w, r, attachment.Filename, info.ModTime(), file)
 	return nil
 }
 
