@@ -63,11 +63,10 @@ func maskAPIKey(apiKey string) string {
 	if apiKey == "" {
 		return ""
 	}
-	if len(apiKey) <= 8 {
+	if len(apiKey) < 16 {
 		return "..."
 	}
-	prefixLength := min(4, len(apiKey))
-	return apiKey[:prefixLength] + "..." + apiKey[len(apiKey)-4:]
+	return apiKey[:4] + "..." + apiKey[len(apiKey)-4:]
 }
 
 func validateInstanceTagsSetting(setting *apipb.InstanceSetting_TagsSetting) error {
