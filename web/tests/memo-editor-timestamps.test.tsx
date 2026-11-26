@@ -83,21 +83,19 @@ describe("memo editor timestamps", () => {
     expect(request.memo[field]).toEqual(timestampFromDate(customTime));
   });
 
-  it.each([
-    "2024-02-30 12:34:56",
-    "2024-13-01 12:34:56",
-    "2024-02-29 24:34:56",
-    "invalid",
-  ])("rejects invalid local time %s without changing the saved timestamp", async (value) => {
-    const memo = renderEditor();
-    const input = screen.getAllByRole("textbox")[0];
-    fireEvent.change(input, { target: { value } });
-    fireEvent.blur(input);
-    expect(input).toHaveAttribute("aria-invalid", "true");
-    expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
-    await memoService.save(editor.getState(), { memoName: memo.name }, ops);
-    expect(clients.updateMemo).not.toHaveBeenCalled();
-  });
+  it.each(["2024-02-30 12:34:56", "2024-13-01 12:34:56", "2024-02-29 24:34:56", "invalid"])(
+    "rejects invalid local time %s without changing the saved timestamp",
+    async (value) => {
+      const memo = renderEditor();
+      const input = screen.getAllByRole("textbox")[0];
+      fireEvent.change(input, { target: { value } });
+      fireEvent.blur(input);
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
+      await memoService.save(editor.getState(), { memoName: memo.name }, ops);
+      expect(clients.updateMemo).not.toHaveBeenCalled();
+    },
+  );
 
   it("automatically updates the modification time for content edits", async () => {
     const memo = renderEditor();

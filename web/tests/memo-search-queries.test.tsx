@@ -21,30 +21,27 @@ describe("memo search requests", () => {
     listMemos.mockReset();
   });
 
-  it.each([
-    "content.contains('urgent')",
-    'tags.exists(t, t.startsWith("work/"))',
-    'content.matches("(?i)urgent")',
-    "space == null",
-  ])("sends server-supported CEL without interpreting it: %s", async (expression) => {
-    listMemos.mockResolvedValue({ memos: [], nextPageToken: "" });
-    const filter = buildMemoFilter({ filters: buildQuickFindFilters(expression, [], true, "cel"), includePinned: false });
-    const { result } = renderHook(() => useInfiniteMemos({ filter }), { wrapper: createWrapper() });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(listMemos).toHaveBeenCalledWith(expect.objectContaining({ filter: `(${expression})` }), expect.anything());
-    expect(result.current.data?.pages[0].memos).toEqual([]);
-  });
+  it.each(["content.contains('urgent')", 'tags.exists(t, t.startsWith("work/"))', 'content.matches("(?i)urgent")', "space == null"])(
+    "sends server-supported CEL without interpreting it: %s",
+    async (expression) => {
+      listMemos.mockResolvedValue({ memos: [], nextPageToken: "" });
+      const filter = buildMemoFilter({ filters: buildQuickFindFilters(expression, [], true, "cel"), includePinned: false });
+      const { result } = renderHook(() => useInfiniteMemos({ filter }), { wrapper: createWrapper() });
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(listMemos).toHaveBeenCalledWith(expect.objectContaining({ filter: `(${expression})` }), expect.anything());
+      expect(result.current.data?.pages[0].memos).toEqual([]);
+    },
+  );
 
-  it.each([
-    Code.InvalidArgument,
-    Code.PermissionDenied,
-    Code.Unauthenticated,
-  ])("does not retry terminal search errors (%i)", async (code) => {
-    listMemos.mockRejectedValue(new ConnectError("rejected", code));
-    const { result } = renderHook(() => useInfiniteMemos({ filter: "invalid" }), { wrapper: createWrapper() });
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(listMemos).toHaveBeenCalledOnce();
-  });
+  it.each([Code.InvalidArgument, Code.PermissionDenied, Code.Unauthenticated])(
+    "does not retry terminal search errors (%i)",
+    async (code) => {
+      listMemos.mockRejectedValue(new ConnectError("rejected", code));
+      const { result } = renderHook(() => useInfiniteMemos({ filter: "invalid" }), { wrapper: createWrapper() });
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(listMemos).toHaveBeenCalledOnce();
+    },
+  );
 
   it("recovers when the invalid query is edited", async () => {
     listMemos

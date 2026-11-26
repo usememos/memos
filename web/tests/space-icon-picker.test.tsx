@@ -76,7 +76,7 @@ describe("SpaceIconPicker", () => {
     const search = await screen.findByRole("combobox", { name: "space.icon.search-icons" });
     expect(screen.getByRole("gridcell", { name: "Leaf" })).toHaveAttribute("aria-selected", "true");
     type(search, "book");
-    fireEvent.keyDown(search, { key: "Enter", isComposing: true });
+    fireEvent.keyDown(search, { key: "Enter", keyCode: 229, isComposing: true });
     expect(onChange).not.toHaveBeenCalled();
     fireEvent.keyDown(search, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());

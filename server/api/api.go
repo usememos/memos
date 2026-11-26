@@ -294,12 +294,13 @@ func newProfileRateLimiter(profile *profile.Profile) ratelimit.Limiter {
 }
 
 // gatewayIncomingHeaderMatcher forwards the challenge token to metadata on top
-// of the gateway's default set.
+// of the gateway's legacy set, which also maps Grpc-Metadata-* headers such as
+// the Grpc-Metadata-Cookie that REST clients use to send the refresh cookie.
 func gatewayIncomingHeaderMatcher(key string) (string, bool) {
 	if http.CanonicalHeaderKey(key) == challengeTokenHeader {
 		return challengeTokenMetadataKey, true
 	}
-	return runtime.DefaultHeaderMatcher(key)
+	return runtime.LegacyHeaderMatcher(key)
 }
 
 // gatewayErrorHandler adds the rate-limit header fields to a refusal before

@@ -11,19 +11,12 @@ const allowContext = (overrides: Partial<SuggestionAllowContext>): SuggestionAll
   ({ excluded: false, explicit: false, query: "", textBefore: "", from: 0, ...overrides }) as SuggestionAllowContext;
 
 describe("tag suggestion matching", () => {
-  it.each([
-    "hello #",
-    "#t",
-    "- [ ] #",
-    "#work/",
-    "first line\n#work/",
-    "hello#work",
-    "C#",
-    "#2024",
-    "＃t",
-  ])("finds a tag token being typed: %s", (text) => {
-    expect(tokenAtEnd(text)).not.toBeNull();
-  });
+  it.each(["hello #", "#t", "- [ ] #", "#work/", "first line\n#work/", "hello#work", "C#", "#2024", "＃t"])(
+    "finds a tag token being typed: %s",
+    (text) => {
+      expect(tokenAtEnd(text)).not.toBeNull();
+    },
+  );
 
   it.each(["", "hello world", "#work//"])("finds no tag token in %s", (text) => {
     expect(tokenAtEnd(text)).toBeNull();

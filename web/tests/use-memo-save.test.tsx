@@ -99,29 +99,29 @@ describe("useMemoSave", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "detail", "memos/parent"] });
   });
 
-  it.each([
-    { memoName: "memos/existing" },
-    { parentMemoName: "memos/parent" },
-  ])("resets and confirms a successful closing save without advancing timers: %o", async (options) => {
-    vi.useFakeTimers();
-    try {
-      mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/saved" });
-      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-      const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-      const onConfirm = vi.fn();
-      const discardDraft = vi.fn();
-      const { result } = renderHook(() => useMemoSave({ ...options, discardDraft, onConfirm }), { wrapper });
+  it.each([{ memoName: "memos/existing" }, { parentMemoName: "memos/parent" }])(
+    "resets and confirms a successful closing save without advancing timers: %o",
+    async (options) => {
+      vi.useFakeTimers();
+      try {
+        mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/saved" });
+        const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+        const onConfirm = vi.fn();
+        const discardDraft = vi.fn();
+        const { result } = renderHook(() => useMemoSave({ ...options, discardDraft, onConfirm }), { wrapper });
 
-      await act(async () => result.current());
+        await act(async () => result.current());
 
-      expect(discardDraft).toHaveBeenCalledOnce();
-      expect(mocks.dispatch).toHaveBeenCalledWith({ type: "reset" });
-      expect(onConfirm).toHaveBeenCalledWith("memos/saved");
-      expect(mocks.saving).toBe(false);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
+        expect(discardDraft).toHaveBeenCalledOnce();
+        expect(mocks.dispatch).toHaveBeenCalledWith({ type: "reset" });
+        expect(onConfirm).toHaveBeenCalledWith("memos/saved");
+        expect(mocks.saving).toBe(false);
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
 
   it("blocks another save while pending and preserves the draft for a failed save's retry", async () => {
     let failSave!: (error: Error) => void;

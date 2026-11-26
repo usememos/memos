@@ -1,4 +1,5 @@
-import { FallbackLngObjList } from "i18next";
+import { FallbackLngObjList, TOptions } from "i18next";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import i18n, { locales, TLocale } from "@/i18n";
 import enTranslation from "@/locales/en.json";
@@ -91,12 +92,12 @@ export type Translations = NestedKeyOf<typeof enTranslation> | PluralBase<Nested
 type TypedT = (key: Translations, params?: Record<string, unknown>) => string;
 
 export const useTranslate = (): TypedT => {
-  const { t } = useTranslation<Translations>();
-  return t;
+  const { t } = useTranslation();
+  return useCallback<TypedT>((key, params) => t(key, params as TOptions), [t]);
 };
 
 /** The same typed lookup for code outside React components, such as error helpers. */
-export const translate: TypedT = (key, params) => i18n.t(key, params);
+export const translate: TypedT = (key, params) => i18n.t(key, params as TOptions);
 
 export const isValidLocale = (locale: string | undefined | null): boolean => {
   if (!locale) return false;
