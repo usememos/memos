@@ -442,6 +442,7 @@
       "self": "תגובות",
       "write-a-comment": "כתבו תגובה",
       "view-all-count_one": "הצג {{count}} תגובה",
+      "view-all-count_two": "הצג את כל {{count}} התגובות",
       "view-all-count_other": "הצג את כל {{count}} התגובות"
     },
     "copy-content": "העתק תוכן",
@@ -975,6 +976,7 @@
       "redirect-url": "כתובת להפניה",
       "redirect-url-description": "רשמו את כתובת החזרה הזו אצל ספק הזהות שלכם כדי שתהליך קוד ההרשאה יוכל להסתיים.",
       "scope-count_one": "{{count}} טווח",
+      "scope-count_two": "{{count}} טווחים",
       "scope-count_other": "{{count}} טווחים",
       "scopes": "טווחים",
       "scopes-description": "הפרידו בין טווחים ברווחים. רוב הספקים זקוקים רק לקבוצה קטנה כגון profile או email.",

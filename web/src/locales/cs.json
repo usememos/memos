@@ -822,6 +822,7 @@
       "redirect-url-description": "Zaregistrujte toto zpětné volání URL u svého poskytovatele identity, aby bylo možné dokončit tok autorizačního kódu.",
       "scope-count_one": "{{count}} rozsah",
       "scope-count_few": "{{count}} rozsahy",
+      "scope-count_many": "{{count}} rozsahu",
       "scope-count_other": "{{count}} rozsahů",
       "scopes-description": "Rozsahy oddělte mezerami. Většina poskytovatelů potřebuje pouze malou sadu, jako je přístup k profilu nebo e-mailu.",
       "template-description": "Začněte od přednastaveného poskytovatele a poté upravte přihlašovací údaje a koncové body pro svého tenanta.",
