@@ -51,9 +51,12 @@ const PlaceRow = ({
   </Link>
 );
 
-/** Up and Down walk the places, Home and End jump to the ends; Tab still leaves the list in order. */
+/**
+ * Up and Down walk the places, Home and End jump to the ends; Tab still leaves the list in order.
+ * The Create Space button sits between Explore and the Spaces, so it is a stop in the same order.
+ */
 const handlePlacesKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-  const rows = [...event.currentTarget.querySelectorAll<HTMLElement>("a[href]")];
+  const rows = [...event.currentTarget.querySelectorAll<HTMLElement>("a[href], button")];
   const index = rows.indexOf(document.activeElement as HTMLElement);
   const next = {
     ArrowDown: rows[(index + 1) % rows.length],

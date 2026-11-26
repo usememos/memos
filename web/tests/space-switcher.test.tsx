@@ -133,6 +133,28 @@ describe("SpaceSwitcher", () => {
     expect(links[3]).toHaveFocus();
   });
 
+  it("walks Space creation in its place between Explore and the Spaces", () => {
+    renderAt();
+    openSwitcher();
+    const places = screen.getByRole("navigation", { name: "space.switch" });
+    const [home, explore, product, research] = within(places).getAllByRole("link");
+    const create = within(places).getByRole("button", { name: "space.create" });
+    create.focus();
+    fireEvent.keyDown(create, { key: "ArrowDown" });
+    expect(product).toHaveFocus();
+    fireEvent.keyDown(product, { key: "ArrowUp" });
+    expect(create).toHaveFocus();
+    fireEvent.keyDown(create, { key: "ArrowUp" });
+    expect(explore).toHaveFocus();
+    fireEvent.keyDown(explore, { key: "ArrowDown" });
+    expect(create).toHaveFocus();
+    fireEvent.keyDown(create, { key: "End" });
+    expect(research).toHaveFocus();
+    create.focus();
+    fireEvent.keyDown(create, { key: "Home" });
+    expect(home).toHaveFocus();
+  });
+
   it("drops the Spaces heading when it would name nothing", () => {
     state.spaces = [];
     renderAt("/?creator=alice");
