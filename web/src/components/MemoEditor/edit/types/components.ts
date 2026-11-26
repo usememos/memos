@@ -57,6 +57,7 @@ export interface EditSessionProps {
 }
 
 export interface EditorContentProps {
+  onSuggestTags?: (content: string) => void;
   placeholder?: string;
   sourceMode: EditorSourceModeToggle;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */

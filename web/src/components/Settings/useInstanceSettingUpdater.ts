@@ -10,6 +10,8 @@ interface SaveInstanceSettingOptions {
   setting: InstanceSetting;
   errorContext: string;
   showSuccessToast?: boolean;
+  /** Reports a failed save in place instead of in a toast. */
+  onError?: (error: unknown) => void;
 }
 
 export const buildInstanceSettingName = (key: InstanceSetting_Key) => `instance/settings/${InstanceSetting_Key[key]}`;
@@ -19,7 +21,7 @@ const useInstanceSettingUpdater = () => {
   const { updateSetting, fetchSetting } = useInstance();
 
   return useCallback(
-    async ({ key, setting, errorContext, showSuccessToast = true }: SaveInstanceSettingOptions) => {
+    async ({ key, setting, errorContext, showSuccessToast = true, onError }: SaveInstanceSettingOptions) => {
       try {
         await updateSetting(setting);
         // ACCESS is updated in the React Query cache from the mutation response.
@@ -32,6 +34,10 @@ const useInstanceSettingUpdater = () => {
         }
         return true;
       } catch (error: unknown) {
+        if (onError) {
+          onError(error);
+          return false;
+        }
         await handleError(error, showErrorToast, { context: errorContext });
         return false;
       }

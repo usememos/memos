@@ -5,7 +5,11 @@ import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading" | "transcribing";
 
+/** `limited`: the hourly budget is spent, so asking again cannot help. `stale`: the draft changed after an empty answer. */
+export type TagSuggestions = { status: "loading" | "error" | "limited" } | { status: "ready"; tags: string[]; stale?: boolean };
+
 export interface EditorState {
+  tagSuggestions?: TagSuggestions;
   content: string;
   metadata: {
     visibility: Visibility;
@@ -58,6 +62,7 @@ export type EditorAction =
   | { type: "ACCEPT_SUGGESTION"; payload: string }
   | { type: "SET_DRAWING_SAVE_ERROR"; payload: EditorState["drawingSaveError"] }
   | { type: "SET_DRAWING_MEMO_UPDATE"; payload: boolean }
+  | { type: "SET_TAG_SUGGESTIONS"; payload: EditorState["tagSuggestions"] }
   | { type: "RESET" };
 
 // Module-private template for createInitialState.

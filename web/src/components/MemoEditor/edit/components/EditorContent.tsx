@@ -12,33 +12,36 @@ import type { EditorController } from "../types/editorController";
  * Hosts the Markdown Editor behind the EditorController contract. The
  * editor writes into state.content on every change.
  */
-export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, sourceMode, onSubmit, onFiles }, ref) => {
-  const isSourceMode = sourceMode.isSourceMode;
-  const { actions, dispatch } = useEditorContext();
-  const content = useEditorSelector((s) => s.content);
-  const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
-  const attachments = useEditorSelector((s) => s.metadata.attachments);
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(
+  ({ placeholder, sourceMode, onSubmit, onFiles, onSuggestTags }, ref) => {
+    const isSourceMode = sourceMode.isSourceMode;
+    const { actions, dispatch } = useEditorContext();
+    const content = useEditorSelector((s) => s.content);
+    const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
+    const attachments = useEditorSelector((s) => s.metadata.attachments);
 
-  const handleContentChange = (content: string) => {
-    dispatch(actions.updateContent(content));
-  };
+    const handleContentChange = (content: string) => {
+      dispatch(actions.updateContent(content));
+    };
 
-  return (
-    <div className="relative w-full flex flex-col flex-1">
-      <Editor
-        ref={ref}
-        className="memo-editor-content"
-        value={content}
-        placeholder={placeholder || ""}
-        isFocusMode={isFocusMode}
-        mode={isSourceMode ? "source" : "rich"}
-        attachments={attachments}
-        onContentChange={handleContentChange}
-        onFiles={onFiles}
-        onSubmit={onSubmit}
-      />
-    </div>
-  );
-});
+    return (
+      <div className="relative w-full flex flex-col flex-1">
+        <Editor
+          ref={ref}
+          className="memo-editor-content"
+          value={content}
+          placeholder={placeholder || ""}
+          isFocusMode={isFocusMode}
+          mode={isSourceMode ? "source" : "rich"}
+          attachments={attachments}
+          onContentChange={handleContentChange}
+          onSuggestTags={onSuggestTags}
+          onFiles={onFiles}
+          onSubmit={onSubmit}
+        />
+      </div>
+    );
+  },
+);
 
 EditorContent.displayName = "EditorContent";

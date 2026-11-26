@@ -6,6 +6,31 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/ai:suggestTags:
+        post:
+            tags:
+                - AIService
+            description: SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+            operationId: AIService_SuggestTags
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SuggestTagsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuggestTagsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/ai:transcribe:
         post:
             tags:
@@ -620,8 +645,8 @@ paths:
             tags:
                 - InstanceService
             description: |-
-                GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-                 which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+                GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+                 USAGE_LIMITS and AI, which are admin only.
             operationId: InstanceService_GetInstanceSetting
             parameters:
                 - name: instance
@@ -649,6 +674,13 @@ paths:
             description: |-
                 UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
                  changed. Empty write-only credentials keep the stored values.
+
+                 Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+                 rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+                 google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+                 FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+                 Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+                 refuse the save.
             operationId: InstanceService_UpdateInstanceSetting
             parameters:
                 - name: instance
@@ -3867,7 +3899,23 @@ components:
                     description: |-
                         The proof-of-humanity challenge required on signup and password sign-in.
                          Absent when none is configured, which is the case on every self-hosted instance.
+                aiFeatures:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceProfile_AIFeatures'
+                    description: |-
+                        The AI features that are ready to use, derived from the AI setting.
+                         Only set for signed-in callers.
             description: InstanceProfile is the basic information about the instance.
+        InstanceProfile_AIFeatures:
+            type: object
+            properties:
+                transcription:
+                    type: boolean
+                    description: Whether AIService.Transcribe is available.
+                tagSuggestions:
+                    type: boolean
+                    description: Whether AIService.SuggestTags is available.
+            description: AIFeatures says which AI features the instance can serve.
         InstanceProfile_Challenge:
             type: object
             properties:
@@ -3916,38 +3964,43 @@ components:
                     description: The value of the USAGE_LIMITS setting.
             description: InstanceSetting is one group of instance-wide settings, selected by its key.
         InstanceSetting_AIProviderConfig:
+            required:
+                - title
+                - type
             type: object
             properties:
                 id:
                     type: string
-                    description: The provider ID. Generated when empty on update.
+                    description: The provider ID, unique within the setting. Generated when empty.
                 title:
                     type: string
-                    description: The provider display title.
+                    description: Required. The display title.
                 type:
                     enum:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - GEMINI
                     type: string
-                    description: The provider implementation type.
+                    description: Required. The API protocol the endpoint speaks.
                     format: enum
                 endpoint:
                     type: string
-                    description: The provider API endpoint. Defaults to the provider's public endpoint when empty.
+                    description: The base URL of the provider API. Empty selects the default endpoint of the type.
                 apiKey:
                     writeOnly: true
                     type: string
-                    description: Input only. The provider API key. Never returned; an empty value keeps the stored key.
+                    description: |-
+                        Input only. The API key. Never returned. An empty value keeps the stored key while type and endpoint are
+                         unchanged; changing either requires the key again, so that it is never sent to a different service.
                 apiKeySet:
                     readOnly: true
                     type: boolean
-                    description: Output only. Whether an API key is stored for this provider.
+                    description: Output only. Whether an API key is stored.
                 apiKeyHint:
                     readOnly: true
                     type: string
                     description: Output only. A masked hint of the stored API key.
-            description: AIProviderConfig is one callable AI provider connection.
+            description: AIProviderConfig is one connection to an AI provider.
         InstanceSetting_AISetting:
             type: object
             properties:
@@ -3955,15 +4008,18 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/InstanceSetting_AIProviderConfig'
-                    description: The AI provider configurations available instance-wide.
+                    description: The provider connections the capabilities below can use.
                 transcription:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
-                    description: |-
-                        The speech-to-text feature configuration.
-                         When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-                         stored configuration.
-            description: AISetting is the AI provider configuration.
+                    description: The speech-to-text capability, used by AIService.Transcribe. Unset turns it off.
+                textGeneration:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_TextGenerationConfig'
+                    description: The text generation capability, used by AIService.SuggestTags. Unset turns it off.
+            description: |-
+                AISetting is the instance's AI configuration: the provider connections, and the provider and model that
+                 serve each capability. Admin only. The setting is read and replaced whole.
         InstanceSetting_AccessSetting:
             type: object
             properties:
@@ -4096,28 +4152,38 @@ components:
                 TagsSetting is the instance-wide tag metadata configuration.
                  Active tag metadata is stored in per-user tag settings. This message remains for backward compatibility with
                  existing clients and migrations.
-        InstanceSetting_TranscriptionConfig:
+        InstanceSetting_TextGenerationConfig:
+            required:
+                - providerId
+                - model
             type: object
             properties:
                 providerId:
                     type: string
-                    description: |-
-                        The ID of the provider used for transcription; must reference an entry in AISetting.providers.
-                         Empty means transcription is disabled.
+                    description: Required. The ID of an entry in AISetting.providers.
                 model:
                     type: string
-                    description: |-
-                        The provider-specific model identifier. Hidden from non-admins.
-                         Empty selects gpt-transcribe on OpenAI, whisper-1 on custom OpenAI-compatible endpoints, or gemini-2.5-flash on Gemini.
+                    description: Required. The provider's model identifier.
+            description: TextGenerationConfig selects the provider and model for text generation.
+        InstanceSetting_TranscriptionConfig:
+            required:
+                - providerId
+                - model
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: Required. The ID of an entry in AISetting.providers.
+                model:
+                    type: string
+                    description: Required. The provider's model identifier.
                 language:
                     type: string
-                    description: |-
-                        The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
-                         Empty lets the provider auto-detect.
+                    description: The ISO 639-1 language hint sent to the provider. Empty lets the provider detect the language.
                 prompt:
                     type: string
-                    description: A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
-            description: TranscriptionConfig is the speech-to-text feature configuration.
+                    description: A spelling and vocabulary hint sent to the provider.
+            description: TranscriptionConfig selects the provider and model for speech to text.
         InstanceSetting_UsageLimitsSetting:
             type: object
             properties:
@@ -5246,6 +5312,33 @@ components:
             description: |-
                 S3Config is the configuration of an S3-compatible object store.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        SuggestTagsRequest:
+            required:
+                - content
+            type: object
+            properties:
+                content:
+                    type: string
+                    description: The current Markdown draft, up to 64 KiB.
+                candidateTags:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Optional vocabulary to prefer. Supply up to 64 tag values without the leading hash, each at most 256 bytes.
+                         Values that are not valid tags are ignored.
+            description: Request message for AIService.SuggestTags.
+        SuggestTagsResponse:
+            type: object
+            properties:
+                tags:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Up to three matching candidates, most relevant first. If none fit, this may contain one new tag.
+                         Values omit the leading hash and exclude tags already in the draft. The list may be empty.
+            description: Response message for AIService.SuggestTags.
         TestInstanceEmailSettingRequest:
             type: object
             properties:

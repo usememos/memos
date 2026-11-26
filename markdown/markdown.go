@@ -1,8 +1,10 @@
 package markdown
 
 import (
+	"bufio"
 	"bytes"
 	"cmp"
+	"html"
 	"net/url"
 	"regexp"
 	"slices"
@@ -14,6 +16,7 @@ import (
 	"github.com/yuin/goldmark/extension"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/parser"
+	ghtml "github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
 
 	"github.com/usememos/memos/internal/identifier"
@@ -194,6 +197,25 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 	return uniquePreserveCase(tags), nil
 }
 
+// textValue returns the plain text a Text node displays: backslash escapes are
+// removed and entity references are decoded, as when the node is rendered.
+// Raw text, such as the content of a code span, is returned as written.
+func textValue(n *gast.Text, source []byte) []byte {
+	value := n.Segment.Value(source)
+	// The writer also replaces NUL bytes, so text holding one takes the same path.
+	if n.IsRaw() || !bytes.ContainsAny(value, "\\&\x00") {
+		return value
+	}
+	// Reuse goldmark's HTML writer so the decoding follows CommonMark exactly
+	// (for example, `\&amp;` stays a literal `&amp;`), then turn the HTML it
+	// writes back into plain text.
+	var rendered bytes.Buffer
+	w := bufio.NewWriterSize(&rendered, len(value))
+	ghtml.DefaultWriter.Write(w, value)
+	_ = w.Flush()
+	return []byte(html.UnescapeString(rendered.String()))
+}
+
 // extractHeadingText extracts plain text content from a heading node.
 func extractHeadingText(n gast.Node, source []byte) string {
 	var buf strings.Builder
@@ -207,7 +229,7 @@ func extractHeadingText(n gast.Node, source []byte) string {
 func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
 	switch node := n.(type) {
 	case *gast.Text:
-		buf.Write(node.Segment.Value(source))
+		buf.Write(textValue(node, source))
 		if node.SoftLineBreak() || node.HardLineBreak() {
 			buf.WriteByte(' ')
 		}
@@ -379,7 +401,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			if alertMarker.Len() > 0 && segment.Start >= alertMarker.Start && segment.Stop <= alertMarker.Stop {
 				return gast.WalkContinue, nil
 			}
-			writeBytes(segment.Value(content))
+			writeBytes(textValue(node, content))
 			if node.SoftLineBreak() || node.HardLineBreak() {
 				writeByte(' ')
 			}

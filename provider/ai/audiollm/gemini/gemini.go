@@ -7,7 +7,6 @@ import (
 	"context"
 	"io"
 	"mime"
-	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -18,12 +17,7 @@ import (
 	"github.com/usememos/memos/provider/ai/audiollm"
 )
 
-const (
-	defaultEndpoint   = "https://generativelanguage.googleapis.com/v1beta"
-	defaultAPIVersion = "v1beta"
-	maxInlineSize     = 14 * 1024 * 1024
-	providerName      = "Gemini"
-)
+const maxInlineSize = 14 * 1024 * 1024
 
 var supportedContentTypes = map[string]string{
 	"audio/wav":    "audio/wav",
@@ -44,28 +38,7 @@ type Model struct {
 
 // New constructs a Model from a provider config.
 func New(cfg ai.ProviderConfig, options audiollm.Options) (*Model, error) {
-	endpoint, err := normalizeEndpoint(cfg.Endpoint)
-	if err != nil {
-		return nil, err
-	}
-	if cfg.APIKey == "" {
-		return nil, errors.Errorf("%s API key is required", providerName)
-	}
-	baseURL, apiVersion, err := splitEndpoint(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	httpOptions := genai.HTTPOptions{BaseURL: baseURL, APIVersion: apiVersion}
-	if options.HTTPClient != nil && options.HTTPClient.Timeout > 0 {
-		timeout := options.HTTPClient.Timeout
-		httpOptions.Timeout = &timeout
-	}
-	client, err := genai.NewClient(context.Background(), &genai.ClientConfig{
-		APIKey:      cfg.APIKey,
-		Backend:     genai.BackendGeminiAPI,
-		HTTPClient:  options.HTTPClient,
-		HTTPOptions: httpOptions,
-	})
+	client, err := ai.NewGeminiClient(context.Background(), cfg, options.HTTPClient)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create Gemini client")
 	}
@@ -154,34 +127,6 @@ func mapFinishReason(resp *genai.GenerateContentResponse) audiollm.FinishReason 
 	default:
 		return audiollm.FinishOther
 	}
-}
-
-func normalizeEndpoint(endpoint string) (string, error) {
-	endpoint = strings.TrimSpace(endpoint)
-	if endpoint == "" {
-		endpoint = defaultEndpoint
-	}
-	if _, err := url.ParseRequestURI(endpoint); err != nil {
-		return "", errors.Wrapf(err, "invalid %s endpoint", providerName)
-	}
-	return strings.TrimRight(endpoint, "/"), nil
-}
-
-func splitEndpoint(endpoint string) (string, string, error) {
-	parsed, err := url.Parse(endpoint)
-	if err != nil {
-		return "", "", errors.Wrap(err, "invalid Gemini endpoint")
-	}
-	path := strings.TrimRight(parsed.Path, "/")
-	apiVersion := defaultAPIVersion
-	for _, supported := range []string{"v1alpha", "v1beta", "v1"} {
-		if path == "/"+supported || strings.HasSuffix(path, "/"+supported) {
-			apiVersion = supported
-			parsed.Path = strings.TrimSuffix(path, "/"+supported)
-			break
-		}
-	}
-	return strings.TrimRight(parsed.String(), "/"), apiVersion, nil
 }
 
 func normalizeContentType(contentType string) (string, error) {

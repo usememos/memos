@@ -9,7 +9,7 @@ import { MemoMarkdown } from "../MemoMarkdown";
 import { createController } from "./controller";
 import type { EditorController } from "./types/editorController";
 import "./editor.css";
-import { buildEditorExtensions, type EditorFileOrigin } from "./extensions";
+import { buildEditorExtensions, type EditorFileOrigin, type TagAction } from "./extensions";
 
 interface EditorProps {
   className: string;
@@ -17,6 +17,7 @@ interface EditorProps {
   value: string;
   placeholder: string;
   onContentChange: (content: string) => void;
+  onSuggestTags?: (content: string) => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
@@ -44,16 +45,24 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   // The extensions read the latest callbacks through refs, written after commit so
   // a render React discards never leaves its callbacks behind.
   const onContentChangeRef = useRef(onContentChange);
+  const tagActionRef = useRef<TagAction | undefined>(undefined);
   const onFilesRef = useRef(onFiles);
   useLayoutEffect(() => {
     onContentChangeRef.current = onContentChange;
     onFilesRef.current = onFiles;
+    tagActionRef.current = props.onSuggestTags ? { label: t("editor.suggest-tags"), request: props.onSuggestTags } : undefined;
   });
   // A user can only author their own memos. Reuse the current-user stats query
   // instead of fetching and aggregating every user's tags for autocomplete.
   const { data: tagData } = useTagCounts(true);
   const tagsRef = useRef<string[]>([]);
-  tagsRef.current = useMemo(() => Object.keys(tagData ?? {}), [tagData]);
+  tagsRef.current = useMemo(
+    () =>
+      Object.entries(tagData ?? {})
+        .sort(([a, aCount], [b, bCount]) => bCount - aCount || a.localeCompare(b))
+        .map(([tag]) => tag),
+    [tagData],
+  );
 
   const controller = useMemo(
     () =>
@@ -70,6 +79,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   const extensions = useMemo(
     () =>
       buildEditorExtensions({
+        getTagAction: () => tagActionRef.current,
         getTags: () => tagsRef.current,
         onFiles: (files, origin) => onFilesRef.current(files, origin),
         // Read once, like the rest: the popup keeps the language the composer opened in.

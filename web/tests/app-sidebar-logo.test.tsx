@@ -264,49 +264,41 @@ describe("App sidebar logo", () => {
     expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
 
-  it.each([
-    "/spaces/product",
-    "/spaces/product/",
-    "/spaces/product/attachments",
-    "/spaces/product/Attachments/",
-  ])("shows the selected Space only on collection route %s", (path) => {
-    const product = { name: "spaces/product", title: "Product", description: "" };
-    spaceState.spaces = [product];
-    spaceState.selectedSpace = product;
+  it.each(["/spaces/product", "/spaces/product/", "/spaces/product/attachments", "/spaces/product/Attachments/"])(
+    "shows the selected Space only on collection route %s",
+    (path) => {
+      const product = { name: "spaces/product", title: "Product", description: "" };
+      spaceState.spaces = [product];
+      spaceState.selectedSpace = product;
 
-    render(
-      <MemoryRouter initialEntries={[path]}>
-        <AppSidebar />
-      </MemoryRouter>,
-    );
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <AppSidebar />
+        </MemoryRouter>,
+      );
 
-    expect(screen.getByRole("button", { name: "space.switch: Product" })).toBeInTheDocument();
-  });
+      expect(screen.getByRole("button", { name: "space.switch: Product" })).toBeInTheDocument();
+    },
+  );
 
-  it.each([
-    "/archived",
-    "/inbox",
-    "/setting",
-    "/about",
-    "/views",
-    "/memos/123",
-    "/memos/shares/token",
-    "/404",
-  ])("shows Memos in the switcher on global page %s", (path) => {
-    const product = { name: "spaces/product", title: "Product", description: "" };
-    spaceState.spaces = [product];
-    spaceState.selectedSpace = product;
+  it.each(["/archived", "/inbox", "/setting", "/about", "/views", "/memos/123", "/memos/shares/token", "/404"])(
+    "shows Memos in the switcher on global page %s",
+    (path) => {
+      const product = { name: "spaces/product", title: "Product", description: "" };
+      spaceState.spaces = [product];
+      spaceState.selectedSpace = product;
 
-    render(
-      <MemoryRouter initialEntries={[path]}>
-        <AppSidebar />
-      </MemoryRouter>,
-    );
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <AppSidebar />
+        </MemoryRouter>,
+      );
 
-    const brand = screen.getByRole("button", { name: "space.switch: common.memos" });
-    expect(brand).toHaveClass("h-9", "gap-2", "px-2");
-    expect(within(brand).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
-  });
+      const brand = screen.getByRole("button", { name: "space.switch: common.memos" });
+      expect(brand).toHaveClass("h-9", "gap-2", "px-2");
+      expect(within(brand).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
+    },
+  );
 
   it("scopes collection statistics to the selected Space", () => {
     render(
@@ -645,20 +637,17 @@ describe("App sidebar logo", () => {
     ).toBeInTheDocument();
   });
 
-  it.each([
-    "/calendar",
-    "/map",
-    "/attachments",
-    "/archived",
-    "/spaces/test/calendar",
-  ])("hides Timeline display settings on other views: %s", (path) => {
-    render(
-      <MemoryRouter initialEntries={[path]}>
-        <AppSidebar />
-      </MemoryRouter>,
-    );
-    expect(screen.queryByRole("button", { name: "memo.view-options" })).not.toBeInTheDocument();
-  });
+  it.each(["/calendar", "/map", "/attachments", "/archived", "/spaces/test/calendar"])(
+    "hides Timeline display settings on other views: %s",
+    (path) => {
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <AppSidebar />
+        </MemoryRouter>,
+      );
+      expect(screen.queryByRole("button", { name: "memo.view-options" })).not.toBeInTheDocument();
+    },
+  );
 
   it("opens the create form from the empty Views section and closes the mobile sidebar", () => {
     const LocationProbe = () => {

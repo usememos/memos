@@ -207,22 +207,19 @@ describe("User menu panel", () => {
       label: /setting.preference.theme.*setting.preference.theme-dark/,
     },
     { row: /common.language/, choice: "Français", storageKey: "memos-locale", value: "fr", label: /common.language.*Français/ },
-  ] as const)("persists a guest's choice of $storageKey locally without updating an account", async ({
-    row,
-    choice,
-    storageKey,
-    value,
-    label,
-  }) => {
-    mocks.currentUser = undefined;
-    const menu = renderMenu("/explore");
-    fireEvent.click(screen.getByRole("button", { name: row }));
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: choice }));
-    expect(localStorage.getItem(storageKey)).toBe(value);
-    expect(mocks.updateGeneralSetting).not.toHaveBeenCalled();
-    expect(mocks.refetchSettings).not.toHaveBeenCalled();
-    menu.unmount();
-    renderMenu("/explore");
-    expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
-  });
+  ] as const)(
+    "persists a guest's choice of $storageKey locally without updating an account",
+    async ({ row, choice, storageKey, value, label }) => {
+      mocks.currentUser = undefined;
+      const menu = renderMenu("/explore");
+      fireEvent.click(screen.getByRole("button", { name: row }));
+      fireEvent.click(await screen.findByRole("menuitemradio", { name: choice }));
+      expect(localStorage.getItem(storageKey)).toBe(value);
+      expect(mocks.updateGeneralSetting).not.toHaveBeenCalled();
+      expect(mocks.refetchSettings).not.toHaveBeenCalled();
+      menu.unmount();
+      renderMenu("/explore");
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    },
+  );
 });

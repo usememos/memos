@@ -29,6 +29,19 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 
 ### Breaking
 
+- When changing an AI provider's type or endpoint through `UpdateInstanceSetting`, supply its API key again.
+  Updates to the same connection still accept an empty key to keep the stored credential.
+- The `AI` instance setting is admin only. `GetInstanceSetting` no longer returns it, with hidden fields, to other
+  signed-in users; they read which AI features are ready from the new `InstanceProfile.ai_features`.
+- An AI capability is on when it is set and off when it is unset. `InstanceSetting.TranscriptionConfig` and
+  `TextGenerationConfig` require both `provider_id` and `model`; an empty `provider_id` no longer means off, and
+  the transcription model is no longer chosen by the server when left empty. A stored transcription setting
+  without a model reads as off: set its provider and model again.
+- `UpdateInstanceSetting` replaces the `AI` setting whole, like every other setting. Omitting `transcription` or
+  `text_generation` turns that capability off instead of keeping the stored one.
+- `UpdateInstanceSetting` lists the models of each AI provider that is new or whose type, endpoint or key changed,
+  and refuses the save when the key is rejected, the endpoint cannot be reached or redirects, or the provider does not
+  answer in time. The error carries an `AI_*` `google.rpc.ErrorInfo` reason.
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
   Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
   `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.

@@ -48,16 +48,15 @@ describe("router configuration", () => {
     }
   });
 
-  it.each([
-    "/spaces/product",
-    "/spaces/product/calendar/2026/09",
-    "/spaces/product/attachments",
-  ])("gates %s with authentication and Space access", (path) => {
-    const types = matchRoutes(routeConfig, path)?.map(({ route }) => elementType(route));
-    expect(types).toContain(RequireAuthRoute);
-    expect(types).toContain(SpaceRoute);
-    expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
-  });
+  it.each(["/spaces/product", "/spaces/product/calendar/2026/09", "/spaces/product/attachments"])(
+    "gates %s with authentication and Space access",
+    (path) => {
+      const types = matchRoutes(routeConfig, path)?.map(({ route }) => elementType(route));
+      expect(types).toContain(RequireAuthRoute);
+      expect(types).toContain(SpaceRoute);
+      expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
+    },
+  );
   // A Space has one timeline, so it has no Explore page of its own.
   it.each(["/spaces/product/unknown", "/spaces/product/explore"])("keeps %s outside collection pages", (path) => {
     const matches = matchRoutes(routeConfig, path);

@@ -35,6 +35,8 @@ const (
 const (
 	// AIServiceTranscribeProcedure is the fully-qualified name of the AIService's Transcribe RPC.
 	AIServiceTranscribeProcedure = "/memos.api.AIService/Transcribe"
+	// AIServiceSuggestTagsProcedure is the fully-qualified name of the AIService's SuggestTags RPC.
+	AIServiceSuggestTagsProcedure = "/memos.api.AIService/SuggestTags"
 )
 
 // AIServiceClient is a client for the memos.api.AIService service.
@@ -42,6 +44,8 @@ type AIServiceClient interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error)
 }
 
 // NewAIServiceClient constructs a client for the memos.api.AIService service. By default, it uses
@@ -61,12 +65,19 @@ func NewAIServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aIServiceMethods.ByName("Transcribe")),
 			connect.WithClientOptions(opts...),
 		),
+		suggestTags: connect.NewClient[api.SuggestTagsRequest, api.SuggestTagsResponse](
+			httpClient,
+			baseURL+AIServiceSuggestTagsProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("SuggestTags")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // aIServiceClient implements AIServiceClient.
 type aIServiceClient struct {
-	transcribe *connect.Client[api.TranscribeRequest, api.TranscribeResponse]
+	transcribe  *connect.Client[api.TranscribeRequest, api.TranscribeResponse]
+	suggestTags *connect.Client[api.SuggestTagsRequest, api.SuggestTagsResponse]
 }
 
 // Transcribe calls memos.api.AIService.Transcribe.
@@ -74,11 +85,18 @@ func (c *aIServiceClient) Transcribe(ctx context.Context, req *connect.Request[a
 	return c.transcribe.CallUnary(ctx, req)
 }
 
+// SuggestTags calls memos.api.AIService.SuggestTags.
+func (c *aIServiceClient) SuggestTags(ctx context.Context, req *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error) {
+	return c.suggestTags.CallUnary(ctx, req)
+}
+
 // AIServiceHandler is an implementation of the memos.api.AIService service.
 type AIServiceHandler interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error)
 }
 
 // NewAIServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -94,10 +112,18 @@ func NewAIServiceHandler(svc AIServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aIServiceMethods.ByName("Transcribe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aIServiceSuggestTagsHandler := connect.NewUnaryHandler(
+		AIServiceSuggestTagsProcedure,
+		svc.SuggestTags,
+		connect.WithSchema(aIServiceMethods.ByName("SuggestTags")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.AIService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AIServiceTranscribeProcedure:
 			aIServiceTranscribeHandler.ServeHTTP(w, r)
+		case AIServiceSuggestTagsProcedure:
+			aIServiceSuggestTagsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -109,4 +135,8 @@ type UnimplementedAIServiceHandler struct{}
 
 func (UnimplementedAIServiceHandler) Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.Transcribe is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.SuggestTags is not implemented"))
 }

@@ -3,6 +3,8 @@ package audiollm
 import (
 	"net/http"
 	"time"
+
+	"github.com/usememos/memos/provider/ai"
 )
 
 const defaultHTTPTimeout = 2 * time.Minute
@@ -26,7 +28,7 @@ func WithHTTPClient(client *http.Client) ModelOption {
 
 // ApplyOptions resolves a ModelOption slice into Options with defaults.
 func ApplyOptions(opts []ModelOption) Options {
-	resolved := Options{HTTPClient: &http.Client{Timeout: defaultHTTPTimeout}}
+	resolved := Options{HTTPClient: ai.NewHTTPClient(defaultHTTPTimeout)}
 	for _, apply := range opts {
 		apply(&resolved)
 	}

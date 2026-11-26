@@ -74,6 +74,12 @@ func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanc
 		AccessMode:  instancesetting.AccessModeFromStore(accessSetting.AccessMode),
 		Challenge:   s.challengeProfile(),
 	}
+	if currentUser != nil {
+		instanceProfile.AiFeatures, err = s.aiFeatures(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
+		}
+	}
 	return instanceProfile, nil
 }
 
@@ -149,11 +155,13 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		return nil, status.Errorf(codes.Internal, "failed to get instance setting: %v", err)
 	}
 
-	// Storage and notification settings contain credentials, and usage limits
-	// name users; restrict them to admins.
+	// Storage, notification and AI settings contain credentials and endpoints, and usage
+	// limits name users; restrict them to admins. What other users need from the AI
+	// setting, which features are ready, is on the instance profile.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
 		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION ||
-		instanceSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		instanceSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS ||
+		instanceSetting.Key == storepb.InstanceSettingKey_AI {
 		user, err := caller.currentUser(ctx, s)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -165,34 +173,7 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
-	isAdminCaller := false
-	if instanceSetting.Key == storepb.InstanceSettingKey_AI {
-		user, err := caller.currentUser(ctx, s)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-		}
-		if user == nil {
-			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-		}
-		isAdminCaller = user.Role == store.RoleAdmin
-	}
-
-	result, err := s.convertInstanceSettingResponse(ctx, instanceSetting)
-	if err != nil {
-		return nil, err
-	}
-	if instanceSetting.Key == storepb.InstanceSettingKey_AI && !isAdminCaller {
-		// Non-admin callers only need transcription.provider_id to gate the
-		// editor's Transcribe button. Model / language / prompt are
-		// admin-entered defaults that may contain proprietary glossary terms,
-		// so they are redacted from non-admin responses.
-		if ai := result.GetAiSetting(); ai != nil && ai.Transcription != nil {
-			ai.Transcription.Model = ""
-			ai.Transcription.Language = ""
-			ai.Transcription.Prompt = ""
-		}
-	}
-	return result, nil
+	return s.convertInstanceSettingResponse(ctx, instanceSetting)
 }
 
 func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.UpdateInstanceSettingRequest) (*apipb.InstanceSetting, error) {
@@ -269,6 +250,11 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	}
 	if err := s.checkManagedSettingChange(ctx, updateSetting); err != nil {
 		return nil, err
+	}
+	if updateSetting.Key == storepb.InstanceSettingKey_AI {
+		if err := s.checkAIProviderConnections(ctx, updateSetting.GetAiSetting()); err != nil {
+			return nil, err
+		}
 	}
 
 	var instanceSetting *storepb.InstanceSetting

@@ -37,14 +37,21 @@ const (
 type InstanceServiceClient interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
 	GetInstanceProfile(ctx context.Context, in *GetInstanceProfileRequest, opts ...grpc.CallOption) (*InstanceProfile, error)
-	// GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-	// which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+	// GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+	// USAGE_LIMITS and AI, which are admin only.
 	GetInstanceSetting(ctx context.Context, in *GetInstanceSettingRequest, opts ...grpc.CallOption) (*InstanceSetting, error)
 	// BatchGetInstanceSettings gets up to 100 instance settings in request order, with the same access rules as
 	// GetInstanceSetting. The call fails if any setting cannot be returned.
 	BatchGetInstanceSettings(ctx context.Context, in *BatchGetInstanceSettingsRequest, opts ...grpc.CallOption) (*BatchGetInstanceSettingsResponse, error)
 	// UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
 	// changed. Empty write-only credentials keep the stored values.
+	//
+	// Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+	// rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+	// google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+	// FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+	// Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+	// refuse the save.
 	UpdateInstanceSetting(ctx context.Context, in *UpdateInstanceSettingRequest, opts ...grpc.CallOption) (*InstanceSetting, error)
 	// TestInstanceEmailSetting sends a test email with the provided or stored SMTP settings. Admin only.
 	TestInstanceEmailSetting(ctx context.Context, in *TestInstanceEmailSettingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -141,14 +148,21 @@ func (c *instanceServiceClient) GetConfigurationStatus(ctx context.Context, in *
 type InstanceServiceServer interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
 	GetInstanceProfile(context.Context, *GetInstanceProfileRequest) (*InstanceProfile, error)
-	// GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-	// which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+	// GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+	// USAGE_LIMITS and AI, which are admin only.
 	GetInstanceSetting(context.Context, *GetInstanceSettingRequest) (*InstanceSetting, error)
 	// BatchGetInstanceSettings gets up to 100 instance settings in request order, with the same access rules as
 	// GetInstanceSetting. The call fails if any setting cannot be returned.
 	BatchGetInstanceSettings(context.Context, *BatchGetInstanceSettingsRequest) (*BatchGetInstanceSettingsResponse, error)
 	// UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
 	// changed. Empty write-only credentials keep the stored values.
+	//
+	// Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+	// rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+	// google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+	// FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+	// Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+	// refuse the save.
 	UpdateInstanceSetting(context.Context, *UpdateInstanceSettingRequest) (*InstanceSetting, error)
 	// TestInstanceEmailSetting sends a test email with the provided or stored SMTP settings. Admin only.
 	TestInstanceEmailSetting(context.Context, *TestInstanceEmailSettingRequest) (*emptypb.Empty, error)

@@ -43,9 +43,10 @@ func TestConversionRoundTrips(t *testing.T) {
 		}}},
 		{Key: storepb.InstanceSettingKey_AI, Value: &storepb.InstanceSetting_AiSetting{AiSetting: &storepb.InstanceAISetting{
 			Providers: []*storepb.AIProviderConfig{
-				{Id: "openai", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, Endpoint: DefaultOpenAIEndpoint, ApiKey: "sk-secret"},
+				{Id: "openai", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, Endpoint: "https://api.openai.com/v1", ApiKey: "sk-secret"},
 			},
-			Transcription: &storepb.TranscriptionConfig{ProviderId: "openai", Model: "whisper-1", Language: "en", Prompt: "notes"},
+			TextGeneration: &storepb.TextGenerationConfig{ProviderId: "openai", Model: "text-model"},
+			Transcription:  &storepb.TranscriptionConfig{ProviderId: "openai", Model: "whisper-1", Language: "en", Prompt: "notes"},
 		}}},
 		{Key: storepb.InstanceSettingKey_ACCESS, Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
 			AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,

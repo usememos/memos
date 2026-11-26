@@ -181,7 +181,7 @@ func TestPlanComparesNormalizedValues(t *testing.T) {
 	reader := newFakeReader()
 	reader.settings[storepb.InstanceSettingKey_AI] = &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_AI, Value: &storepb.InstanceSetting_AiSetting{
 		AiSetting: &storepb.InstanceAISetting{Providers: []*storepb.AIProviderConfig{
-			{Id: "openai", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, Endpoint: instancesetting.DefaultOpenAIEndpoint, ApiKey: "placeholder"},
+			{Id: "openai", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, Endpoint: "https://api.openai.com/v1", ApiKey: "placeholder"},
 		}},
 	}}
 	storage := &storepb.InstanceStorageSetting{StorageType: storepb.InstanceStorageSetting_LOCAL}

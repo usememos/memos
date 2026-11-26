@@ -19,6 +19,31 @@ service AIService {
     };
     option (google.api.method_signature) = "audio";
   }
+  // SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+  rpc SuggestTags(SuggestTagsRequest) returns (SuggestTagsResponse) {
+    option (google.api.http) = {
+      post: "/api/ai:suggestTags"
+      body: "*"
+    };
+    option (google.api.method_signature) = "content,candidate_tags";
+    option (google.api.method_signature) = "content";
+  }
+}
+
+// Request message for AIService.SuggestTags.
+message SuggestTagsRequest {
+  // The current Markdown draft, up to 64 KiB.
+  string content = 1 [(google.api.field_behavior) = REQUIRED];
+  // Optional vocabulary to prefer. Supply up to 64 tag values without the leading hash, each at most 256 bytes.
+  // Values that are not valid tags are ignored.
+  repeated string candidate_tags = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for AIService.SuggestTags.
+message SuggestTagsResponse {
+  // Up to three matching candidates, most relevant first. If none fit, this may contain one new tag.
+  // Values omit the leading hash and exclude tags already in the draft. The list may be empty.
+  repeated string tags = 1;
 }
 
 // Request message for AIService.Transcribe.

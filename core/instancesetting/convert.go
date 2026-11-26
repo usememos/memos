@@ -45,7 +45,7 @@ func ToStore(setting *apipb.InstanceSetting) *storepb.InstanceSetting {
 		}
 	case storepb.InstanceSettingKey_AI:
 		if value := setting.GetAiSetting(); value != nil {
-			result.Value = &storepb.InstanceSetting_AiSetting{AiSetting: aiSettingToStore(value)}
+			result.Value = &storepb.InstanceSetting_AiSetting{AiSetting: AISettingToStore(value)}
 		}
 	case storepb.InstanceSettingKey_ACCESS:
 		if value := setting.GetAccessSetting(); value != nil {
@@ -394,6 +394,9 @@ func aiSettingFromStore(setting *storepb.InstanceAISetting) *apipb.InstanceSetti
 		Providers:     make([]*apipb.InstanceSetting_AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: transcriptionConfigFromStore(setting.GetTranscription()),
 	}
+	if cfg := setting.GetTextGeneration(); cfg != nil {
+		aiSetting.TextGeneration = &apipb.InstanceSetting_TextGenerationConfig{ProviderId: cfg.ProviderId, Model: cfg.Model}
+	}
 	for _, provider := range setting.Providers {
 		if provider == nil {
 			continue
@@ -409,7 +412,8 @@ func aiSettingFromStore(setting *storepb.InstanceAISetting) *apipb.InstanceSetti
 	return aiSetting
 }
 
-func aiSettingToStore(setting *apipb.InstanceSetting_AISetting) *storepb.InstanceAISetting {
+// AISettingToStore converts AI settings, including any supplied provider credentials.
+func AISettingToStore(setting *apipb.InstanceSetting_AISetting) *storepb.InstanceAISetting {
 	if setting == nil {
 		return nil
 	}
@@ -417,6 +421,9 @@ func aiSettingToStore(setting *apipb.InstanceSetting_AISetting) *storepb.Instanc
 	aiSetting := &storepb.InstanceAISetting{
 		Providers:     make([]*storepb.AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: transcriptionConfigToStore(setting.GetTranscription()),
+	}
+	if cfg := setting.GetTextGeneration(); cfg != nil {
+		aiSetting.TextGeneration = &storepb.TextGenerationConfig{ProviderId: cfg.ProviderId, Model: cfg.Model}
 	}
 	for _, provider := range setting.Providers {
 		if provider == nil {

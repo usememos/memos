@@ -80,6 +80,18 @@ func startsNonCombiningXIDContinuation(source []byte) bool {
 // cannot be extended into an emoji, so matchFullyQualifiedEmoji stops there.
 var emoji17Prefixes = emojiSequencePrefixes(emoji17FullyQualified)
 
+// emoji17FirstBytes marks the bytes that start a sequence in
+// emoji17FullyQualified. Text that starts with any other byte is not an emoji.
+var emoji17FirstBytes = emojiFirstBytes(emoji17FullyQualified)
+
+func emojiFirstBytes(sequences map[string]struct{}) [256]bool {
+	var first [256]bool
+	for sequence := range sequences {
+		first[sequence[0]] = true
+	}
+	return first
+}
+
 func emojiSequencePrefixes(sequences map[string]struct{}) map[string]struct{} {
 	prefixes := make(map[string]struct{})
 	for sequence := range sequences {
@@ -96,6 +108,9 @@ func emojiSequencePrefixes(sequences map[string]struct{}) map[string]struct{} {
 }
 
 func matchFullyQualifiedEmoji(source []byte) int {
+	if len(source) == 0 || !emoji17FirstBytes[source[0]] {
+		return 0
+	}
 	limit := min(len(source), maxEmoji17SequenceBytes)
 	match := 0
 	for pos := 0; pos < limit; {

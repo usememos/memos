@@ -12,7 +12,7 @@ apply the same way.
 | `memoexport/` | the Memos Export Format container and records used for export and import |
 | `usagelimit/` | which usage limits apply to a user, and whether memo counts, memo content, and uploads stay within them |
 | `identityprovider/` | the rules an identity provider must meet before it is stored, and its API↔store conversion |
-| `instancesetting/` | the rules each instance setting group must meet before it is stored, AI setting normalization, and the API↔store conversion |
+| `instancesetting/` | the rules each instance setting group must meet before it is stored, and the API↔store conversion |
 | `user/` | the rules a username and password must meet before they are stored |
 | `configuration/` | declarative configuration: reading files (substitution, strict decoding, schema checks, merging), planning and applying them against the instance, and the API ownership guard |
 

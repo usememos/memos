@@ -369,6 +369,14 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), aiSetting); err != nil {
 			return nil, err
 		}
+		// A capability is a provider and a model together. A setting stored before both were
+		// required may hold only one, or neither as its way of saying "off": read those as off.
+		if c := aiSetting.Transcription; c != nil && (c.ProviderId == "" || c.Model == "") {
+			aiSetting.Transcription = nil
+		}
+		if c := aiSetting.TextGeneration; c != nil && (c.ProviderId == "" || c.Model == "") {
+			aiSetting.TextGeneration = nil
+		}
 		instanceSetting.Value = &storepb.InstanceSetting_AiSetting{AiSetting: aiSetting}
 	case storepb.InstanceSettingKey_ACCESS.String():
 		accessSetting := &storepb.InstanceAccessSetting{}

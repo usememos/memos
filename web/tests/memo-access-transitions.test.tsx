@@ -19,43 +19,47 @@ const setup = () => {
 describe("memo access transitions", () => {
   beforeEach(() => vi.resetAllMocks());
 
-  it.each([
-    Code.PermissionDenied,
-    Code.NotFound,
-  ])("discards denied parent content and snippets while preserving the comment (%s)", async (code) => {
-    const { client, wrapper } = setup();
-    const parent = create(MemoSchema, { name: "memos/parent", content: "secret", snippet: "secret" });
-    const comment = create(MemoSchema, {
-      name: "memos/comment",
-      parent: parent.name,
-      content: "my comment",
-      relations: [
-        create(MemoRelationSchema, {
-          type: MemoRelation_Type.REFERENCE,
-          memo: { name: "memos/comment" },
-          relatedMemo: { name: parent.name, snippet: "secret" },
-        }),
-      ],
-    });
-    client.setQueryData(memoKeys.detail(parent.name), parent, { updatedAt: 1 });
-    client.setQueryData(memoKeys.detail(comment.name), comment);
-    client.setQueryData(memoKeys.list({}), create(ListMemosResponseSchema, { memos: [parent, comment] }));
-    api.getMemo.mockRejectedValue(new ConnectError("denied", code));
-    const { result } = renderHook(() => useMemo(parent.name), { wrapper });
-    await waitFor(() => expect(result.current.isUnavailable).toBe(true));
-    expect(result.current.data).toBeUndefined();
-    expect(client.getQueryData(memoKeys.detail(parent.name))).toBeNull();
-    expect(findMemoInCollectionQueries(client, parent.name)).toBeUndefined();
-    expect(client.getQueryData(memoKeys.detail(comment.name))).toMatchObject({ content: "my comment", parent: parent.name, relations: [] });
-    expect(api.getMemo).toHaveBeenCalledOnce();
-    api.getMemo.mockResolvedValue(parent);
-    await act(async () => {
-      await result.current.refetch();
-    });
-    await waitFor(() => expect(result.current.isUnavailable).toBe(false));
-    expect(result.current.data?.content).toBe("secret");
-    client.clear();
-  });
+  it.each([Code.PermissionDenied, Code.NotFound])(
+    "discards denied parent content and snippets while preserving the comment (%s)",
+    async (code) => {
+      const { client, wrapper } = setup();
+      const parent = create(MemoSchema, { name: "memos/parent", content: "secret", snippet: "secret" });
+      const comment = create(MemoSchema, {
+        name: "memos/comment",
+        parent: parent.name,
+        content: "my comment",
+        relations: [
+          create(MemoRelationSchema, {
+            type: MemoRelation_Type.REFERENCE,
+            memo: { name: "memos/comment" },
+            relatedMemo: { name: parent.name, snippet: "secret" },
+          }),
+        ],
+      });
+      client.setQueryData(memoKeys.detail(parent.name), parent, { updatedAt: 1 });
+      client.setQueryData(memoKeys.detail(comment.name), comment);
+      client.setQueryData(memoKeys.list({}), create(ListMemosResponseSchema, { memos: [parent, comment] }));
+      api.getMemo.mockRejectedValue(new ConnectError("denied", code));
+      const { result } = renderHook(() => useMemo(parent.name), { wrapper });
+      await waitFor(() => expect(result.current.isUnavailable).toBe(true));
+      expect(result.current.data).toBeUndefined();
+      expect(client.getQueryData(memoKeys.detail(parent.name))).toBeNull();
+      expect(findMemoInCollectionQueries(client, parent.name)).toBeUndefined();
+      expect(client.getQueryData(memoKeys.detail(comment.name))).toMatchObject({
+        content: "my comment",
+        parent: parent.name,
+        relations: [],
+      });
+      expect(api.getMemo).toHaveBeenCalledOnce();
+      api.getMemo.mockResolvedValue(parent);
+      await act(async () => {
+        await result.current.refetch();
+      });
+      await waitFor(() => expect(result.current.isUnavailable).toBe(false));
+      expect(result.current.data?.content).toBe("secret");
+      client.clear();
+    },
+  );
 
   it("resolves readable relations even when another relation is denied", async () => {
     const { client, wrapper } = setup();

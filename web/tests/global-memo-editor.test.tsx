@@ -327,19 +327,18 @@ describe("GlobalMemoEditorProvider", () => {
     });
   });
 
-  it.each([
-    "/spaces/product/explore",
-    "/spaces/product/attachments",
-    "/spaces/product/calendar/2026/09",
-  ])("inherits the route Space when composing from %s", async (pathname) => {
-    mocks.pathname = pathname;
-    mocks.selectedSpaceName = "spaces/product";
-    await openViaTrigger();
+  it.each(["/spaces/product/explore", "/spaces/product/attachments", "/spaces/product/calendar/2026/09"])(
+    "inherits the route Space when composing from %s",
+    async (pathname) => {
+      mocks.pathname = pathname;
+      mocks.selectedSpaceName = "spaces/product";
+      await openViaTrigger();
 
-    expect(mocks.editorProps).toMatchObject({
-      draft: { scope: "global", space: "spaces/product" },
-    });
-  });
+      expect(mocks.editorProps).toMatchObject({
+        draft: { scope: "global", space: "spaces/product" },
+      });
+    },
+  );
 
   it.each([
     "/?creator=steven",

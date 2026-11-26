@@ -13,7 +13,58 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/ai_service.proto.
  */
 export const file_api_ai_service: GenFile = /*@__PURE__*/
-  fileDesc("ChRhcGkvYWlfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIkYKEVRyYW5zY3JpYmVSZXF1ZXN0EjEKBWF1ZGlvGAEgASgLMh0ubWVtb3MuYXBpLlRyYW5zY3JpcHRpb25BdWRpb0ID4EECIiIKElRyYW5zY3JpYmVSZXNwb25zZRIMCgR0ZXh0GAEgASgJIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZTJ9CglBSVNlcnZpY2UScAoKVHJhbnNjcmliZRIcLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVxdWVzdBodLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVzcG9uc2UiJdpBBWF1ZGlvgtPkkwIXOgEqIhIvYXBpL2FpOnRyYW5zY3JpYmVCjQEKDWNvbS5tZW1vcy5hcGlCDkFpU2VydmljZVByb3RvUAFaJ2dpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaaICA01BWKoCCU1lbW9zLkFwacoCCU1lbW9zXEFwaeICFU1lbW9zXEFwaVxHUEJNZXRhZGF0YeoCCk1lbW9zOjpBcGliBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+  fileDesc("ChRhcGkvYWlfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIkcKElN1Z2dlc3RUYWdzUmVxdWVzdBIUCgdjb250ZW50GAEgASgJQgPgQQISGwoOY2FuZGlkYXRlX3RhZ3MYAiADKAlCA+BBASIjChNTdWdnZXN0VGFnc1Jlc3BvbnNlEgwKBHRhZ3MYASADKAkiRgoRVHJhbnNjcmliZVJlcXVlc3QSMQoFYXVkaW8YASABKAsyHS5tZW1vcy5hcGkuVHJhbnNjcmlwdGlvbkF1ZGlvQgPgQQIiIgoSVHJhbnNjcmliZVJlc3BvbnNlEgwKBHRleHQYASABKAkidwoSVHJhbnNjcmlwdGlvbkF1ZGlvEhYKB2NvbnRlbnQYASABKAxCA+BBBEgAEg0KA3VyaRgCIAEoCUgAEhUKCGZpbGVuYW1lGAMgASgJQgPgQQESGQoMY29udGVudF90eXBlGAQgASgJQgPgQQFCCAoGc291cmNlMo8CCglBSVNlcnZpY2UScAoKVHJhbnNjcmliZRIcLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVxdWVzdBodLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVzcG9uc2UiJdpBBWF1ZGlvgtPkkwIXOgEqIhIvYXBpL2FpOnRyYW5zY3JpYmUSjwEKC1N1Z2dlc3RUYWdzEh0ubWVtb3MuYXBpLlN1Z2dlc3RUYWdzUmVxdWVzdBoeLm1lbW9zLmFwaS5TdWdnZXN0VGFnc1Jlc3BvbnNlIkHaQRZjb250ZW50LGNhbmRpZGF0ZV90YWdz2kEHY29udGVudILT5JMCGDoBKiITL2FwaS9haTpzdWdnZXN0VGFnc0KNAQoNY29tLm1lbW9zLmFwaUIOQWlTZXJ2aWNlUHJvdG9QAVonZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpogIDTUFYqgIJTWVtb3MuQXBpygIJTWVtb3NcQXBp4gIVTWVtb3NcQXBpXEdQQk1ldGFkYXRh6gIKTWVtb3M6OkFwaWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+
+/**
+ * Request message for AIService.SuggestTags.
+ *
+ * @generated from message memos.api.SuggestTagsRequest
+ */
+export type SuggestTagsRequest = Message<"memos.api.SuggestTagsRequest"> & {
+  /**
+   * The current Markdown draft, up to 64 KiB.
+   *
+   * @generated from field: string content = 1;
+   */
+  content: string;
+
+  /**
+   * Optional vocabulary to prefer. Supply up to 64 tag values without the leading hash, each at most 256 bytes.
+   * Values that are not valid tags are ignored.
+   *
+   * @generated from field: repeated string candidate_tags = 2;
+   */
+  candidateTags: string[];
+};
+
+/**
+ * Describes the message memos.api.SuggestTagsRequest.
+ * Use `create(SuggestTagsRequestSchema)` to create a new message.
+ */
+export const SuggestTagsRequestSchema: GenMessage<SuggestTagsRequest> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 0);
+
+/**
+ * Response message for AIService.SuggestTags.
+ *
+ * @generated from message memos.api.SuggestTagsResponse
+ */
+export type SuggestTagsResponse = Message<"memos.api.SuggestTagsResponse"> & {
+  /**
+   * Up to three matching candidates, most relevant first. If none fit, this may contain one new tag.
+   * Values omit the leading hash and exclude tags already in the draft. The list may be empty.
+   *
+   * @generated from field: repeated string tags = 1;
+   */
+  tags: string[];
+};
+
+/**
+ * Describes the message memos.api.SuggestTagsResponse.
+ * Use `create(SuggestTagsResponseSchema)` to create a new message.
+ */
+export const SuggestTagsResponseSchema: GenMessage<SuggestTagsResponse> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 1);
 
 /**
  * Request message for AIService.Transcribe.
@@ -34,7 +85,7 @@ export type TranscribeRequest = Message<"memos.api.TranscribeRequest"> & {
  * Use `create(TranscribeRequestSchema)` to create a new message.
  */
 export const TranscribeRequestSchema: GenMessage<TranscribeRequest> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 0);
+  messageDesc(file_api_ai_service, 2);
 
 /**
  * Response message for AIService.Transcribe.
@@ -55,7 +106,7 @@ export type TranscribeResponse = Message<"memos.api.TranscribeResponse"> & {
  * Use `create(TranscribeResponseSchema)` to create a new message.
  */
 export const TranscribeResponseSchema: GenMessage<TranscribeResponse> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 1);
+  messageDesc(file_api_ai_service, 3);
 
 /**
  * TranscriptionAudio is the audio input for a transcription.
@@ -106,7 +157,7 @@ export type TranscriptionAudio = Message<"memos.api.TranscriptionAudio"> & {
  * Use `create(TranscriptionAudioSchema)` to create a new message.
  */
 export const TranscriptionAudioSchema: GenMessage<TranscriptionAudio> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 2);
+  messageDesc(file_api_ai_service, 4);
 
 /**
  * AIService runs AI tasks through the AI providers configured on the instance.
@@ -124,6 +175,16 @@ export const AIService: GenService<{
     methodKind: "unary";
     input: typeof TranscribeRequestSchema;
     output: typeof TranscribeResponseSchema;
+  },
+  /**
+   * SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+   *
+   * @generated from rpc memos.api.AIService.SuggestTags
+   */
+  suggestTags: {
+    methodKind: "unary";
+    input: typeof SuggestTagsRequestSchema;
+    output: typeof SuggestTagsResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_ai_service, 0);

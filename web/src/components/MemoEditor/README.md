@@ -88,6 +88,8 @@ image preparation, original bytes/order, active Chinese text at export, desktop/
 
 Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; edits and comments show none. `EditorSuggestions` hides until the draft has text, drops suggestions already satisfied or accepted, and shows at most three. Acceptance history lives in the store so Undo does not immediately resuggest, and clears with the draft.
 
+When text generation is configured, the `#` picker also offers **Suggest tags with AI** below the saved tags it lists; with no tag to list it shows the command only when the picker is asked for (Ctrl+Space). Choosing it removes the active search token and sends the draft with up to 64 frequently used personal tags. Returned tags are added after the contextual tags, checklist and visibility suggestions already in the row, beyond their three slots, so a late answer moves nothing. An empty answer stays until the draft is cleared and offers Retry once the draft has changed; a spent hourly budget says so without Retry. Each click applies one suggestion to the draft.
+
 ### Presentation: in a card, inline, hosted
 
 - **In a card** (`frameless`): the card is the frame, so the session has no background, border or padding of its own outside focus mode. `MemoView` flips its body into the session by name and keeps its header, frame and reactions mounted.
