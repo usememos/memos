@@ -66,20 +66,13 @@ describe("sidebar route content", () => {
     });
   });
 
-  it.each([
-    "/inbox",
-    "/setting",
-    "/views",
-    "/about",
-    "/memos/abc",
-    "/memos/shares/token",
-    "/403",
-    "/404",
-    "/unknown",
-  ])("sends search to All on %s", (path) => {
-    expect(getRouteActionPolicy(path)).toEqual({
-      searchScope: "all",
-      searchDestination: "/explore",
-    });
-  });
+  it.each(["/inbox", "/setting", "/views", "/about", "/memos/abc", "/memos/shares/token", "/403", "/404", "/unknown"])(
+    "sends search to All on %s",
+    (path) => {
+      expect(getRouteActionPolicy(path)).toEqual({
+        searchScope: "all",
+        searchDestination: "/explore",
+      });
+    },
+  );
 });

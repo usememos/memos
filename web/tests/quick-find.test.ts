@@ -101,20 +101,15 @@ describe("Quick Find", () => {
     });
   });
 
-  it.each([
-    "/inbox",
-    "/setting",
-    "/views",
-    "/about",
-    "/memos/abc",
-    "/memos/shares/token",
-    "/404",
-  ])("starts a clean All search from %s", (pathname) => {
-    expect(resolveQuickFindSubmission(pathname, "project", scopedFilters, "text")).toEqual({
-      filters: [{ factor: "contentSearch", value: "project" }],
-      destination: "/explore?filter=contentSearch%3Aproject",
-    });
-  });
+  it.each(["/inbox", "/setting", "/views", "/about", "/memos/abc", "/memos/shares/token", "/404"])(
+    "starts a clean All search from %s",
+    (pathname) => {
+      expect(resolveQuickFindSubmission(pathname, "project", scopedFilters, "text")).toEqual({
+        filters: [{ factor: "contentSearch", value: "project" }],
+        destination: "/explore?filter=contentSearch%3Aproject",
+      });
+    },
+  );
 
   it("replaces only the selected date facet", () => {
     expect(replaceFiltersByFactor(scopedFilters, "displayTime", [{ factor: "displayTime", value: "2026-08-02" }])).toEqual([

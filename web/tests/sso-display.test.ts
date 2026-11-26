@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import i18next from "i18next";
+import i18next, { type TOptions } from "i18next";
 import { describe, expect, it } from "vitest";
 import { buildOAuth2SummaryItems } from "@/components/Settings/sso-display";
 import plTranslation from "@/locales/pl.json";
@@ -10,7 +10,7 @@ const scopeSummary = async (lng: string, translation: Record<string, unknown>, c
   const i18n = i18next.createInstance();
   await i18n.init({ lng, fallbackLng: false, resources: { [lng]: { translation } }, interpolation: { escapeValue: false } });
   const config = create(OAuth2ConfigSchema, { scopes: Array.from({ length: count }, (_, index) => `scope-${index}`) });
-  const items = buildOAuth2SummaryItems(config, "", (key, params) => String(i18n.t(key, params)));
+  const items = buildOAuth2SummaryItems(config, "", (key, params) => String(i18n.t(key, params as TOptions)));
   return items.find((item) => item.key === "scopes")?.value;
 };
 
