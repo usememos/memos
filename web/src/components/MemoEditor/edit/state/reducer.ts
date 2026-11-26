@@ -8,6 +8,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         ...state,
         content: action.payload.content,
         metadata: action.payload.metadata,
+        tagSuggestions: undefined,
         timestamps: action.payload.timestamps,
       };
 
@@ -21,9 +22,14 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       if (state.content === action.payload.content) {
         return state;
       }
+      // An empty answer belongs to the draft that was sent. It stays, so the row does not collapse
+      // under the writer, and is marked stale so the row can offer to ask again.
+      const requested = state.tagSuggestions;
+      const kept = requested?.status === "ready" && requested.tags.length === 0 ? { ...requested, stale: true } : requested;
       return {
         ...state,
         content: action.payload.content,
+        tagSuggestions: action.payload.content.trim() ? kept : undefined,
       };
     }
 
@@ -104,6 +110,9 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         ...state,
         recorderBusy: action.payload,
       };
+
+    case "SET_TAG_SUGGESTIONS":
+      return { ...state, tagSuggestions: action.payload };
 
     case "RESET":
       return createInitialState();

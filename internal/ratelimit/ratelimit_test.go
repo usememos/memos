@@ -222,7 +222,7 @@ func TestDefaultPolicyCoversEveryScope(t *testing.T) {
 	p := DefaultPolicy()
 	for _, scope := range []Scope{
 		ScopeAnonymous, ScopeAuthenticated, ScopeSignInIP, ScopeSignInAccount, ScopeSignupIP, ScopeValidateIP,
-		ScopePasswordResetIP, ScopePasswordResetEmail, ScopeLinkMetadata, ScopeUploadUser, ScopeTranscribeUser, ScopeWriteUser,
+		ScopePasswordResetIP, ScopePasswordResetEmail, ScopeLinkMetadata, ScopeUploadUser, ScopeTranscribeUser, ScopeSuggestTagsUser, ScopeWriteUser,
 		ScopeArchiveUser,
 	} {
 		rule, ok := p.Rule(scope)

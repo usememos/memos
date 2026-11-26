@@ -1,13 +1,26 @@
-import { type Extension, fileHandler, matchToken, type SuggestionAllowContext, scanTags, suggestion } from "@usememos/editor";
+import {
+  containerContent,
+  type Extension,
+  fileHandler,
+  inlineText,
+  matchToken,
+  type SuggestionAllowContext,
+  type SuggestionItem,
+  scanTags,
+  suggestion,
+} from "@usememos/editor";
 import { emoji } from "@usememos/editor/emoji";
 import type { EditorPosition } from "./types/editorController";
 
 /** The gesture that handed files to the editor: a drop lands at a document position, a paste has none. */
 export type EditorFileOrigin = { source: "paste" } | { source: "drop"; position: EditorPosition | null };
 
+export type TagAction = { label: string; request: (content: string) => void };
+
 export interface EditorExtensionsOptions {
   /** Known tags, read when the popup asks for items. */
   getTags: () => string[];
+  getTagAction?: () => TagAction | undefined;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Accessible name of the emoji popup. */
   emojiLabel: string;
@@ -52,16 +65,49 @@ export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: Su
 };
 
 /** What only the composer adds to the memo syntax MemoMarkdown already reads: autocomplete and file handling. */
-export function buildEditorExtensions({ getTags, onFiles, emojiLabel }: EditorExtensionsOptions): Extension[] {
+export function buildEditorExtensions({ getTags, getTagAction, onFiles, emojiLabel }: EditorExtensionsOptions): Extension[] {
+  const localTagLimit = 6;
+  const actionId = "action:suggest-tags";
   return [
     // The popup opens exactly where tags are highlighted: the matcher is built
     // from the same scanner as tags(). A pick writes "#work/planning ".
-    suggestion({
+    suggestion<SuggestionItem>({
       name: "tags",
       trigger: ["#", "＃"],
       match: matchToken(scanTags),
       allow: allowTagSuggestion,
-      items: ({ query }) => rankTags(getTags(), query).map((tag) => ({ id: tag, label: `#${tag}`, value: tag })),
+      className: "memo-tag-picker",
+      items: ({ query, editor, explicit }) => {
+        const action = getTagAction?.();
+        // Only a picker that offers the AI command is kept short, so the command stays in view.
+        const tags = rankTags(getTags(), query)
+          .slice(0, action ? localTagLimit : undefined)
+          .map((tag) => ({ id: tag, label: `#${tag}`, value: tag }));
+        // The command never opens the picker by itself. A lone row is highlighted, and Enter after a
+        // "#" would run it instead of ending the line. Ctrl+Space asks for the picker, so it shows there.
+        if (!action || (!tags.length && !explicit)) return tags;
+        const draft = editor.getMarkdown().trim();
+        if (/^[#＃][^\s#＃]*$/u.test(draft) || new TextEncoder().encode(draft).length > 64 * 1024) return tags;
+        // The row has no id or class of its own, so an empty element in its icon slot marks it for editor.css.
+        const mark = editor.root.ownerDocument.createElement("span");
+        mark.className = "memo-suggest-tags-mark";
+        return [...tags, { id: actionId, label: action.label, icon: mark }];
+      },
+      command: ({ editor, range, item }) => {
+        if (item.id === actionId) {
+          const action = getTagAction?.();
+          if (action && editor.commands.insertText("", { range })) action.request(editor.getMarkdown());
+          return;
+        }
+        // Match the editor's default tag completion in prose, table cells and Markdown source.
+        const block = editor.state.doc.blocks.find((candidate) => candidate.id === range.to.blockId);
+        const content = block && containerContent(block, range.to.cell);
+        if (!content) return;
+        const next = inlineText(content)[range.to.offset];
+        const space =
+          next && !(next === "\n" && editor.mode === "source") && /[\s.,;:!?)\]}>'"’”»）」』】、。，．：；！？]/u.test(next) ? "" : " ";
+        editor.commands.insertText(`#${item.value}${space}`, { range });
+      },
     }),
     // ":tada" lists emoji by name; a pick writes the emoji itself. The list loads on first use.
     emoji({ label: emojiLabel }),

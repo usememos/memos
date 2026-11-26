@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AIService_Transcribe_FullMethodName = "/memos.api.AIService/Transcribe"
+	AIService_Transcribe_FullMethodName  = "/memos.api.AIService/Transcribe"
+	AIService_SuggestTags_FullMethodName = "/memos.api.AIService/SuggestTags"
 )
 
 // AIServiceClient is the client API for AIService service.
@@ -31,6 +32,8 @@ type AIServiceClient interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(ctx context.Context, in *TranscribeRequest, opts ...grpc.CallOption) (*TranscribeResponse, error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(ctx context.Context, in *SuggestTagsRequest, opts ...grpc.CallOption) (*SuggestTagsResponse, error)
 }
 
 type aIServiceClient struct {
@@ -51,6 +54,16 @@ func (c *aIServiceClient) Transcribe(ctx context.Context, in *TranscribeRequest,
 	return out, nil
 }
 
+func (c *aIServiceClient) SuggestTags(ctx context.Context, in *SuggestTagsRequest, opts ...grpc.CallOption) (*SuggestTagsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuggestTagsResponse)
+	err := c.cc.Invoke(ctx, AIService_SuggestTags_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AIServiceServer is the server API for AIService service.
 // All implementations must embed UnimplementedAIServiceServer
 // for forward compatibility.
@@ -60,6 +73,8 @@ type AIServiceServer interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(context.Context, *SuggestTagsRequest) (*SuggestTagsResponse, error)
 	mustEmbedUnimplementedAIServiceServer()
 }
 
@@ -72,6 +87,9 @@ type UnimplementedAIServiceServer struct{}
 
 func (UnimplementedAIServiceServer) Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Transcribe not implemented")
+}
+func (UnimplementedAIServiceServer) SuggestTags(context.Context, *SuggestTagsRequest) (*SuggestTagsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SuggestTags not implemented")
 }
 func (UnimplementedAIServiceServer) mustEmbedUnimplementedAIServiceServer() {}
 func (UnimplementedAIServiceServer) testEmbeddedByValue()                   {}
@@ -112,6 +130,24 @@ func _AIService_Transcribe_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AIService_SuggestTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SuggestTagsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).SuggestTags(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_SuggestTags_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).SuggestTags(ctx, req.(*SuggestTagsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AIService_ServiceDesc is the grpc.ServiceDesc for AIService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -122,6 +158,10 @@ var AIService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Transcribe",
 			Handler:    _AIService_Transcribe_Handler,
+		},
+		{
+			MethodName: "SuggestTags",
+			Handler:    _AIService_SuggestTags_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

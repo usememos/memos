@@ -14,6 +14,21 @@ export const ERROR_REASON_RATE_LIMITED = "RATE_LIMITED";
 export const ERROR_REASON_CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED";
 export const ERROR_REASON_QUOTA_EXCEEDED = "QUOTA_EXCEEDED";
 
+// Why a call to the instance's AI provider failed. The server sends the reason with an English
+// message; the wording shown comes from here, so it is translated.
+const AI_FAILURE_MESSAGES = {
+  AI_PROVIDER_AUTH_FAILED: "error.ai-auth-failed",
+  AI_MODEL_NOT_FOUND: "error.ai-model-not-found",
+  AI_PROVIDER_QUOTA_EXHAUSTED: "error.ai-quota-exhausted",
+  AI_PROVIDER_RATE_LIMITED: "error.ai-rate-limited",
+  AI_REQUEST_REJECTED: "error.ai-request-rejected",
+  AI_PROVIDER_UNREACHABLE: "error.ai-unreachable",
+  AI_PROVIDER_TIMEOUT: "error.ai-timeout",
+  AI_PROVIDER_REDIRECTED: "error.ai-redirected",
+  AI_PROVIDER_ERROR: "error.ai-invalid-response",
+  AI_INVALID_RESPONSE: "error.ai-invalid-response",
+} as const;
+
 const ERROR_INFO_TYPE = "google.rpc.ErrorInfo";
 
 // The api protos never reference google.rpc, so its TypeScript schema is not
@@ -131,6 +146,10 @@ export function getErrorMessage(error: unknown, fallback = translate("common.unk
     const limitMessage = getQuotaExceededMessage(error);
     if (limitMessage !== undefined) {
       return limitMessage;
+    }
+    const aiFailure = AI_FAILURE_MESSAGES[getErrorInfo(error)?.reason as keyof typeof AI_FAILURE_MESSAGES];
+    if (aiFailure) {
+      return translate(aiFailure);
     }
     return error.rawMessage || fallback;
   }

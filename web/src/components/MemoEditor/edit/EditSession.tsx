@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { DrawingSheet } from "@/components/DrawingSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -6,7 +6,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSourceMode } from "@/hooks/useSourceMode";
 import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
+
 import { useTranslate } from "@/utils/i18n";
 
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
@@ -26,6 +26,7 @@ import {
   useMemoInit,
   useMemoSave,
 } from "./hooks";
+import { useTagSuggestions } from "./hooks/useTagSuggestions";
 import { canChooseSpaceFor } from "./initialState";
 import { cacheService, errorService, transcriptionService } from "./services";
 import { useEditorContext, useEditorSelector } from "./state";
@@ -77,7 +78,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
   const { userGeneralSetting } = useAuth();
-  const { aiSetting, fetchSetting } = useInstance();
+  const { profile } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
   const { createBlobUrl } = useBlobUrls();
@@ -98,12 +99,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const draftSpace = useEditorSelector((s) => s.metadata.space);
   const canChooseSpace = canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace });
   const editorSpace = memo ? draftSpace : parentMemoName ? parentSpace : (defaultSpace ?? draftSpace);
-  const canTranscribe = useMemo(() => {
-    const providerId = aiSetting.transcription?.providerId ?? "";
-    if (!providerId) return false;
-    const provider = aiSetting.providers.find((p) => p.id === providerId);
-    return Boolean(provider?.apiKeySet);
-  }, [aiSetting.providers, aiSetting.transcription?.providerId]);
+  // The instance says which AI features are ready; how they are configured is the admin's to see.
+  const canTranscribe = Boolean(profile.aiFeatures?.transcription);
 
   // Source mode only changes how the text is edited, so every composer offers it.
   const [editorMode, setEditorMode] = useSourceMode();
@@ -111,6 +108,9 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const sourceMode = { isSourceMode, onToggle: () => setEditorMode(isSourceMode ? "rich" : "source") };
 
   const { isInitialized } = useMemoInit({ editorRef, draftKey, autoFocus, mode: editorMode });
+  const canSuggestTags = Boolean(currentUser && !memo && !parentMemoName && isInitialized && profile.aiFeatures?.tagSuggestions);
+  const requestTags = useTagSuggestions();
+  const suggestTags = canSuggestTags && !isSaving ? requestTags : undefined;
   // An edit starts from the memo and never persists a draft; only new memos and comments do.
   const isDraftCacheEnabled = !memo;
 
@@ -138,14 +138,6 @@ export const EditSession: React.FC<EditSessionProps> = ({
       }),
     );
   }, [defaultCreateTime, memo, isInitialized, actions, dispatch]);
-
-  useEffect(() => {
-    if (!currentUser) {
-      return;
-    }
-
-    void fetchSetting(InstanceSetting_Key.AI).catch(() => undefined);
-  }, [currentUser, fetchSetting]);
 
   const insertTranscribedText = useCallback((text: string) => editorRef.current?.insertMarkdown(text), []);
 
@@ -245,8 +237,9 @@ export const EditSession: React.FC<EditSessionProps> = ({
 
   const handleCancel = useCallback(() => {
     rememberCursor();
+    dispatch({ type: "SET_TAG_SUGGESTIONS", payload: undefined });
     onCancel?.();
-  }, [onCancel, rememberCursor]);
+  }, [dispatch, onCancel, rememberCursor]);
 
   const handleStartAudioRecording = async () => {
     setIsAudioRecorderOpen(true);
@@ -377,6 +370,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
           placeholder={placeholder}
           sourceMode={sourceMode}
           onSubmit={handleSave}
+          onSuggestTags={suggestTags}
           onFiles={handleEditorFiles}
         />
 
@@ -405,8 +399,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             onEditDrawing={drawing.openExisting}
             openingDrawing={drawing.opening}
           />
-          {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
-            <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
+          {!memo && !parentMemoName && isInitialized && (suggestions.length > 0 || canSuggestTags) && (
+            <EditorSuggestions onRetry={suggestTags} suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
           )}
           <EditorToolbar
             onSave={handleSave}

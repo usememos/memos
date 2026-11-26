@@ -162,3 +162,43 @@
   text-wrap: pretty;
   overflow-wrap: anywhere;
 }
+
+/* Keep the command in the listbox so it shares tag navigation and selection. */
+.memo-tag-picker .mbe-menu-item {
+  min-height: 28px;
+}
+
+.memo-tag-picker .mbe-menu-item:has(.memo-suggest-tags-mark) {
+  position: sticky;
+  inset-block-end: 0;
+  background-color: var(--mu-surface);
+  color: var(--mu-text-secondary);
+
+  &.mbe-highlighted {
+    background-color: var(--mu-hover);
+    color: var(--mu-text);
+  }
+
+  /* The slot only carries the marker that these rules select on. */
+  .mbe-menu-icon {
+    display: none;
+  }
+}
+
+.memo-tag-picker .mbe-menu-item + .mbe-menu-item:has(.memo-suggest-tags-mark) {
+  margin-block-start: 5px;
+
+  &::before {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: -5px;
+    height: 5px;
+    background: linear-gradient(to bottom, var(--mu-surface) 2px, var(--mu-line) 2px 3px, var(--mu-surface) 3px);
+    pointer-events: none;
+    content: "";
+  }
+}
+
+.memo-tag-picker:has(.memo-suggest-tags-mark) {
+  scroll-padding-block-end: 2.25rem;
+}

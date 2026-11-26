@@ -175,12 +175,6 @@ describe("locale resources", () => {
 
       expect(messages["setting.storage.filepath-template-description"]).toContain("assets/{timestamp}_{uuid}_{filename}");
       expect(messages["setting.memo-export.import-detail"]).toMatch(/zip/i);
-      for (const key of ["transcription-model-placeholder-openai", "transcription-model-placeholder-gemini"]) {
-        expect(messages[`setting.ai.${key}`]).toBe(source[`setting.ai.${key}`]);
-      }
-      for (const model of ["gpt-transcribe", "whisper-large-v3-turbo"]) {
-        expect(messages["setting.ai.transcription-model-help"]).toContain(model);
-      }
     });
   }
 });

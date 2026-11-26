@@ -26,8 +26,9 @@ applyLocaleEarly();
 // Inner component that initializes contexts
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { isIdentityInitialized, initialize: initAuth, currentUser } = useAuth();
-  const { isProfileInitialized, initialize: initInstance } = useInstance();
+  const { isProfileInitialized, initialize: initInstance, refreshProfile } = useInstance();
   const initStartedRef = useRef(false);
+  const profileIdentity = useRef<string | undefined>(undefined);
 
   // Initialize on mount - run in parallel for better performance
   useEffect(() => {
@@ -39,6 +40,15 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
     };
     init();
   }, [initAuth, initInstance]);
+
+  // The profile names what a signed-in user may see (the admin, the AI features that are ready),
+  // so signing in or out without a page load fetches it again.
+  const identity = currentUser?.name ?? "";
+  useEffect(() => {
+    if (!isIdentityInitialized || !isProfileInitialized) return;
+    if (profileIdentity.current !== undefined && profileIdentity.current !== identity) void refreshProfile();
+    profileIdentity.current = identity;
+  }, [identity, isIdentityInitialized, isProfileInitialized, refreshProfile]);
 
   // Proactively refresh token on window focus to prevent 401 errors
   // Only enabled when user is authenticated

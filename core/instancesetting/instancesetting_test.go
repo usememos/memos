@@ -1,7 +1,6 @@
 package instancesetting
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -87,55 +86,6 @@ func TestValidateNotification(t *testing.T) {
 	require.ErrorContains(t, Validate(notification(&storepb.InstanceNotificationSetting_EmailSetting{
 		Enabled: true, SmtpHost: "smtp.example.com", SmtpPort: 465, FromEmail: "memos@example.com", UseTls: true, UseSsl: true,
 	})), "use_tls and use_ssl")
-}
-
-func aiSetting(providers ...*storepb.AIProviderConfig) *storepb.InstanceSetting {
-	return &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_AI,
-		Value: &storepb.InstanceSetting_AiSetting{AiSetting: &storepb.InstanceAISetting{Providers: providers}},
-	}
-}
-
-func TestValidateAI(t *testing.T) {
-	provider := func(id string) *storepb.AIProviderConfig {
-		return &storepb.AIProviderConfig{Id: id, Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, ApiKey: "key"}
-	}
-	require.NoError(t, Validate(aiSetting()))
-	require.NoError(t, Validate(aiSetting(provider("a"), provider("b"))))
-	require.ErrorContains(t, Validate(aiSetting(provider(""))), "id is required")
-	require.ErrorContains(t, Validate(aiSetting(provider("a"), provider("a"))), "duplicate provider ID")
-
-	noKey := provider("a")
-	noKey.ApiKey = ""
-	require.ErrorContains(t, Validate(aiSetting(noKey)), "API key is required")
-
-	badType := provider("a")
-	badType.Type = storepb.AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED
-	require.ErrorContains(t, Validate(aiSetting(badType)), "unsupported type")
-
-	setting := aiSetting(provider("a"))
-	setting.GetAiSetting().Transcription = &storepb.TranscriptionConfig{ProviderId: "missing"}
-	require.ErrorContains(t, Validate(setting), "does not reference")
-	setting.GetAiSetting().Transcription = &storepb.TranscriptionConfig{ProviderId: "a", Language: strings.Repeat("x", MaxTranscriptionLanguageLength+1)}
-	require.ErrorContains(t, Validate(setting), "language is too long")
-}
-
-func TestNormalizeAISetting(t *testing.T) {
-	setting := &storepb.InstanceAISetting{
-		Providers: []*storepb.AIProviderConfig{
-			{Id: " a ", Title: " OpenAI ", Type: storepb.AIProviderType_OPENAI},
-			{Id: "b", Type: storepb.AIProviderType_GEMINI, Endpoint: " https://proxy.example.com "},
-			nil,
-		},
-		Transcription: &storepb.TranscriptionConfig{ProviderId: " a ", Model: " whisper-1 "},
-	}
-	NormalizeAISetting(setting)
-	require.Equal(t, "a", setting.Providers[0].Id)
-	require.Equal(t, "OpenAI", setting.Providers[0].Title)
-	require.Equal(t, DefaultOpenAIEndpoint, setting.Providers[0].Endpoint)
-	require.Equal(t, "https://proxy.example.com", setting.Providers[1].Endpoint)
-	require.Equal(t, "a", setting.Transcription.ProviderId)
-	require.Equal(t, "whisper-1", setting.Transcription.Model)
 }
 
 func s3Storage(id string) *storepb.Storage {

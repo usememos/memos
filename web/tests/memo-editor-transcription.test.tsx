@@ -17,8 +17,8 @@ vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) 
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({
-    aiSetting: { providers: [{ id: "configured", apiKeySet: true }], transcription: { providerId: "configured" } },
-    fetchSetting: vi.fn().mockResolvedValue(undefined),
+    // The editor learns only that transcription is ready, never how it is configured.
+    profile: { aiFeatures: { transcription: true } },
   }),
 }));
 vi.mock("@/contexts/NewMemoContext", () => ({ useNewMemo: () => ({ markNewMemo: vi.fn() }) }));

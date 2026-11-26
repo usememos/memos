@@ -268,7 +268,7 @@ func TestLoadChecksResourceRules(t *testing.T) {
 
 	_, err := Load(writeFiles(t, map[string]string{"config.json": `{"instanceSettings":[
 		{"name":"instance/settings/USAGE_LIMITS","usageLimitsSetting":{"limits":[{"users":["users/alice","users/bob"],"memoCount":"100"},{"allUsers":true,"memoCount":"10"}]}},
-		{"name":"instance/settings/AI","aiSetting":{"providers":[{"id":"openai","title":"OpenAI","type":"OPENAI","apiKey":"k"}],"transcription":{"providerId":"openai"}}},
+		{"name":"instance/settings/AI","aiSetting":{"providers":[{"id":"openai","title":"OpenAI","type":"OPENAI","apiKey":"k"}],"transcription":{"providerId":"openai","model":"gpt-transcribe"}}},
 		{"name":"instance/settings/STORAGE","storageSetting":{"storageType":"LOCAL"}}
 	]}`}), placeholderResolver())
 	require.NoError(t, err, "valid usage limits, AI, and legacy storage settings load")

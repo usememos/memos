@@ -21,8 +21,8 @@ service InstanceService {
     option (google.api.http) = {get: "/api/instance/profile"};
   }
 
-  // GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-  // which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+  // GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+  // USAGE_LIMITS and AI, which are admin only.
   rpc GetInstanceSetting(GetInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {get: "/api/{name=instance/settings/*}"};
     option (google.api.method_signature) = "name";
@@ -39,6 +39,13 @@ service InstanceService {
 
   // UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
   // changed. Empty write-only credentials keep the stored values.
+  //
+  // Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+  // rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+  // google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+  // FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+  // Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+  // refuse the save.
   rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {
       patch: "/api/{instance_setting.name=instance/settings/*}"
@@ -109,6 +116,10 @@ message InstanceProfile {
   // Absent when none is configured, which is the case on every self-hosted instance.
   Challenge challenge = 8;
 
+  // The AI features that are ready to use, derived from the AI setting.
+  // Only set for signed-in callers.
+  AIFeatures ai_features = 9;
+
   // Challenge describes a proof-of-humanity challenge widget.
   message Challenge {
     // The challenge provider, which selects the widget the web app renders.
@@ -116,6 +127,15 @@ message InstanceProfile {
 
     // The provider's public site key for the widget.
     string site_key = 2;
+  }
+
+  // AIFeatures says which AI features the instance can serve.
+  message AIFeatures {
+    // Whether AIService.Transcribe is available.
+    bool transcription = 1;
+
+    // Whether AIService.SuggestTags is available.
+    bool tag_suggestions = 2;
   }
 }
 
@@ -188,12 +208,13 @@ message InstanceSetting {
     S3 = 3;
   }
 
-  // AIProviderType is the provider implementation type.
+  // AIProviderType is the API protocol a provider endpoint speaks.
   enum AIProviderType {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
-    // OpenAI API. The endpoint defaults to https://api.openai.com/v1.
+    // The OpenAI API, served by OpenAI and by compatible services.
+    // The endpoint defaults to https://api.openai.com/v1.
     OPENAI = 1;
-    // Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
+    // The Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
     GEMINI = 2;
   }
 
@@ -399,57 +420,66 @@ message InstanceSetting {
     }
   }
 
-  // AISetting is the AI provider configuration.
+  // AISetting is the instance's AI configuration: the provider connections, and the provider and model that
+  // serve each capability. Admin only. The setting is read and replaced whole.
   message AISetting {
-    // The AI provider configurations available instance-wide.
+    // The provider connections the capabilities below can use.
     repeated AIProviderConfig providers = 1;
 
-    // The speech-to-text feature configuration.
-    // When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-    // stored configuration.
+    // The speech-to-text capability, used by AIService.Transcribe. Unset turns it off.
     TranscriptionConfig transcription = 2;
+
+    // The text generation capability, used by AIService.SuggestTags. Unset turns it off.
+    TextGenerationConfig text_generation = 3;
   }
 
-  // AIProviderConfig is one callable AI provider connection.
+  // AIProviderConfig is one connection to an AI provider.
   message AIProviderConfig {
-    // The provider ID. Generated when empty on update.
+    // The provider ID, unique within the setting. Generated when empty.
     string id = 1;
 
-    // The provider display title.
-    string title = 2;
+    // Required. The display title.
+    string title = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider implementation type.
-    AIProviderType type = 3;
+    // Required. The API protocol the endpoint speaks.
+    AIProviderType type = 3 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider API endpoint. Defaults to the provider's public endpoint when empty.
+    // The base URL of the provider API. Empty selects the default endpoint of the type.
     string endpoint = 4;
 
-    // Input only. The provider API key. Never returned; an empty value keeps the stored key.
+    // Input only. The API key. Never returned. An empty value keeps the stored key while type and endpoint are
+    // unchanged; changing either requires the key again, so that it is never sent to a different service.
     string api_key = 5 [(google.api.field_behavior) = INPUT_ONLY];
 
-    // Output only. Whether an API key is stored for this provider.
+    // Output only. Whether an API key is stored.
     bool api_key_set = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 
     // Output only. A masked hint of the stored API key.
     string api_key_hint = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 
-  // TranscriptionConfig is the speech-to-text feature configuration.
+  // TranscriptionConfig selects the provider and model for speech to text.
   message TranscriptionConfig {
-    // The ID of the provider used for transcription; must reference an entry in AISetting.providers.
-    // Empty means transcription is disabled.
-    string provider_id = 1;
+    // Required. The ID of an entry in AISetting.providers.
+    string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider-specific model identifier. Hidden from non-admins.
-    // Empty selects gpt-transcribe on OpenAI, whisper-1 on custom OpenAI-compatible endpoints, or gemini-2.5-flash on Gemini.
-    string model = 2;
+    // Required. The provider's model identifier.
+    string model = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
-    // Empty lets the provider auto-detect.
+    // The ISO 639-1 language hint sent to the provider. Empty lets the provider detect the language.
     string language = 3;
 
-    // A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
+    // A spelling and vocabulary hint sent to the provider.
     string prompt = 4;
+  }
+
+  // TextGenerationConfig selects the provider and model for text generation.
+  message TextGenerationConfig {
+    // Required. The ID of an entry in AISetting.providers.
+    string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The provider's model identifier.
+    string model = 2 [(google.api.field_behavior) = REQUIRED];
   }
 
   // AccessSetting is the instance access policy.

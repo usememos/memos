@@ -184,44 +184,55 @@ message InstanceNotificationSetting {
 }
 
 message InstanceAISetting {
-  // providers is the list of AI provider configurations available instance-wide.
+  // The provider connections the capabilities below can use.
   repeated AIProviderConfig providers = 1;
 
-  // transcription is the speech-to-text feature configuration.
-  // When unset or transcription.provider_id is empty, transcription is disabled.
+  // The speech-to-text capability. Unset means off.
   TranscriptionConfig transcription = 2;
+
+  // The text generation capability. Unset means off.
+  TextGenerationConfig text_generation = 3;
 }
 
+// TextGenerationConfig selects the provider and model for text generation. Both are set whenever it is.
+message TextGenerationConfig {
+  // The ID of an entry in InstanceAISetting.providers.
+  string provider_id = 1;
+  // The provider's model identifier.
+  string model = 2;
+}
+
+// AIProviderConfig is one connection to an AI provider.
 message AIProviderConfig {
   string id = 1;
   string title = 2;
   AIProviderType type = 3;
   string endpoint = 4;
-  // api_key is write-only at the API layer and is required by the server to call providers.
+  // Write-only at the API layer.
   string api_key = 5;
 }
 
+// AIProviderType is the API protocol a provider endpoint speaks.
 enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
+  // The OpenAI API, served by OpenAI and by compatible services.
   OPENAI = 1;
+  // The Google Gemini API.
   GEMINI = 2;
 }
 
-// TranscriptionConfig configures the speech-to-text feature.
+// TranscriptionConfig selects the provider and model for speech to text. Both are set whenever it is.
 message TranscriptionConfig {
-  // provider_id references an entry in InstanceAISetting.providers[].id.
-  // Empty string means transcription is disabled.
+  // The ID of an entry in InstanceAISetting.providers.
   string provider_id = 1;
 
-  // model is the provider-specific model identifier.
-  // Empty selects gpt-transcribe on OpenAI, whisper-1 on custom OpenAI-compatible endpoints, or gemini-2.5-flash on Gemini.
+  // The provider's model identifier.
   string model = 2;
 
-  // language is the default ISO 639-1 language hint sent to the provider.
-  // Empty string lets the provider auto-detect.
+  // The ISO 639-1 language hint sent to the provider. Empty lets the provider detect the language.
   string language = 3;
 
-  // Context and spelling hints for the recording.
+  // A spelling and vocabulary hint sent to the provider.
   string prompt = 4;
 }
 

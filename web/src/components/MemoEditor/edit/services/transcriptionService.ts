@@ -43,6 +43,7 @@ export const transcriptionService = {
   },
 
   async transcribeFile(file: File, signal?: AbortSignal): Promise<string> {
+    checkAudioSize(file.size);
     return transcribe(new Uint8Array(await file.arrayBuffer()), file.name, file.type, signal);
   },
 };

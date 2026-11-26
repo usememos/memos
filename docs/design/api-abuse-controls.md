@@ -218,3 +218,12 @@ Every refusal logs one info line with the scope and the key. The client address 
 ## Deferred design
 
 Adaptive challenges shown only after failures, per-scope tuning in the admin UI, a shared limiter for more than one node, bans and IP reputation, disposable-domain lists in the open-source binary, content-quality spam detection, enumeration-safe signup, metrics export, byte-based quotas, and limits on file and avatar serving remain deferred. Later work must preserve the single client-address resolver, the two-layer enforcement of catch-all budgets in the authorizer and per-flow limits in handlers, check-before-work ordering, the AIP-193 error shape, and identical behavior for existing and non-existing account names.
+
+## Amendments
+
+### 2026-11-24 (Unreleased) — `SuggestTags` has its own budget
+
+`SuggestTags` has its own `suggest_tags_user` budget of 20 requests per user per hour, charged only for requests that reach the
+provider. Transcription has a separate budget. The AI settings page has no test calls of its own: its playgrounds call
+`Transcribe` and `SuggestTags` and charge those budgets, and the model listing that checks a changed provider on save is
+not charged.

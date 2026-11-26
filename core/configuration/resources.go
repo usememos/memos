@@ -54,7 +54,7 @@ func instanceSettingToStore(setting *apipb.InstanceSetting) (*storepb.InstanceSe
 	stored := instancesetting.ToStore(setting)
 	switch stored.Key {
 	case storepb.InstanceSettingKey_AI:
-		instancesetting.NormalizeAISetting(stored.GetAiSetting())
+		instancesetting.Normalize(stored)
 	case storepb.InstanceSettingKey_USAGE_LIMITS:
 		standInIDs := map[string]int32{}
 		for _, limit := range setting.GetUsageLimitsSetting().GetLimits() {

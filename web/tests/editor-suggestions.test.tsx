@@ -1,31 +1,43 @@
+import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { EditorContent } from "@/components/MemoEditor/edit/components/EditorContent";
 import { EditorSuggestions, SuggestionsBar } from "@/components/MemoEditor/edit/components/EditorSuggestions";
+import { useTagSuggestions } from "@/components/MemoEditor/edit/hooks/useTagSuggestions";
 import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
 import type { EditorController } from "@/components/MemoEditor/edit/types/editorController";
+import { aiServiceClient } from "@/connect";
 import { getMemoSuggestions, type MemoSuggestion } from "@/lib/memo-suggestions";
+import { type SuggestTagsResponse, SuggestTagsResponseSchema } from "@/types/proto/api/ai_service_pb";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
 
-vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+vi.mock("@/utils/i18n", () => ({
+  useTranslate: () => (key: string, values?: { visibility: string }) => (values ? `Set to ${values.visibility}` : key),
+}));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: { work: 5, release: 2 } }),
+  useUsersByUsernames: () => ({ data: undefined }),
+}));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userTagsSetting: undefined }) }));
 
 /** A caret at `offset` in block `block`. */
 const caret = (block: number, offset: number) => ({ anchor: { block, offset }, focus: { block, offset } });
 
 let editor: ReturnType<typeof useEditorContext>;
+let requestTags: ReturnType<typeof useTagSuggestions>;
 let controller: React.RefObject<EditorController | null>;
 const candidates = getMemoSuggestions(["work", "release", "planning", "later"].map((value) => ({ factor: "tagSearch", value })));
 
 function Harness({ suggestions, space }: { suggestions: MemoSuggestion[]; space?: string }) {
   editor = useEditorContext();
+  requestTags = useTagSuggestions();
   controller = useRef<EditorController>(null);
   return (
     <>
       <EditorContent ref={controller} sourceMode={{ isSourceMode: false, onToggle: vi.fn() }} onSubmit={vi.fn()} onFiles={vi.fn()} />
-      <EditorSuggestions suggestions={suggestions} controllerRef={controller} space={space} />
+      <EditorSuggestions onRetry={requestTags} suggestions={suggestions} controllerRef={controller} space={space} />
     </>
   );
 }
@@ -52,8 +64,8 @@ describe("editor suggestions", () => {
     const onAccept = vi.fn();
     render(<SuggestionsBar suggestions={[{ id: "future:example", label: "Example" }]} disabled={false} onAccept={onAccept} />);
     const chip = screen.getByRole("button", { name: "Example" });
-    expect(chip).not.toHaveClass("border-dashed");
-    expect(chip).toHaveClass("bg-mu-hover/60");
+    expect(chip).toHaveClass("border-dashed");
+    expect(chip.querySelector("svg")).toBeNull();
     fireEvent.click(chip);
     expect(onAccept).toHaveBeenCalledWith("future:example");
   });
@@ -164,7 +176,7 @@ describe("checklist and visibility acceptance", () => {
   it("changes visibility only on acceptance, keeps text intact, and remembers the choice", async () => {
     render(composer([publicAudience]));
     expect(editor.getState().metadata.visibility).toBe(Visibility.PRIVATE);
-    fireEvent.click(screen.getByRole("button", { name: "memo.visibility.public" }));
+    fireEvent.click(screen.getByRole("button", { name: "Set to memo.visibility.public" }));
     expect(editor.getState().metadata.visibility).toBe(Visibility.PUBLIC);
     await waitFor(() => expect(editor.getState().content).toBe("A note"));
     expect(controller.current?.hasFocus()).toBe(true);
@@ -178,18 +190,18 @@ describe("checklist and visibility acceptance", () => {
     act(() => editor.dispatch(editor.actions.setMetadata({ visibility: Visibility.PUBLIC })));
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
     act(() => editor.dispatch(editor.actions.setMetadata({ visibility: Visibility.PRIVATE })));
-    expect(screen.getByRole("button", { name: "memo.visibility.public" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set to memo.visibility.public" })).toBeInTheDocument();
   });
 
   it("requires actual Space placement to offer Space visibility", async () => {
     const result = render(composer([spaceAudience]));
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
     result.rerender(composer([spaceAudience], "A note", "spaces/team"));
-    expect(screen.getByRole("button", { name: "memo.visibility.space" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set to memo.visibility.space" })).toBeInTheDocument();
     result.rerender(composer([spaceAudience]));
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
     result.rerender(composer([spaceAudience], "A note", "spaces/team"));
-    fireEvent.click(screen.getByRole("button", { name: "memo.visibility.space" }));
+    fireEvent.click(screen.getByRole("button", { name: "Set to memo.visibility.space" }));
     expect(editor.getState().metadata.visibility).toBe(Visibility.SPACE);
   });
 
@@ -198,7 +210,7 @@ describe("checklist and visibility acceptance", () => {
     expect(screen.getAllByRole("button")).toHaveLength(3);
     expect(screen.getByRole("button", { name: "common.add #release" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "editor.format.task-list" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "memo.visibility.public" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set to memo.visibility.public" })).toBeInTheDocument();
   });
 
   it("hides all kinds in an empty draft and prevents acceptance while saving", async () => {
@@ -212,5 +224,80 @@ describe("checklist and visibility acceptance", () => {
     }
     await waitFor(() => expect(editor.getState().content).toBe("A note"));
     expect(editor.getState().metadata.visibility).toBe(Visibility.PRIVATE);
+  });
+});
+
+describe("requested tag suggestions", () => {
+  it("requests candidates explicitly, merges duplicate tags, and adds them after the pills already shown", async () => {
+    const rpc = vi
+      .spyOn(aiServiceClient, "suggestTags")
+      .mockResolvedValue(create(SuggestTagsResponseSchema, { tags: ["release", "work"] }));
+    render(composer([candidates[0], checklist, publicAudience]));
+    expect(rpc).not.toHaveBeenCalled();
+    await act(() => requestTags("A note"));
+    expect(screen.getByRole("status")).toHaveTextContent("editor.tag-suggestions-label (2)");
+    expect(rpc).toHaveBeenCalledWith({ content: "A note", candidateTags: ["work", "release"] }, { signal: expect.anything() });
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual([
+      "#work",
+      "editor.format.task-list",
+      "Set to memo.visibility.public",
+      "#release",
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: "common.add #release" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.add #work" }));
+    await waitFor(() => expect(editor.getState().content).toContain("#release #work"));
+    expect(screen.getByRole("button", { name: "Set to memo.visibility.public" })).toBeVisible();
+  });
+
+  it("retries with the current draft and displays a new tag with only its hashtag", async () => {
+    const rpc = vi
+      .spyOn(aiServiceClient, "suggestTags")
+      .mockRejectedValueOnce(new Error("Unavailable"))
+      .mockResolvedValue(create(SuggestTagsResponseSchema, { tags: ["design"] }));
+    render(composer([]));
+    await act(() => requestTags("A note"));
+    expect(screen.getByRole("status")).toHaveTextContent("editor.tag-suggestions-error");
+    act(() => controller.current?.setMarkdown("A revised note"));
+    fireEvent.click(screen.getByRole("button", { name: "common.retry" }));
+    expect(await screen.findByRole("button", { name: "common.add #design" })).toHaveTextContent(/^#design$/);
+    expect(rpc.mock.lastCall?.[0].content).toBe("A revised note");
+  });
+
+  it("aborts a pending request on reset and ignores a late response in a new draft", async () => {
+    const response = Promise.withResolvers<SuggestTagsResponse>();
+    const rpc = vi.spyOn(aiServiceClient, "suggestTags").mockReturnValue(response.promise);
+    render(composer([]));
+    let pending: Promise<void>;
+    act(() => {
+      pending = requestTags("A note");
+    });
+    expect(screen.getByRole("status")).toHaveTextContent("editor.blocks.loading");
+    act(() => editor.dispatch(editor.actions.reset()));
+    expect(rpc.mock.lastCall?.[1]?.signal?.aborted).toBe(true);
+    act(() => controller.current?.setMarkdown("Another draft"));
+    response.resolve(create(SuggestTagsResponseSchema, { tags: ["old"] }));
+    await act(() => pending);
+    expect(screen.queryByRole("group")).not.toBeInTheDocument();
+  });
+
+  it("shows the empty result alongside existing suggestions", async () => {
+    vi.spyOn(aiServiceClient, "suggestTags").mockResolvedValue(create(SuggestTagsResponseSchema));
+    render(composer([checklist]));
+    await act(() => requestTags("A note"));
+    expect(screen.getByRole("status")).toHaveTextContent("editor.no-suggested-tags");
+    expect(screen.getByRole("button", { name: "editor.format.task-list" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "common.retry" })).not.toBeInTheDocument();
+    // The answer stays while the draft changes, so the row keeps its height, and offers to ask again.
+    act(() => controller.current?.setMarkdown("A longer note"));
+    expect(screen.getByRole("status")).toHaveTextContent("editor.no-suggested-tags");
+    expect(screen.getByRole("button", { name: "common.retry" })).toBeVisible();
+  });
+
+  it("explains a spent budget without offering a retry", async () => {
+    vi.spyOn(aiServiceClient, "suggestTags").mockRejectedValue(new ConnectError("limit", Code.ResourceExhausted));
+    render(composer([]));
+    await act(() => requestTags("A note"));
+    expect(screen.getByRole("status")).toHaveTextContent("editor.tag-suggestions-limit");
+    expect(screen.queryByRole("button", { name: "common.retry" })).not.toBeInTheDocument();
   });
 });

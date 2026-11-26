@@ -122,6 +122,7 @@ func TestTranscribe(t *testing.T) {
 					},
 					Transcription: &storepb.TranscriptionConfig{
 						ProviderId: "openai-main",
+						Model:      "gpt-transcribe",
 					},
 				},
 			},
@@ -179,6 +180,7 @@ func TestTranscribe(t *testing.T) {
 					},
 					Transcription: &storepb.TranscriptionConfig{
 						ProviderId: "gemini-main",
+						Model:      "gemini-2.5-flash",
 					},
 				},
 			},
@@ -225,6 +227,7 @@ func TestTranscribe(t *testing.T) {
 					},
 					Transcription: &storepb.TranscriptionConfig{
 						ProviderId: "gemini-main",
+						Model:      "gemini-2.5-flash",
 					},
 				},
 			},
@@ -244,7 +247,7 @@ func TestTranscribe(t *testing.T) {
 		}
 	})
 
-	t.Run("keeps the Whisper default for a custom OpenAI-compatible endpoint", func(t *testing.T) {
+	t.Run("treats a setting stored without a model as not configured", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -252,13 +255,9 @@ func TestTranscribe(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			require.NoError(t, r.ParseMultipartForm(10<<20))
-			require.Equal(t, "whisper-1", r.FormValue("model"))
-			w.Header().Set("Content-Type", "application/json")
-			require.NoError(t, json.NewEncoder(w).Encode(map[string]string{
-				"text": "built-in model",
-			}))
+		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			t.Error("no model is guessed, so the provider must not be called")
+			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer openAIServer.Close()
 
@@ -283,15 +282,20 @@ func TestTranscribe(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		resp, err := ts.Service.Transcribe(userCtx, &apipb.TranscribeRequest{
+		_, err = ts.Service.Transcribe(userCtx, &apipb.TranscribeRequest{
 			Audio: &apipb.TranscriptionAudio{
 				Source:      &apipb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
 				ContentType: "audio/wav",
 			},
 		})
+		require.Equal(t, codes.FailedPrecondition, status.Code(err))
+		require.Contains(t, err.Error(), "transcription is not configured")
+
+		// The same holds for every reader of the setting, including the availability flags.
+		profile, err := ts.Service.GetInstanceProfile(userCtx, &apipb.GetInstanceProfileRequest{})
 		require.NoError(t, err)
-		require.Equal(t, "built-in model", resp.Text)
+		require.False(t, profile.GetAiFeatures().GetTranscription())
 	})
 
 	t.Run("rejects non-audio content before provider call", func(t *testing.T) {

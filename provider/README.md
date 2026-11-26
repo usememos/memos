@@ -6,7 +6,7 @@ swapped.
 
 | Package | Backend |
 | --- | --- |
-| `ai/` | speech-to-text and audio-capable LLM providers (OpenAI, Gemini) |
+| `ai/` | AI provider configuration, connection testing, tag suggestions and audio transcription (OpenAI, Gemini) |
 | `idp/` | identity providers for SSO (OAuth2) |
 | `storage/` | attachment object storage (local disk, S3) |
 

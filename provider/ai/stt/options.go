@@ -3,6 +3,8 @@ package stt
 import (
 	"net/http"
 	"time"
+
+	"github.com/usememos/memos/provider/ai"
 )
 
 const defaultHTTPTimeout = 2 * time.Minute
@@ -26,7 +28,7 @@ func WithHTTPClient(client *http.Client) TranscriberOption {
 
 // ApplyOptions resolves a TranscriberOption slice into Options with defaults.
 func ApplyOptions(opts []TranscriberOption) Options {
-	resolved := Options{HTTPClient: &http.Client{Timeout: defaultHTTPTimeout}}
+	resolved := Options{HTTPClient: ai.NewHTTPClient(defaultHTTPTimeout)}
 	for _, apply := range opts {
 		apply(&resolved)
 	}

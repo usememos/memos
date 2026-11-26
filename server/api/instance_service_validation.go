@@ -10,15 +10,15 @@ import (
 	"github.com/pkg/errors"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 
-	"github.com/usememos/memos/core/instancesetting"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/provider/ai"
 )
 
 // prepareInstanceAISettingForUpdate applies the API's update conveniences to an
 // AI setting before it is validated: trimming and default endpoints, generated
-// IDs for new providers, an empty API key meaning "keep the stored key", and an
-// omitted transcription config meaning "keep the stored config".
+// IDs for new providers, and an empty API key meaning "keep the stored key".
+// The setting is otherwise taken as sent: an unset capability is off.
 func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, setting *storepb.InstanceAISetting) error {
 	if setting == nil {
 		return errors.New("AI setting is required")
@@ -37,7 +37,7 @@ func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, sett
 		}
 	}
 
-	instancesetting.NormalizeAISetting(setting)
+	ai.NormalizeSetting(setting)
 	for _, provider := range setting.Providers {
 		if provider == nil {
 			continue
@@ -46,17 +46,22 @@ func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, sett
 			provider.Id = shortuuid.New()
 		}
 		if provider.ApiKey == "" {
-			if existingProvider, ok := existingProviders[provider.Id]; ok {
+			if existingProvider := existingProviders[provider.Id]; sameAIConnection(provider, existingProvider) {
 				provider.ApiKey = existingProvider.ApiKey
 			}
 		}
 	}
-	// The preserved config is still validated, so a stale provider_id is
-	// rejected if the same update removed or renamed its referenced provider.
-	if setting.Transcription == nil && existing != nil {
-		setting.Transcription = existing.GetTranscription()
-	}
 	return nil
+}
+
+// Compare normalized copies so older settings with an implicit endpoint keep their key.
+func sameAIConnection(draft, stored *storepb.AIProviderConfig) bool {
+	if stored == nil || stored.Type != draft.Type || stored.Id != draft.Id {
+		return false
+	}
+	previous := &storepb.AIProviderConfig{Type: stored.Type, Endpoint: stored.Endpoint}
+	ai.NormalizeSetting(&storepb.InstanceAISetting{Providers: []*storepb.AIProviderConfig{previous}})
+	return strings.TrimRight(previous.Endpoint, "/") == strings.TrimRight(draft.Endpoint, "/")
 }
 
 func maskAPIKey(apiKey string) string {

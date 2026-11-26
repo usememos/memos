@@ -22,6 +22,109 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Request message for AIService.SuggestTags.
+type SuggestTagsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The current Markdown draft, up to 64 KiB.
+	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// Optional vocabulary to prefer. Supply up to 64 tag values without the leading hash, each at most 256 bytes.
+	// Values that are not valid tags are ignored.
+	CandidateTags []string `protobuf:"bytes,2,rep,name=candidate_tags,json=candidateTags,proto3" json:"candidate_tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SuggestTagsRequest) Reset() {
+	*x = SuggestTagsRequest{}
+	mi := &file_api_ai_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SuggestTagsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SuggestTagsRequest) ProtoMessage() {}
+
+func (x *SuggestTagsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SuggestTagsRequest.ProtoReflect.Descriptor instead.
+func (*SuggestTagsRequest) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *SuggestTagsRequest) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *SuggestTagsRequest) GetCandidateTags() []string {
+	if x != nil {
+		return x.CandidateTags
+	}
+	return nil
+}
+
+// Response message for AIService.SuggestTags.
+type SuggestTagsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Up to three matching candidates, most relevant first. If none fit, this may contain one new tag.
+	// Values omit the leading hash and exclude tags already in the draft. The list may be empty.
+	Tags          []string `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SuggestTagsResponse) Reset() {
+	*x = SuggestTagsResponse{}
+	mi := &file_api_ai_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SuggestTagsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SuggestTagsResponse) ProtoMessage() {}
+
+func (x *SuggestTagsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SuggestTagsResponse.ProtoReflect.Descriptor instead.
+func (*SuggestTagsResponse) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SuggestTagsResponse) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 // Request message for AIService.Transcribe.
 type TranscribeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -33,7 +136,7 @@ type TranscribeRequest struct {
 
 func (x *TranscribeRequest) Reset() {
 	*x = TranscribeRequest{}
-	mi := &file_api_ai_service_proto_msgTypes[0]
+	mi := &file_api_ai_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +148,7 @@ func (x *TranscribeRequest) String() string {
 func (*TranscribeRequest) ProtoMessage() {}
 
 func (x *TranscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[0]
+	mi := &file_api_ai_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +161,7 @@ func (x *TranscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscribeRequest.ProtoReflect.Descriptor instead.
 func (*TranscribeRequest) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{0}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TranscribeRequest) GetAudio() *TranscriptionAudio {
@@ -79,7 +182,7 @@ type TranscribeResponse struct {
 
 func (x *TranscribeResponse) Reset() {
 	*x = TranscribeResponse{}
-	mi := &file_api_ai_service_proto_msgTypes[1]
+	mi := &file_api_ai_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -91,7 +194,7 @@ func (x *TranscribeResponse) String() string {
 func (*TranscribeResponse) ProtoMessage() {}
 
 func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[1]
+	mi := &file_api_ai_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +207,7 @@ func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscribeResponse.ProtoReflect.Descriptor instead.
 func (*TranscribeResponse) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{1}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TranscribeResponse) GetText() string {
@@ -134,7 +237,7 @@ type TranscriptionAudio struct {
 
 func (x *TranscriptionAudio) Reset() {
 	*x = TranscriptionAudio{}
-	mi := &file_api_ai_service_proto_msgTypes[2]
+	mi := &file_api_ai_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +249,7 @@ func (x *TranscriptionAudio) String() string {
 func (*TranscriptionAudio) ProtoMessage() {}
 
 func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[2]
+	mi := &file_api_ai_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,7 +262,7 @@ func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscriptionAudio.ProtoReflect.Descriptor instead.
 func (*TranscriptionAudio) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{2}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TranscriptionAudio) GetSource() isTranscriptionAudio_Source {
@@ -223,7 +326,12 @@ var File_api_ai_service_proto protoreflect.FileDescriptor
 
 const file_api_ai_service_proto_rawDesc = "" +
 	"\n" +
-	"\x14api/ai_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"M\n" +
+	"\x14api/ai_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"_\n" +
+	"\x12SuggestTagsRequest\x12\x1d\n" +
+	"\acontent\x18\x01 \x01(\tB\x03\xe0A\x02R\acontent\x12*\n" +
+	"\x0ecandidate_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\rcandidateTags\")\n" +
+	"\x13SuggestTagsResponse\x12\x12\n" +
+	"\x04tags\x18\x01 \x03(\tR\x04tags\"M\n" +
 	"\x11TranscribeRequest\x128\n" +
 	"\x05audio\x18\x01 \x01(\v2\x1d.memos.api.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"(\n" +
 	"\x12TranscribeResponse\x12\x12\n" +
@@ -233,10 +341,11 @@ const file_api_ai_service_proto_rawDesc = "" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x1f\n" +
 	"\bfilename\x18\x03 \x01(\tB\x03\xe0A\x01R\bfilename\x12&\n" +
 	"\fcontent_type\x18\x04 \x01(\tB\x03\xe0A\x01R\vcontentTypeB\b\n" +
-	"\x06source2}\n" +
+	"\x06source2\x8f\x02\n" +
 	"\tAIService\x12p\n" +
 	"\n" +
-	"Transcribe\x12\x1c.memos.api.TranscribeRequest\x1a\x1d.memos.api.TranscribeResponse\"%\xdaA\x05audio\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/ai:transcribeB\x8d\x01\n" +
+	"Transcribe\x12\x1c.memos.api.TranscribeRequest\x1a\x1d.memos.api.TranscribeResponse\"%\xdaA\x05audio\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/ai:transcribe\x12\x8f\x01\n" +
+	"\vSuggestTags\x12\x1d.memos.api.SuggestTagsRequest\x1a\x1e.memos.api.SuggestTagsResponse\"A\xdaA\x16content,candidate_tags\xdaA\acontent\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/ai:suggestTagsB\x8d\x01\n" +
 	"\rcom.memos.apiB\x0eAiServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
 	"Memos::Apib\x06proto3"
 
@@ -252,18 +361,22 @@ func file_api_ai_service_proto_rawDescGZIP() []byte {
 	return file_api_ai_service_proto_rawDescData
 }
 
-var file_api_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_ai_service_proto_goTypes = []any{
-	(*TranscribeRequest)(nil),  // 0: memos.api.TranscribeRequest
-	(*TranscribeResponse)(nil), // 1: memos.api.TranscribeResponse
-	(*TranscriptionAudio)(nil), // 2: memos.api.TranscriptionAudio
+	(*SuggestTagsRequest)(nil),  // 0: memos.api.SuggestTagsRequest
+	(*SuggestTagsResponse)(nil), // 1: memos.api.SuggestTagsResponse
+	(*TranscribeRequest)(nil),   // 2: memos.api.TranscribeRequest
+	(*TranscribeResponse)(nil),  // 3: memos.api.TranscribeResponse
+	(*TranscriptionAudio)(nil),  // 4: memos.api.TranscriptionAudio
 }
 var file_api_ai_service_proto_depIdxs = []int32{
-	2, // 0: memos.api.TranscribeRequest.audio:type_name -> memos.api.TranscriptionAudio
-	0, // 1: memos.api.AIService.Transcribe:input_type -> memos.api.TranscribeRequest
-	1, // 2: memos.api.AIService.Transcribe:output_type -> memos.api.TranscribeResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	4, // 0: memos.api.TranscribeRequest.audio:type_name -> memos.api.TranscriptionAudio
+	2, // 1: memos.api.AIService.Transcribe:input_type -> memos.api.TranscribeRequest
+	0, // 2: memos.api.AIService.SuggestTags:input_type -> memos.api.SuggestTagsRequest
+	3, // 3: memos.api.AIService.Transcribe:output_type -> memos.api.TranscribeResponse
+	1, // 4: memos.api.AIService.SuggestTags:output_type -> memos.api.SuggestTagsResponse
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -274,7 +387,7 @@ func file_api_ai_service_proto_init() {
 	if File_api_ai_service_proto != nil {
 		return
 	}
-	file_api_ai_service_proto_msgTypes[2].OneofWrappers = []any{
+	file_api_ai_service_proto_msgTypes[4].OneofWrappers = []any{
 		(*TranscriptionAudio_Content)(nil),
 		(*TranscriptionAudio_Uri)(nil),
 	}
@@ -284,7 +397,7 @@ func file_api_ai_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_ai_service_proto_rawDesc), len(file_api_ai_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
