@@ -308,10 +308,9 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
 }
 
-// TestPostAcceptsSuccessResponsesWithoutJSONBody covers receivers that answer
-// 2xx with an empty or plain-text body, and checks that a JSON error code in a
-// 2xx response is still reported.
-func TestPostAcceptsSuccessResponsesWithoutJSONBody(t *testing.T) {
+// TestPostDeliveryFollowsStatusCode checks that any 2xx counts as delivered
+// whatever the body holds, and that other statuses fail.
+func TestPostDeliveryFollowsStatusCode(t *testing.T) {
 	prev := AllowPrivateIPs
 	AllowPrivateIPs = true
 	defer func() { AllowPrivateIPs = prev }()
@@ -325,9 +324,10 @@ func TestPostAcceptsSuccessResponsesWithoutJSONBody(t *testing.T) {
 		{name: "no content", status: http.StatusNoContent},
 		{name: "empty body", status: http.StatusOK},
 		{name: "plain text", status: http.StatusOK, body: "ok"},
-		{name: "json without code", status: http.StatusOK, body: `{"id":"abc"}`},
-		{name: "json success code", status: http.StatusOK, body: `{"code":0}`},
-		{name: "json error code", status: http.StatusOK, body: `{"code":1,"message":"bad"}`, wantErr: true},
+		{name: "json body", status: http.StatusOK, body: `{"id":"abc"}`},
+		{name: "json code field is ignored", status: http.StatusOK, body: `{"code":1,"message":{"detail":"bad"}}`},
+		{name: "accepted", status: http.StatusAccepted},
+		{name: "client error", status: http.StatusBadRequest, body: `{"code":0}`, wantErr: true},
 		{name: "server error", status: http.StatusInternalServerError, body: "ok", wantErr: true},
 	}
 	for _, tt := range tests {
