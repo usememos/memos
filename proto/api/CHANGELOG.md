@@ -29,6 +29,13 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 
 ### Breaking
 
+- `InstanceService.UpdateInstanceSetting` now applies `update_mask`, which was ignored before. With a non-empty mask
+  only the named fields change and the rest keep their stored values; a path outside the setting's value, or an unknown
+  field, returns `INVALID_ARGUMENT`; the `name` path is ignored. For `STORAGE`, a mask containing both `storages` and
+  `default_storage_id` uses the registry to derive the legacy fields. Mixing only one registry field with legacy fields is rejected. A masked `ai_setting.transcription` that is unset
+  disables transcription; without a mask an omitted transcription still keeps the stored config. Requests without a mask
+  still replace the whole setting, except over REST: a `PATCH` without a mask gets one derived from the body keys, so
+  fields left out of the body now keep their stored values instead of being reset.
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
   Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
   `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.

@@ -792,9 +792,15 @@ func (x *BatchGetInstanceSettingsResponse) GetInstanceSettings() []*InstanceSett
 // Request message for InstanceService.UpdateInstanceSetting.
 type UpdateInstanceSettingRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The instance setting, which replaces the stored setting.
+	// Required. The instance setting. Without update_mask it replaces the stored setting.
 	InstanceSetting *InstanceSetting `protobuf:"bytes,1,opt,name=instance_setting,json=instanceSetting,proto3" json:"instance_setting,omitempty"`
-	// Optional. The list of fields to update. Currently ignored; the whole setting is replaced.
+	// Optional. The fields to update; other fields keep their stored values. Paths are relative to
+	// InstanceSetting and must lie within the value for the setting's key, such as
+	// "general_setting.disallow_user_registration" for GENERAL. A path may also be relative to that value,
+	// such as "disallow_user_registration". Proto and JSON field names are accepted. The "name" path is ignored.
+	// For STORAGE, masking both storages and default_storage_id makes the registry authoritative over legacy fields.
+	// Masking just one of them together with a legacy storage field is invalid. If omitted or empty, the
+	// whole setting is replaced; over REST, a mask is derived from the request body's keys instead.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1632,8 +1638,9 @@ type InstanceSetting_AISetting struct {
 	// The AI provider configurations available instance-wide.
 	Providers []*InstanceSetting_AIProviderConfig `protobuf:"bytes,1,rep,name=providers,proto3" json:"providers,omitempty"`
 	// The speech-to-text feature configuration.
-	// When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-	// stored configuration.
+	// Transcription is disabled when provider_id is empty. Omitting transcription in an update preserves the stored
+	// configuration unless the update mask selects a transcription field. Selecting ai_setting or
+	// ai_setting.transcription and omitting transcription clears the configuration.
 	Transcription *InstanceSetting_TranscriptionConfig `protobuf:"bytes,2,opt,name=transcription,proto3" json:"transcription,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

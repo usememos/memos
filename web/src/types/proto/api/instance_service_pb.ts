@@ -778,8 +778,9 @@ export type InstanceSetting_AISetting = Message<"memos.api.InstanceSetting.AISet
 
   /**
    * The speech-to-text feature configuration.
-   * When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-   * stored configuration.
+   * Transcription is disabled when provider_id is empty. Omitting transcription in an update preserves the stored
+   * configuration unless the update mask selects a transcription field. Selecting ai_setting or
+   * ai_setting.transcription and omitting transcription clears the configuration.
    *
    * @generated from field: memos.api.InstanceSetting.TranscriptionConfig transcription = 2;
    */
@@ -1218,14 +1219,20 @@ export const BatchGetInstanceSettingsResponseSchema: GenMessage<BatchGetInstance
  */
 export type UpdateInstanceSettingRequest = Message<"memos.api.UpdateInstanceSettingRequest"> & {
   /**
-   * Required. The instance setting, which replaces the stored setting.
+   * Required. The instance setting. Without update_mask it replaces the stored setting.
    *
    * @generated from field: memos.api.InstanceSetting instance_setting = 1;
    */
   instanceSetting?: InstanceSetting | undefined;
 
   /**
-   * Optional. The list of fields to update. Currently ignored; the whole setting is replaced.
+   * Optional. The fields to update; other fields keep their stored values. Paths are relative to
+   * InstanceSetting and must lie within the value for the setting's key, such as
+   * "general_setting.disallow_user_registration" for GENERAL. A path may also be relative to that value,
+   * such as "disallow_user_registration". Proto and JSON field names are accepted. The "name" path is ignored.
+   * For STORAGE, masking both storages and default_storage_id makes the registry authoritative over legacy fields.
+   * Masking just one of them together with a legacy storage field is invalid. If omitted or empty, the
+   * whole setting is replaced; over REST, a mask is derived from the request body's keys instead.
    *
    * @generated from field: google.protobuf.FieldMask update_mask = 2;
    */

@@ -14,6 +14,9 @@ import (
 // ErrUnsafeAuthenticationConfiguration indicates a mutation would lock regular users out.
 var ErrUnsafeAuthenticationConfiguration = errors.New("password authentication for regular users cannot be disabled without an effective identity provider")
 
+// ErrInstanceSettingChanged indicates a masked update used a stale merge base.
+var ErrInstanceSettingChanged = errors.New("instance setting changed during update; retry the request")
+
 // AuthenticationConfigState is the stored authentication configuration read inside a transaction.
 type AuthenticationConfigState struct {
 	GeneralSetting    *InstanceSetting
@@ -29,6 +32,12 @@ type AuthenticationConfigMutation struct {
 
 // UpsertInstanceGeneralSettingSafely validates and stores GENERAL as one serialized operation.
 func (s *Store) UpsertInstanceGeneralSettingSafely(ctx context.Context, setting *storepb.InstanceSetting) (*storepb.InstanceSetting, error) {
+	return s.UpdateInstanceGeneralSettingIfUnchanged(ctx, setting, nil)
+}
+
+// UpdateInstanceGeneralSettingIfUnchanged checks the merge base inside the serialized write.
+// A nil expected value requests an unconditional replacement.
+func (s *Store) UpdateInstanceGeneralSettingIfUnchanged(ctx context.Context, setting *storepb.InstanceSetting, expected *storepb.InstanceGeneralSetting) (*storepb.InstanceSetting, error) {
 	if setting == nil || setting.Key != storepb.InstanceSettingKey_GENERAL || setting.GetGeneralSetting() == nil {
 		return nil, errors.New("GENERAL instance setting is required")
 	}
@@ -40,7 +49,7 @@ func (s *Store) UpsertInstanceGeneralSettingSafely(ctx context.Context, setting 
 	mutation := &AuthenticationConfigMutation{
 		UpsertGeneralSetting: raw,
 		Validate: func(state *AuthenticationConfigState) error {
-			return validateAuthenticationMutationState(state, setting.GetGeneralSetting(), nil)
+			return validateAuthenticationMutationState(state, setting.GetGeneralSetting(), nil, expected)
 		},
 	}
 	if err := s.applyAuthenticationConfigMutation(ctx, mutation); err != nil {
@@ -59,7 +68,7 @@ func (s *Store) DeleteIdentityProviderSafely(ctx context.Context, delete *Delete
 	mutation := &AuthenticationConfigMutation{
 		DeleteIdentityProviderID: &delete.ID,
 		Validate: func(state *AuthenticationConfigState) error {
-			return validateAuthenticationMutationState(state, nil, &delete.ID)
+			return validateAuthenticationMutationState(state, nil, &delete.ID, nil)
 		},
 	}
 	return s.applyAuthenticationConfigMutation(ctx, mutation)
@@ -74,14 +83,18 @@ func (s *Store) applyAuthenticationConfigMutation(ctx context.Context, mutation 
 	})
 }
 
-func validateAuthenticationMutationState(state *AuthenticationConfigState, proposedGeneral *storepb.InstanceGeneralSetting, deletedProviderID *int32) error {
-	var storedGeneral *storepb.InstanceGeneralSetting
+func validateAuthenticationMutationState(state *AuthenticationConfigState, proposedGeneral *storepb.InstanceGeneralSetting, deletedProviderID *int32, expected *storepb.InstanceGeneralSetting) error {
+	storedGeneral := &storepb.InstanceGeneralSetting{}
 	if state.GeneralSetting != nil {
 		stored, err := convertInstanceSettingFromRaw(state.GeneralSetting)
 		if err != nil {
 			return errors.Wrap(err, "failed to decode stored GENERAL setting")
 		}
 		storedGeneral = stored.GetGeneralSetting()
+	}
+
+	if expected != nil && !proto.Equal(expected, storedGeneral) {
+		return ErrInstanceSettingChanged
 	}
 
 	oldUIDs := make(map[string]struct{}, len(state.IdentityProviders))

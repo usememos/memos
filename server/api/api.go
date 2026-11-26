@@ -182,6 +182,9 @@ func (s *APIService) NewHandler(ctx context.Context) (http.Handler, error) {
 			}
 			r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(procedure))
 
+			if procedure == apipb.InstanceService_UpdateInstanceSetting_FullMethodName && r.URL.RawQuery != "" {
+				omitEmptyInstanceSettingMask(r)
+			}
 			next(w, r, pathParams)
 		}
 	}

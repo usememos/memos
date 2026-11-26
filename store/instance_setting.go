@@ -118,9 +118,9 @@ func (s *Store) ListInstanceSettings(ctx context.Context, find *FindInstanceSett
 }
 
 // GetUncachedInstanceSetting reads one setting from the database, bypassing
-// the instance setting cache.
+// the instance setting cache for both reads and writes.
 func (s *Store) GetUncachedInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
-	list, err := s.ListInstanceSettings(ctx, find)
+	list, err := s.driver.ListInstanceSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (s *Store) GetUncachedInstanceSetting(ctx context.Context, find *FindInstan
 	if len(list) > 1 {
 		return nil, errors.Errorf("found multiple instance settings with key %s", find.Name)
 	}
-	return list[0], nil
+	return convertInstanceSettingFromRaw(list[0])
 }
 
 func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
@@ -141,17 +141,11 @@ func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSettin
 		}
 	}
 
-	list, err := s.ListInstanceSettings(ctx, find)
-	if err != nil {
-		return nil, err
+	setting, err := s.GetUncachedInstanceSetting(ctx, find)
+	if err == nil {
+		s.cacheInstanceSetting(ctx, setting)
 	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-	if len(list) > 1 {
-		return nil, errors.Errorf("found multiple instance settings with key %s", find.Name)
-	}
-	return list[0], nil
+	return setting, err
 }
 
 func (s *Store) cacheInstanceSetting(ctx context.Context, setting *storepb.InstanceSetting) {
