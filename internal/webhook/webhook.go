@@ -137,7 +137,8 @@ func GenerateSigningSecret() (string, error) {
 	return "whsec_" + base64.StdEncoding.EncodeToString(buf), nil
 }
 
-// Post delivers the request synchronously and returns the receiver's verdict.
+// Post delivers the request synchronously. It fails unless the receiver
+// answers with a 2xx status; the response body is ignored.
 func Post(requestPayload *Request) error {
 	body, err := json.Marshal(requestPayload.Payload)
 	if err != nil {
@@ -176,25 +177,11 @@ func Post(requestPayload *Request) error {
 	}
 	defer resp.Body.Close()
 
-	b, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-	if err != nil {
-		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.URL)
-	}
-
+	// The status alone decides delivery: any 2xx counts, as in the Standard
+	// Webhooks spec. The body is drained so the connection can be reused.
+	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20))
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return errors.Errorf("failed to post webhook %s, status code: %d", requestPayload.URL, resp.StatusCode)
-	}
-
-	response := &struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	}{}
-	if err := json.Unmarshal(b, response); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.URL)
-	}
-
-	if response.Code != 0 {
-		return errors.Errorf("receive error code sent by webhook server, code %d, msg: %s", response.Code, response.Message)
 	}
 
 	return nil
