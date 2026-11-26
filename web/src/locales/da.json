@@ -921,7 +921,7 @@
       "redirect-url": "Omdiriger URL",
       "redirect-url-description": "Registrer dette tilbagekald URL hos din identitetsudbyder, så godkendelseskodeflowet kan gennemføres.",
       "scope-count_one": "{{count}} omfang",
-      "scope-count_other": "{{count}} skoper",
+      "scope-count_other": "{{count}} omfang",
       "scopes": "Omfang",
       "scopes-description": "Adskil scopes med mellemrum. De fleste udbydere har kun brug for et lille sæt såsom profil eller e-mailadgang.",
       "sso-created": "SSO {{name}} oprettet",

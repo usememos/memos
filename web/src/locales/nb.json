@@ -813,7 +813,7 @@
       "provider-uid": "UID",
       "redirect-url-description": "Registrer denne tilbakeringingen URL hos din identitetsleverandør slik at autorisasjonskodeflyten kan fullføres.",
       "scope-count_one": "{{count}} omfang",
-      "scope-count_other": "{{count}} skoper",
+      "scope-count_other": "{{count}} omfang",
       "scopes-description": "Separate skoper med mellomrom. De fleste tilbydere trenger bare et lite sett som profil eller e-posttilgang.",
       "template-description": "Start fra en forhåndsinnstilt leverandør, og juster deretter legitimasjonen og endepunktene for leietakeren din.",
       "unlink-success": "Frakoblet {{name}}.",
