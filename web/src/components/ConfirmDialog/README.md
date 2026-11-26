@@ -58,16 +58,16 @@ const t = useTranslate();
 
 ## Props
 
-| Prop             | Type                      | Required       | Acceptable Values                                         |
-| ---------------- | ------------------------- | -------------- | --------------------------------------------------------- |
-| `open`           | `boolean`                 | Yes            | `true` (visible) / `false` (hidden)                       |
-| `onOpenChange`   | `(open: boolean) => void` | Yes            | Callback receiving next state; should update parent state |
-| `title`          | `React.ReactNode`         | Yes            | Short localized action summary (text / node)              |
-| `description`    | `React.ReactNode`         | No             | Optional contextual message                               |
-| `confirmLabel`   | `string`                  | Yes            | Non-empty localized action text (1–2 words)               |
-| `cancelLabel`    | `string`                  | Yes            | Localized cancel label                                    |
-| `onConfirm`      | `() => void               | Promise<void>` | Yes                                                       | Sync or async handler; resolve = close, reject = stay open       |
-| `confirmVariant` | `"primary"                | "danger"`      | No                                                        | Defaults to `"primary"`; use `"danger"` for irreversible actions |
+| Prop             | Type                          | Required | Acceptable Values                                                |
+| ---------------- | ----------------------------- | -------- | ---------------------------------------------------------------- |
+| `open`           | `boolean`                     | Yes      | `true` (visible) / `false` (hidden)                              |
+| `onOpenChange`   | `(open: boolean) => void`     | Yes      | Callback receiving next state; should update parent state        |
+| `title`          | `React.ReactNode`             | Yes      | Short localized action summary (text / node)                     |
+| `description`    | `React.ReactNode`             | No       | Optional contextual message                                      |
+| `confirmLabel`   | `string`                      | Yes      | Non-empty localized action text (1–2 words)                      |
+| `cancelLabel`    | `string`                      | Yes      | Localized cancel label                                           |
+| `onConfirm`      | `() => void \| Promise<void>` | Yes      | Sync or async handler; resolve = close, reject = stay open       |
+| `confirmVariant` | `"primary" \| "danger"`       | No       | Defaults to `"primary"`; use `"danger"` for irreversible actions |
 
 ## Benefits vs Previous Implementation
 
