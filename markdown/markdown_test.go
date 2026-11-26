@@ -223,6 +223,54 @@ func TestGenerateSnippet(t *testing.T) {
 			maxLength: 100,
 			expected:  "Check out https://usememos.com for more info.",
 		},
+		{
+			name:      "backslash escapes",
+			content:   "Tom \\& Jerry \\*not emphasis\\*",
+			maxLength: 100,
+			expected:  "Tom & Jerry *not emphasis*",
+		},
+		{
+			name:      "entity and numeric references",
+			content:   "Fish &amp; chips &copy; 2026 &#35;1 &#x41;",
+			maxLength: 100,
+			expected:  "Fish & chips © 2026 #1 A",
+		},
+		{
+			name:      "escaped ampersand keeps the entity literal",
+			content:   "Write \\&amp; for an ampersand",
+			maxLength: 100,
+			expected:  "Write &amp; for an ampersand",
+		},
+		{
+			name:      "escaped backslash before an entity",
+			content:   "a \\\\&amp; b",
+			maxLength: 100,
+			expected:  "a \\& b",
+		},
+		{
+			name:      "unknown entity is kept",
+			content:   "Fish &nosuch; chips",
+			maxLength: 100,
+			expected:  "Fish &nosuch; chips",
+		},
+		{
+			name:      "escaped hash is not a tag",
+			content:   "Issue \\#42 is fixed",
+			maxLength: 100,
+			expected:  "Issue #42 is fixed",
+		},
+		{
+			name:      "backslash before a letter is kept",
+			content:   "Saved in C:\\Users\\me",
+			maxLength: 100,
+			expected:  "Saved in C:\\Users\\me",
+		},
+		{
+			name:      "code span keeps backslashes and entities",
+			content:   "Run `a\\*b &amp; c` now",
+			maxLength: 100,
+			expected:  "Run a\\*b &amp; c now",
+		},
 	}
 
 	for _, tt := range tests {
@@ -512,6 +560,21 @@ func TestExtractAllTitle(t *testing.T) {
 			name:    "multiline setext h1",
 			content: "First line\nSecond line\n===========",
 			title:   "First line Second line",
+		},
+		{
+			name:    "h1 with backslash escape",
+			content: "# 1\\. Intro\n\nBody.",
+			title:   "1. Intro",
+		},
+		{
+			name:    "h1 with entity reference",
+			content: "# Fish &amp; chips\n\nBody.",
+			title:   "Fish & chips",
+		},
+		{
+			name:    "h1 with code span",
+			content: "# Use `a\\*b`\n\nBody.",
+			title:   "Use a\\*b",
 		},
 	}
 

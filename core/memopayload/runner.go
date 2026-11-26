@@ -20,7 +20,8 @@ import (
 // every memo's payload once after upgrading.
 //
 // 1: Property.has_inline_image.
-const Version = 1
+// 2: Property.title decodes backslash escapes and entity references.
+const Version = 2
 
 // batchSize is how many memos the rebuild loads at a time.
 const batchSize = 100
