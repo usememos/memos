@@ -29,7 +29,7 @@ type webhookSettingDriver struct {
 	release chan struct{}
 }
 
-func (d *webhookSettingDriver) Close() error { return nil }
+func (*webhookSettingDriver) Close() error { return nil }
 
 func (d *webhookSettingDriver) UpsertUserSetting(_ context.Context, upsert *store.UserSetting) (*store.UserSetting, error) {
 	if d.fail {
@@ -105,11 +105,9 @@ func TestUserWebhookConcurrentAddsAreSerialized(t *testing.T) {
 
 	var wg sync.WaitGroup
 	errs := make(chan error, 2)
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		errs <- ts.AddUserWebhook(ctx, 1, &storepb.WebhooksUserSetting_Webhook{Id: "hook-1"})
-	}()
+	})
 
 	select {
 	case <-driver.entered:
@@ -117,10 +115,9 @@ func TestUserWebhookConcurrentAddsAreSerialized(t *testing.T) {
 		t.Fatal("first webhook add never reached persistence")
 	}
 
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		errs <- ts.AddUserWebhook(ctx, 1, &storepb.WebhooksUserSetting_Webhook{Id: "hook-2"})
-	}()
+	})
 
 	// Without a mutex the second add reads stale state while the first write is
 	// blocked. With a mutex it waits for the first write and never gets here.
