@@ -31,6 +31,10 @@ Memos is an open-source, self-hosted note-taking app for your everyday thoughts.
 - **Your own data.** Your record lives on your own server, and your data stays yours.
 - **Sharing you control.** You choose what stays private, what to share with family and friends, and what to publish on the web. In shared spaces, you can write alongside others while each person keeps their own memos.
 
+![Memos in action: capture a memo and find it again](.github/memos-demo.gif)
+
+*Capturing a memo and finding it again with search.*
+
 ## Quick start
 
 With Docker installed, run:
