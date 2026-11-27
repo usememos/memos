@@ -1,11 +1,44 @@
 package email
 
 import (
+	"io"
 	"mime"
+	"mime/quotedprintable"
 	"net/mail"
 	"strings"
 	"testing"
 )
+
+func TestMessageFormatEncodesBodyForSevenBitTransport(t *testing.T) {
+	for _, html := range []bool{false, true} {
+		body := strings.Repeat("你好 = café ", 200)
+		formatted := (&Message{To: []string{"reader@example.com"}, Subject: "test", Body: body, IsHTML: html}).Format("sender@example.com", "Sender")
+		message, err := mail.ReadMessage(strings.NewReader(formatted))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := message.Header.Get("Content-Transfer-Encoding"); got != "quoted-printable" {
+			t.Fatalf("unexpected body encoding: %q", got)
+		}
+		decoded, err := io.ReadAll(quotedprintable.NewReader(message.Body))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(decoded) != body {
+			t.Fatal("encoding changed the message body")
+		}
+		for _, line := range strings.Split(formatted, "\r\n") {
+			if len(line) > 998 {
+				t.Fatalf("message exceeds SMTP line limit: %d bytes", len(line))
+			}
+			for _, c := range line {
+				if c > 127 {
+					t.Fatal("message contains an unencoded non-ASCII byte")
+				}
+			}
+		}
+	}
+}
 
 func TestMessageValidation(t *testing.T) {
 	tests := []struct {
