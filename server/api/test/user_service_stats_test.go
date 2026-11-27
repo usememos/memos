@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -221,6 +222,63 @@ func TestGetUserStats_PinnedMemoUsesCanonicalResourceName(t *testing.T) {
 	resp, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{Name: fmt.Sprintf("users/%s", user.Username)})
 	require.NoError(t, err)
 	require.Equal(t, []string{"memos/pinned-stats-memo"}, resp.PinnedMemos)
+}
+
+func TestUserStats_MemoListsAreNewestCreatedFirst(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateHostUser(ctx, "stats-order-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	// Memos are created in ID order with created timestamps out of order, and
+	// two memos share a timestamp, which ties are broken by ID.
+	createdTimestamps := []int64{1_700_000_300, 1_700_000_100, 1_700_000_500, 1_700_000_100, 1_700_000_200}
+	pinnedUIDs := map[string]bool{"order-1": true, "order-2": true, "order-3": true}
+	for i, createdTs := range createdTimestamps {
+		uid := fmt.Sprintf("order-%d", i)
+		memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+			UID:        uid,
+			CreatorID:  user.ID,
+			Content:    "memo",
+			Visibility: store.Public,
+			CreatedTs:  createdTs,
+			UpdatedTs:  createdTs + int64(i),
+		})
+		require.NoError(t, err)
+		if pinnedUIDs[uid] {
+			pinned := true
+			require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Pinned: &pinned}))
+		}
+	}
+
+	// Newest created first, then highest ID first: order-2, order-0, order-4, order-3, order-1.
+	wantCreated := []int64{1_700_000_500, 1_700_000_300, 1_700_000_200, 1_700_000_100, 1_700_000_100}
+	wantUpdated := []int64{1_700_000_502, 1_700_000_300, 1_700_000_204, 1_700_000_103, 1_700_000_101}
+	wantPinned := []string{"memos/order-2", "memos/order-3", "memos/order-1"}
+	unix := func(timestamps []*timestamppb.Timestamp) []int64 {
+		values := []int64{}
+		for _, timestamp := range timestamps {
+			values = append(values, timestamp.AsTime().Unix())
+		}
+		return values
+	}
+
+	userName := fmt.Sprintf("users/%s", user.Username)
+	stats, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{Name: userName})
+	require.NoError(t, err)
+	require.Equal(t, wantCreated, unix(stats.MemoCreatedTimestamps))
+	require.Equal(t, wantUpdated, unix(stats.MemoUpdatedTimestamps))
+	require.Equal(t, wantPinned, stats.PinnedMemos)
+
+	list, err := ts.Service.ListUserStats(userCtx, &apipb.ListUserStatsRequest{Parent: userName})
+	require.NoError(t, err)
+	require.Len(t, list.UserStats, 1)
+	require.Equal(t, wantCreated, unix(list.UserStats[0].MemoCreatedTimestamps))
+	require.Equal(t, wantUpdated, unix(list.UserStats[0].MemoUpdatedTimestamps))
+	require.Equal(t, wantPinned, list.UserStats[0].PinnedMemos)
 }
 
 func TestListUserStats_FilterExcludesPrivateMemos(t *testing.T) {

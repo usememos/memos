@@ -141,6 +141,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.UID; v != nil {
 		where, args = append(where, "`memo`.`uid` = ?"), append(args, *v)
 	}
+	if v := find.AfterID; v != nil {
+		where, args = append(where, "`memo`.`id` > ?"), append(args, *v)
+	}
 	if len(find.UIDList) > 0 {
 		placeholders := make([]string, 0, len(find.UIDList))
 		for range find.UIDList {
@@ -198,6 +201,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	// Add id as final tie-breaker
 	orderBy = append(orderBy, "`id` DESC")
+	if find.OrderByID {
+		orderBy = []string{"`id` ASC"}
+	}
 	fields := []string{
 		"`memo`.`id` AS `id`",
 		"`memo`.`uid` AS `uid`",

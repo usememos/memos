@@ -315,6 +315,50 @@ func TestMemoListWithPagination(t *testing.T) {
 	ts.Close()
 }
 
+func TestMemoListAfterIDOrderedByID(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Created timestamps run opposite to IDs, so time ordering would differ.
+	createdIDs := []int32{}
+	for i := range 7 {
+		memo, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        fmt.Sprintf("after-id-%d", i),
+			CreatorID:  user.ID,
+			Content:    fmt.Sprintf("content %d", i),
+			Visibility: store.Public,
+			CreatedTs:  int64(1_700_000_000 - i*60),
+		})
+		require.NoError(t, err)
+		createdIDs = append(createdIDs, memo.ID)
+	}
+
+	limit := 3
+	find := &store.FindMemo{CreatorID: &user.ID, Limit: &limit, OrderByID: true}
+	pagedIDs := []int32{}
+	pageSizes := []int{}
+	for {
+		memos, err := ts.ListMemos(ctx, find)
+		require.NoError(t, err)
+		if len(memos) == 0 {
+			break
+		}
+		pageSizes = append(pageSizes, len(memos))
+		for _, memo := range memos {
+			pagedIDs = append(pagedIDs, memo.ID)
+		}
+		lastID := memos[len(memos)-1].ID
+		find.AfterID = &lastID
+	}
+	require.Equal(t, createdIDs, pagedIDs)
+	require.Equal(t, []int{3, 3, 1}, pageSizes)
+
+	ts.Close()
+}
+
 func TestMemoUpdatePinned(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

@@ -91,11 +91,16 @@ type FindMemo struct {
 	// Pagination
 	Limit  *int
 	Offset *int
+	// AfterID keeps memos with a greater ID. With OrderByID it pages through
+	// all memos without rescanning the skipped rows on every page like Offset.
+	AfterID *int32
 
 	// Ordering
 	OrderByPinned    bool
 	OrderByUpdatedTs bool
 	OrderByTimeAsc   bool
+	// OrderByID orders memos by ID ascending, replacing the other orderings.
+	OrderByID bool
 }
 
 type FindMemoPayload struct {
