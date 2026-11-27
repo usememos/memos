@@ -15,6 +15,8 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({
   transcriptionDisabled,
   onEditDrawing,
   openingDrawing,
+  onEditExcalidraw,
+  openingExcalidraw,
 }) => {
   const { actions, dispatch } = useEditorContext();
   const attachments = useEditorSelector((s) => s.metadata.attachments);
@@ -65,6 +67,8 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({
         transcriptionDisabled={transcriptionDisabled}
         onEditDrawing={onEditDrawing}
         openingDrawing={openingDrawing}
+        onEditExcalidraw={onEditExcalidraw}
+        openingExcalidraw={openingExcalidraw}
       >
         {trailingRows}
       </AttachmentListEditor>

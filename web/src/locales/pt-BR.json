@@ -186,7 +186,8 @@
       "keep-as-attachments": "Manter como anexos",
       "retry-image-upload": "Tentar novamente",
       "uploading-inline-image": "Carregando conteúdo",
-      "uploading-images": "Carregando imagens {{completed}}/{{total}}"
+      "uploading-images": "Carregando imagens {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Editar marcação",
@@ -336,7 +337,19 @@
     "remove-location": "Remover local",
     "recording-unsupported": "A gravação de áudio não é compatível com este navegador.",
     "microphone-denied": "A permissão do microfone foi negada.",
-    "recording-failed": "Falha ao iniciar a gravação de áudio."
+    "recording-failed": "Falha ao iniciar a gravação de áudio.",
+    "excalidraw": {
+      "new": "Novo desenho do Excalidraw",
+      "edit": "Editar desenho",
+      "edit-name": "Editar {{name}}",
+      "open-file": "Abrir arquivo",
+      "open-failed": "Não foi possível abrir o desenho. Tente novamente.",
+      "invalid-file": "Este não é um arquivo do Excalidraw.",
+      "save-failed": "Não foi possível salvar o desenho. Tente novamente.",
+      "preview-failed": "O desenho foi salvo, mas a pré-visualização não. Salve novamente para tentar outra vez.",
+      "bind-failed": "O desenho foi enviado, mas não foi adicionado ao memo. Salve novamente para tentar outra vez.",
+      "unavailable": "O memo ou o desenho não está mais disponível."
+    }
   },
   "inbox": {
     "failed-to-load": "Falha ao carregar item da caixa de entrada",

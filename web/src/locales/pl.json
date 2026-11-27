@@ -196,7 +196,8 @@
       "drawing": "Oznaczanie",
       "keep-as-attachments": "Zachowaj jako załącznik",
       "uploading-inline-image": "Przesyłanie do treści",
-      "uploading-images": "Przesyłanie obrazów {{completed}}/{{total}}"
+      "uploading-images": "Przesyłanie obrazów {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Edytuj oznaczenia",
@@ -336,7 +337,19 @@
     "remove-location": "Usuń lokalizację",
     "recording-unsupported": "Ta przeglądarka nie obsługuje nagrywania dźwięku.",
     "microphone-denied": "Odmówiono dostępu do mikrofonu.",
-    "recording-failed": "Nie udało się rozpocząć nagrywania dźwięku."
+    "recording-failed": "Nie udało się rozpocząć nagrywania dźwięku.",
+    "excalidraw": {
+      "new": "Nowy rysunek Excalidraw",
+      "edit": "Edytuj rysunek",
+      "edit-name": "Edytuj {{name}}",
+      "open-file": "Otwórz plik",
+      "open-failed": "Nie udało się otworzyć rysunku. Spróbuj ponownie.",
+      "invalid-file": "To nie jest plik Excalidraw.",
+      "save-failed": "Nie udało się zapisać rysunku. Spróbuj ponownie.",
+      "preview-failed": "Rysunek został zapisany, ale jego podgląd nie. Zapisz ponownie, aby spróbować jeszcze raz.",
+      "bind-failed": "Rysunek został przesłany, ale nie dodano go do notatki. Zapisz ponownie, aby spróbować jeszcze raz.",
+      "unavailable": "Notatka lub rysunek nie są już dostępne."
+    }
   },
   "inbox": {
     "failed-to-load": "Nie udało się załadować elementu skrzynki odbiorczej",

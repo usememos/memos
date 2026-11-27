@@ -219,7 +219,8 @@
       "drawing": "Merkintä",
       "keep-as-attachments": "Säilytä liitteinä",
       "uploading-inline-image": "Ladataan sisältöön",
-      "uploading-images": "Kuvien lataus {{completed}}/{{total}}"
+      "uploading-images": "Kuvien lataus {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Muokkaa merkintää",
@@ -374,7 +375,19 @@
     "remove-location": "Poista sijainti",
     "recording-unsupported": "Tämä selain ei tue äänen tallennusta.",
     "microphone-denied": "Mikrofonin käyttöoikeus evättiin.",
-    "recording-failed": "Äänen tallennuksen aloittaminen epäonnistui."
+    "recording-failed": "Äänen tallennuksen aloittaminen epäonnistui.",
+    "excalidraw": {
+      "new": "Uusi Excalidraw-piirros",
+      "edit": "Muokkaa piirrosta",
+      "edit-name": "Muokkaa: {{name}}",
+      "open-file": "Avaa tiedosto",
+      "open-failed": "Piirrosta ei voitu avata. Yritä uudelleen.",
+      "invalid-file": "Tämä ei ole Excalidraw-tiedosto.",
+      "save-failed": "Piirrosta ei voitu tallentaa. Yritä uudelleen.",
+      "preview-failed": "Piirros on tallennettu, mutta sen esikatselu ei. Yritä uudelleen tallentamalla uudestaan.",
+      "bind-failed": "Piirros ladattiin, mutta sitä ei lisätty muistioon. Yritä uudelleen tallentamalla uudestaan.",
+      "unavailable": "Muistio tai piirros ei ole enää saatavilla."
+    }
   },
   "inbox": {
     "failed-to-load": "Saapuneet-kansion kohteen lataaminen epäonnistui",

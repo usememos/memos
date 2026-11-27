@@ -219,7 +219,8 @@
       "drawing": "Означавање",
       "keep-as-attachments": "Сачувај као прилоге",
       "uploading-inline-image": "Отпремање у садржај",
-      "uploading-images": "Отпремање слика {{completed}}/{{total}}"
+      "uploading-images": "Отпремање слика {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Уреди ознаке",
@@ -374,7 +375,19 @@
     "remove-location": "Уклони локацију",
     "recording-unsupported": "Овај прегледач не подржава снимање звука.",
     "microphone-denied": "Приступ микрофону је одбијен.",
-    "recording-failed": "Покретање снимања звука није успело."
+    "recording-failed": "Покретање снимања звука није успело.",
+    "excalidraw": {
+      "new": "Нови Excalidraw цртеж",
+      "edit": "Уреди цртеж",
+      "edit-name": "Уреди {{name}}",
+      "open-file": "Отвори датотеку",
+      "open-failed": "Цртеж није могао да се отвори. Покушајте поново.",
+      "invalid-file": "Ово није Excalidraw датотека.",
+      "save-failed": "Цртеж није могао да се сачува. Покушајте поново.",
+      "preview-failed": "Цртеж је сачуван, али његов преглед није. Сачувајте поново да бисте покушали опет.",
+      "bind-failed": "Цртеж је отпремљен, али није додат поруци. Сачувајте поново да бисте покушали опет.",
+      "unavailable": "Порука или цртеж више нису доступни."
+    }
   },
   "inbox": {
     "failed-to-load": "Учитавање ставке пријемног сандучета није успело",

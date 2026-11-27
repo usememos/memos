@@ -291,7 +291,8 @@
       "link-memo": "Knyt til notat",
       "retry-image-upload": "Prøv att",
       "uploading-images": "Lastar opp bilete {{completed}}/{{total}}",
-      "uploading-inline-image": "Lastar opp til innhaldet"
+      "uploading-inline-image": "Lastar opp til innhaldet",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Rediger markering",
@@ -413,7 +414,19 @@
     "remove-location": "Fjern staden",
     "recording-unsupported": "Ljodopptak er ikkje støtta i denne nettlesaren.",
     "microphone-denied": "Tilgang til mikrofonen vart avslått.",
-    "recording-failed": "Klarte ikkje å starte ljodopptaket."
+    "recording-failed": "Klarte ikkje å starte ljodopptaket.",
+    "excalidraw": {
+      "new": "Ny Excalidraw-teikning",
+      "edit": "Rediger teikninga",
+      "edit-name": "Rediger {{name}}",
+      "open-file": "Opne fil",
+      "open-failed": "Kunne ikkje opne teikninga. Prøv igjen.",
+      "invalid-file": "Dette er ikkje ei Excalidraw-fil.",
+      "save-failed": "Kunne ikkje lagre teikninga. Prøv igjen.",
+      "preview-failed": "Teikninga er lagra, men førehandsvisinga er ikkje. Lagre igjen for å prøve på nytt.",
+      "bind-failed": "Teikninga vart lasta opp, men vart ikkje lagd til i notatet. Lagre igjen for å prøve på nytt.",
+      "unavailable": "Notatet eller teikninga er ikkje lenger tilgjengeleg."
+    }
   },
   "inbox": {
     "failed-to-load": "Klarte diverre ikkje å laste innbokselementet",

@@ -181,7 +181,8 @@
       "drawing": "Markering",
       "keep-as-attachments": "Bewaren als bijlagen",
       "uploading-inline-image": "Uploaden naar inhoud",
-      "uploading-images": "Afbeeldingen uploaden {{completed}}/{{total}}"
+      "uploading-images": "Afbeeldingen uploaden {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Markering bewerken",
@@ -336,7 +337,19 @@
     "remove-location": "Locatie verwijderen",
     "recording-unsupported": "Audio opnemen wordt niet ondersteund in deze browser.",
     "microphone-denied": "Toegang tot de microfoon is geweigerd.",
-    "recording-failed": "Kan audio-opname niet starten."
+    "recording-failed": "Kan audio-opname niet starten.",
+    "excalidraw": {
+      "new": "Nieuwe Excalidraw-tekening",
+      "edit": "Tekening bewerken",
+      "edit-name": "{{name}} bewerken",
+      "open-file": "Bestand openen",
+      "open-failed": "De tekening kon niet worden geopend. Probeer het opnieuw.",
+      "invalid-file": "Dit is geen Excalidraw-bestand.",
+      "save-failed": "De tekening kon niet worden opgeslagen. Probeer het opnieuw.",
+      "preview-failed": "De tekening is opgeslagen, maar de voorvertoning niet. Sla opnieuw op om het opnieuw te proberen.",
+      "bind-failed": "De tekening is geüpload maar niet aan de memo toegevoegd. Sla opnieuw op om het opnieuw te proberen.",
+      "unavailable": "De memo of tekening is niet meer beschikbaar."
+    }
   },
   "inbox": {
     "failed-to-load": "Postvak-item laden mislukt",

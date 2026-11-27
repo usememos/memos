@@ -181,7 +181,8 @@
       "keep-as-attachments": "Mantieni come allegati",
       "uploading-inline-image": "Caricamento nel contenuto",
       "uploading-images": "Caricamento immagini {{completed}}/{{total}}",
-      "image-upload-failed": "Impossibile caricare alcune immagini. Riprova o mantieni i file caricati come allegati."
+      "image-upload-failed": "Impossibile caricare alcune immagini. Riprova o mantieni i file caricati come allegati.",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Modifica annotazione",
@@ -336,7 +337,19 @@
     "remove-location": "Rimuovi posizione",
     "recording-unsupported": "La registrazione audio non è supportata da questo browser.",
     "microphone-denied": "L'autorizzazione al microfono è stata negata.",
-    "recording-failed": "Impossibile avviare la registrazione audio."
+    "recording-failed": "Impossibile avviare la registrazione audio.",
+    "excalidraw": {
+      "new": "Nuovo disegno Excalidraw",
+      "edit": "Modifica disegno",
+      "edit-name": "Modifica {{name}}",
+      "open-file": "Apri file",
+      "open-failed": "Impossibile aprire il disegno. Riprova.",
+      "invalid-file": "Questo non è un file Excalidraw.",
+      "save-failed": "Impossibile salvare il disegno. Riprova.",
+      "preview-failed": "Il disegno è salvato, ma la sua anteprima no. Salva di nuovo per riprovare.",
+      "bind-failed": "Il disegno è stato caricato ma non aggiunto al memo. Salva di nuovo per riprovare.",
+      "unavailable": "Il memo o il disegno non è più disponibile."
+    }
   },
   "inbox": {
     "failed-to-load": "Impossibile caricare l'elemento della posta in arrivo",

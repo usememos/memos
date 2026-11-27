@@ -219,7 +219,8 @@
       "drawing": "Adnotare",
       "keep-as-attachments": "Păstrare ca atașamente",
       "uploading-inline-image": "Se încarcă în conținut",
-      "uploading-images": "Se încarcă imagini {{completed}}/{{total}}"
+      "uploading-images": "Se încarcă imagini {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Editează adnotarea",
@@ -374,7 +375,19 @@
     "remove-location": "Eliminați locația",
     "recording-unsupported": "Înregistrarea audio nu este acceptată în acest browser.",
     "microphone-denied": "Permisiunea pentru microfon a fost refuzată.",
-    "recording-failed": "Pornirea înregistrării audio a eșuat."
+    "recording-failed": "Pornirea înregistrării audio a eșuat.",
+    "excalidraw": {
+      "new": "Desen Excalidraw nou",
+      "edit": "Editează desenul",
+      "edit-name": "Editează {{name}}",
+      "open-file": "Deschide fișier",
+      "open-failed": "Desenul nu a putut fi deschis. Încearcă din nou.",
+      "invalid-file": "Acesta nu este un fișier Excalidraw.",
+      "save-failed": "Desenul nu a putut fi salvat. Încearcă din nou.",
+      "preview-failed": "Desenul a fost salvat, dar previzualizarea sa nu. Salvează din nou pentru a reîncerca.",
+      "bind-failed": "Desenul a fost încărcat, dar nu a fost adăugat la notă. Salvează din nou pentru a reîncerca.",
+      "unavailable": "Nota sau desenul nu mai este disponibil."
+    }
   },
   "inbox": {
     "failed-to-load": "Nu s-a încărcat elementul din căsuța de e-mail",

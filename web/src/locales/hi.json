@@ -186,7 +186,8 @@
       "keep-as-attachments": "अटैचमेंट के तौर पर रखें",
       "retry-image-upload": "फिर से कोशिश करें",
       "uploading-inline-image": "कंटेंट में अपलोड हो रहा है",
-      "uploading-images": "इमेज अपलोड हो रही हैं {{completed}}/{{total}}"
+      "uploading-images": "इमेज अपलोड हो रही हैं {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "मार्कअप संपादित करें",
@@ -336,7 +337,19 @@
     "remove-location": "स्थान हटाएँ",
     "recording-unsupported": "इस ब्राउज़र में ऑडियो रिकॉर्डिंग समर्थित नहीं है।",
     "microphone-denied": "माइक्रोफ़ोन की अनुमति अस्वीकार कर दी गई।",
-    "recording-failed": "ऑडियो रिकॉर्डिंग शुरू नहीं हो सकी।"
+    "recording-failed": "ऑडियो रिकॉर्डिंग शुरू नहीं हो सकी।",
+    "excalidraw": {
+      "new": "नई Excalidraw ड्रॉइंग",
+      "edit": "ड्रॉइंग संपादित करें",
+      "edit-name": "{{name}} संपादित करें",
+      "open-file": "फ़ाइल खोलें",
+      "open-failed": "ड्रॉइंग नहीं खुल सकी। फिर से कोशिश करें।",
+      "invalid-file": "यह Excalidraw फ़ाइल नहीं है।",
+      "save-failed": "ड्रॉइंग सेव नहीं हो सकी। फिर से कोशिश करें।",
+      "preview-failed": "ड्रॉइंग सेव हो गई, लेकिन उसका प्रीव्यू नहीं। फिर से कोशिश करने के लिए दोबारा सेव करें।",
+      "bind-failed": "ड्रॉइंग अपलोड हो गई, लेकिन मेमो में नहीं जुड़ी। फिर से कोशिश करने के लिए दोबारा सेव करें।",
+      "unavailable": "मेमो या ड्रॉइंग अब उपलब्ध नहीं है।"
+    }
   },
   "inbox": {
     "failed-to-load": "इनबॉक्स आइटम लोड करने में विफल",

@@ -181,7 +181,8 @@
       "drawing": "Marcação",
       "keep-as-attachments": "Manter como anexos",
       "uploading-inline-image": "A carregar conteúdo",
-      "uploading-images": "A carregar imagens {{completed}}/{{total}}"
+      "uploading-images": "A carregar imagens {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Editar marcação",
@@ -336,7 +337,19 @@
     "remove-location": "Remover local",
     "recording-unsupported": "A gravação de áudio não é suportada neste navegador.",
     "microphone-denied": "A permissão do microfone foi negada.",
-    "recording-failed": "Falha ao iniciar a gravação de áudio."
+    "recording-failed": "Falha ao iniciar a gravação de áudio.",
+    "excalidraw": {
+      "new": "Novo desenho do Excalidraw",
+      "edit": "Editar desenho",
+      "edit-name": "Editar {{name}}",
+      "open-file": "Abrir ficheiro",
+      "open-failed": "Não foi possível abrir o desenho. Tente novamente.",
+      "invalid-file": "Este não é um ficheiro do Excalidraw.",
+      "save-failed": "Não foi possível guardar o desenho. Tente novamente.",
+      "preview-failed": "O desenho foi guardado, mas a pré-visualização não. Guarde novamente para tentar outra vez.",
+      "bind-failed": "O desenho foi carregado, mas não foi adicionado ao memorando. Guarde novamente para tentar outra vez.",
+      "unavailable": "O memorando ou o desenho já não está disponível."
+    }
   },
   "inbox": {
     "failed-to-load": "Falha ao carregar item da caixa de entrada",

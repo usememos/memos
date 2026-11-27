@@ -181,7 +181,8 @@
       "drawing": "Marcatge",
       "keep-as-attachments": "Desa com a fitxers adjunts",
       "uploading-inline-image": "S'està pujant al contingut",
-      "uploading-images": "S'estan pujant imatges {{completed}}/{{total}}"
+      "uploading-images": "S'estan pujant imatges {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Edita el marcatge",
@@ -336,7 +337,19 @@
     "remove-location": "Elimina la ubicació",
     "recording-unsupported": "Aquest navegador no admet l'enregistrament d'àudio.",
     "microphone-denied": "S'ha denegat el permís del micròfon.",
-    "recording-failed": "No s'ha pogut iniciar l'enregistrament d'àudio."
+    "recording-failed": "No s'ha pogut iniciar l'enregistrament d'àudio.",
+    "excalidraw": {
+      "new": "Dibuix nou d'Excalidraw",
+      "edit": "Edita el dibuix",
+      "edit-name": "Edita {{name}}",
+      "open-file": "Obre un fitxer",
+      "open-failed": "No s'ha pogut obrir el dibuix. Torna-ho a provar.",
+      "invalid-file": "Aquest no és un fitxer d'Excalidraw.",
+      "save-failed": "No s'ha pogut desar el dibuix. Torna-ho a provar.",
+      "preview-failed": "El dibuix s'ha desat, però la previsualització no. Desa de nou per tornar-ho a provar.",
+      "bind-failed": "El dibuix s'ha pujat però no s'ha afegit a la nota. Desa de nou per tornar-ho a provar.",
+      "unavailable": "La nota o el dibuix ja no estan disponibles."
+    }
   },
   "inbox": {
     "failed-to-load": "Error en carregar la bústia",

@@ -181,7 +181,8 @@
       "drawing": "Marcado",
       "keep-as-attachments": "Gardar como anexos",
       "uploading-inline-image": "Subindo ao contido",
-      "uploading-images": "Subindo imaxes {{completed}}/{{total}}"
+      "uploading-images": "Subindo imaxes {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Editar marcado",
@@ -336,7 +337,19 @@
     "remove-location": "Quitar a localización",
     "recording-unsupported": "Este navegador non admite a gravación de audio.",
     "microphone-denied": "Denegouse o permiso do micrófono.",
-    "recording-failed": "Non se puido iniciar a gravación de audio."
+    "recording-failed": "Non se puido iniciar a gravación de audio.",
+    "excalidraw": {
+      "new": "Novo debuxo de Excalidraw",
+      "edit": "Editar o debuxo",
+      "edit-name": "Editar {{name}}",
+      "open-file": "Abrir ficheiro",
+      "open-failed": "Non se puido abrir o debuxo. Téntao de novo.",
+      "invalid-file": "Este non é un ficheiro de Excalidraw.",
+      "save-failed": "Non se puido gardar o debuxo. Téntao de novo.",
+      "preview-failed": "O debuxo gardouse, pero a súa vista previa non. Garda de novo para tentalo outra vez.",
+      "bind-failed": "O debuxo subiuse pero non se engadiu á nota. Garda de novo para tentalo outra vez.",
+      "unavailable": "A nota ou o debuxo xa non está dispoñible."
+    }
   },
   "inbox": {
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",

@@ -267,7 +267,8 @@
       "link-memo": "קשר פתק",
       "retry-image-upload": "נסה שוב",
       "uploading-inline-image": "מעלה לתוכן",
-      "uploading-images": "מעלה תמונות {{completed}}/{{total}}"
+      "uploading-images": "מעלה תמונות {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "עריכת סימון",
@@ -407,7 +408,19 @@
     "remove-location": "הסרת המיקום",
     "recording-unsupported": "הקלטת שמע אינה נתמכת בדפדפן זה.",
     "microphone-denied": "הגישה למיקרופון נדחתה.",
-    "recording-failed": "הפעלת הקלטת השמע נכשלה."
+    "recording-failed": "הפעלת הקלטת השמע נכשלה.",
+    "excalidraw": {
+      "new": "ציור Excalidraw חדש",
+      "edit": "עריכת הציור",
+      "edit-name": "עריכת {{name}}",
+      "open-file": "פתיחת קובץ",
+      "open-failed": "לא ניתן לפתוח את הציור. נסו שוב.",
+      "invalid-file": "זה אינו קובץ Excalidraw.",
+      "save-failed": "לא ניתן לשמור את הציור. נסו שוב.",
+      "preview-failed": "הציור נשמר, אך התצוגה המקדימה שלו לא. שמרו שוב כדי לנסות שוב.",
+      "bind-failed": "הציור הועלה אך לא נוסף לתזכיר. שמרו שוב כדי לנסות שוב.",
+      "unavailable": "התזכיר או הציור אינם זמינים עוד."
+    }
   },
   "inbox": {
     "failed-to-load": "טעינת פריט מתיבת הדואר הנכנס נכשלה",

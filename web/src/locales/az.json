@@ -302,7 +302,8 @@
       "link-memo": "Qeydə keçid əlavə et",
       "retry-image-upload": "Yenidən cəhd et",
       "uploading-inline-image": "Məzmuna yüklənir",
-      "uploading-images": "Şəkillər yüklənir {{completed}}/{{total}}"
+      "uploading-images": "Şəkillər yüklənir {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "İşarələməni redaktə et",
@@ -439,7 +440,19 @@
     "remove-location": "Məkanı çıxar",
     "recording-unsupported": "Bu brauzer audio yazmağı dəstəkləmir.",
     "microphone-denied": "Mikrofon icazəsi rədd edildi.",
-    "recording-failed": "Audio yazmağa başlamaq alınmadı."
+    "recording-failed": "Audio yazmağa başlamaq alınmadı.",
+    "excalidraw": {
+      "new": "Yeni Excalidraw çertyoju",
+      "edit": "Çertyoju redaktə et",
+      "edit-name": "{{name}} redaktə et",
+      "open-file": "Fayl aç",
+      "open-failed": "Çertyoj açılmadı. Yenidən cəhd edin.",
+      "invalid-file": "Bu Excalidraw faylı deyil.",
+      "save-failed": "Çertyoj saxlanılmadı. Yenidən cəhd edin.",
+      "preview-failed": "Çertyoj saxlanıldı, lakin önizləməsi saxlanılmadı. Yenidən cəhd etmək üçün yenidən saxlayın.",
+      "bind-failed": "Çertyoj yükləndi, lakin qeydə əlavə edilmədi. Yenidən cəhd etmək üçün yenidən saxlayın.",
+      "unavailable": "Qeyd və ya çertyoj artıq mövcud deyil."
+    }
   },
   "inbox": {
     "failed-to-load": "Gələnlər elementi yüklənmədi",

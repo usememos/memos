@@ -181,7 +181,8 @@
       "drawing": "Jelölés",
       "keep-as-attachments": "Megtartás mellékletként",
       "uploading-inline-image": "Feltöltés a tartalomhoz",
-      "uploading-images": "Képek feltöltése {{completed}}/{{total}}"
+      "uploading-images": "Képek feltöltése {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Jelölés szerkesztése",
@@ -336,7 +337,19 @@
     "remove-location": "Hely eltávolítása",
     "recording-unsupported": "Ez a böngésző nem támogatja a hangfelvételt.",
     "microphone-denied": "A mikrofonhoz való hozzáférés megtagadva.",
-    "recording-failed": "Nem sikerült elindítani a hangfelvételt."
+    "recording-failed": "Nem sikerült elindítani a hangfelvételt.",
+    "excalidraw": {
+      "new": "Új Excalidraw-rajz",
+      "edit": "Rajz szerkesztése",
+      "edit-name": "{{name}} szerkesztése",
+      "open-file": "Fájl megnyitása",
+      "open-failed": "A rajzot nem sikerült megnyitni. Próbáld újra.",
+      "invalid-file": "Ez nem Excalidraw-fájl.",
+      "save-failed": "A rajzot nem sikerült menteni. Próbáld újra.",
+      "preview-failed": "A rajz mentve, de az előnézete nem. Mentsd újra az újrapróbáláshoz.",
+      "bind-failed": "A rajz feltöltődött, de nem került a feljegyzésbe. Mentsd újra az újrapróbáláshoz.",
+      "unavailable": "A feljegyzés vagy a rajz már nem érhető el."
+    }
   },
   "inbox": {
     "failed-to-load": "Nem sikerült betölteni az értesítést",

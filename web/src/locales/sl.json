@@ -181,7 +181,8 @@
       "drawing": "Označevanje",
       "keep-as-attachments": "Obdrži kot priloge",
       "uploading-inline-image": "Nalaganje v vsebino",
-      "uploading-images": "Nalaganje slik {{completed}}/{{total}}"
+      "uploading-images": "Nalaganje slik {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Uredi oznake",
@@ -336,7 +337,19 @@
     "remove-location": "Odstrani lokacijo",
     "recording-unsupported": "Ta brskalnik ne podpira snemanja zvoka.",
     "microphone-denied": "Dostop do mikrofona je bil zavrnjen.",
-    "recording-failed": "Snemanja zvoka ni bilo mogoče začeti."
+    "recording-failed": "Snemanja zvoka ni bilo mogoče začeti.",
+    "excalidraw": {
+      "new": "Nova risba Excalidraw",
+      "edit": "Uredi risbo",
+      "edit-name": "Uredi {{name}}",
+      "open-file": "Odpri datoteko",
+      "open-failed": "Risbe ni bilo mogoče odpreti. Poskusite znova.",
+      "invalid-file": "To ni datoteka Excalidraw.",
+      "save-failed": "Risbe ni bilo mogoče shraniti. Poskusite znova.",
+      "preview-failed": "Risba je shranjena, njen predogled pa ne. Shranite znova, da poskusite še enkrat.",
+      "bind-failed": "Risba je naložena, a ni dodana zapisku. Shranite znova, da poskusite še enkrat.",
+      "unavailable": "Zapisek ali risba ni več na voljo."
+    }
   },
   "inbox": {
     "failed-to-load": "Ni bilo mogoče naložiti elementa prejetega",

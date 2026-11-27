@@ -181,7 +181,8 @@
       "drawing": "Markieren",
       "keep-as-attachments": "Als Anhänge beibehalten",
       "uploading-inline-image": "Inhalt wird hochgeladen",
-      "uploading-images": "Bilder werden hochgeladen {{completed}}/{{total}}"
+      "uploading-images": "Bilder werden hochgeladen {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Markierung bearbeiten",
@@ -336,7 +337,19 @@
     "remove-location": "Standort entfernen",
     "recording-unsupported": "Audioaufnahme wird in diesem Browser nicht unterstützt.",
     "microphone-denied": "Der Zugriff auf das Mikrofon wurde verweigert.",
-    "recording-failed": "Audioaufnahme konnte nicht gestartet werden."
+    "recording-failed": "Audioaufnahme konnte nicht gestartet werden.",
+    "excalidraw": {
+      "new": "Neue Excalidraw-Zeichnung",
+      "edit": "Zeichnung bearbeiten",
+      "edit-name": "{{name}} bearbeiten",
+      "open-file": "Datei öffnen",
+      "open-failed": "Die Zeichnung konnte nicht geöffnet werden. Versuche es erneut.",
+      "invalid-file": "Das ist keine Excalidraw-Datei.",
+      "save-failed": "Die Zeichnung konnte nicht gespeichert werden. Versuche es erneut.",
+      "preview-failed": "Die Zeichnung ist gespeichert, ihre Vorschau aber nicht. Speichere erneut, um es noch einmal zu versuchen.",
+      "bind-failed": "Die Zeichnung wurde hochgeladen, aber nicht zum Memo hinzugefügt. Speichere erneut, um es noch einmal zu versuchen.",
+      "unavailable": "Das Memo oder die Zeichnung ist nicht mehr verfügbar."
+    }
   },
   "inbox": {
     "failed-to-load": "Fehler beim Laden des Eintrags",

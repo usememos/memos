@@ -1,8 +1,9 @@
 import { buttonClasses } from "@usememos/ui";
-import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
+import { DownloadIcon, ExternalLinkIcon, FileIcon, PenToolIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
 import { Suspense, useMemo, useState } from "react";
 import { DRAWING_PAPER, DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
+import { ExcalidrawViewer, isExcalidrawFilename } from "@/components/Excalidraw";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
@@ -336,8 +337,9 @@ const isServedHere = (url: string) => {
  * controls only appear over the detail rail once the row is engaged, so the rail stays on
  * the same edge as every other row's at rest.
  */
-const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
+const DocumentRow = ({ attachment, excalidraw }: { attachment: Attachment; excalidraw?: ExcalidrawContext }) => {
   const t = useTranslate();
+  const [isEditing, setIsEditing] = useState(false);
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
   const url = getAttachmentUrl(attachment);
   const body = (
@@ -347,6 +349,40 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
       <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
     </>
   );
+
+  // An Excalidraw source opens in the editor for whoever may edit the memo; its download stays one tap away.
+  if (excalidraw?.canEdit && isExcalidrawFilename(attachment.filename) && isServedHere(url)) {
+    return (
+      <div className={METADATA_ROW_BOX_CLASSES}>
+        <button
+          type="button"
+          title={t("editor.excalidraw.edit-name", { name: attachment.filename })}
+          className={cn(METADATA_ROW_LABEL_CLASSES, "text-start")}
+          onClick={() => setIsEditing(true)}
+        >
+          <MetadataRowIconSlot icon={PenToolIcon} />
+          <span className={METADATA_ROW_CONTENT_TEXT_CLASSES}>{attachment.filename}</span>
+          <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
+        </button>
+        <div className={METADATA_ROW_CONTROLS_CLASSES}>
+          <a
+            href={url}
+            download
+            title={t("common.download")}
+            aria-label={t("common.download-name", { name: attachment.filename })}
+            className={buttonClasses({ variant: "ghost", size: "xs", iconOnly: true })}
+          >
+            <DownloadIcon className="mu-icon-sm" />
+          </a>
+        </div>
+        {isEditing && (
+          <Suspense fallback={null}>
+            <ExcalidrawViewer attachment={attachment} memo={excalidraw.memo} onClose={() => setIsEditing(false)} />
+          </Suspense>
+        )}
+      </div>
+    );
+  }
 
   if (!isServedHere(url)) {
     return (
@@ -398,8 +434,22 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
+/** Where an Excalidraw source is edited from, and whether the viewer may. */
+export interface ExcalidrawContext {
+  memo: Pick<Memo, "name">;
+  canEdit: boolean;
+}
+
 /** Audio and file attachments as metadata rows, for a host that owns the row list. */
-export const AttachmentRows = ({ audio, docs }: { audio: Attachment[]; docs: Attachment[] }) => (
+export const AttachmentRows = ({
+  audio,
+  docs,
+  excalidraw,
+}: {
+  audio: Attachment[];
+  docs: Attachment[];
+  excalidraw?: ExcalidrawContext;
+}) => (
   <>
     {audio.map((attachment) => (
       <AudioAttachmentItem
@@ -411,7 +461,7 @@ export const AttachmentRows = ({ audio, docs }: { audio: Attachment[]; docs: Att
       />
     ))}
     {docs.map((attachment) => (
-      <DocumentRow key={attachment.name} attachment={attachment} />
+      <DocumentRow key={attachment.name} attachment={attachment} excalidraw={excalidraw} />
     ))}
   </>
 );

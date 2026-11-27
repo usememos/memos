@@ -181,7 +181,8 @@
       "drawing": "Markering",
       "keep-as-attachments": "Behold som vedlegg",
       "uploading-inline-image": "Laster opp til innhold",
-      "uploading-images": "Laster opp bilder {{completed}}/{{total}}"
+      "uploading-images": "Laster opp bilder {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Rediger markering",
@@ -336,7 +337,19 @@
     "remove-location": "Fjern plassering",
     "recording-unsupported": "Lydopptak støttes ikke i denne nettleseren.",
     "microphone-denied": "Tilgang til mikrofonen ble avslått.",
-    "recording-failed": "Kunne ikke starte lydopptaket."
+    "recording-failed": "Kunne ikke starte lydopptaket.",
+    "excalidraw": {
+      "new": "Ny Excalidraw-tegning",
+      "edit": "Rediger tegning",
+      "edit-name": "Rediger {{name}}",
+      "open-file": "Åpne fil",
+      "open-failed": "Kunne ikke åpne tegningen. Prøv igjen.",
+      "invalid-file": "Dette er ikke en Excalidraw-fil.",
+      "save-failed": "Kunne ikke lagre tegningen. Prøv igjen.",
+      "preview-failed": "Tegningen er lagret, men forhåndsvisningen er ikke. Lagre igjen for å prøve på nytt.",
+      "bind-failed": "Tegningen ble lastet opp, men ble ikke lagt til i notatet. Lagre igjen for å prøve på nytt.",
+      "unavailable": "Notatet eller tegningen er ikke lenger tilgjengelig."
+    }
   },
   "inbox": {
     "failed-to-load": "Kunne ikke laste innbokselement",

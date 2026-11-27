@@ -6,6 +6,7 @@ export { useAudioWaveform } from "./useAudioWaveform";
 export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
 export { type DrawingSession, useDrawing } from "./useDrawing";
+export { type ExcalidrawSession, useExcalidraw } from "./useExcalidraw";
 export { pairAppleLivePhotoFiles, toLocalFiles, useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";
 export { splitInlineLocalFiles, useInlineImageUpload } from "./useInlineImageUpload";

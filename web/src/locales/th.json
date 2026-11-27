@@ -186,7 +186,8 @@
       "keep-as-attachments": "เก็บเป็นไฟล์แนบ",
       "retry-image-upload": "ลองใหม่",
       "uploading-inline-image": "กำลังอัปโหลดไปยังเนื้อหา",
-      "uploading-images": "กำลังอัปโหลดรูปภาพ {{completed}}/{{total}}"
+      "uploading-images": "กำลังอัปโหลดรูปภาพ {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "แก้ไขเครื่องหมาย",
@@ -336,7 +337,19 @@
     "remove-location": "ลบตำแหน่ง",
     "recording-unsupported": "เบราว์เซอร์นี้ไม่รองรับการบันทึกเสียง",
     "microphone-denied": "การอนุญาตใช้ไมโครโฟนถูกปฏิเสธ",
-    "recording-failed": "เริ่มบันทึกเสียงไม่สำเร็จ"
+    "recording-failed": "เริ่มบันทึกเสียงไม่สำเร็จ",
+    "excalidraw": {
+      "new": "ภาพวาด Excalidraw ใหม่",
+      "edit": "แก้ไขภาพวาด",
+      "edit-name": "แก้ไข {{name}}",
+      "open-file": "เปิดไฟล์",
+      "open-failed": "ไม่สามารถเปิดภาพวาดได้ ลองอีกครั้ง",
+      "invalid-file": "นี่ไม่ใช่ไฟล์ Excalidraw",
+      "save-failed": "ไม่สามารถบันทึกภาพวาดได้ ลองอีกครั้ง",
+      "preview-failed": "บันทึกภาพวาดแล้ว แต่ภาพตัวอย่างยังไม่ได้บันทึก บันทึกอีกครั้งเพื่อลองใหม่",
+      "bind-failed": "อัปโหลดภาพวาดแล้ว แต่ไม่ได้เพิ่มลงในบันทึก บันทึกอีกครั้งเพื่อลองใหม่",
+      "unavailable": "บันทึกหรือภาพวาดไม่พร้อมใช้งานอีกต่อไป"
+    }
   },
   "inbox": {
     "failed-to-load": "ไม่สามารถโหลดรายการกล่องจดหมายได้",

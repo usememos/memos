@@ -181,7 +181,8 @@
       "drawing": "Markering",
       "keep-as-attachments": "Behåll som bilagor",
       "uploading-inline-image": "Uppladdning till innehåll",
-      "uploading-images": "Uppladdning av bilder {{completed}}/{{total}}"
+      "uploading-images": "Uppladdning av bilder {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Redigera markering",
@@ -336,7 +337,19 @@
     "remove-location": "Ta bort plats",
     "recording-unsupported": "Ljudinspelning stöds inte i den här webbläsaren.",
     "microphone-denied": "Åtkomst till mikrofonen nekades.",
-    "recording-failed": "Det gick inte att starta ljudinspelningen."
+    "recording-failed": "Det gick inte att starta ljudinspelningen.",
+    "excalidraw": {
+      "new": "Ny Excalidraw-teckning",
+      "edit": "Redigera teckning",
+      "edit-name": "Redigera {{name}}",
+      "open-file": "Öppna fil",
+      "open-failed": "Det gick inte att öppna teckningen. Försök igen.",
+      "invalid-file": "Det här är inte en Excalidraw-fil.",
+      "save-failed": "Det gick inte att spara teckningen. Försök igen.",
+      "preview-failed": "Teckningen är sparad, men inte dess förhandsvisning. Spara igen för att försöka på nytt.",
+      "bind-failed": "Teckningen laddades upp men lades inte till i PM:et. Spara igen för att försöka på nytt.",
+      "unavailable": "PM:et eller teckningen är inte längre tillgänglig."
+    }
   },
   "inbox": {
     "failed-to-load": "Misslyckades att ladda inkorgsobjekt",

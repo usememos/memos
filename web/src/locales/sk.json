@@ -219,7 +219,8 @@
       "drawing": "Anotácia",
       "keep-as-attachments": "Ponechať ako prílohy",
       "uploading-inline-image": "Nahrávanie do obsahu",
-      "uploading-images": "Nahrávanie obrázkov {{completed}}/{{total}}"
+      "uploading-images": "Nahrávanie obrázkov {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Upraviť anotáciu",
@@ -374,7 +375,19 @@
     "remove-location": "Odstrániť polohu",
     "recording-unsupported": "Tento prehliadač nepodporuje nahrávanie zvuku.",
     "microphone-denied": "Prístup k mikrofónu bol zamietnutý.",
-    "recording-failed": "Nahrávanie zvuku sa nepodarilo spustiť."
+    "recording-failed": "Nahrávanie zvuku sa nepodarilo spustiť.",
+    "excalidraw": {
+      "new": "Nová kresba Excalidraw",
+      "edit": "Upraviť kresbu",
+      "edit-name": "Upraviť {{name}}",
+      "open-file": "Otvoriť súbor",
+      "open-failed": "Kresbu sa nepodarilo otvoriť. Skúste to znova.",
+      "invalid-file": "Toto nie je súbor Excalidraw.",
+      "save-failed": "Kresbu sa nepodarilo uložiť. Skúste to znova.",
+      "preview-failed": "Kresba je uložená, ale jej náhľad nie. Uložte znova a skúste to tak ešte raz.",
+      "bind-failed": "Kresba sa nahrala, ale nebola pridaná k poznámke. Uložte znova a skúste to tak ešte raz.",
+      "unavailable": "Poznámka alebo kresba už nie je k dispozícii."
+    }
   },
   "inbox": {
     "failed-to-load": "Nepodarilo sa načítať položku doručenej pošty",

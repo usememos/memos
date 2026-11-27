@@ -8,6 +8,7 @@ import {
   ImagePlusIcon,
   PaletteIcon,
   PauseIcon,
+  PenToolIcon,
   PlayIcon,
   XIcon,
 } from "lucide-react";
@@ -24,7 +25,8 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { DRAWING_PAPER, isDrawingFilename } from "@/components/DrawingSheet";
-import type { AttachmentItem, DrawingSource, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import { isExcalidrawFilename } from "@/components/Excalidraw/excalidraw";
+import type { AttachmentItem, DrawingSource, ExcalidrawSource, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
 import {
   getAudioRecordingTimeLabel,
   isMediaItem,
@@ -93,6 +95,10 @@ interface AttachmentListEditorProps {
   onEditDrawing?: (source: DrawingSource) => void;
   /** The row whose drawing is being opened. */
   openingDrawing?: string;
+  /** Opens an `.excalidraw` file in the Excalidraw editor. */
+  onEditExcalidraw?: (source: ExcalidrawSource) => void;
+  /** The row whose Excalidraw drawing is being opened. */
+  openingExcalidraw?: string;
   /** Rows that follow the attachments in the same list: the draft's links and place. */
   children?: ReactNode;
 }
@@ -108,6 +114,8 @@ interface ItemActions {
   /** Inserts the image into the text. */
   placement?: ItemAction;
   drawing?: ItemAction;
+  /** Opens an `.excalidraw` row in the Excalidraw editor. */
+  excalidraw?: ItemAction;
   transcription?: ItemAction;
   onRemove?: () => void;
   onPreview?: () => void;
@@ -317,6 +325,22 @@ const AttachmentRow: FC<{
       <MetadataRowDetail parts={detailParts} />
 
       <div className={METADATA_ROW_CONTROLS_CLASSES}>
+        {actions.excalidraw && (
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={actions.excalidraw.disabled}
+            loading={actions.excalidraw.busy}
+            loadingLabel={actions.excalidraw.label}
+            onClick={(event) => {
+              stop(event);
+              actions.excalidraw?.onClick();
+            }}
+            icon={<PenToolIcon />}
+          >
+            {actions.excalidraw.label}
+          </Button>
+        )}
         {actions.transcription && (
           <Button
             variant="ghost"
@@ -398,6 +422,8 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   transcriptionDisabled = false,
   onEditDrawing,
   openingDrawing,
+  onEditExcalidraw,
+  openingExcalidraw,
   children,
 }) => {
   const t = useTranslate();
@@ -522,6 +548,24 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
           }
         : undefined;
 
+    // An Excalidraw source opens from its file, like a drawing: a saved one must live on this server.
+    const excalidrawSource: ExcalidrawSource | undefined = !isExcalidrawFilename(item.filename)
+      ? undefined
+      : item.isLocal
+        ? itemLocalFiles[0] && { kind: "local", localFile: itemLocalFiles[0] }
+        : itemAttachments[0] && !itemAttachments[0].externalLink
+          ? { kind: "attachment", attachment: itemAttachments[0] }
+          : undefined;
+    const excalidraw =
+      excalidrawSource && onEditExcalidraw
+        ? {
+            label: t("editor.excalidraw.edit"),
+            onClick: () => onEditExcalidraw(excalidrawSource),
+            disabled: placementActionsDisabled || Boolean(openingExcalidraw),
+            busy: openingExcalidraw !== undefined && item.memberIds.includes(openingExcalidraw),
+          }
+        : undefined;
+
     // Inserting uploads at once, so a pending edit of a saved drawing would overwrite it before the memo is saved.
     const canInsert =
       (item.category === "image" || item.category === "motion") &&
@@ -538,6 +582,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     return {
       placement,
       drawing,
+      excalidraw,
       transcription,
       isUploadingInline,
       onRemove: isUploadingInline || isTranscribing ? undefined : () => handleRemoveItem(item),

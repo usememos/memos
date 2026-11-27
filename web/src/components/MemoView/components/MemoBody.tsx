@@ -55,6 +55,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
     [memo.content, memo.attachments],
   );
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachmentOnlyItems), [attachmentOnlyItems]);
+  const canEdit = !readonly && canManageMemo(memo, currentUser);
 
   // Editing takes the body's place inside the card's own frame: the session brings its
   // attachments, metadata and toolbar, so the read-only rows and reactions step aside.
@@ -99,11 +100,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
                 onDoubleClick={handleMemoContentDoubleClick}
               />
             )}
-            <AttachmentGallery
-              visual={visual}
-              onImagePreview={openPreview}
-              drawings={{ memo, canEdit: !readonly && canManageMemo(memo, currentUser) }}
-            />
+            <AttachmentGallery visual={visual} onImagePreview={openPreview} drawings={{ memo, canEdit }} />
             <MemoMetadataRows
               audio={audio}
               docs={docs}
@@ -111,6 +108,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
               currentMemoName={memo.name}
               parentPage={parentPage}
               location={memo.location}
+              excalidraw={{ memo, canEdit }}
             />
           </ClampedSection>
         </div>

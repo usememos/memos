@@ -219,7 +219,8 @@
       "drawing": "Žymėjimas",
       "keep-as-attachments": "Išsaugoti kaip priedus",
       "uploading-inline-image": "Įkeliama į turinį",
-      "uploading-images": "Įkeliami vaizdai {{completed}}/{{total}}"
+      "uploading-images": "Įkeliami vaizdai {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Redaguoti žymėjimą",
@@ -374,7 +375,19 @@
     "remove-location": "Pašalinti vietą",
     "recording-unsupported": "Ši naršyklė nepalaiko garso įrašymo.",
     "microphone-denied": "Prieiga prie mikrofono atmesta.",
-    "recording-failed": "Nepavyko pradėti garso įrašymo."
+    "recording-failed": "Nepavyko pradėti garso įrašymo.",
+    "excalidraw": {
+      "new": "Naujas Excalidraw piešinys",
+      "edit": "Redaguoti piešinį",
+      "edit-name": "Redaguoti {{name}}",
+      "open-file": "Atidaryti failą",
+      "open-failed": "Nepavyko atidaryti piešinio. Bandykite dar kartą.",
+      "invalid-file": "Tai ne Excalidraw failas.",
+      "save-failed": "Nepavyko išsaugoti piešinio. Bandykite dar kartą.",
+      "preview-failed": "Piešinys išsaugotas, bet jo peržiūra – ne. Išsaugokite dar kartą, kad bandytumėte vėl.",
+      "bind-failed": "Piešinys įkeltas, bet nepridėtas prie priminimo. Išsaugokite dar kartą, kad bandytumėte vėl.",
+      "unavailable": "Priminimas arba piešinys nebepasiekiamas."
+    }
   },
   "inbox": {
     "failed-to-load": "Nepavyko įkelti gautųjų elemento",

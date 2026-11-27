@@ -249,7 +249,8 @@
       "link-memo": "链接备忘录",
       "retry-image-upload": "重试",
       "uploading-inline-image": "正在上传到正文",
-      "uploading-images": "正在上传图片 {{completed}}/{{total}}"
+      "uploading-images": "正在上传图片 {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "编辑标注",
@@ -373,7 +374,19 @@
     "remove-location": "移除位置",
     "recording-unsupported": "此浏览器不支持录音。",
     "microphone-denied": "麦克风权限被拒绝。",
-    "recording-failed": "无法开始录音。"
+    "recording-failed": "无法开始录音。",
+    "excalidraw": {
+      "new": "新建 Excalidraw 绘图",
+      "edit": "编辑绘图",
+      "edit-name": "编辑 {{name}}",
+      "open-file": "打开文件",
+      "open-failed": "无法打开绘图，请重试。",
+      "invalid-file": "这不是 Excalidraw 文件。",
+      "save-failed": "无法保存绘图，请重试。",
+      "preview-failed": "绘图已保存，但预览图未保存。请再次保存以重试。",
+      "bind-failed": "绘图已上传，但未添加到备忘录。请再次保存以重试。",
+      "unavailable": "该备忘录或绘图已不可用。"
+    }
   },
   "inbox": {
     "failed-to-load": "加载失败",

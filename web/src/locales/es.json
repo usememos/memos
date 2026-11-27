@@ -181,7 +181,8 @@
       "drawing": "Marcación",
       "keep-as-attachments": "Guardar como adjuntos",
       "uploading-inline-image": "Cargando contenido",
-      "uploading-images": "Cargando imágenes {{completed}}/{{total}}"
+      "uploading-images": "Cargando imágenes {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Editar marcación",
@@ -336,7 +337,19 @@
     "remove-location": "Quitar ubicación",
     "recording-unsupported": "Este navegador no admite la grabación de audio.",
     "microphone-denied": "Se denegó el permiso del micrófono.",
-    "recording-failed": "No se pudo iniciar la grabación de audio."
+    "recording-failed": "No se pudo iniciar la grabación de audio.",
+    "excalidraw": {
+      "new": "Nuevo dibujo de Excalidraw",
+      "edit": "Editar dibujo",
+      "edit-name": "Editar {{name}}",
+      "open-file": "Abrir archivo",
+      "open-failed": "No se pudo abrir el dibujo. Inténtalo de nuevo.",
+      "invalid-file": "Este no es un archivo de Excalidraw.",
+      "save-failed": "No se pudo guardar el dibujo. Inténtalo de nuevo.",
+      "preview-failed": "El dibujo se guardó, pero su vista previa no. Guarda de nuevo para reintentarlo.",
+      "bind-failed": "El dibujo se subió, pero no se añadió al memo. Guarda de nuevo para reintentarlo.",
+      "unavailable": "El memo o el dibujo ya no está disponible."
+    }
   },
   "inbox": {
     "failed-to-load": "Error al cargar el elemento de bandeja de entrada",

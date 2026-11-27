@@ -186,7 +186,8 @@
       "uploading-inline-image": "جارٍ التحميل إلى المحتوى",
       "uploading-images": "جارٍ تحميل الصور {{completed}}/{{total}}",
       "add-attachment": "إضافة مرفق",
-      "image-upload-failed": "تعذر رفع بعض الصور. أعد المحاولة أو احتفظ بالملفات المرفوعة كمرفقات."
+      "image-upload-failed": "تعذر رفع بعض الصور. أعد المحاولة أو احتفظ بالملفات المرفوعة كمرفقات.",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "تعديل التعليق",
@@ -336,7 +337,19 @@
     "remove-location": "إزالة الموقع",
     "recording-unsupported": "تسجيل الصوت غير مدعوم في هذا المتصفح.",
     "microphone-denied": "تم رفض إذن الميكروفون.",
-    "recording-failed": "فشل بدء تسجيل الصوت."
+    "recording-failed": "فشل بدء تسجيل الصوت.",
+    "excalidraw": {
+      "new": "رسم Excalidraw جديد",
+      "edit": "تعديل الرسم",
+      "edit-name": "تعديل {{name}}",
+      "open-file": "فتح ملف",
+      "open-failed": "تعذّر فتح الرسم. حاول مرة أخرى.",
+      "invalid-file": "هذا ليس ملف Excalidraw.",
+      "save-failed": "تعذّر حفظ الرسم. حاول مرة أخرى.",
+      "preview-failed": "تم حفظ الرسم، لكن معاينته لم تُحفظ. احفظ مرة أخرى لإعادة المحاولة.",
+      "bind-failed": "تم رفع الرسم لكن لم تتم إضافته إلى المذكرة. احفظ مرة أخرى لإعادة المحاولة.",
+      "unavailable": "المذكرة أو الرسم لم يعد متاحًا."
+    }
   },
   "inbox": {
     "failed-to-load": "فشل تحميل عنصر صندوق الوارد",
