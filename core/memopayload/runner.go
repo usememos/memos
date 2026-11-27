@@ -78,10 +78,10 @@ func (r *Runner) Backfill(ctx context.Context) error {
 }
 
 // RunOnce rebuilds the content-derived payload of every memo. It collects the
-// memo IDs first, so memos created or deleted during the pass cannot shift the
-// pages and skip a memo. Content that fails to parse is logged and skipped,
-// since a retry cannot fix it; a failed write fails the pass after every memo
-// has been tried.
+// memo IDs first, in one query, so memos deleted or re-dated during the pass
+// cannot make it skip a memo. Content that fails to parse is logged and
+// skipped, since a retry cannot fix it; a failed write fails the pass after
+// every memo has been tried.
 func (r *Runner) RunOnce(ctx context.Context) error {
 	ids, err := r.listMemoIDs(ctx)
 	if err != nil {
@@ -130,26 +130,20 @@ func (r *Runner) RunOnce(ctx context.Context) error {
 	return nil
 }
 
+// listMemoIDs reads the IDs of every memo in one query. Reading them page by
+// page with an offset could skip a memo: a memo deleted during the pass moves
+// the rows after it onto pages already read, and a memo whose created time
+// moves earlier lands on one.
 func (r *Runner) listMemoIDs(ctx context.Context) ([]int32, error) {
-	ids := []int32{}
-	for offset := 0; ; offset += batchSize {
-		limit, pageOffset := batchSize, offset
-		memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
-			ExcludeContent: true,
-			OrderByTimeAsc: true,
-			Limit:          &limit,
-			Offset:         &pageOffset,
-		})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to list memo IDs")
-		}
-		for _, memo := range memos {
-			ids = append(ids, memo.ID)
-		}
-		if len(memos) < batchSize {
-			return ids, nil
-		}
+	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{ExcludeContent: true, OrderByTimeAsc: true})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo IDs")
 	}
+	ids := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		ids = append(ids, memo.ID)
+	}
+	return ids, nil
 }
 
 // RebuildMemoPayload sets the memo's tags and property from its content.
