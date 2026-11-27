@@ -1,0 +1,6 @@
+/* Ordered list markers with 2+ digits exceed --mbe-indent-size; let them expand without wrapping. */
+.mbe-root .mbe-list-item[data-list-type="ordered"] > .mbe-marker {
+  width: auto;
+  min-width: var(--mbe-indent-size);
+  white-space: nowrap;
+}
