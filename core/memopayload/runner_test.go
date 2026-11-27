@@ -2,12 +2,14 @@ package memopayload_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/usememos/memos/core/memopayload"
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/markdown"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -90,6 +92,52 @@ func TestBackfillStopsOnCancel(t *testing.T) {
 	basic, err := st.GetInstanceBasicSetting(ctx)
 	require.NoError(t, err)
 	require.Zero(t, basic.PayloadVersion, "an interrupted pass must not record the version")
+}
+
+func TestRunOnceRebuildsEveryMemoWhenOneIsDeletedDuringThePass(t *testing.T) {
+	ctx := context.Background()
+	base := teststore.NewTestingStore(ctx, t)
+	driver := &deleteAfterListingDriver{Driver: base.GetDriver()}
+	st := store.New(driver, &profile.Profile{})
+	user, err := st.CreateUser(ctx, &store.User{Username: "payload-delete-during-pass", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	// Enough memos for more than one rebuild batch, each with a stale payload.
+	const count = 150
+	for i := range count {
+		_, err := st.CreateMemo(ctx, &store.Memo{
+			UID: fmt.Sprintf("delete-during-pass-%03d", i), CreatorID: user.ID, Visibility: store.Private,
+			Content: fmt.Sprintf("memo %d #batch", i),
+			Payload: &storepb.MemoPayload{},
+		})
+		require.NoError(t, err)
+	}
+
+	require.NoError(t, memopayload.NewRunner(st, newMarkdownService()).RunOnce(ctx))
+
+	memos, err := st.ListMemos(ctx, &store.FindMemo{})
+	require.NoError(t, err)
+	require.Len(t, memos, count-1, "one memo was deleted during the pass")
+	for _, memo := range memos {
+		require.Equal(t, []string{"batch"}, memo.Payload.GetTags(), "memo %s is rebuilt", memo.UID)
+	}
+}
+
+// deleteAfterListingDriver deletes the first memo right after the memo IDs
+// are read, as a request could while the rebuild runs.
+type deleteAfterListingDriver struct {
+	store.Driver
+}
+
+func (d *deleteAfterListingDriver) ListMemoIDs(ctx context.Context) ([]int32, error) {
+	ids, err := d.Driver.ListMemoIDs(ctx)
+	if err != nil || len(ids) == 0 {
+		return ids, err
+	}
+	if err := d.DeleteMemo(ctx, &store.DeleteMemo{ID: ids[0]}); err != nil {
+		return nil, err
+	}
+	return ids, nil
 }
 
 // newMarkdownService matches the extensions the server uses.

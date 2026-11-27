@@ -269,6 +269,12 @@ func (s *Store) CountUserMemos(ctx context.Context, creatorID int32) (int64, err
 	return s.driver.CountUserMemos(ctx, creatorID)
 }
 
+// ListMemoIDs lists the ID of every memo, comments included, in every row
+// status and Space, in ascending order.
+func (s *Store) ListMemoIDs(ctx context.Context) ([]int32, error) {
+	return s.driver.ListMemoIDs(ctx)
+}
+
 func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 	list, err := s.ListMemos(ctx, find)
 	if err != nil {
