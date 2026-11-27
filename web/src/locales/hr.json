@@ -470,7 +470,12 @@
     "full-width": "Puna širina",
     "full-width-hint": "Koristi cijelu širinu vremenske crte memoa.",
     "include-comments": "Uključi komentare",
-    "include-comments-hint": "Prikaži komentare uz memoe na popisima."
+    "include-comments-hint": "Prikaži komentare uz memoe na popisima.",
+    "sensitive-content": "Osjetljiv sadržaj",
+    "split-view": "Podijeljeni prikaz",
+    "split-view-description": "Popis podsjetnika uz otvoreni podsjetnik",
+    "split-view-list": "Popis podsjetnika",
+    "split-view-untitled": "Nema teksta"
   },
   "message": {
     "archived-successfully": "Uspješno arhivirano",

@@ -572,7 +572,12 @@
     "full-width": "Full breidd",
     "full-width-hint": "Bruk heile breidda på tidslina for notata.",
     "include-comments": "Inkluder kommentarar",
-    "include-comments-hint": "Vis kommentarar saman med notat i lister."
+    "include-comments-hint": "Vis kommentarar saman med notat i lister.",
+    "sensitive-content": "Sensitivt innhald",
+    "split-view": "Delt vising",
+    "split-view-description": "Notatliste ved sida av det opne notatet",
+    "split-view-list": "Notatliste",
+    "split-view-untitled": "Ingen tekst"
   },
   "message": {
     "archived-successfully": "Arkivert",

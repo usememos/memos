@@ -470,7 +470,12 @@
     "full-width": "Largura total",
     "full-width-hint": "Usar toda a largura da linha do tempo dos memos.",
     "include-comments": "Incluir comentários",
-    "include-comments-hint": "Mostrar comentários juntamente com os memos nas listas."
+    "include-comments-hint": "Mostrar comentários juntamente com os memos nas listas.",
+    "sensitive-content": "Conteúdo sensível",
+    "split-view": "Vista dividida",
+    "split-view-description": "Lista de memorandos ao lado do memorando aberto",
+    "split-view-list": "Lista de memorandos",
+    "split-view-untitled": "Sem texto"
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",

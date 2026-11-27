@@ -507,7 +507,12 @@
     "full-width": "Пълна ширина",
     "full-width-hint": "Използване на цялата ширина на хронологията на бележките.",
     "include-comments": "Включване на коментари",
-    "include-comments-hint": "Показване на коментарите заедно с бележките в списъците."
+    "include-comments-hint": "Показване на коментарите заедно с бележките в списъците.",
+    "sensitive-content": "Чувствително съдържание",
+    "split-view": "Разделен изглед",
+    "split-view-description": "Списък с бележки до отворената бележка",
+    "split-view-list": "Списък с бележки",
+    "split-view-untitled": "Няма текст"
   },
   "message": {
     "archived-successfully": "Архивиран успешно",

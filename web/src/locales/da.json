@@ -507,7 +507,12 @@
     "full-width": "Fuld bredde",
     "full-width-hint": "Brug hele bredden af memoernes tidslinje.",
     "include-comments": "Medtag kommentarer",
-    "include-comments-hint": "Vis kommentarer sammen med memoer i lister."
+    "include-comments-hint": "Vis kommentarer sammen med memoer i lister.",
+    "sensitive-content": "Følsomt indhold",
+    "split-view": "Delt visning",
+    "split-view-description": "Notatliste ved siden af det åbne notat",
+    "split-view-list": "Notatliste",
+    "split-view-untitled": "Ingen tekst"
   },
   "message": {
     "archived-successfully": "Arkiveret",

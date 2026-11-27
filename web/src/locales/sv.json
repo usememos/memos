@@ -469,7 +469,12 @@
     "full-width": "Full bredd",
     "full-width-hint": "Använd hela bredden på anteckningarnas tidslinje.",
     "include-comments": "Inkludera kommentarer",
-    "include-comments-hint": "Visa kommentarer tillsammans med anteckningar i listor."
+    "include-comments-hint": "Visa kommentarer tillsammans med anteckningar i listor.",
+    "sensitive-content": "Känsligt innehåll",
+    "split-view": "Delad vy",
+    "split-view-description": "PM-lista bredvid det öppna PM:et",
+    "split-view-list": "PM-lista",
+    "split-view-untitled": "Ingen text"
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",

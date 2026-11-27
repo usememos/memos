@@ -501,7 +501,12 @@
     "full-width": "全宽显示",
     "full-width-hint": "使用备忘录时间线的全部宽度。",
     "include-comments": "包含评论",
-    "include-comments-hint": "在列表中同时显示评论和备忘录。"
+    "include-comments-hint": "在列表中同时显示评论和备忘录。",
+    "sensitive-content": "敏感内容",
+    "split-view": "分栏视图",
+    "split-view-description": "在打开的备忘录旁显示备忘录列表",
+    "split-view-list": "备忘录列表",
+    "split-view-untitled": "无文本"
   },
   "message": {
     "archived-successfully": "归档成功",

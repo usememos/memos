@@ -501,7 +501,12 @@
     "full-width": "Tam genişlik",
     "full-width-hint": "Not zaman tünelinin tüm genişliğini kullan.",
     "include-comments": "Yorumları dahil et",
-    "include-comments-hint": "Listelerde yorumları notlarla birlikte göster."
+    "include-comments-hint": "Listelerde yorumları notlarla birlikte göster.",
+    "sensitive-content": "Hassas içerik",
+    "split-view": "Bölünmüş görünüm",
+    "split-view-description": "Açık notun yanında not listesi",
+    "split-view-list": "Not listesi",
+    "split-view-untitled": "Metin yok"
   },
   "message": {
     "archived-successfully": "Arşivlendi",

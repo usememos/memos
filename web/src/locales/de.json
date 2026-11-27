@@ -469,7 +469,12 @@
     "full-width": "Volle Breite",
     "full-width-hint": "Die gesamte Breite der Notiz-Zeitleiste nutzen.",
     "include-comments": "Kommentare einbeziehen",
-    "include-comments-hint": "Kommentare in Listen zusammen mit Notizen anzeigen."
+    "include-comments-hint": "Kommentare in Listen zusammen mit Notizen anzeigen.",
+    "sensitive-content": "Sensibler Inhalt",
+    "split-view": "Geteilte Ansicht",
+    "split-view-description": "Memo-Liste neben dem geöffneten Memo",
+    "split-view-list": "Memo-Liste",
+    "split-view-untitled": "Kein Text"
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",

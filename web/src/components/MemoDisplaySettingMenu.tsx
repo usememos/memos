@@ -21,7 +21,18 @@ const LAYOUT_OPTIONS: Record<MemoMaxColumns, { icon: LucideIcon; key: "layout-li
 
 function MemoDisplaySettingsContent() {
   const t = useTranslate();
-  const { orderByTimeAsc, timeBasis, fullWidth, maxColumns, setTimeBasis, setOrderByTimeAsc, setFullWidth, setMaxColumns } = useView();
+  const {
+    orderByTimeAsc,
+    timeBasis,
+    fullWidth,
+    maxColumns,
+    splitView,
+    setTimeBasis,
+    setOrderByTimeAsc,
+    setFullWidth,
+    setMaxColumns,
+    setSplitView,
+  } = useView();
   const fullWidthLocked = maxColumns == 0;
 
   const timeBasisOptions = { create_time: t("common.created-at"), update_time: t("common.last-updated-at") };
@@ -55,6 +66,12 @@ function MemoDisplaySettingsContent() {
           );
         })}
       </ToggleGroup>
+
+      <Field.Root orientation="horizontal" size="md">
+        <Field.Label>{t("memo.split-view")}</Field.Label>
+        <Field.Description className="w-0 min-w-full">{t("memo.split-view-description")}</Field.Description>
+        <Switch checked={splitView} onCheckedChange={setSplitView} />
+      </Field.Root>
 
       {/* Selects, not segmented rows: the two labels of a pair don't fit side by side in every language. */}
       <Field.Root orientation="horizontal" size="md">

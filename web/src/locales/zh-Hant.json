@@ -549,7 +549,12 @@
     "full-width": "全寬顯示",
     "full-width-hint": "使用備忘錄時間軸的完整寬度。",
     "include-comments": "包含評論",
-    "include-comments-hint": "在列表中同時顯示評論與備忘錄。"
+    "include-comments-hint": "在列表中同時顯示評論與備忘錄。",
+    "sensitive-content": "敏感內容",
+    "split-view": "分欄檢視",
+    "split-view-description": "在開啟的備忘錄旁顯示備忘錄列表",
+    "split-view-list": "備忘錄列表",
+    "split-view-untitled": "無文字"
   },
   "message": {
     "archived-successfully": "封存成功",

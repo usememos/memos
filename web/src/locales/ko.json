@@ -464,7 +464,12 @@
     "full-width": "전체 너비",
     "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다.",
     "include-comments": "댓글 포함",
-    "include-comments-hint": "목록에 메모와 함께 댓글을 표시합니다."
+    "include-comments-hint": "목록에 메모와 함께 댓글을 표시합니다.",
+    "sensitive-content": "민감한 콘텐츠",
+    "split-view": "분할 보기",
+    "split-view-description": "열린 메모 옆에 메모 목록 표시",
+    "split-view-list": "메모 목록",
+    "split-view-untitled": "텍스트 없음"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",

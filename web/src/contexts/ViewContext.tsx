@@ -14,6 +14,7 @@ interface ViewState {
   sortTimeField?: MemoTimeBasis;
   fullWidth: boolean;
   maxColumns: MemoMaxColumns;
+  splitView: boolean;
 }
 
 interface ViewContextValue {
@@ -21,17 +22,20 @@ interface ViewContextValue {
   timeBasis: MemoTimeBasis;
   fullWidth: boolean;
   maxColumns: MemoMaxColumns;
+  /** List memo titles in a side pane and read the selected memo beside it. */
+  splitView: boolean;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setFullWidth: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
+  setSplitView: (value: boolean) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, fullWidth: false, maxColumns: 1 };
+const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, fullWidth: false, maxColumns: 1, splitView: false };
 
 export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
   const getInitialState = (): ViewState => {
@@ -49,6 +53,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
           timeBasis,
           fullWidth: Boolean(data.fullWidth ?? DEFAULT_VIEW_STATE.fullWidth),
           maxColumns,
+          splitView: Boolean(data.splitView ?? DEFAULT_VIEW_STATE.splitView),
         };
       }
     } catch (error) {
@@ -82,6 +87,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
   const setFullWidth = (value: boolean) => updateState({ fullWidth: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
+  const setSplitView = (value: boolean) => updateState({ splitView: value });
 
   return (
     <ViewContext.Provider
@@ -90,10 +96,12 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         timeBasis,
         fullWidth: activeState.fullWidth,
         maxColumns: activeState.maxColumns,
+        splitView: activeState.splitView,
         setOrderByTimeAsc,
         setTimeBasis,
         setFullWidth,
         setMaxColumns,
+        setSplitView,
       }}
     >
       {children}

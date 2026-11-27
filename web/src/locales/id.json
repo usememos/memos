@@ -464,7 +464,12 @@
     "full-width": "Lebar penuh",
     "full-width-hint": "Gunakan seluruh lebar linimasa memo.",
     "include-comments": "Sertakan komentar",
-    "include-comments-hint": "Tampilkan komentar bersama memo dalam daftar."
+    "include-comments-hint": "Tampilkan komentar bersama memo dalam daftar.",
+    "sensitive-content": "Konten sensitif",
+    "split-view": "Tampilan terpisah",
+    "split-view-description": "Daftar memo di samping memo yang dibuka",
+    "split-view-list": "Daftar memo",
+    "split-view-untitled": "Tidak ada teks"
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",

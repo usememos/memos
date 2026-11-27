@@ -471,7 +471,12 @@
     "full-width": "Plná šířka",
     "full-width-hint": "Využít celou šířku časové osy poznámek.",
     "include-comments": "Zahrnout komentáře",
-    "include-comments-hint": "Zobrazit komentáře v seznamech spolu s poznámkami."
+    "include-comments-hint": "Zobrazit komentáře v seznamech spolu s poznámkami.",
+    "sensitive-content": "Citlivý obsah",
+    "split-view": "Rozdělené zobrazení",
+    "split-view-description": "Seznam poznámek vedle otevřené poznámky",
+    "split-view-list": "Seznam poznámek",
+    "split-view-untitled": "Žádný text"
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",

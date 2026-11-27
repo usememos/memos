@@ -469,7 +469,12 @@
     "full-width": "Largura completa",
     "full-width-hint": "Usar toda a largura da cronoloxía dos memos.",
     "include-comments": "Incluír comentarios",
-    "include-comments-hint": "Mostrar os comentarios xunto aos memos nas listas."
+    "include-comments-hint": "Mostrar os comentarios xunto aos memos nas listas.",
+    "sensitive-content": "Contido sensible",
+    "split-view": "Vista dividida",
+    "split-view-description": "Lista de notas xunto á nota aberta",
+    "split-view-list": "Lista de notas",
+    "split-view-untitled": "Sen texto"
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",

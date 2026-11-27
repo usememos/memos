@@ -464,7 +464,12 @@
     "full-width": "पूर्ण रुंदी",
     "full-width-hint": "मेमो कालरेषेची संपूर्ण रुंदी वापरा.",
     "include-comments": "टिप्पण्या समाविष्ट करा",
-    "include-comments-hint": "याद्यांमध्ये मेमोसोबत टिप्पण्या दाखवा."
+    "include-comments-hint": "याद्यांमध्ये मेमोसोबत टिप्पण्या दाखवा.",
+    "sensitive-content": "संवेदनशील मजकूर",
+    "split-view": "विभाजित दृश्य",
+    "split-view-description": "उघडलेल्या मेमोशेजारी मेमो सूची",
+    "split-view-list": "मेमो सूची",
+    "split-view-untitled": "मजकूर नाही"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

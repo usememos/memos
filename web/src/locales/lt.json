@@ -509,7 +509,12 @@
     "full-width": "Visas plotis",
     "full-width-hint": "Naudoti visą atmintinių laiko juostos plotį.",
     "include-comments": "Įtraukti komentarus",
-    "include-comments-hint": "Sąrašuose rodyti komentarus kartu su atmintinėmis."
+    "include-comments-hint": "Sąrašuose rodyti komentarus kartu su atmintinėmis.",
+    "sensitive-content": "Jautrus turinys",
+    "split-view": "Padalytas vaizdas",
+    "split-view-description": "Priminimų sąrašas šalia atidaryto priminimo",
+    "split-view-list": "Priminimų sąrašas",
+    "split-view-untitled": "Nėra teksto"
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",

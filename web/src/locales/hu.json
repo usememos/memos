@@ -469,7 +469,12 @@
     "full-width": "Teljes szélesség",
     "full-width-hint": "A jegyzetek idővonalának teljes szélességét használja.",
     "include-comments": "Hozzászólások belefoglalása",
-    "include-comments-hint": "A listákban a hozzászólások a jegyzetekkel együtt jelennek meg."
+    "include-comments-hint": "A listákban a hozzászólások a jegyzetekkel együtt jelennek meg.",
+    "sensitive-content": "Érzékeny tartalom",
+    "split-view": "Osztott nézet",
+    "split-view-description": "Feljegyzéslista a megnyitott feljegyzés mellett",
+    "split-view-list": "Feljegyzéslista",
+    "split-view-untitled": "Nincs szöveg"
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",

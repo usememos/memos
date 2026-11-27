@@ -53,3 +53,29 @@ describe("ViewContext maxColumns setting", () => {
     expect(result.current.maxColumns).toBe(1);
   });
 });
+
+describe("ViewContext splitView setting", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("is off by default and persists when toggled", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+    expect(result.current.splitView).toBe(false);
+
+    act(() => result.current.setSplitView(true));
+
+    expect(result.current.splitView).toBe(true);
+    expect(persisted().splitView).toBe(true);
+  });
+
+  it("stays off outside the Timeline", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ splitView: true }));
+
+    const { result } = renderHook(() => useView(), {
+      wrapper: ({ children }: { children: ReactNode }) => <ViewProvider enabled={false}>{children}</ViewProvider>,
+    });
+
+    expect(result.current.splitView).toBe(false);
+  });
+});

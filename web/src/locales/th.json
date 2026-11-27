@@ -464,7 +464,12 @@
     "full-width": "เต็มความกว้าง",
     "full-width-hint": "ใช้ความกว้างทั้งหมดของไทม์ไลน์บันทึกช่วยจำ",
     "include-comments": "รวมความคิดเห็น",
-    "include-comments-hint": "แสดงความคิดเห็นร่วมกับบันทึกช่วยจำในรายการ"
+    "include-comments-hint": "แสดงความคิดเห็นร่วมกับบันทึกช่วยจำในรายการ",
+    "sensitive-content": "เนื้อหาที่ละเอียดอ่อน",
+    "split-view": "มุมมองแบบแยก",
+    "split-view-description": "รายการบันทึกข้างบันทึกที่เปิดอยู่",
+    "split-view-list": "รายการบันทึก",
+    "split-view-untitled": "ไม่มีข้อความ"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",

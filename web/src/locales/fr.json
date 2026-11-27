@@ -470,7 +470,12 @@
     "full-width": "Pleine largeur",
     "full-width-hint": "Utiliser toute la largeur de la chronologie des mémos.",
     "include-comments": "Inclure les commentaires",
-    "include-comments-hint": "Afficher les commentaires avec les mémos dans les listes."
+    "include-comments-hint": "Afficher les commentaires avec les mémos dans les listes.",
+    "sensitive-content": "Contenu sensible",
+    "split-view": "Vue scindée",
+    "split-view-description": "Liste des mémos à côté du mémo ouvert",
+    "split-view-list": "Liste des mémos",
+    "split-view-untitled": "Aucun texte"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",

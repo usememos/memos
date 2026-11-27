@@ -508,7 +508,12 @@
     "full-width": "Pilns platums",
     "full-width-hint": "Izmantot visu piezīmju laika skalas platumu.",
     "include-comments": "Iekļaut komentārus",
-    "include-comments-hint": "Sarakstos rādīt komentārus kopā ar piezīmēm."
+    "include-comments-hint": "Sarakstos rādīt komentārus kopā ar piezīmēm.",
+    "sensitive-content": "Sensitīvs saturs",
+    "split-view": "Sadalīts skats",
+    "split-view-description": "Piezīmju saraksts blakus atvērtajai piezīmei",
+    "split-view-list": "Piezīmju saraksts",
+    "split-view-untitled": "Nav teksta"
   },
   "message": {
     "archived-successfully": "Veiksmīgi arhivēts",

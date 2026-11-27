@@ -507,7 +507,12 @@
     "full-width": "Täysi leveys",
     "full-width-hint": "Käytä muistioiden aikajanan koko leveyttä.",
     "include-comments": "Sisällytä kommentit",
-    "include-comments-hint": "Näytä kommentit muistioiden rinnalla luetteloissa."
+    "include-comments-hint": "Näytä kommentit muistioiden rinnalla luetteloissa.",
+    "sensitive-content": "Arkaluonteinen sisältö",
+    "split-view": "Jaettu näkymä",
+    "split-view-description": "Muistioluettelo avoimen muistion vieressä",
+    "split-view-list": "Muistioluettelo",
+    "split-view-untitled": "Ei tekstiä"
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",

@@ -507,7 +507,12 @@
     "full-width": "Täislaius",
     "full-width-hint": "Kasuta memode ajajoone kogu laiust.",
     "include-comments": "Kaasa kommentaarid",
-    "include-comments-hint": "Näita loendites kommentaare koos memodega."
+    "include-comments-hint": "Näita loendites kommentaare koos memodega.",
+    "sensitive-content": "Tundlik sisu",
+    "split-view": "Jagatud vaade",
+    "split-view-description": "Memode loend avatud memo kõrval",
+    "split-view-list": "Memode loend",
+    "split-view-untitled": "Teksti pole"
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",

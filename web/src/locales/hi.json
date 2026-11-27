@@ -464,7 +464,12 @@
     "full-width": "पूरी चौड़ाई",
     "full-width-hint": "मेमो समयरेखा की पूरी चौड़ाई का उपयोग करें।",
     "include-comments": "टिप्पणियाँ शामिल करें",
-    "include-comments-hint": "सूचियों में मेमो के साथ टिप्पणियाँ दिखाएँ।"
+    "include-comments-hint": "सूचियों में मेमो के साथ टिप्पणियाँ दिखाएँ।",
+    "sensitive-content": "संवेदनशील सामग्री",
+    "split-view": "स्प्लिट व्यू",
+    "split-view-description": "खुले मेमो के बगल में मेमो सूची",
+    "split-view-list": "मेमो सूची",
+    "split-view-untitled": "कोई टेक्स्ट नहीं"
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",

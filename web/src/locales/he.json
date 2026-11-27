@@ -541,7 +541,12 @@
     "full-width": "רוחב מלא",
     "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים.",
     "include-comments": "הכללת תגובות",
-    "include-comments-hint": "הצגת תגובות לצד פתקים ברשימות."
+    "include-comments-hint": "הצגת תגובות לצד פתקים ברשימות.",
+    "sensitive-content": "תוכן רגיש",
+    "split-view": "תצוגה מפוצלת",
+    "split-view-description": "רשימת תזכירים לצד התזכיר הפתוח",
+    "split-view-list": "רשימת תזכירים",
+    "split-view-untitled": "אין טקסט"
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

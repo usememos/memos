@@ -471,7 +471,12 @@
     "full-width": "На всю ширину",
     "full-width-hint": "Використовувати всю ширину хронології нотаток.",
     "include-comments": "Включати коментарі",
-    "include-comments-hint": "Показувати коментарі разом із нотатками у списках."
+    "include-comments-hint": "Показувати коментарі разом із нотатками у списках.",
+    "sensitive-content": "Чутливий вміст",
+    "split-view": "Розділений вигляд",
+    "split-view-description": "Список нотаток поруч із відкритою нотаткою",
+    "split-view-list": "Список нотаток",
+    "split-view-untitled": "Немає тексту"
   },
   "message": {
     "archived-successfully": "Архівовано успішно",

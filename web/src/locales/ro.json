@@ -508,7 +508,12 @@
     "full-width": "Lățime completă",
     "full-width-hint": "Folosește întreaga lățime a cronologiei notelor.",
     "include-comments": "Include comentariile",
-    "include-comments-hint": "Afișează comentariile împreună cu notele în liste."
+    "include-comments-hint": "Afișează comentariile împreună cu notele în liste.",
+    "sensitive-content": "Conținut sensibil",
+    "split-view": "Vizualizare divizată",
+    "split-view-description": "Lista de note lângă nota deschisă",
+    "split-view-list": "Lista de note",
+    "split-view-untitled": "Fără text"
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

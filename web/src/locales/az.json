@@ -572,7 +572,12 @@
     "full-width": "Tam en",
     "full-width-hint": "Qeydlərin zaman xəttinin bütün enindən istifadə et.",
     "include-comments": "Şərhləri daxil et",
-    "include-comments-hint": "Siyahılarda şərhləri qeydlərlə birlikdə göstər."
+    "include-comments-hint": "Siyahılarda şərhləri qeydlərlə birlikdə göstər.",
+    "sensitive-content": "Həssas məzmun",
+    "split-view": "Bölünmüş görünüş",
+    "split-view-description": "Açıq qeydin yanında qeyd siyahısı",
+    "split-view-list": "Qeyd siyahısı",
+    "split-view-untitled": "Mətn yoxdur"
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",

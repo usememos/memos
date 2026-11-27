@@ -471,7 +471,12 @@
     "full-width": "Polna širina",
     "full-width-hint": "Uporabi celotno širino časovnice beležk.",
     "include-comments": "Vključi komentarje",
-    "include-comments-hint": "V seznamih prikaži komentarje skupaj z beležkami."
+    "include-comments-hint": "V seznamih prikaži komentarje skupaj z beležkami.",
+    "sensitive-content": "Občutljiva vsebina",
+    "split-view": "Razdeljen pogled",
+    "split-view-description": "Seznam zapiskov ob odprtem zapisku",
+    "split-view-list": "Seznam zapiskov",
+    "split-view-untitled": "Ni besedila"
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",

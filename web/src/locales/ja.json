@@ -469,7 +469,12 @@
     "full-width": "全幅表示",
     "full-width-hint": "メモのタイムラインを幅いっぱいに表示します。",
     "include-comments": "コメントを含める",
-    "include-comments-hint": "一覧にメモと一緒にコメントを表示します。"
+    "include-comments-hint": "一覧にメモと一緒にコメントを表示します。",
+    "sensitive-content": "センシティブな内容",
+    "split-view": "分割ビュー",
+    "split-view-description": "開いているメモの横にメモ一覧を表示",
+    "split-view-list": "メモ一覧",
+    "split-view-untitled": "テキストなし"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",

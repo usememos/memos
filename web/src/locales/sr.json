@@ -508,7 +508,12 @@
     "full-width": "Пуна ширина",
     "full-width-hint": "Користи целу ширину временске линије мемоа.",
     "include-comments": "Укључи коментаре",
-    "include-comments-hint": "Прикажи коментаре уз мемое на листама."
+    "include-comments-hint": "Прикажи коментаре уз мемое на листама.",
+    "sensitive-content": "Осетљив садржај",
+    "split-view": "Подељени приказ",
+    "split-view-description": "Листа порука поред отворене поруке",
+    "split-view-list": "Листа порука",
+    "split-view-untitled": "Нема текста"
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

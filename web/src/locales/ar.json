@@ -468,7 +468,12 @@
     "full-width": "العرض الكامل",
     "full-width-hint": "استخدام العرض الكامل للخط الزمني للمذكرات.",
     "include-comments": "تضمين التعليقات",
-    "include-comments-hint": "عرض التعليقات مع المذكرات في القوائم."
+    "include-comments-hint": "عرض التعليقات مع المذكرات في القوائم.",
+    "sensitive-content": "محتوى حساس",
+    "split-view": "عرض مقسّم",
+    "split-view-description": "قائمة المذكرات بجانب المذكرة المفتوحة",
+    "split-view-list": "قائمة المذكرات",
+    "split-view-untitled": "لا يوجد نص"
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",

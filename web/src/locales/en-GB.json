@@ -469,7 +469,12 @@
     "full-width": "Full width",
     "full-width-hint": "Use entire width of the memo timeline.",
     "include-comments": "Include comments",
-    "include-comments-hint": "Show comments alongside memos in lists."
+    "include-comments-hint": "Show comments alongside memos in lists.",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Archived successfully",

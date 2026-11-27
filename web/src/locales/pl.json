@@ -471,7 +471,12 @@
     "full-width": "Pełna szerokość",
     "full-width-hint": "Używaj całej szerokości osi czasu notatek.",
     "include-comments": "Uwzględnij komentarze",
-    "include-comments-hint": "Pokazuj komentarze razem z notatkami na listach."
+    "include-comments-hint": "Pokazuj komentarze razem z notatkami na listach.",
+    "sensitive-content": "Treść wrażliwa",
+    "split-view": "Widok podzielony",
+    "split-view-description": "Lista notatek obok otwartej notatki",
+    "split-view-list": "Lista notatek",
+    "split-view-untitled": "Brak tekstu"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",

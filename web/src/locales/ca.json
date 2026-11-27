@@ -470,7 +470,12 @@
     "full-width": "Amplada completa",
     "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos.",
     "include-comments": "Inclou els comentaris",
-    "include-comments-hint": "Mostra els comentaris juntament amb els memos a les llistes."
+    "include-comments-hint": "Mostra els comentaris juntament amb els memos a les llistes.",
+    "sensitive-content": "Contingut sensible",
+    "split-view": "Vista dividida",
+    "split-view-description": "Llista de notes al costat de la nota oberta",
+    "split-view-list": "Llista de notes",
+    "split-view-untitled": "Sense text"
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

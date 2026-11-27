@@ -469,7 +469,12 @@
     "full-width": "სრული სიგანე",
     "full-width-hint": "მემოების დროის ხაზის სრული სიგანის გამოყენება.",
     "include-comments": "კომენტარების ჩართვა",
-    "include-comments-hint": "სიებში კომენტარების ჩვენება მემოებთან ერთად."
+    "include-comments-hint": "სიებში კომენტარების ჩვენება მემოებთან ერთად.",
+    "sensitive-content": "მგრძნობიარე შინაარსი",
+    "split-view": "გაყოფილი ხედი",
+    "split-view-description": "მემოების სია გახსნილი მემოს გვერდით",
+    "split-view-list": "მემოების სია",
+    "split-view-untitled": "ტექსტი არ არის"
   },
   "message": {
     "archived-successfully": "წარმატებით დაარქივდა",
