@@ -162,9 +162,12 @@ interface TimeTooltipContent {
 const TimeTooltip = ({ children, content }: { children: React.ReactElement; content: TimeTooltipContent }) => (
   <Tooltip.Root>
     <Tooltip.Trigger render={children} />
-    <Tooltip.Popup align="start" className="flex flex-col items-start gap-0.5 whitespace-nowrap text-left">
-      {content.createdAt && <span>{content.createdAt}</span>}
-      {content.updatedAt && <span>{content.updatedAt}</span>}
+    <Tooltip.Popup align="start">
+      {/* Lines wrap inside the popup's max width; long locale strings must not overflow it. */}
+      <span className="flex flex-col gap-0.5 text-left">
+        {content.createdAt && <span>{content.createdAt}</span>}
+        {content.updatedAt && <span>{content.updatedAt}</span>}
+      </span>
     </Tooltip.Popup>
   </Tooltip.Root>
 );
