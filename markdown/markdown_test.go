@@ -284,6 +284,30 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Run a b now",
 		},
 		{
+			name:      "code span on its own lines",
+			content:   "Run `\ncode\n` now",
+			maxLength: 100,
+			expected:  "Run code now",
+		},
+		{
+			name:      "code span on its own lines with CRLF line endings",
+			content:   "Run `\r\ncode\r\n` now",
+			maxLength: 100,
+			expected:  "Run code now",
+		},
+		{
+			name:      "CRLF line ending at the end of a code span",
+			content:   "Run ` a\r\n` now",
+			maxLength: 100,
+			expected:  "Run a now",
+		},
+		{
+			name:      "code span keeps spaces beyond one at each end",
+			content:   "Run `  a  ` now",
+			maxLength: 100,
+			expected:  "Run  a  now",
+		},
+		{
 			name:      "code span keeps backslashes and entities",
 			content:   "Run `a\\*b &amp; c` now",
 			maxLength: 100,
@@ -592,6 +616,11 @@ func TestExtractAllTitle(t *testing.T) {
 		{
 			name:    "setext h1 with a code span over two lines",
 			content: "Use `a\nb` here\n===\n\nBody.",
+			title:   "Use a b here",
+		},
+		{
+			name:    "setext h1 with CRLF line endings in a code span",
+			content: "Use ` a\r\nb\r\n` here\r\n===\r\n\r\nBody.",
 			title:   "Use a b here",
 		},
 		{
