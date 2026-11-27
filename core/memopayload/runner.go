@@ -21,7 +21,8 @@ import (
 //
 // 1: Property.has_inline_image.
 // 2: Property.title decodes backslash escapes and entity references.
-const Version = 2
+// 3: Property.title shows a line ending inside a code span as a space.
+const Version = 3
 
 // batchSize is how many memos the rebuild loads at a time.
 const batchSize = 100
