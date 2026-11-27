@@ -8,7 +8,6 @@ package api
 
 import (
 	context "context"
-	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -38,6 +37,7 @@ const (
 	UserService_CreateMemoView_FullMethodName              = "/memos.api.UserService/CreateMemoView"
 	UserService_UpdateMemoView_FullMethodName              = "/memos.api.UserService/UpdateMemoView"
 	UserService_DeleteMemoView_FullMethodName              = "/memos.api.UserService/DeleteMemoView"
+	UserService_ReorderMemoViews_FullMethodName            = "/memos.api.UserService/ReorderMemoViews"
 	UserService_ListUserNotifications_FullMethodName       = "/memos.api.UserService/ListUserNotifications"
 	UserService_UpdateUserNotification_FullMethodName      = "/memos.api.UserService/UpdateUserNotification"
 	UserService_DeleteUserNotification_FullMethodName      = "/memos.api.UserService/DeleteUserNotification"
@@ -53,7 +53,6 @@ const (
 	UserService_ListPersonalAccessTokens_FullMethodName    = "/memos.api.UserService/ListPersonalAccessTokens"
 	UserService_CreatePersonalAccessToken_FullMethodName   = "/memos.api.UserService/CreatePersonalAccessToken"
 	UserService_DeletePersonalAccessToken_FullMethodName   = "/memos.api.UserService/DeletePersonalAccessToken"
-	UserService_ExportMemos_FullMethodName                 = "/memos.api.UserService/ExportMemos"
 	UserService_ImportMemos_FullMethodName                 = "/memos.api.UserService/ImportMemos"
 )
 
@@ -113,6 +112,9 @@ type UserServiceClient interface {
 	UpdateMemoView(ctx context.Context, in *UpdateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(ctx context.Context, in *DeleteMemoViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(ctx context.Context, in *ReorderMemoViewsRequest, opts ...grpc.CallOption) (*ReorderMemoViewsResponse, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -160,11 +162,6 @@ type UserServiceClient interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(ctx context.Context, in *DeletePersonalAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -353,6 +350,16 @@ func (c *userServiceClient) DeleteMemoView(ctx context.Context, in *DeleteMemoVi
 	return out, nil
 }
 
+func (c *userServiceClient) ReorderMemoViews(ctx context.Context, in *ReorderMemoViewsRequest, opts ...grpc.CallOption) (*ReorderMemoViewsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReorderMemoViewsResponse)
+	err := c.cc.Invoke(ctx, UserService_ReorderMemoViews_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserNotificationsResponse)
@@ -503,16 +510,6 @@ func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *userServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, UserService_ExportMemos_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ImportMemosResponse)
@@ -579,6 +576,9 @@ type UserServiceServer interface {
 	UpdateMemoView(context.Context, *UpdateMemoViewRequest) (*MemoView, error)
 	// DeleteMemoView deletes a memo view. Only the owner may call it.
 	DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error)
+	// ReorderMemoViews sets the order of a user's memo views, which is the order
+	// ListMemoViews returns them in. Only the user may call it.
+	ReorderMemoViews(context.Context, *ReorderMemoViewsRequest) (*ReorderMemoViewsResponse, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
 	// it. Notifications whose memos or space invitation the user can no longer
 	// read are left out.
@@ -626,11 +626,6 @@ type UserServiceServer interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -700,6 +695,9 @@ func (UnimplementedUserServiceServer) UpdateMemoView(context.Context, *UpdateMem
 func (UnimplementedUserServiceServer) DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteMemoView not implemented")
 }
+func (UnimplementedUserServiceServer) ReorderMemoViews(context.Context, *ReorderMemoViewsRequest) (*ReorderMemoViewsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReorderMemoViews not implemented")
+}
 func (UnimplementedUserServiceServer) ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserNotifications not implemented")
 }
@@ -744,9 +742,6 @@ func (UnimplementedUserServiceServer) CreatePersonalAccessToken(context.Context,
 }
 func (UnimplementedUserServiceServer) DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePersonalAccessToken not implemented")
-}
-func (UnimplementedUserServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Error(codes.Unimplemented, "method ExportMemos not implemented")
 }
 func (UnimplementedUserServiceServer) ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ImportMemos not implemented")
@@ -1078,6 +1073,24 @@ func _UserService_DeleteMemoView_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ReorderMemoViews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReorderMemoViewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ReorderMemoViews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ReorderMemoViews_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ReorderMemoViews(ctx, req.(*ReorderMemoViewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_ListUserNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserNotificationsRequest)
 	if err := dec(in); err != nil {
@@ -1348,24 +1361,6 @@ func _UserService_DeletePersonalAccessToken_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExportMemosRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).ExportMemos(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_ExportMemos_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_ImportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ImportMemosRequest)
 	if err := dec(in); err != nil {
@@ -1460,6 +1455,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_DeleteMemoView_Handler,
 		},
 		{
+			MethodName: "ReorderMemoViews",
+			Handler:    _UserService_ReorderMemoViews_Handler,
+		},
+		{
 			MethodName: "ListUserNotifications",
 			Handler:    _UserService_ListUserNotifications_Handler,
 		},
@@ -1518,10 +1517,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePersonalAccessToken",
 			Handler:    _UserService_DeletePersonalAccessToken_Handler,
-		},
-		{
-			MethodName: "ExportMemos",
-			Handler:    _UserService_ExportMemos_Handler,
 		},
 		{
 			MethodName: "ImportMemos",

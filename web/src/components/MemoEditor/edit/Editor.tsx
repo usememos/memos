@@ -1,6 +1,7 @@
 import type { EditorMode, Editor as MarkdownEditorInstance } from "@usememos/editor";
 import { forwardRef, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react";
 import { useTagCounts } from "@/hooks/useUserQueries";
+import { MEMO_FOCUS_EDITOR_THEME } from "@/lib/memo-markdown";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -8,7 +9,7 @@ import { MemoMarkdown } from "../MemoMarkdown";
 import { createController } from "./controller";
 import type { EditorController } from "./types/editorController";
 import "./editor.css";
-import { buildEditorExtensions, type EditorFileOrigin } from "./extensions";
+import { buildEditorExtensions, type EditorFileOrigin, type TagAction } from "./extensions";
 
 interface EditorProps {
   className: string;
@@ -16,6 +17,7 @@ interface EditorProps {
   value: string;
   placeholder: string;
   onContentChange: (content: string) => void;
+  onSuggestTags?: (content: string) => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
@@ -43,16 +45,24 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   // The extensions read the latest callbacks through refs, written after commit so
   // a render React discards never leaves its callbacks behind.
   const onContentChangeRef = useRef(onContentChange);
+  const tagActionRef = useRef<TagAction | undefined>(undefined);
   const onFilesRef = useRef(onFiles);
   useLayoutEffect(() => {
     onContentChangeRef.current = onContentChange;
     onFilesRef.current = onFiles;
+    tagActionRef.current = props.onSuggestTags ? { label: t("editor.suggest-tags"), request: props.onSuggestTags } : undefined;
   });
   // A user can only author their own memos. Reuse the current-user stats query
   // instead of fetching and aggregating every user's tags for autocomplete.
   const { data: tagData } = useTagCounts(true);
   const tagsRef = useRef<string[]>([]);
-  tagsRef.current = useMemo(() => Object.keys(tagData ?? {}), [tagData]);
+  tagsRef.current = useMemo(
+    () =>
+      Object.entries(tagData ?? {})
+        .sort(([a, aCount], [b, bCount]) => bCount - aCount || a.localeCompare(b))
+        .map(([tag]) => tag),
+    [tagData],
+  );
 
   const controller = useMemo(
     () =>
@@ -69,6 +79,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   const extensions = useMemo(
     () =>
       buildEditorExtensions({
+        getTagAction: () => tagActionRef.current,
         getTags: () => tagsRef.current,
         onFiles: (files, origin) => onFilesRef.current(files, origin),
         // Read once, like the rest: the popup keeps the language the composer opened in.
@@ -83,7 +94,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
       data-focus-mode={isFocusMode || undefined}
       data-source-mode={mode === "source" || undefined}
     >
-      <div className={cn("memo-editor-scroller w-full text-base", isFocusMode && "min-h-0 flex-1")}>
+      <div className={cn("memo-editor-scroller w-full text-base leading-6", isFocusMode && "min-h-0 flex-1")}>
         <MemoMarkdown
           editorRef={editorRef}
           value={value}
@@ -95,6 +106,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           attachments={attachments}
           extensions={extensions}
           attributes={EDITOR_ATTRIBUTES}
+          theme={isFocusMode ? MEMO_FOCUS_EDITOR_THEME : undefined}
           className="memo-editor-root"
         />
       </div>

@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import { getMemoListPreview } from "@/components/PagedMemoList/memoListPreview";
 
 describe("getMemoListPreview", () => {
-  it("uses the first text line as the title and the rest as the description", () => {
+  it("uses the first text line as the title and the next one as the description", () => {
     expect(getMemoListPreview("Trip ideas\nLisbon in May\n\nPorto after")).toEqual({
       title: "Trip ideas",
-      description: "Lisbon in May Porto after",
+      description: "Lisbon in May",
     });
   });
 
   it("strips block markers and inline markdown", () => {
     expect(getMemoListPreview("## **Weekly** review\n- [x] ship `split view`\n> see [the issue](https://example.com)")).toEqual({
       title: "Weekly review",
-      description: "ship split view see the issue",
+      description: "ship split view",
     });
   });
 

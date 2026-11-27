@@ -1,12 +1,12 @@
 # User Usage Limits Design
 
-Status: Draft (merged, not yet released; revised 2026-10-14)
+Status: Implemented in 26.10.0
 
 Date: 2026-10-11, revised 2026-10-14
 
 Existing domain language: [Memos context](../../CONTEXT.md)
 
-Related: [API Abuse Controls Design](api-abuse-controls.md), [Configuration Provisioning Design](configuration-provisioning.md)
+Related: [API Abuse Controls Design](api-abuse-controls.md)
 
 ## Summary
 
@@ -23,7 +23,6 @@ This revision replaces the first merged shape, which stored one resource per met
 - A refused memo save keeps the draft, and its uploaded files, in the editor.
 - A user can see their usage and the limits that apply to them.
 - An instance with no count or storage limit runs no extra count or sum queries.
-- A deployment can provide the whole setting as a file.
 
 ## Non-goals
 
@@ -75,7 +74,7 @@ message InstanceUsageLimitsSetting {
 }
 ```
 
-Validation, applied to every stored list whether it comes from the API or a file:
+Validation, applied to every stored list:
 
 - At most 100 entries, and at most 1,000 user IDs across all entries.
 - Every entry has at least one user ID or `all_users`, never both.
@@ -84,8 +83,6 @@ Validation, applied to every stored list whether it comes from the API or a file
 - Values are not negative.
 
 Reads for checks skip the settings cache, as `ACCESS` does, so a change applies on every replica at the next check. Writes replace the whole row; there is no per-entry write. Entries naming a user that no longer exists are ignored on read and dropped on the next write. User deletion drops the user's ID from every entry; an entry left with no users and no `all_users` is dropped with it.
-
-**Settings file.** A deployment can provide `memos-instance-setting-usage-limits.json` in the store format. The setting is then read-only through the API.
 
 ## API
 
@@ -128,3 +125,10 @@ Migration `26.10/00` adds an index on `attachment.creator_id` on every driver, a
 - **A copied limit set per user** (Harbor, oCIS, Documenso). Every product that did this added a backfill job because editing the shared value did not propagate.
 - **A resolver supplied by the deployment** (Nextcloud quota event, Synapse module). Hides the record outside the product, so the admin UI and the usage call cannot explain a number. Rejected before this design as well.
 - **Merging several matching entries per field**, most permissive wins (Nextcloud group quota, Forgejo). Order-independent, but a rule to explain; first match needs none. An admin who wants two entries combined writes a third.
+
+## Amendments
+
+### 2026-11-21 (26.11.2) — comments are created by `CreateMemo`
+
+`CreateMemoComment` is removed; a comment is a memo created by `CreateMemo` with `memo.parent` set. `memo_count` and `memo_content_bytes`
+are enforced there for comments, unchanged.

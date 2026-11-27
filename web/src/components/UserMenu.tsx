@@ -1,3 +1,4 @@
+import { Menu, menuClasses } from "@usememos/ui";
 import {
   ArchiveIcon,
   BellIcon,
@@ -9,36 +10,21 @@ import {
   PaletteIcon,
   SettingsIcon,
 } from "lucide-react";
-import { useState } from "react";
-import { matchPath, useLocation } from "react-router-dom";
-import UserAvatar from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { type ReactNode, useState } from "react";
+import { Link, matchPath, useLocation } from "react-router-dom";
+import { ScopePanelRowIcon } from "@/components/AppSidebar/SidebarRow";
+import { SCOPE_PANEL_ICON_CLASSES, SCOPE_PANEL_ROW_CLASSES, SCOPE_PANEL_STACK_CLASSES } from "@/components/AppSidebar/sidebar-layout";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
-import useNavigateTo from "@/hooks/useNavigateTo";
-import { useNotifications, useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
+import { useUnreadInbox } from "@/hooks/useUnreadInbox";
+import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { buildAuthRoute } from "@/utils/auth-redirect";
 import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
-
-// One row grammar for the whole scope panel: 28px rows, 13px text, and a 20px leading slot
-// (a 14px glyph with 3px each side) so icons, the avatar and Space marks share one column.
-const rowClass = "h-7 w-full justify-start gap-1.5 rounded-sm px-2 text-ui font-normal shadow-none hover:bg-accent";
-const iconClass = "mx-[3px] size-3.5 shrink-0 text-muted-foreground";
-const chevronClass = "size-3.5 shrink-0 text-muted-foreground";
 
 interface PreferenceSubmenuProps {
   icon: LucideIcon;
@@ -52,35 +38,33 @@ interface PreferenceSubmenuProps {
 
 /** A row that opens its choices beside the panel, like a submenu, and applies one on select. */
 const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, className }: PreferenceSubmenuProps) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger openOnHover render={<Button variant="ghost" className={cn(rowClass, "data-popup-open:bg-accent")} />}>
-      <Icon className={iconClass} />
-      <span className="shrink-0 text-start">{label}</span>
-      <span className="min-w-0 flex-1 truncate text-end text-muted-foreground">
+  <Menu.Root modal={false}>
+    <Menu.Trigger openOnHover className={SCOPE_PANEL_ROW_CLASSES}>
+      <ScopePanelRowIcon icon={Icon} />
+      <span className="shrink-0">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-end text-mu-text-secondary">
         {options.find((option) => option.value === value)?.label ?? value}
       </span>
-      <ChevronRightIcon className={cn(chevronClass, "rtl:rotate-180")} />
-    </DropdownMenuTrigger>
-    {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}
-    <DropdownMenuContent
+      <ChevronRightIcon aria-hidden="true" className={cn(SCOPE_PANEL_ICON_CLASSES, "rtl:rotate-180")} />
+    </Menu.Trigger>
+    {/* Like a nested submenu: its first row lines up with this one, and its rows match the panel's fixed menu density.
+        When neither side has room (narrow screens), it drops below the row instead of overflowing. */}
+    <Menu.Popup
       side="inline-end"
       align="start"
-      sideOffset={8}
-      alignOffset={-4}
       collisionAvoidance={{ fallbackAxisSide: "end" }}
       positionMethod="fixed"
-      size="sm"
       className={className}
     >
-      <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
+      <Menu.RadioGroup value={value} onValueChange={onChange}>
         {options.map((option) => (
-          <DropdownMenuRadioItem key={option.value} value={option.value} closeOnClick>
+          <Menu.RadioItem key={option.value} value={option.value} closeOnClick>
             {option.label}
-          </DropdownMenuRadioItem>
+          </Menu.RadioItem>
         ))}
-      </DropdownMenuRadioGroup>
-    </DropdownMenuContent>
-  </DropdownMenu>
+      </Menu.RadioGroup>
+    </Menu.Popup>
+  </Menu.Root>
 );
 
 const LOCALE_OPTIONS = locales.map((locale) => ({ value: locale, label: getLocaleDisplayName(locale) }));
@@ -113,12 +97,12 @@ const UserPreferenceMenu = () => {
   };
 
   return (
-    <section aria-label={t("setting.preference.label")} className="border-border/70 p-1 not-first:border-t">
+    <section aria-label={t("setting.preference.label")} className={SCOPE_PANEL_STACK_CLASSES}>
       <PreferenceSubmenu
         icon={PaletteIcon}
         label={t("setting.preference.theme")}
         value={currentTheme}
-        options={THEME_OPTIONS}
+        options={THEME_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
         onChange={handleThemeChange}
       />
       <PreferenceSubmenu
@@ -133,26 +117,55 @@ const UserPreferenceMenu = () => {
   );
 };
 
-/** The account half of the scope menu: preferences for everyone, then the user's own pages. */
+/** A page in the panel: a link on the menu row look, marked when it is the current page. */
+const NavRow = ({
+  to,
+  icon,
+  current,
+  label,
+  onNavigate,
+  trailing,
+  children,
+}: {
+  to: string;
+  icon: LucideIcon;
+  current?: boolean;
+  /** The accessible name when it says more than the visible text. */
+  label?: string;
+  onNavigate: () => void;
+  trailing?: ReactNode;
+  children: ReactNode;
+}) => (
+  <Link
+    to={to}
+    viewTransition
+    aria-label={label}
+    aria-current={current ? "page" : undefined}
+    className={SCOPE_PANEL_ROW_CLASSES}
+    onClick={onNavigate}
+  >
+    <ScopePanelRowIcon icon={icon} />
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+    {trailing}
+  </Link>
+);
+
+/**
+ * The account menu behind the sidebar's footer row: the user's own pages, then preferences, then
+ * About and Sign out. Guests get the preferences and About; they sign in from the footer row itself.
+ */
 const UserMenu = ({ onClose }: { onClose: () => void }) => {
   const t = useTranslate();
   const location = useLocation();
-  const navigateTo = useNavigateTo();
   const { setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
-  const sseStatus = useSSEConnectionStatus();
   const { logout } = useAuth();
-  const { data: notifications = [] } = useNotifications();
-  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
-  const inboxLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} ${t("inbox.unread")}` : t("common.inbox");
-  const accountLabel = currentUser?.displayName || currentUser?.username || t("common.profile");
-  const inboxActive = Boolean(matchPath(Routes.INBOX, location.pathname));
-  const archivedActive = Boolean(matchPath(Routes.ARCHIVED, location.pathname));
+  const unread = useUnreadInbox();
+  const isAt = (path: string) => Boolean(matchPath(path, location.pathname));
 
-  const navigateFromMenu = (path: string) => {
+  const closePanel = () => {
     onClose();
     setMobileOpen(false);
-    navigateTo(path);
   };
 
   const handleSignOut = async () => {
@@ -173,67 +186,43 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <>
-      <UserPreferenceMenu />
-      <section aria-label={t("setting.sso.account")} className="border-t border-border/70 p-1">
-        {currentUser && (
-          <>
-            <div className="flex h-7 items-center gap-1.5 px-2">
-              <span className="relative flex size-5 shrink-0 items-center justify-center">
-                <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5" />
-                {sseStatus !== "connected" && (
-                  <span
-                    role="img"
-                    aria-label={t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}
-                    className={cn(
-                      "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-popover",
-                      sseStatus === "connecting" ? "animate-pulse bg-muted-foreground" : "bg-destructive",
-                    )}
-                  />
-                )}
-              </span>
-              <span className="min-w-0 flex-1 truncate text-ui font-medium">{accountLabel}</span>
-              <Button
-                variant="ghost"
-                aria-label={inboxLabel}
-                aria-current={inboxActive ? "page" : undefined}
-                className={cn(
-                  "h-5 gap-1 rounded-sm bg-muted/60 px-1.5 text-2xs font-medium text-muted-foreground shadow-none hover:bg-accent hover:text-foreground",
-                  inboxActive && "bg-accent text-foreground",
-                )}
-                onClick={() => navigateFromMenu(Routes.INBOX)}
-              >
-                <BellIcon className="size-3" />
-                {t("common.inbox")}
-                {unreadCount > 0 && <span className="tabular-nums text-primary">{unreadCount > 99 ? "99+" : unreadCount}</span>}
-              </Button>
-            </div>
-            <Button
-              variant="ghost"
-              aria-current={archivedActive ? "page" : undefined}
-              className={cn(rowClass, archivedActive && "bg-accent")}
-              onClick={() => navigateFromMenu(Routes.ARCHIVED)}
+      {currentUser && (
+        <>
+          <nav aria-label={t("setting.sso.account")} className={SCOPE_PANEL_STACK_CLASSES}>
+            <NavRow
+              to={Routes.INBOX}
+              current={isAt(Routes.INBOX)}
+              icon={BellIcon}
+              label={unread.label}
+              onNavigate={closePanel}
+              trailing={unread.count > 0 && <span className="mu-caption tabular-nums text-mu-accent">{unread.text}</span>}
             >
-              <ArchiveIcon className={iconClass} />
+              {t("common.inbox")}
+            </NavRow>
+            <NavRow to={Routes.ARCHIVED} current={isAt(Routes.ARCHIVED)} icon={ArchiveIcon} onNavigate={closePanel}>
               {t("common.archived")}
-            </Button>
-            <Button variant="ghost" className={rowClass} onClick={() => navigateFromMenu(Routes.SETTING)}>
-              <SettingsIcon className={iconClass} />
+            </NavRow>
+            <NavRow to={Routes.SETTING} current={isAt(Routes.SETTING)} icon={SettingsIcon} onNavigate={closePanel}>
               {t("common.settings")}
-            </Button>
-          </>
-        )}
-        <Button variant="ghost" className={rowClass} onClick={() => navigateFromMenu(Routes.ABOUT)}>
-          <InfoIcon className={iconClass} />
+            </NavRow>
+          </nav>
+          <div role="separator" className={menuClasses().separator} />
+        </>
+      )}
+      <UserPreferenceMenu />
+      <div role="separator" className={menuClasses().separator} />
+      <div className={SCOPE_PANEL_STACK_CLASSES}>
+        <NavRow to={Routes.ABOUT} current={isAt(Routes.ABOUT)} icon={InfoIcon} onNavigate={closePanel}>
           {t("common.about")}
-        </Button>
-        {/* Guests sign in from the sidebar footer, which is always in view. */}
+        </NavRow>
         {currentUser && (
-          <Button variant="ghost" className={cn(rowClass, "text-muted-foreground")} onClick={() => void handleSignOut()}>
-            <LogOutIcon className={iconClass} />
-            {t("common.sign-out")}
-          </Button>
+          // Leaving is secondary to the pages above it, so it reads quieter.
+          <button type="button" className={cn(SCOPE_PANEL_ROW_CLASSES, "text-mu-text-secondary")} onClick={() => void handleSignOut()}>
+            <ScopePanelRowIcon icon={LogOutIcon} />
+            <span className="min-w-0 flex-1 truncate">{t("common.sign-out")}</span>
+          </button>
         )}
-      </section>
+      </div>
     </>
   );
 };

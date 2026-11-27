@@ -3,11 +3,11 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const listMemoComments = vi.hoisted(() => vi.fn());
+const listMemos = vi.hoisted(() => vi.fn());
 
 vi.mock("@/connect", () => ({
   memoServiceClient: {
-    listMemoComments,
+    listMemos,
   },
 }));
 
@@ -19,24 +19,27 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 describe("useInfiniteMemoComments", () => {
   beforeEach(() => {
-    listMemoComments.mockReset();
+    listMemos.mockReset();
   });
 
   it("follows nextPageToken and flattens every fetched comment page", async () => {
-    listMemoComments
+    listMemos
       .mockResolvedValueOnce({
-        comments: [{ name: "memos/comment-1" }, { name: "memos/comment-2" }],
+        memos: [{ name: "memos/comment-1" }, { name: "memos/comment-2" }],
         nextPageToken: "page-2",
       })
       .mockResolvedValueOnce({
-        comments: [{ name: "memos/comment-3" }],
+        memos: [{ name: "memos/comment-3" }],
         nextPageToken: "",
       });
 
     const { result } = renderHook(() => useInfiniteMemoComments("memos/parent", { pageSize: 2 }), { wrapper });
 
     await waitFor(() => expect(result.current.data?.map((memo) => memo.name)).toEqual(["memos/comment-1", "memos/comment-2"]));
-    expect(listMemoComments).toHaveBeenNthCalledWith(1, expect.objectContaining({ parent: "memos/parent", pageSize: 2, pageToken: "" }));
+    expect(listMemos).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ filter: 'parent == "memos/parent"', pageSize: 2, pageToken: "" }),
+    );
     expect(result.current.hasNextPage).toBe(true);
 
     await act(async () => {
@@ -46,9 +49,9 @@ describe("useInfiniteMemoComments", () => {
     await waitFor(() =>
       expect(result.current.data?.map((memo) => memo.name)).toEqual(["memos/comment-1", "memos/comment-2", "memos/comment-3"]),
     );
-    expect(listMemoComments).toHaveBeenNthCalledWith(
+    expect(listMemos).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ parent: "memos/parent", pageSize: 2, pageToken: "page-2" }),
+      expect.objectContaining({ filter: 'parent == "memos/parent"', pageSize: 2, pageToken: "page-2" }),
     );
     expect(result.current.hasNextPage).toBe(false);
   });

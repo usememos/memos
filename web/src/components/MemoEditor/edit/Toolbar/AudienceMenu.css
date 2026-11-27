@@ -1,0 +1,15 @@
+.memo-audience-menu .mu-menu-item {
+  height: auto;
+  min-height: var(--mu-row-height);
+  align-items: flex-start;
+  padding-block: calc((var(--mu-row-height) - var(--mu-row-line-height)) / 2);
+}
+
+.memo-audience-menu .mu-menu-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.memo-audience-menu .mu-menu-item > :is(.mu-option-icon, .mu-menu-indicator, svg, .mu-menu-shortcut:has(svg)) {
+  margin-block: calc((var(--mu-row-line-height) - var(--mu-row-icon)) / 2);
+}

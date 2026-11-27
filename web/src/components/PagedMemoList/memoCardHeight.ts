@@ -1,13 +1,14 @@
 import { CLAMP_PREVIEW_HEIGHT_PX, CLAMP_TRIGGER_HEIGHT_PX } from "@/components/ClampedSection";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
-import { MemoRelation_Type } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 
 interface EstimateMemoCardHeightOptions {
   columnWidth: number;
+  /** The list includes comments, so a memo's comment preview is one "View N comments" row. */
+  commentsCollapsed?: boolean;
 }
 
 const CARD_VERTICAL_PADDING = 24;
@@ -37,6 +38,8 @@ const COMMENT_PREVIEW_HEADER_HEIGHT = 20;
 const COMMENT_PREVIEW_ROW_HEIGHT = 44;
 const COMMENT_PREVIEW_VERTICAL_PADDING = 20;
 const MAX_VISIBLE_COMMENT_PREVIEWS = 3;
+/** A strip holding one row, above or below a card: a 24px row, 4px padding either side and the border. */
+const SINGLE_ROW_STRIP_HEIGHT = 33;
 
 const estimateWrappedTextHeight = (content: string, columnWidth: number): number => {
   const textWidth = Math.max(1, columnWidth - CONTENT_HORIZONTAL_PADDING);
@@ -87,17 +90,16 @@ const estimateAttachmentSectionHeight = (attachments: Attachment[], columnWidth:
   return ATTACHMENT_SECTION_HEADER_HEIGHT + ATTACHMENT_SECTION_PADDING + contentHeight;
 };
 
-const countCommentRelations = (memo: Memo): number =>
-  (memo.relations ?? []).filter((relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name)
-    .length;
-
-const estimateCommentPreviewHeight = (memo: Memo): number => {
-  const visibleCommentCount = Math.min(countCommentRelations(memo), MAX_VISIBLE_COMMENT_PREVIEWS);
+const estimateStripHeight = (memo: Memo, commentsCollapsed: boolean): number => {
+  // A comment's card carries its parent strip instead of a comment preview.
+  if (memo.parent) return SINGLE_ROW_STRIP_HEIGHT;
+  const visibleCommentCount = Math.min(memo.commentCount ?? 0, MAX_VISIBLE_COMMENT_PREVIEWS);
   if (visibleCommentCount === 0) return 0;
+  if (commentsCollapsed) return SINGLE_ROW_STRIP_HEIGHT;
   return COMMENT_PREVIEW_VERTICAL_PADDING + COMMENT_PREVIEW_HEADER_HEIGHT + visibleCommentCount * COMMENT_PREVIEW_ROW_HEIGHT;
 };
 
-export const estimateMemoCardHeight = (memo: Memo, { columnWidth }: EstimateMemoCardHeightOptions): number => {
+export const estimateMemoCardHeight = (memo: Memo, { columnWidth, commentsCollapsed = false }: EstimateMemoCardHeightOptions): number => {
   const content = memo.content ?? "";
   const contentHeight = estimateWrappedTextHeight(content, columnWidth) + countMarkdownImages(content) * MARKDOWN_IMAGE_HEIGHT;
   const attachmentHeight = estimateAttachmentSectionHeight(filterInlineManagedAttachments(content, memo.attachments ?? []), columnWidth);
@@ -106,6 +108,11 @@ export const estimateMemoCardHeight = (memo: Memo, { columnWidth }: EstimateMemo
   const reactionHeight = (memo.reactions ?? []).length > 0 ? CARD_SECTION_GAP + REACTION_ROW_HEIGHT : 0;
 
   return (
-    CARD_VERTICAL_PADDING + CARD_HEADER_HEIGHT + CARD_SECTION_GAP + compactBodyHeight + reactionHeight + estimateCommentPreviewHeight(memo)
+    CARD_VERTICAL_PADDING +
+    CARD_HEADER_HEIGHT +
+    CARD_SECTION_GAP +
+    compactBodyHeight +
+    reactionHeight +
+    estimateStripHeight(memo, commentsCollapsed)
   );
 };

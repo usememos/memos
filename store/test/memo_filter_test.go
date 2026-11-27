@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -364,6 +365,57 @@ func TestMemoFilterPinnedEquals(t *testing.T) {
 	memos = tc.ListWithFilter(`pinned == false`)
 	require.Len(t, memos, 1)
 	require.False(t, memos[0].Pinned)
+}
+
+func TestMemoFilterParent(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	top := tc.CreateMemo(NewMemoBuilder("memo-top", tc.User.ID).Content("Top-level memo"))
+	other := tc.CreateMemo(NewMemoBuilder("memo-other", tc.User.ID).Content("Another top-level memo"))
+	comment, err := tc.Store.CreateMemoComment(tc.Ctx, &store.Memo{
+		UID: "memo-comment", CreatorID: tc.User.ID, Content: "A comment", Visibility: store.Public,
+	}, top.ID, tc.User.ID)
+	require.NoError(t, err)
+	reply, err := tc.Store.CreateMemoComment(tc.Ctx, &store.Memo{
+		UID: "memo-reply", CreatorID: tc.User.ID, Content: "A reply to the comment", Visibility: store.Public,
+	}, comment.ID, tc.User.ID)
+	require.NoError(t, err)
+
+	// Test: parent == null selects top-level memos only.
+	require.ElementsMatch(t, []string{top.UID, other.UID}, uids(tc.ListWithFilter(`parent == null`)))
+
+	// Test: parent != null selects comments at any depth.
+	require.ElementsMatch(t, []string{comment.UID, reply.UID}, uids(tc.ListWithFilter(`parent != null`)))
+
+	// Test: parent == "memos/{uid}" selects the direct comments on one memo.
+	require.Equal(t, []string{comment.UID}, uids(tc.ListWithFilter(`parent == "memos/memo-top"`)))
+	require.Equal(t, []string{reply.UID}, uids(tc.ListWithFilter(`parent == "memos/memo-comment"`)))
+	require.Empty(t, tc.ListWithFilter(`parent == "memos/memo-other"`))
+
+	// Test: the term combines with other fields.
+	require.Equal(t, []string{reply.UID}, uids(tc.ListWithFilter(`parent != null && content.contains("reply")`)))
+}
+
+func TestMemoFilterName(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	first := tc.CreateMemo(NewMemoBuilder("memo-first", tc.User.ID).Content("First"))
+	second := tc.CreateMemo(NewMemoBuilder("memo-second", tc.User.ID).Content("Second"))
+	tc.CreateMemo(NewMemoBuilder("memo-third", tc.User.ID).Content("Third"))
+
+	// Test: name == selects one memo by its resource name.
+	require.Equal(t, []string{first.UID}, uids(tc.ListWithFilter(`name == "memos/memo-first"`)))
+
+	// Test: name in [...] selects a known set; an unknown name matches nothing.
+	require.ElementsMatch(t, []string{first.UID, second.UID},
+		uids(tc.ListWithFilter(`name in ["memos/memo-first", "memos/memo-second", "memos/missing"]`)))
+
+	// Test: a bare UID is not a resource name.
+	require.Empty(t, tc.ListWithFilter(`name == "memo-first"`))
 }
 
 func TestMemoFilterPinnedPredicate(t *testing.T) {
@@ -1210,11 +1262,24 @@ func TestMemoFilterNullPayload(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-null-payload", tc.User.ID).Content("Null payload"))
-
-	// Test: has_link should not crash and return no results
-	memos := tc.ListWithFilter(`has_link`)
-	require.Len(t, memos, 0)
+	query := "UPDATE memo SET payload = ? WHERE id = ?"
+	if getDriverFromEnv() == "postgres" {
+		query = "UPDATE memo SET payload = $1 WHERE id = $2"
+	}
+	for i, payload := range []string{
+		`{}`,
+		`{"property":{}}`,
+		`{"property":{"hasLink":false}}`,
+		`{"property":{"hasLink":null}}`,
+	} {
+		memo := tc.CreateMemo(NewMemoBuilder(fmt.Sprintf("memo-null-payload-%d", i), tc.User.ID).Content("Missing or false flag"))
+		_, err := tc.Store.GetDriver().GetDB().ExecContext(tc.Ctx, query, payload, memo.ID)
+		require.NoError(t, err)
+	}
+	require.Empty(t, tc.ListWithFilter(`has_link`))
+	for _, expression := range []string{`!has_link`, `has_link == false`, `has_link != true`} {
+		require.Len(t, tc.ListWithFilter(expression), 4, expression)
+	}
 }
 
 func TestMemoFilterNoMatches(t *testing.T) {

@@ -24,8 +24,8 @@ const MemoReactionListView = (props: Props) => {
   return (
     // Chips are filled surfaces, so their box edge, not their padding, sits on the text edge.
     <div className="flex w-full flex-row flex-wrap items-center justify-start gap-1 select-none">
-      {Array.from(reactionGroup).map(([reactionType, users]) => (
-        <ReactionView key={`${reactionType.toString()} ${users.length}`} memo={memoData} reactionType={reactionType} users={users} />
+      {Array.from(reactionGroup).map(([reactionType, group]) => (
+        <ReactionView key={reactionType} memo={memoData} reactionType={reactionType} count={group.reactions.length} names={group.names} />
       ))}
       {!readonly && currentUser && <ReactionSelector memo={memoData} />}
     </div>

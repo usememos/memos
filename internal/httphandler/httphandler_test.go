@@ -116,14 +116,24 @@ func TestJSONFailureBeforeCommit(t *testing.T) {
 	require.JSONEq(t, `{"message":"Internal Server Error"}`, rec.Body.String())
 }
 
-func TestErrorPreservesExistingContentType(t *testing.T) {
+// The error body is always JSON, so representation headers a handler prepared
+// for the response it meant to serve must not survive onto the error: a
+// media-typed error gets handed to the browser's document viewer (Chrome's
+// "Failed to load PDF document" on usememos/memos#6515) instead of read.
+// Headers that describe the error itself, such as a 416's Content-Range, stay.
+func TestErrorUsesJSONContentType(t *testing.T) {
 	rec := httptest.NewRecorder()
 	Func(func(w http.ResponseWriter, _ *http.Request) error {
 		w.Header().Set("Content-Type", "video/mp4")
+		w.Header().Set("Content-Disposition", "attachment")
+		w.Header().Set("Content-Length", "10")
+		w.Header().Set("Content-Range", "bytes */10")
 		return &Error{Code: http.StatusRequestedRangeNotSatisfiable, Message: "requested range not satisfiable"}
 	}).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
 	require.Equal(t, http.StatusRequestedRangeNotSatisfiable, rec.Code)
-	require.Equal(t, "video/mp4", rec.Header().Get("Content-Type"))
+	require.Equal(t, "application/json", rec.Header().Get("Content-Type"))
+	require.Empty(t, rec.Header().Get("Content-Disposition"))
+	require.Equal(t, "bytes */10", rec.Header().Get("Content-Range"))
 	require.JSONEq(t, `{"message":"requested range not satisfiable"}`, rec.Body.String())
 }
 

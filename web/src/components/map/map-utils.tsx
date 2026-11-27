@@ -28,12 +28,12 @@ export const createMarkerIcon = (options?: MarkerIconOptions): DivIcon => {
     html: ReactDOMServer.renderToString(
       <div
         aria-hidden="true"
-        className={`grid place-items-center rounded-full ${halo ? "bg-primary/20" : ""}`.trim()}
+        className={`grid place-items-center rounded-full ${halo ? "bg-mu-primary/20" : ""}`.trim()}
         style={{ width: size, height: size }}
       >
         <span
           className="rounded-full border-2 border-white shadow-[0_1px_4px_rgba(15,23,42,0.4)]"
-          style={{ width: dot, height: dot, backgroundColor: "var(--primary)" }}
+          style={{ width: dot, height: dot, backgroundColor: "var(--mu-primary)" }}
         />
       </div>,
     ),

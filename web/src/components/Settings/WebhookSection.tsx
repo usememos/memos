@@ -1,16 +1,16 @@
+import { Button, List, Tooltip } from "@usememos/ui";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { toast } from "@/lib/toast";
 import { UserWebhook } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateWebhookDialog from "../CreateWebhookDialog";
 import LearnMore from "../LearnMore";
+import { SettingList } from "./SettingList";
 import SettingSection from "./SettingSection";
-import SettingTable from "./SettingTable";
 
 const WebhookSection = () => {
   const t = useTranslate();
@@ -37,7 +37,7 @@ const WebhookSection = () => {
     const name = webhooks[webhooks.length - 1]?.displayName || "";
     setWebhooks(webhooks);
     setIsCreateWebhookDialogOpen(false);
-    toast.success(t("setting.webhook.create-dialog.create-webhook-success", { name }));
+    toast.add({ title: t("setting.webhook.create-dialog.create-webhook-success", { name }), type: "success" });
   };
 
   const handleEditWebhook = (webhook: UserWebhook) => {
@@ -60,7 +60,7 @@ const WebhookSection = () => {
     setWebhooks((prev) => prev.filter((item) => item.name !== deleteTarget.name));
     const name = deleteTarget.displayName;
     setDeleteTarget(undefined);
-    toast.success(t("setting.webhook.delete-dialog.delete-webhook-success", { name }));
+    toast.add({ title: t("setting.webhook.delete-dialog.delete-webhook-success", { name }), type: "success" });
   };
 
   return (
@@ -72,48 +72,53 @@ const WebhookSection = () => {
         </div>
       }
       actions={
-        <Button onClick={() => setIsCreateWebhookDialogOpen(true)}>
-          <PlusIcon className="w-4 h-4 mr-2" />
+        <Button variant="primary" onClick={() => setIsCreateWebhookDialogOpen(true)} icon={<PlusIcon />}>
           {t("common.create")}
         </Button>
       }
     >
-      <SettingTable
-        columns={[
-          {
-            key: "displayName",
-            header: t("common.name"),
-            render: (_, webhook: UserWebhook) => <span className="text-foreground">{webhook.displayName}</span>,
-          },
-          {
-            key: "url",
-            header: t("setting.webhook.url"),
-            render: (_, webhook: UserWebhook) => (
-              <span className="max-w-[300px] inline-block truncate text-foreground" title={webhook.url}>
-                {webhook.url}
-              </span>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            className: "text-right",
-            render: (_, webhook: UserWebhook) => (
-              <>
-                <Button variant="ghost" size="sm" onClick={() => handleEditWebhook(webhook)} aria-label={t("common.edit")}>
-                  <PencilIcon className="w-4 h-auto" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => handleDeleteWebhook(webhook)} aria-label={t("common.delete")}>
-                  <TrashIcon className="text-destructive w-4 h-auto" />
-                </Button>
-              </>
-            ),
-          },
-        ]}
-        data={webhooks}
-        emptyMessage={t("setting.webhook.no-webhooks-found")}
-        getRowKey={(webhook) => webhook.name}
-      />
+      {webhooks.length === 0 ? (
+        <p className="py-6 text-center mu-body text-mu-text-secondary">{t("setting.webhook.no-webhooks-found")}</p>
+      ) : (
+        <SettingList aria-label={t("setting.webhook.title")}>
+          {webhooks.map((webhook) => (
+            <List.Item key={webhook.name} className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="mu-label break-words">{webhook.displayName}</p>
+                <p className="mt-1 break-all mu-caption text-mu-text-secondary">{webhook.url}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleEditWebhook(webhook)}
+                        aria-label={`${t("common.edit")}: ${webhook.displayName}`}
+                        icon={<PencilIcon />}
+                      />
+                    }
+                  />
+                  <Tooltip.Popup>{t("common.edit")}</Tooltip.Popup>
+                </Tooltip.Root>
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDeleteWebhook(webhook)}
+                        aria-label={`${t("common.delete")}: ${webhook.displayName}`}
+                        icon={<TrashIcon />}
+                      />
+                    }
+                  />
+                  <Tooltip.Popup>{t("common.delete")}</Tooltip.Popup>
+                </Tooltip.Root>
+              </div>
+            </List.Item>
+          ))}
+        </SettingList>
+      )}
 
       <CreateWebhookDialog
         open={isCreateWebhookDialogOpen}
@@ -135,7 +140,7 @@ const WebhookSection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteWebhook}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

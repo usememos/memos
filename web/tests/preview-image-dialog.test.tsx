@@ -9,6 +9,7 @@ import {
   MediaMetadataSchema,
   PhotoMetadataSchema,
 } from "@/types/proto/api/attachment_service_pb";
+import english from "../src/locales/en.json";
 
 vi.mock("@/hooks/useMediaQuery", () => ({
   __esModule: true,
@@ -19,31 +20,13 @@ vi.mock("@/components/map/LazyLocationPicker", () => ({
   LazyLocationPicker: () => <div data-testid="attachment-location-map" />,
 }));
 
-const labels: Record<string, string> = {
-  "attachment-details.actions.hide": "Hide attachment details",
-  "attachment-details.actions.hide-map": "Hide map",
-  "attachment-details.actions.show": "Show attachment details",
-  "attachment-details.actions.show-map": "Show map",
-  "attachment-details.empty": "No saved capture metadata.",
-  "attachment-details.fields.altitude": "Altitude",
-  "attachment-details.fields.camera": "Camera",
-  "attachment-details.fields.captured": "Captured",
-  "attachment-details.fields.dimensions": "Dimensions",
-  "attachment-details.fields.exposure": "Exposure",
-  "attachment-details.fields.file": "File",
-  "attachment-details.fields.lens": "Lens",
-  "attachment-details.fields.location": "Coordinates",
-  "attachment-details.sections.camera": "Camera",
-  "attachment-details.sections.capture": "Capture",
-  "attachment-details.sections.file": "File",
-  "attachment-details.sections.location": "Location",
-  "attachment-details.timezone-unknown": "Time zone unknown",
-  "attachment-details.title": "Details",
-};
-
+// Render the English copy, so the assertions read like the screen.
 vi.mock("@/utils/i18n", () => ({
   findNearestMatchedLanguage: (language: string) => language || "en",
-  useTranslate: () => (key: string) => labels[key] ?? key,
+  useTranslate: () => (key: string, params?: Record<string, unknown>) => {
+    const text = key.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown>)?.[part], english);
+    return typeof text === "string" ? text.replace(/\{\{(\w+)\}\}/g, (_, name) => String(params?.[name])) : key;
+  },
 }));
 
 const buildAttachmentWithPhotoMetadata = () =>
@@ -96,6 +79,34 @@ const mockImageCenter = (image: HTMLElement, x: number, y: number) => {
     toJSON: () => ({}),
   } as DOMRect);
 };
+
+describe("Markup entry", () => {
+  it.each([
+    { canEdit: true, external: false, visible: true },
+    { canEdit: false, external: false, visible: false },
+    { canEdit: true, external: true, visible: false },
+  ])("limits annotation to editable instance images: $canEdit/$external", ({ canEdit, external, visible }) => {
+    const attachment = create(AttachmentSchema, {
+      name: "attachments/source",
+      filename: "source.png",
+      type: "image/png",
+      externalLink: external ? "https://example.com/photo.png" : "",
+    });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: attachment.name, kind: "image", sourceUrl: "/source.png", filename: attachment.filename }]}
+        drawingContext={{ memo: { name: "memos/a", attachments: [attachment] }, canEdit }}
+      />,
+    );
+    const action = screen.queryByRole("button", { name: "Markup" });
+    if (visible) {
+      expect(action).toHaveTextContent("Markup");
+      expect(action?.querySelector("svg")).toHaveClass("lucide-palette");
+    } else expect(action).not.toBeInTheDocument();
+  });
+});
 
 describe("<PreviewImageDialog>", () => {
   beforeEach(() => {
@@ -316,8 +327,8 @@ describe("<PreviewImageDialog>", () => {
     fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
     expect(image).toHaveStyle({ transform: "translate3d(-100px, 0px, 0) scale(2)" });
 
-    fireEvent.keyDown(document, { key: "ArrowRight" });
-    fireEvent.keyDown(document, { key: "ArrowLeft" });
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "ArrowRight" });
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "ArrowLeft" });
 
     const returned = screen.getByAltText("Preview image 1 of 2");
     fireEvent.doubleClick(returned);
@@ -571,6 +582,30 @@ describe("<PreviewImageDialog>", () => {
 
     expect(screen.getByRole("button", { name: /previous item/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next item/i })).toBeInTheDocument();
+  });
+
+  it("switches items with the arrow keys while focus is inside the dialog", () => {
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[
+          { id: "image-1", kind: "image", sourceUrl: "/image-1.jpg", posterUrl: "/image-1.jpg", filename: "image-1.jpg" },
+          { id: "image-2", kind: "image", sourceUrl: "/image-2.jpg", posterUrl: "/image-2.jpg", filename: "image-2.jpg" },
+        ]}
+      />,
+    );
+
+    // The dialog traps focus, so key presses start from a control inside it and bubble through the popup.
+    const closeButton = screen.getByRole("button", { name: /close preview/i });
+    fireEvent.keyDown(closeButton, { key: "ArrowRight" });
+    expect(screen.getByAltText("Preview image 2 of 2")).toBeInTheDocument();
+
+    fireEvent.keyDown(closeButton, { key: "ArrowRight" });
+    expect(screen.getByAltText("Preview image 2 of 2")).toBeInTheDocument();
+
+    fireEvent.keyDown(closeButton, { key: "ArrowLeft" });
+    expect(screen.getByAltText("Preview image 1 of 2")).toBeInTheDocument();
   });
 
   it("shows saved media details on demand with grouped, lean facts", () => {

@@ -71,10 +71,24 @@ type UpdateAttachment struct {
 	Filename  *string
 	MemoID    *int32
 	Payload   *storepb.AttachmentPayload
+	// Content replaces the stored file. The caller has already written the new
+	// object; the previous one is the caller's to delete once this commits.
+	Content *AttachmentContent
 	// Policy is present for transport-facing updates. Drivers discover the
 	// current attachment binding and authorize any linked memo in the same
 	// transaction as the update.
 	Policy *MemoWritePolicy
+}
+
+// AttachmentContent is where an attachment's file is stored and what it is.
+type AttachmentContent struct {
+	Type        string
+	Size        int64
+	StorageType storepb.AttachmentStorageType
+	// Reference is the local path of a LOCAL file; empty otherwise.
+	Reference string
+	// Blob holds the file of a DATABASE attachment; nil otherwise.
+	Blob []byte
 }
 
 type DeleteAttachment struct {
@@ -324,7 +338,7 @@ func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Att
 		}
 	}
 
-	s.deleteAttachmentDerivedCaches(attachment)
+	s.DeleteAttachmentDerivedCaches(attachment)
 	return nil
 }
 
@@ -382,11 +396,11 @@ func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
 	return attachment.Payload.GetS3Object() != nil
 }
 
-// deleteAttachmentDerivedCaches removes every derived asset the file server
+// DeleteAttachmentDerivedCaches removes every derived asset the file server
 // may have written for the attachment: the current thumbnail, its failure
 // marker, the pre-v2 thumbnail name, and the extracted motion clip. The names
 // must match server/fileserver.
-func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
+func (s *Store) DeleteAttachmentDerivedCaches(attachment *Attachment) {
 	for _, cachePath := range []string{
 		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".v2.jpeg"),
 		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".v2.jpeg.failed"),

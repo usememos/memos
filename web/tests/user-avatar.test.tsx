@@ -27,6 +27,6 @@ describe("UserAvatar", () => {
     rerender(<UserAvatar />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("svg")).toBeInTheDocument();
-    expect(container.firstElementChild).toHaveClass("bg-muted");
+    expect(container.firstElementChild).toHaveClass("bg-mu-well");
   });
 });

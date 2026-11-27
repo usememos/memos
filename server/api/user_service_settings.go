@@ -51,6 +51,10 @@ func (s *APIService) GetUserSetting(ctx context.Context, request *apipb.GetUserS
 }
 
 func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.UpdateUserSettingRequest) (*apipb.UserSetting, error) {
+	if request.UserSetting == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "user setting is required")
+	}
+
 	// Parse resource name: users/{user}/settings/{setting}
 	user, settingKey, err := s.resolveUserAndSettingKeyFromName(ctx, request.UserSetting.Name)
 	if err != nil {
@@ -151,6 +155,30 @@ func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.Updat
 			Name: request.UserSetting.Name,
 			Value: &apipb.UserSetting_TagsSetting_{
 				TagsSetting: incomingTags,
+			},
+		}
+	case storepb.UserSetting_EDITOR:
+		var shouldUpdateSourceMode bool
+		for _, field := range request.UpdateMask.Paths {
+			switch field {
+			case "source_mode":
+				shouldUpdateSourceMode = true
+			default:
+				return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path for editor setting: %s", field)
+			}
+		}
+		if !shouldUpdateSourceMode {
+			return nil, status.Errorf(codes.InvalidArgument, "update mask must include source_mode")
+		}
+
+		incomingEditor := request.UserSetting.GetEditorSetting()
+		if incomingEditor == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "editor setting is required")
+		}
+		updatedSetting = &apipb.UserSetting{
+			Name: request.UserSetting.Name,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{SourceMode: incomingEditor.SourceMode},
 			},
 		}
 	default:

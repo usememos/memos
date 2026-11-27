@@ -6,6 +6,80 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/ai/providerTypes:
+        get:
+            tags:
+                - AIService
+            description: |-
+                ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+                 key rules and capabilities. The caller must be an administrator.
+            operationId: AIService_ListAIProviderTypes
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAIProviderTypesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/ai/providers/{providerId}/models:
+        get:
+            tags:
+                - AIService
+            description: |-
+                ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+                 InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+            operationId: AIService_ListAIProviderModels
+            parameters:
+                - name: providerId
+                  in: path
+                  description: Required. The ID of a provider in the instance's AI setting.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAIProviderModelsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/ai:suggestTags:
+        post:
+            tags:
+                - AIService
+            description: SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+            operationId: AIService_SuggestTags
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SuggestTagsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuggestTagsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/ai:transcribe:
         post:
             tags:
@@ -507,6 +581,27 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/instance/configuration:
+        get:
+            tags:
+                - InstanceService
+            description: |-
+                GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+                 Admin only. It carries resource names and field paths, never a configured value.
+            operationId: InstanceService_GetConfigurationStatus
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ConfigurationStatus'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/instance/profile:
         get:
             tags:
@@ -599,8 +694,8 @@ paths:
             tags:
                 - InstanceService
             description: |-
-                GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-                 which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+                GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+                 USAGE_LIMITS and AI, which are admin only.
             operationId: InstanceService_GetInstanceSetting
             parameters:
                 - name: instance
@@ -626,8 +721,15 @@ paths:
             tags:
                 - InstanceService
             description: |-
-                UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-                 updated. Empty write-only credentials keep the stored values.
+                UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+                 changed. Empty write-only credentials keep the stored values.
+
+                 Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+                 rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+                 google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+                 FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+                 Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+                 refuse the save.
             operationId: InstanceService_UpdateInstanceSetting
             parameters:
                 - name: instance
@@ -666,8 +768,9 @@ paths:
             tags:
                 - MemoService
             description: |-
-                ListMemos lists the memos the caller can read, excluding comments.
-                 Anonymous callers can list only when the instance allows public access.
+                ListMemos lists the memos the caller can read, comments included. Narrow
+                 to top-level memos with the filter `parent == null`. Anonymous callers can
+                 list only when the instance allows public access.
             operationId: MemoService_ListMemos
             parameters:
                 - name: pageSize
@@ -690,11 +793,15 @@ paths:
                   description: |-
                     Optional. A CEL expression to filter memos. Combine terms with && and ||.
                      Available fields:
+                       name (string resource name; match several with
+                         `name in ["memos/abc", "memos/def"]`),
                        content (string), creator (string, e.g. "users/1"),
                        created_ts / updated_ts (timestamp), pinned (bool),
                        visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
                        space (string resource name, or null when the memo has no space;
                          supports == and comparisons against null, e.g. space != null),
+                       parent (string resource name of the memo this one comments on, or null
+                         for a top-level memo; supports == and comparisons against null),
                        tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
                        has_task_list / has_link / has_code / has_incomplete_tasks (bool),
                        has_location (bool; true when the memo has a location attached),
@@ -706,6 +813,8 @@ paths:
                      Examples:
                        pinned == true && visibility == "PUBLIC"
                        space == "spaces/team" or space == null
+                       parent == null (top-level memos only)
+                       parent == "memos/abc" (the comments on one memo)
                        tags.exists(t, t == "urgent")
                        content.contains("roadmap") && created_ts > now - duration("168h")
                   schema:
@@ -759,7 +868,8 @@ paths:
             description: |-
                 CreateMemo creates a memo owned by the authenticated user. The request body
                  is a Memo; set its Markdown content and visibility (defaults to PRIVATE).
-                 Requires authentication.
+                 Set memo.parent to create a comment on that memo, which must be readable by
+                 the caller and not archived. Requires authentication.
             operationId: MemoService_CreateMemo
             parameters:
                 - name: memoId
@@ -1014,96 +1124,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/memos/{memo}/comments:
-        get:
-            tags:
-                - MemoService
-            description: |-
-                ListMemoComments lists the active comments on a memo that the caller can
-                 read. Requires read access to the memo.
-            operationId: MemoService_ListMemoComments
-            parameters:
-                - name: memo
-                  in: path
-                  description: The memo id.
-                  required: true
-                  schema:
-                    type: string
-                - name: pageSize
-                  in: query
-                  description: |-
-                    Optional. The maximum number of comments to return. The service may return
-                     fewer. Defaults to 50; values above 1000 are coerced to 1000.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: |-
-                    Optional. A page token from a previous call. Provide it to retrieve the
-                     next page.
-                  schema:
-                    type: string
-                - name: orderBy
-                  in: query
-                  description: Optional. The order to sort results by. Currently ignored by the server.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListMemoCommentsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - MemoService
-            description: |-
-                CreateMemoComment atomically creates an independent memo plus one immutable
-                 COMMENT context relation to the named memo. The new memo keeps its own
-                 placement, visibility, authorship, and lifecycle. The named memo must be
-                 readable by the caller and not archived.
-            operationId: MemoService_CreateMemoComment
-            parameters:
-                - name: memo
-                  in: path
-                  description: The memo id.
-                  required: true
-                  schema:
-                    type: string
-                - name: commentId
-                  in: query
-                  description: |-
-                    Optional. The ID to use for the comment memo, in the same format as
-                     CreateMemoRequest.memo_id. If empty, a unique ID is generated.
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Memo'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Memo'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/memos/{memo}/reactions:
         get:
             tags:
@@ -1258,10 +1278,9 @@ paths:
             tags:
                 - MemoService
             description: |-
-                SetMemoRelations replaces the full set of mutable REFERENCE relations on a
-                 memo. COMMENT relations are immutable creation context and are rejected by
-                 this RPC. An empty list clears references without changing COMMENT.
-                 Requires the memo creator or an instance administrator.
+                SetMemoRelations replaces the full set of relations on a memo with the
+                 provided list. An empty list clears them. Requires the memo creator or an
+                 instance administrator.
             operationId: MemoService_SetMemoRelations
             parameters:
                 - name: memo
@@ -2905,6 +2924,40 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/users/{user}/views:reorder:
+        post:
+            tags:
+                - UserService
+            description: |-
+                ReorderMemoViews sets the order of a user's memo views, which is the order
+                 ListMemoViews returns them in. Only the user may call it.
+            operationId: UserService_ReorderMemoViews
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReorderMemoViewsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReorderMemoViewsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/users/{user}/webhooks:
         get:
             tags:
@@ -3074,34 +3127,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/users/{user}:exportMemos:
-        get:
-            tags:
-                - UserService
-            description: |-
-                ExportMemos writes every memo the user created, with comments, archived
-                 memos, and attachment files, as a Memos export file (a ZIP file, see
-                 docs/design/memos-export-format.md). Only the user may export their own
-                 memos. The body is the archive; content_type is its media type.
-            operationId: UserService_ExportMemos
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        '*/*': {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/users/{user}:getStats:
         get:
             tags:
@@ -3120,8 +3145,8 @@ paths:
                 - name: filter
                   in: query
                   description: |-
-                    Optional. A CEL expression selecting the readable non-comment memos to
-                     count. Supports the same fields as ListMemos, including `space`.
+                    Optional. A CEL expression selecting the readable memos to count.
+                     Supports the same fields as ListMemos, including `space` and `parent`.
                   schema:
                     type: string
             responses:
@@ -3205,6 +3230,56 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AICapability:
+            type: object
+            properties:
+                kind:
+                    enum:
+                        - AI_CAPABILITY_KIND_UNSPECIFIED
+                        - TEXT_GENERATION
+                        - TRANSCRIPTION
+                    type: string
+                    description: The capability.
+                    format: enum
+                suggestedModel:
+                    type: string
+                    description: A model that serves the capability well. Empty when there is no single good default.
+            description: AICapability is one capability an AI provider type can serve.
+        AIProviderTypeInfo:
+            type: object
+            properties:
+                type:
+                    enum:
+                        - AI_PROVIDER_TYPE_UNSPECIFIED
+                        - OPENAI
+                        - GEMINI
+                        - ANTHROPIC
+                        - DEEPSEEK
+                        - OPENROUTER
+                        - OLLAMA
+                        - OPENAI_COMPATIBLE
+                        - ANTHROPIC_COMPATIBLE
+                    type: string
+                    description: The type described.
+                    format: enum
+                defaultEndpoint:
+                    type: string
+                    description: The endpoint used when a provider leaves its endpoint empty. Empty when the type requires an endpoint.
+                apiKeyRequired:
+                    type: boolean
+                    description: Whether a provider of this type needs an API key.
+                apiKeyUrl:
+                    type: string
+                    description: Where to create an API key for this type. Empty when there is no single place.
+                local:
+                    type: boolean
+                    description: Whether the service usually runs on the administrator's own machine or network rather than in the cloud.
+                capabilities:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AICapability'
+                    description: The capabilities a provider of this type can serve.
+            description: AIProviderTypeInfo describes one AI provider type.
         AcceptSpaceInvitationRequest:
             required:
                 - name
@@ -3507,6 +3582,53 @@ components:
                      };
 
                      // ...
+        ConfigurationStatus:
+            type: object
+            properties:
+                serial:
+                    type: string
+                    description: The state record serial; zero before any apply has changed something.
+                configDigest:
+                    type: string
+                    description: Identifies the applied configuration, with sensitive values masked before hashing.
+                appliedBy:
+                    type: string
+                    description: The apply path ("cli" or "startup") and the host of the last apply.
+                version:
+                    type: string
+                    description: The Memos version of the last apply.
+                managedResources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ConfigurationStatus_ManagedResource'
+                    description: The resources the configuration manages.
+                applyTime:
+                    type: string
+                    description: When the last apply that changed something ran.
+                    format: date-time
+            description: ConfigurationStatus is what declarative configuration manages on the instance.
+        ConfigurationStatus_ManagedResource:
+            type: object
+            properties:
+                resource:
+                    type: string
+                    description: |-
+                        The resource name.
+                         Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+                source:
+                    type: string
+                    description: The configuration file that declares the resource.
+                managedFields:
+                    type: array
+                    items:
+                        type: string
+                    description: The field paths, in JSON names, the configuration manages; "*" means the whole resource.
+                ignoredFields:
+                    type: array
+                    items:
+                        type: string
+                    description: The managed field paths the configuration does not write after creation, so the API accepts edits to them.
+            description: ManagedResource is one resource the configuration manages.
         CreateLinkedIdentityRequest:
             required:
                 - parent
@@ -3876,7 +3998,23 @@ components:
                     description: |-
                         The proof-of-humanity challenge required on signup and password sign-in.
                          Absent when none is configured, which is the case on every self-hosted instance.
+                aiFeatures:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceProfile_AIFeatures'
+                    description: |-
+                        The AI features that are ready to use, derived from the AI setting.
+                         Only set for signed-in callers.
             description: InstanceProfile is the basic information about the instance.
+        InstanceProfile_AIFeatures:
+            type: object
+            properties:
+                transcription:
+                    type: boolean
+                    description: Whether AIService.Transcribe is available.
+                tagSuggestions:
+                    type: boolean
+                    description: Whether AIService.SuggestTags is available.
+            description: AIFeatures says which AI features the instance can serve.
         InstanceProfile_Challenge:
             type: object
             properties:
@@ -3903,10 +4041,6 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_StorageSetting'
                     description: The value of the STORAGE setting.
-                memoRelatedSetting:
-                    allOf:
-                        - $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
-                    description: The value of the MEMO_RELATED setting.
                 tagsSetting:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_TagsSetting'
@@ -3929,38 +4063,52 @@ components:
                     description: The value of the USAGE_LIMITS setting.
             description: InstanceSetting is one group of instance-wide settings, selected by its key.
         InstanceSetting_AIProviderConfig:
+            required:
+                - title
+                - type
             type: object
             properties:
                 id:
                     type: string
-                    description: The provider ID. Generated when empty on update.
+                    description: The provider ID, unique within the setting. Generated when empty.
                 title:
                     type: string
-                    description: The provider display title.
+                    description: Required. The display title.
                 type:
                     enum:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - GEMINI
+                        - ANTHROPIC
+                        - DEEPSEEK
+                        - OPENROUTER
+                        - OLLAMA
+                        - OPENAI_COMPATIBLE
+                        - ANTHROPIC_COMPATIBLE
                     type: string
-                    description: The provider implementation type.
+                    description: Required. The service the provider connects to.
                     format: enum
                 endpoint:
                     type: string
-                    description: The provider API endpoint. Defaults to the provider's public endpoint when empty.
+                    description: |-
+                        The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
+                         stored as empty. Required for the *_COMPATIBLE types.
                 apiKey:
                     writeOnly: true
                     type: string
-                    description: Input only. The provider API key. Never returned; an empty value keeps the stored key.
+                    description: |-
+                        Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
+                         stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never
+                         sent to a different service.
                 apiKeySet:
                     readOnly: true
                     type: boolean
-                    description: Output only. Whether an API key is stored for this provider.
+                    description: Output only. Whether an API key is stored.
                 apiKeyHint:
                     readOnly: true
                     type: string
                     description: Output only. A masked hint of the stored API key.
-            description: AIProviderConfig is one callable AI provider connection.
+            description: AIProviderConfig is one connection to an AI provider.
         InstanceSetting_AISetting:
             type: object
             properties:
@@ -3968,15 +4116,18 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/InstanceSetting_AIProviderConfig'
-                    description: The AI provider configurations available instance-wide.
+                    description: The provider connections the capabilities below can use.
                 transcription:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
-                    description: |-
-                        The speech-to-text feature configuration.
-                         When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-                         stored configuration.
-            description: AISetting is the AI provider configuration.
+                    description: The speech-to-text capability, used by AIService.Transcribe. Unset turns it off.
+                textGeneration:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_TextGenerationConfig'
+                    description: The text generation capability, used by AIService.SuggestTags. Unset turns it off.
+            description: |-
+                AISetting is the instance's AI configuration: the provider connections, and the provider and model that
+                 serve each capability. Admin only. The setting is read and replaced whole.
         InstanceSetting_AccessSetting:
             type: object
             properties:
@@ -4022,15 +4173,6 @@ components:
                     type: string
                     description: Custom JavaScript injected into the web app.
             description: GeneralSetting is the general instance configuration.
-        InstanceSetting_MemoRelatedSetting:
-            type: object
-            properties:
-                reactions:
-                    type: array
-                    items:
-                        type: string
-                    description: The reactions users can choose from. Defaults to a built-in emoji set when empty.
-            description: MemoRelatedSetting is the memo-related instance configuration.
         InstanceSetting_NotificationSetting:
             type: object
             properties:
@@ -4118,28 +4260,38 @@ components:
                 TagsSetting is the instance-wide tag metadata configuration.
                  Active tag metadata is stored in per-user tag settings. This message remains for backward compatibility with
                  existing clients and migrations.
-        InstanceSetting_TranscriptionConfig:
+        InstanceSetting_TextGenerationConfig:
+            required:
+                - providerId
+                - model
             type: object
             properties:
                 providerId:
                     type: string
-                    description: |-
-                        The ID of the provider used for transcription; must reference an entry in AISetting.providers.
-                         Empty means transcription is disabled.
+                    description: Required. The ID of an entry in AISetting.providers.
                 model:
                     type: string
-                    description: |-
-                        The provider-specific model identifier. Hidden from non-admins.
-                         Empty falls back to the engine default (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+                    description: Required. The provider's model identifier.
+            description: TextGenerationConfig selects the provider and model for text generation.
+        InstanceSetting_TranscriptionConfig:
+            required:
+                - providerId
+                - model
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: Required. The ID of an entry in AISetting.providers.
+                model:
+                    type: string
+                    description: Required. The provider's model identifier.
                 language:
                     type: string
-                    description: |-
-                        The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
-                         Empty lets the provider auto-detect.
+                    description: The ISO 639-1 language hint sent to the provider. Empty lets the provider detect the language.
                 prompt:
                     type: string
-                    description: A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
-            description: TranscriptionConfig is the speech-to-text feature configuration.
+                    description: A spelling and vocabulary hint sent to the provider.
+            description: TranscriptionConfig selects the provider and model for speech to text.
         InstanceSetting_UsageLimitsSetting:
             type: object
             properties:
@@ -4212,10 +4364,30 @@ components:
                         Output only. The resource name of the identity provider.
                          Format: identity-providers/{idp}
                 externalUid:
-                    readOnly: true
                     type: string
-                    description: Output only. The external user identifier from the identity provider.
+                    description: |-
+                        The external user identifier from the identity provider: the subject that
+                         signs in as this user. Set by signing in through the provider, or declared
+                         in a configuration file for a declared user.
             description: LinkedIdentity is an SSO identity linked to a user account.
+        ListAIProviderModelsResponse:
+            type: object
+            properties:
+                models:
+                    type: array
+                    items:
+                        type: string
+                    description: The model identifiers the provider reports, sorted. Empty when the provider does not list its models.
+            description: Response message for AIService.ListAIProviderModels.
+        ListAIProviderTypesResponse:
+            type: object
+            properties:
+                providerTypes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AIProviderTypeInfo'
+                    description: Every supported type, in the order a picker should offer them.
+            description: Response message for AIService.ListAIProviderTypes.
         ListAttachmentsResponse:
             type: object
             properties:
@@ -4258,18 +4430,6 @@ components:
                     type: string
                     description: A token to retrieve the next page. Empty when there are no more pages.
             description: Response message for MemoService.ListMemoAttachments.
-        ListMemoCommentsResponse:
-            type: object
-            properties:
-                comments:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Memo'
-                    description: The comment memos.
-                nextPageToken:
-                    type: string
-                    description: A token to retrieve the next page. Empty when there are no more pages.
-            description: Response message for MemoService.ListMemoComments.
         ListMemoReactionsResponse:
             type: object
             properties:
@@ -4571,9 +4731,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/MemoRelation'
-                    description: |-
-                        Optional. The relations of the memo in both directions. Only REFERENCE
-                         relations can be set; COMMENT relations are output only.
+                    description: Optional. The relations of the memo in both directions.
                 reactions:
                     readOnly: true
                     type: array
@@ -4581,12 +4739,11 @@ components:
                         $ref: '#/components/schemas/Reaction'
                     description: Output only. The reactions to the memo.
                 parent:
-                    readOnly: true
                     type: string
                     description: |-
-                        Output only. The context memo of this COMMENT relation, if any.
-                         Its identity is returned even when the caller cannot read the parent.
-                         Fetch the parent independently; this field does not grant read access.
+                        Optional. Immutable. The memo this memo comments on. Set it on creation
+                         to create a comment; unset for a top-level memo. Its identity is returned
+                         even when the caller cannot read the parent, and grants no read access.
                          Format: memos/{memo}
                 tags:
                     readOnly: true
@@ -4615,6 +4772,13 @@ components:
                         Optional. The last update time. Defaults to the current time when unset on
                          creation.
                     format: date-time
+                commentCount:
+                    readOnly: true
+                    type: integer
+                    description: |-
+                        Output only. The number of comments directly on this memo that the caller
+                         can read.
+                    format: int32
             description: Memo is a Markdown note written by a user.
         MemoRelation:
             required:
@@ -4626,18 +4790,15 @@ components:
                 memo:
                     allOf:
                         - $ref: '#/components/schemas/MemoRelation_MemoRef'
-                    description: Required. The source memo of the relation. For COMMENT, the comment.
+                    description: Required. The source memo of the relation.
                 relatedMemo:
                     allOf:
                         - $ref: '#/components/schemas/MemoRelation_MemoRef'
-                    description: |-
-                        Required. The target memo of the relation. For COMMENT, the memo being
-                         commented on.
+                    description: Required. The target memo of the relation.
                 type:
                     enum:
                         - TYPE_UNSPECIFIED
                         - REFERENCE
-                        - COMMENT
                     type: string
                     description: Required. The type of the relation.
                     format: enum
@@ -4657,7 +4818,7 @@ components:
                     type: string
                     description: |-
                         Output only. A plain-text snippet of the memo content. Empty in
-                         ListMemos and ListMemoComments responses.
+                         ListMemos responses.
             description: MemoRef identifies a memo in a relation.
         MemoShare:
             type: object
@@ -4954,6 +5115,36 @@ components:
                     description: When the new access token expires.
                     format: date-time
             description: Response message for AuthService.RefreshToken.
+        ReorderMemoViewsRequest:
+            required:
+                - parent
+                - names
+            type: object
+            properties:
+                parent:
+                    type: string
+                    description: |-
+                        Required. The user whose memo views are reordered.
+                         Format: users/{user}
+                names:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Required. The resource names of all the user's memo views, in the new
+                         order. The service rejects a list that omits a memo view, repeats one, or
+                         names one the user does not have.
+                         Format: users/{user}/views/{view}
+            description: Request message for UserService.ReorderMemoViews.
+        ReorderMemoViewsResponse:
+            type: object
+            properties:
+                memoViews:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoView'
+                    description: The memo views in their new order.
+            description: Response message for UserService.ReorderMemoViews.
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -4986,9 +5177,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/MemoRelation'
-                    description: |-
-                        Required. The complete set of REFERENCE relations for the memo. COMMENT
-                         relations are rejected.
+                    description: Required. The complete set of relations for the memo.
             description: Request message for MemoService.SetMemoRelations.
         SignInRequest:
             type: object
@@ -5249,6 +5438,33 @@ components:
             description: |-
                 S3Config is the configuration of an S3-compatible object store.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        SuggestTagsRequest:
+            required:
+                - content
+            type: object
+            properties:
+                content:
+                    type: string
+                    description: The current Markdown draft, up to 64 KiB.
+                candidateTags:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Optional vocabulary to prefer. Supply up to 64 tag values without the leading hash, each at most 256 bytes.
+                         Values that are not valid tags are ignored.
+            description: Request message for AIService.SuggestTags.
+        SuggestTagsResponse:
+            type: object
+            properties:
+                tags:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        Up to three matching candidates, most relevant first. If none fit, this may contain one new tag.
+                         Values omit the leading hash and exclude tags already in the draft. The list may be empty.
+            description: Response message for AIService.SuggestTags.
         TestInstanceEmailSettingRequest:
             type: object
             properties:
@@ -5361,7 +5577,15 @@ components:
                 totalSize:
                     type: string
                     description: Optional. Total size of the file in bytes before media processing. Zero represents an empty file.
-            description: UploadAttachmentSpec describes the attachment that a new upload creates.
+                replaceAttachment:
+                    type: string
+                    description: |-
+                        Optional. The name of an existing attachment whose content the finished upload replaces, instead of creating one.
+                         The attachment keeps its name, memo and creation time; its filename, type, size and media metadata come from this
+                         upload, and its cached thumbnail is dropped. attachment_id and attachment.memo must be empty. Only the uploader of
+                         the attachment or an admin may replace it. An external link or part of a motion photo cannot be replaced.
+                         Format: attachments/{attachment}
+            description: UploadAttachmentSpec describes the attachment that a new upload creates, or whose content it replaces.
         UpsertMemoReactionRequest:
             required:
                 - parent
@@ -5627,7 +5851,21 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/UserSetting_TagsSetting'
                     description: The value of the TAGS setting.
+                editorSetting:
+                    allOf:
+                        - $ref: '#/components/schemas/UserSetting_EditorSetting'
+                    description: The value of the EDITOR setting.
             description: UserSetting is one group of a user's preferences, identified by its key.
+        UserSetting_EditorSetting:
+            type: object
+            properties:
+                sourceMode:
+                    type: boolean
+                    description: |-
+                        Optional. Whether the official client's memo editor uses source mode,
+                         which shows and edits memos as Markdown text instead of formatted text.
+                         The official client calls this "Markdown mode".
+            description: EditorSetting holds the user's memo editor preferences.
         UserSetting_GeneralSetting:
             type: object
             properties:
@@ -5735,7 +5973,9 @@ components:
                          uploads and attachments in all spaces. Excludes temporary uploads and
                          derived files. Returned only by GetUserStats for the authenticated user's
                          own stats, independently of the request's memo filter.
-            description: UserStats is a summary of a user's memos. Comments are not counted.
+            description: |-
+                UserStats is a summary of a user's memos. Comments are counted unless the
+                 filter excludes them with `parent == null`.
         UserStats_MemoTypeStats:
             type: object
             properties:

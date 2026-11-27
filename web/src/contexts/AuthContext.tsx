@@ -5,6 +5,7 @@ import { authServiceClient, refreshAccessToken, userServiceClient } from "@/conn
 import { userKeys } from "@/hooks/useUserQueries";
 import type {
   User,
+  UserSetting_EditorSetting,
   UserSetting_GeneralSetting,
   UserSetting_TagsSetting,
   UserSetting_WebhooksSetting,
@@ -15,6 +16,8 @@ interface AuthState {
   userGeneralSetting: UserSetting_GeneralSetting | undefined;
   userWebhooksSetting: UserSetting_WebhooksSetting | undefined;
   userTagsSetting: UserSetting_TagsSetting | undefined;
+  /** Unset until the user first changes an editor preference. */
+  userEditorSetting: UserSetting_EditorSetting | undefined;
   /** Authentication identity has settled, while user settings may still be loading. */
   isIdentityInitialized: boolean;
   /** User settings that affect memo presentation are safe to consume. */
@@ -28,6 +31,8 @@ interface AuthContextValue extends AuthState {
   logout: () => Promise<void>;
   refetchSettings: () => Promise<void>;
   setCurrentUser: (user: User | undefined) => void;
+  /** Applies an editor setting locally, ahead of or instead of a refetch. */
+  setUserEditorSetting: (setting: UserSetting_EditorSetting | undefined) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -38,6 +43,7 @@ const UNAUTHENTICATED_STATE: AuthState = {
   userGeneralSetting: undefined,
   userWebhooksSetting: undefined,
   userTagsSetting: undefined,
+  userEditorSetting: undefined,
   isIdentityInitialized: true,
   isUserSettingsInitialized: true,
   isInitialized: true,
@@ -51,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userGeneralSetting: undefined,
     userWebhooksSetting: undefined,
     userTagsSetting: undefined,
+    userEditorSetting: undefined,
     isIdentityInitialized: false,
     isUserSettingsInitialized: false,
     isInitialized: false,
@@ -62,10 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const generalSetting = settings.find((s) => s.value.case === "generalSetting");
     const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
     const tagsSetting = settings.find((s) => s.value.case === "tagsSetting");
+    const editorSetting = settings.find((s) => s.value.case === "editorSetting");
     const userSettings = {
       userGeneralSetting: generalSetting?.value.case === "generalSetting" ? generalSetting.value.value : undefined,
       userWebhooksSetting: webhooksSetting?.value.case === "webhooksSetting" ? webhooksSetting.value.value : undefined,
       userTagsSetting: tagsSetting?.value.case === "tagsSetting" ? tagsSetting.value.value : undefined,
+      userEditorSetting: editorSetting?.value.case === "editorSetting" ? editorSetting.value.value : undefined,
     };
 
     // Tag settings control sensitive-content blurring. Publish them as soon as
@@ -190,6 +199,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
+  const setUserEditorSetting = useCallback((setting: UserSetting_EditorSetting | undefined) => {
+    setState((prev) => ({ ...prev, userEditorSetting: setting }));
+  }, []);
+
   // Memoize context value to prevent unnecessary re-renders of consumers
   const value = useMemo(
     () => ({
@@ -198,8 +211,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       refetchSettings,
       setCurrentUser,
+      setUserEditorSetting,
     }),
-    [state, initialize, logout, refetchSettings, setCurrentUser],
+    [state, initialize, logout, refetchSettings, setCurrentUser, setUserEditorSetting],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

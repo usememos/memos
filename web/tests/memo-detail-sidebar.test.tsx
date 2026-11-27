@@ -24,7 +24,7 @@ const currentUserState = vi.hoisted(() => ({ value: { name: "users/alice" } as {
 const authState = vi.hoisted(() => ({ tagsSetting: undefined as UserSetting_TagsSetting | undefined }));
 
 vi.mock("copy-to-clipboard", () => ({ default: copyToClipboard }));
-vi.mock("react-hot-toast", () => ({ default: { success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 vi.mock("@/components/MemoDetailSidebar/MemoOutline", () => ({
   default: ({ headings }: { headings: unknown[] }) => <div data-testid="outline">{headings.length}</div>,
 }));

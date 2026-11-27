@@ -97,7 +97,20 @@ func saveAttachmentContent(
 		if !filepath.IsAbs(osPath) {
 			osPath = filepath.Join(profile.Data, osPath)
 		}
-		osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
+		dir := filepath.Dir(osPath)
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			return errors.Wrap(err, "Failed to create directory")
+		}
+		osPath, err := reserveLocalAttachmentPath(osPath, create.UID)
+		if err != nil {
+			return errors.Wrap(err, "failed to reserve attachment path")
+		}
+		finalized := false
+		defer func() {
+			if !finalized {
+				os.Remove(osPath)
+			}
+		}()
 		internalPath = filepath.ToSlash(osPath)
 		if !filepath.IsAbs(filepath.FromSlash(internalPath)) {
 			relativePath, err := filepath.Rel(profile.Data, osPath)
@@ -105,10 +118,6 @@ func saveAttachmentContent(
 				return errors.Wrap(err, "Failed to get relative path")
 			}
 			internalPath = filepath.ToSlash(relativePath)
-		}
-		dir := filepath.Dir(osPath)
-		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-			return errors.Wrap(err, "Failed to create directory")
 		}
 
 		// Stage in a temp file so partial content never appears at the final path.
@@ -130,6 +139,7 @@ func saveAttachmentContent(
 		if err := os.Rename(file.Name(), osPath); err != nil {
 			return errors.Wrap(err, "failed to finalize attachment file")
 		}
+		finalized = true
 		create.Reference = internalPath
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_LOCAL
@@ -338,14 +348,26 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 	return path
 }
 
-func ensureUniqueLocalAttachmentPath(path, uid string) string {
-	if _, err := os.Stat(path); err != nil {
-		return path
+// reserveLocalAttachmentPath claims path for a new attachment by creating it
+// exclusively, falling back to the path with the attachment UID appended when
+// it is already taken. Creating the file, rather than checking whether it
+// exists, makes the claim atomic: two concurrent uploads of the same name can
+// no longer both pick the same path and overwrite each other on rename.
+func reserveLocalAttachmentPath(path, uid string) (string, error) {
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if errors.Is(err, os.ErrExist) {
+		ext := filepath.Ext(path)
+		path = strings.TrimSuffix(path, ext) + "_" + uid + ext
+		file, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
 	}
-
-	ext := filepath.Ext(path)
-	base := strings.TrimSuffix(path, ext)
-	return base + "_" + uid + ext
+	if err != nil {
+		return "", err
+	}
+	if err := file.Close(); err != nil {
+		os.Remove(path)
+		return "", err
+	}
+	return path, nil
 }
 
 func validateFilename(filename string) bool {

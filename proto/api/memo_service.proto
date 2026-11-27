@@ -17,8 +17,9 @@ option go_package = "gen/api";
 // MemoService manages memos and their attachments, relations, comments,
 // reactions, and share links.
 service MemoService {
-  // ListMemos lists the memos the caller can read, excluding comments.
-  // Anonymous callers can list only when the instance allows public access.
+  // ListMemos lists the memos the caller can read, comments included. Narrow
+  // to top-level memos with the filter `parent == null`. Anonymous callers can
+  // list only when the instance allows public access.
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
     option (google.api.http) = {get: "/api/memos"};
     option (google.api.method_signature) = "";
@@ -32,7 +33,8 @@ service MemoService {
 
   // CreateMemo creates a memo owned by the authenticated user. The request body
   // is a Memo; set its Markdown content and visibility (defaults to PRIVATE).
-  // Requires authentication.
+  // Set memo.parent to create a comment on that memo, which must be readable by
+  // the caller and not archived. Requires authentication.
   rpc CreateMemo(CreateMemoRequest) returns (Memo) {
     option (google.api.http) = {
       post: "/api/memos"
@@ -85,35 +87,15 @@ service MemoService {
     option (google.api.method_signature) = "parent";
   }
 
-  // SetMemoRelations replaces the full set of mutable REFERENCE relations on a
-  // memo. COMMENT relations are immutable creation context and are rejected by
-  // this RPC. An empty list clears references without changing COMMENT.
-  // Requires the memo creator or an instance administrator.
+  // SetMemoRelations replaces the full set of relations on a memo with the
+  // provided list. An empty list clears them. Requires the memo creator or an
+  // instance administrator.
   rpc SetMemoRelations(SetMemoRelationsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       patch: "/api/{name=memos/*}/relations"
       body: "*"
     };
     option (google.api.method_signature) = "name";
-  }
-
-  // ListMemoComments lists the active comments on a memo that the caller can
-  // read. Requires read access to the memo.
-  rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
-    option (google.api.http) = {get: "/api/{parent=memos/*}/comments"};
-    option (google.api.method_signature) = "parent";
-  }
-
-  // CreateMemoComment atomically creates an independent memo plus one immutable
-  // COMMENT context relation to the named memo. The new memo keeps its own
-  // placement, visibility, authorship, and lifecycle. The named memo must be
-  // readable by the caller and not archived.
-  rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {
-    option (google.api.http) = {
-      post: "/api/{parent=memos/*}/comments"
-      body: "comment"
-    };
-    option (google.api.method_signature) = "parent,comment";
   }
 
   // ListMemoReactions lists the reactions on a memo. Requires read access to
@@ -250,19 +232,19 @@ message Memo {
   // Optional. The attachments of the memo. Setting it replaces the full set.
   repeated Attachment attachments = 9 [(google.api.field_behavior) = OPTIONAL];
 
-  // Optional. The relations of the memo in both directions. Only REFERENCE
-  // relations can be set; COMMENT relations are output only.
+  // Optional. The relations of the memo in both directions.
   repeated MemoRelation relations = 10 [(google.api.field_behavior) = OPTIONAL];
 
   // Output only. The reactions to the memo.
   repeated Reaction reactions = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. The context memo of this COMMENT relation, if any.
-  // Its identity is returned even when the caller cannot read the parent.
-  // Fetch the parent independently; this field does not grant read access.
+  // Optional. Immutable. The memo this memo comments on. Set it on creation
+  // to create a comment; unset for a top-level memo. Its identity is returned
+  // even when the caller cannot read the parent, and grants no read access.
   // Format: memos/{memo}
   optional string parent = 12 [
-    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {type: "memos.api/Memo"}
   ];
 
@@ -282,6 +264,10 @@ message Memo {
   // Optional. The last update time. Defaults to the current time when unset on
   // creation.
   google.protobuf.Timestamp update_time = 17 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The number of comments directly on this memo that the caller
+  // can read.
+  int32 comment_count = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Property holds properties computed from the memo content.
   message Property {
@@ -317,11 +303,15 @@ message ListMemosRequest {
 
   // Optional. A CEL expression to filter memos. Combine terms with && and ||.
   // Available fields:
+  //   name (string resource name; match several with
+  //     `name in ["memos/abc", "memos/def"]`),
   //   content (string), creator (string, e.g. "users/1"),
   //   created_ts / updated_ts (timestamp), pinned (bool),
   //   visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
   //   space (string resource name, or null when the memo has no space;
   //     supports == and comparisons against null, e.g. space != null),
+  //   parent (string resource name of the memo this one comments on, or null
+  //     for a top-level memo; supports == and comparisons against null),
   //   tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
   //   has_task_list / has_link / has_code / has_incomplete_tasks (bool),
   //   has_location (bool; true when the memo has a location attached),
@@ -333,6 +323,8 @@ message ListMemosRequest {
   // Examples:
   //   pinned == true && visibility == "PUBLIC"
   //   space == "spaces/team" or space == null
+  //   parent == null (top-level memos only)
+  //   parent == "memos/abc" (the comments on one memo)
   //   tags.exists(t, t == "urgent")
   //   content.contains("roadmap") && created_ts > now - duration("168h")
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
@@ -463,11 +455,10 @@ message SetMemoAttachmentsRequest {
 
 // MemoRelation is a directed link from one memo to another.
 message MemoRelation {
-  // Required. The source memo of the relation. For COMMENT, the comment.
+  // Required. The source memo of the relation.
   MemoRef memo = 1 [(google.api.field_behavior) = REQUIRED];
 
-  // Required. The target memo of the relation. For COMMENT, the memo being
-  // commented on.
+  // Required. The target memo of the relation.
   MemoRef related_memo = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The type of the relation.
@@ -476,10 +467,10 @@ message MemoRelation {
   // Type is the kind of a memo relation.
   enum Type {
     TYPE_UNSPECIFIED = 0;
-    // The source memo references the target memo. Clients can set it.
+    // The source memo references the target memo.
     REFERENCE = 1;
-    // The source memo is a comment on the target memo. Output only.
-    COMMENT = 2;
+    reserved 2;
+    reserved "COMMENT";
   }
 
   // MemoRef identifies a memo in a relation.
@@ -492,7 +483,7 @@ message MemoRelation {
     ];
 
     // Output only. A plain-text snippet of the memo content. Empty in
-    // ListMemos and ListMemoComments responses.
+    // ListMemos responses.
     string snippet = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 }
@@ -533,56 +524,8 @@ message SetMemoRelationsRequest {
     (google.api.resource_reference) = {type: "memos.api/Memo"}
   ];
 
-  // Required. The complete set of REFERENCE relations for the memo. COMMENT
-  // relations are rejected.
+  // Required. The complete set of relations for the memo.
   repeated MemoRelation relations = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-// Request message for MemoService.ListMemoComments.
-message ListMemoCommentsRequest {
-  // Required. The resource name of the memo.
-  // Format: memos/{memo}
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Memo"}
-  ];
-
-  // Optional. The maximum number of comments to return. The service may return
-  // fewer. Defaults to 50; values above 1000 are coerced to 1000.
-  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token from a previous call. Provide it to retrieve the
-  // next page.
-  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. The order to sort results by. Currently ignored by the server.
-  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// Response message for MemoService.ListMemoComments.
-message ListMemoCommentsResponse {
-  // The comment memos.
-  repeated Memo comments = 1;
-
-  // A token to retrieve the next page. Empty when there are no more pages.
-  string next_page_token = 2;
-}
-
-// Request message for MemoService.CreateMemoComment.
-message CreateMemoCommentRequest {
-  // Required. The resource name of the memo to comment on.
-  // Format: memos/{memo}
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Memo"}
-  ];
-
-  // Required. The comment memo to create.
-  Memo comment = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. The ID to use for the comment memo, in the same format as
-  // CreateMemoRequest.memo_id. If empty, a unique ID is generated.
-  string comment_id = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Reaction is a reaction a user leaves on a memo.

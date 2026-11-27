@@ -109,6 +109,51 @@ func TestRenderSpaceFilters(t *testing.T) {
 	}
 }
 
+func TestRenderNameFilters(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		one, err := engine.CompileToStatement(context.Background(), `name == "memos/abc"`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, one.SQL, "memos/", dialect)
+		require.Equal(t, []any{"memos/abc"}, one.Args, dialect)
+
+		several, err := engine.CompileToStatement(context.Background(), `name in ["memos/abc", "memos/def"]`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, several.SQL, " IN (", dialect)
+		require.Equal(t, []any{"memos/abc", "memos/def"}, several.Args, dialect)
+	}
+}
+
+func TestRenderParentFilters(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		topLevel, err := engine.CompileToStatement(context.Background(), `parent == null`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, topLevel.SQL, "parent_relation.type = 'COMMENT'", dialect)
+		require.True(t, strings.HasSuffix(topLevel.SQL, "IS NULL"), dialect)
+		require.Empty(t, topLevel.Args, dialect)
+
+		comments, err := engine.CompileToStatement(context.Background(), `parent != null`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.True(t, strings.HasSuffix(comments.SQL, "IS NOT NULL"), dialect)
+		require.Empty(t, comments.Args, dialect)
+
+		ofMemo, err := engine.CompileToStatement(context.Background(), `parent == "memos/abc"`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, ofMemo.SQL, "memos/", dialect)
+		require.Equal(t, []any{"memos/abc"}, ofMemo.Args, dialect)
+	}
+
+	_, err = engine.Compile(context.Background(), `parent != "memos/abc"`)
+	require.ErrorContains(t, err, `operator != not allowed for field "parent"`, "NULL != value would silently drop top-level memos")
+}
+
 func TestRenderAttachmentCreatorFilter(t *testing.T) {
 	t.Parallel()
 
@@ -302,6 +347,100 @@ func TestRenderEmptyTagListIsFalse(t *testing.T) {
 		require.NoError(t, err, dialect)
 		require.Equal(t, "1 = 0", stmt.SQL, dialect)
 		require.Empty(t, stmt.Args, dialect)
+	}
+}
+
+func TestRenderEmptyScalarListIsFalse(t *testing.T) {
+	t.Parallel()
+
+	schemas := []struct {
+		schema      Schema
+		expressions []string
+		rejected    []string
+	}{
+		{
+			schema:      NewSchema(),
+			expressions: []string{`visibility in []`, `creator_id in []`, `creator in []`, `space in []`, `content in []`},
+			rejected:    []string{`created_ts in []`, `updated_ts in []`},
+		},
+		{
+			schema:      NewAttachmentSchema(),
+			expressions: []string{`filename in []`, `mime_type in []`, `creator in []`, `memo_id in []`, `space in []`},
+			rejected:    []string{`create_time in []`},
+		},
+	}
+
+	for _, group := range schemas {
+		engine, err := NewEngine(group.schema)
+		require.NoError(t, err)
+		for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+			for _, expr := range group.expressions {
+				stmt, err := engine.CompileToStatement(context.Background(), expr, RenderOptions{Dialect: dialect})
+				require.NoError(t, err, "%s/%s/%s", group.schema.Name, dialect, expr)
+				require.Equal(t, "1 = 0", stmt.SQL, "%s/%s/%s", group.schema.Name, dialect, expr)
+				require.Empty(t, stmt.Args, "%s/%s/%s", group.schema.Name, dialect, expr)
+			}
+			for _, expr := range group.rejected {
+				_, err := engine.CompileToStatement(context.Background(), expr, RenderOptions{Dialect: dialect})
+				require.ErrorContains(t, err, "does not support IN() comparisons", "%s/%s/%s", group.schema.Name, dialect, expr)
+			}
+		}
+	}
+
+	memoEngine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		negated, err := memoEngine.CompileToStatement(context.Background(), `!(visibility in [])`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Equal(t, "NOT (1 = 0)", negated.SQL, dialect)
+		require.Empty(t, negated.Args, dialect)
+
+		combined, err := memoEngine.CompileToStatement(context.Background(), `visibility in [] || creator_id == 1`, RenderOptions{
+			Dialect:           dialect,
+			PlaceholderOffset: 2,
+		})
+		require.NoError(t, err, dialect)
+		require.Contains(t, combined.SQL, "1 = 0 OR", dialect)
+		require.Equal(t, []any{int64(1)}, combined.Args, dialect)
+	}
+}
+
+func TestRenderEmptyScalarListSQLiteBehavior(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+
+	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, visibility TEXT, creator_id INTEGER)`)
+	require.NoError(t, err)
+	for _, fixture := range []struct {
+		id         int
+		visibility string
+		creatorID  int
+	}{
+		{1, "PUBLIC", 1},
+		{2, "PRIVATE", 2},
+	} {
+		_, err = db.Exec(`INSERT INTO memo (id, visibility, creator_id) VALUES (?, ?, ?)`, fixture.id, fixture.visibility, fixture.creatorID)
+		require.NoError(t, err)
+	}
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	cases := []struct {
+		expr string
+		want []int
+	}{
+		{`visibility in []`, nil},
+		{`creator_id in []`, nil},
+		{`!(visibility in [])`, []int{1, 2}},
+		{`visibility in [] || creator_id == 1`, []int{1}},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+		require.NoError(t, err, tc.expr)
+		require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
 	}
 }
 
@@ -673,7 +812,7 @@ func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
 
 	predicates := map[DialectName]string{
 		DialectSQLite:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
-		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
+		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), JSON_EXTRACT('false', '$')) = JSON_EXTRACT('true', '$')",
 		DialectPostgres: "(memo.payload->'property'->>'hasLink')::boolean IS TRUE",
 	}
 	for dialect, predicate := range predicates {
@@ -770,7 +909,7 @@ func TestRenderExistsComparisonsPerDialect(t *testing.T) {
 		"has_image": {
 			DialectSQLite: "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage') IS TRUE OR " +
 				"EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id` AND LOWER(`attachment`.`type`) LIKE 'image/%'))",
-			DialectMySQL: "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage'), CAST('false' AS JSON)) = CAST('true' AS JSON) OR " +
+			DialectMySQL: "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasInlineImage'), JSON_EXTRACT('false', '$')) = JSON_EXTRACT('true', '$') OR " +
 				"EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id` AND LOWER(`attachment`.`type`) LIKE 'image/%'))",
 			DialectPostgres: "((memo.payload->'property'->>'hasInlineImage')::boolean IS TRUE OR " +
 				"EXISTS (SELECT 1 FROM attachment WHERE attachment.memo_id = memo.id AND LOWER(attachment.type) LIKE 'image/%'))",

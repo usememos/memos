@@ -33,10 +33,10 @@ describe("guest theme preferences", () => {
     expect(localStorage.getItem("memos-theme")).toBe("paper");
 
     loadTheme("system");
-    expect(document.documentElement).toHaveAttribute("data-theme", "default-dark");
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
     dark = false;
     changes.dispatchEvent(new Event("change"));
-    expect(document.documentElement).toHaveAttribute("data-theme", "default");
+    expect(document.documentElement).toHaveAttribute("data-theme", "light");
     expect(localStorage.getItem("memos-theme")).toBe("system");
   });
 });

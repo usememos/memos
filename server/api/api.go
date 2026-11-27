@@ -92,6 +92,7 @@ type APIService struct {
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
+	attachmentReplaces  attachmentReplaceLocks
 	memoImports         memoImports
 }
 
@@ -293,12 +294,13 @@ func newProfileRateLimiter(profile *profile.Profile) ratelimit.Limiter {
 }
 
 // gatewayIncomingHeaderMatcher forwards the challenge token to metadata on top
-// of the gateway's default set.
+// of the gateway's legacy set, which also maps Grpc-Metadata-* headers such as
+// the Grpc-Metadata-Cookie that REST clients use to send the refresh cookie.
 func gatewayIncomingHeaderMatcher(key string) (string, bool) {
 	if http.CanonicalHeaderKey(key) == challengeTokenHeader {
 		return challengeTokenMetadataKey, true
 	}
-	return runtime.DefaultHeaderMatcher(key)
+	return runtime.LegacyHeaderMatcher(key)
 }
 
 // gatewayErrorHandler adds the rate-limit header fields to a refusal before
@@ -323,7 +325,7 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 			w.Header().Add(key, value)
 		}
 	}
-	body, marshalErr := protojson.Marshal(st.Proto())
+	body, marshalErr := (protojson.MarshalOptions{EmitDefaultValues: true}).Marshal(st.Proto())
 	if marshalErr != nil {
 		http.Error(w, `{"code": 13, "message": "failed to encode error"}`, http.StatusInternalServerError)
 		return
@@ -335,9 +337,9 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 
 func writeGatewayAuthorizationError(w http.ResponseWriter, err error) {
 	if errors.Is(err, ErrUnauthenticated) {
-		http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+		writeGatewayStatusError(w, status.Error(codes.Unauthenticated, "authentication required"))
 		return
 	}
 	slog.Error("failed to resolve API access policy", "error", err)
-	http.Error(w, `{"code": 13, "message": "failed to resolve API access policy"}`, http.StatusInternalServerError)
+	writeGatewayStatusError(w, status.Error(codes.Internal, "failed to resolve API access policy"))
 }

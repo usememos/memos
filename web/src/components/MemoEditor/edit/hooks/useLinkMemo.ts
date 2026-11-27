@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { memoServiceClient } from "@/connect";
 import { useDebouncedEffect } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { TOP_LEVEL_MEMO_FILTER } from "@/lib/cel-filter";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import {
@@ -44,13 +45,14 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
 
       setIsFetching(true);
       try {
-        const conditions: string[] = [];
+        // Candidates are top-level memos, as before comments were listed with them.
+        const conditions: string[] = [TOP_LEVEL_MEMO_FILTER];
         const creatorFilter = buildMemoCreatorFilter(user?.name ?? "");
         if (creatorFilter) {
           conditions.push(creatorFilter);
         }
         if (searchText) {
-          conditions.push(`content.contains("${searchText}")`);
+          conditions.push(`content.contains(${JSON.stringify(searchText)})`);
         }
         const { memos } = await memoServiceClient.listMemos({
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,

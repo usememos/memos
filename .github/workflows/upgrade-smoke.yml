@@ -15,11 +15,15 @@ on:
     branches: [main]
     paths:
       # Anything that can change how an existing database is opened or upgraded.
+      - "go.mod"
+      - "go.sum"
+      - "filter/**"
       - "store/migration/**"
       - "store/migrator.go"
       - "store/schema_version*.go"
       - "store/db/**"
       - "store/test/containers.go"
+      - "store/test/main_test.go"
       - "store/test/migrator*_test.go"
       - "store/test/store.go"
       - "server/server.go"
@@ -28,6 +32,7 @@ on:
       - "scripts/release_smoke_test.sh"
       - "scripts/release_version*"
       - "scripts/install*"
+      - ".github/actions/**"
       - ".github/workflows/release.yml"
       - ".github/workflows/upgrade-smoke.yml"
 
@@ -38,29 +43,32 @@ concurrency:
   group: ${{ github.workflow }}-upgrade-smoke-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  GO_VERSION: "1.27.2"
-  NODE_VERSION: "24"
-  PNPM_VERSION: "11.0.1"
-
 jobs:
   migration-upgrade:
-    name: Upgrade from previous stable (${{ matrix.driver }})
+    name: Upgrade from previous stable (${{ matrix.target }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        driver: [sqlite, mysql, postgres]
+        include:
+          - target: sqlite
+            driver: sqlite
+            mysql-variant: ""
+          - target: mysql
+            driver: mysql
+            mysql-variant: mysql
+          - target: mariadb
+            driver: mysql
+            mysql-variant: mariadb
+          - target: postgres
+            driver: postgres
+            mysql-variant: ""
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
       - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
+        uses: ./.github/actions/setup-go
 
       - name: Test release versioning and installer
         run: go test -v ./scripts/...
@@ -72,6 +80,7 @@ jobs:
           go test -v -timeout 30m -run 'TestMigration|TestUpgrade|TestFreshInstall' ./store/test/...
         env:
           DRIVER: ${{ matrix.driver }}
+          MYSQL_VARIANT: ${{ matrix.mysql-variant }}
 
   release-smoke:
     name: Fresh install and upgrade through the release image
@@ -84,21 +93,8 @@ jobs:
           # tags, so it needs full history and tags.
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.2.0
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: web/pnpm-lock.yaml
-
-      - name: Install frontend dependencies
-        working-directory: web
-        run: pnpm install --frozen-lockfile
+      - name: Setup web
+        uses: ./.github/actions/setup-web
 
       - name: Run release smoke test
         run: ./scripts/release_smoke_test.sh

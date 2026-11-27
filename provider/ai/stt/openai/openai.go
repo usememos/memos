@@ -6,18 +6,14 @@ package openai
 import (
 	"context"
 	"mime"
-	"net/url"
 	"strings"
 
 	openaisdk "github.com/openai/openai-go/v3"
-	openaioption "github.com/openai/openai-go/v3/option"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/provider/ai"
 	"github.com/usememos/memos/provider/ai/stt"
 )
-
-const defaultEndpoint = "https://api.openai.com/v1"
 
 // Transcriber implements stt.Transcriber for OpenAI-compatible STT endpoints.
 type Transcriber struct {
@@ -26,20 +22,11 @@ type Transcriber struct {
 
 // New constructs a Transcriber from a provider config.
 func New(cfg ai.ProviderConfig, options stt.Options) (*Transcriber, error) {
-	endpoint, err := normalizeEndpoint(cfg.Endpoint)
+	client, err := ai.NewOpenAIClient(cfg, options.HTTPClient)
 	if err != nil {
 		return nil, err
 	}
-	if cfg.APIKey == "" {
-		return nil, errors.New("OpenAI API key is required")
-	}
-	return &Transcriber{
-		client: openaisdk.NewClient(
-			openaioption.WithAPIKey(cfg.APIKey),
-			openaioption.WithBaseURL(endpoint),
-			openaioption.WithHTTPClient(options.HTTPClient),
-		),
-	}, nil
+	return &Transcriber{client: client}, nil
 }
 
 // Transcribe sends the audio to /audio/transcriptions.
@@ -57,36 +44,35 @@ func (t *Transcriber) Transcribe(ctx context.Context, req stt.Request) (*stt.Res
 	}
 
 	params := openaisdk.AudioTranscriptionNewParams{
-		File:           openaisdk.File(req.Audio, filename, contentType),
-		Model:          openaisdk.AudioModel(req.Model),
-		ResponseFormat: openaisdk.AudioResponseFormatJSON,
+		File:  openaisdk.File(req.Audio, filename, contentType),
+		Model: openaisdk.AudioModel(req.Model),
 	}
 	if req.Prompt != "" {
 		params.Prompt = openaisdk.String(req.Prompt)
 	}
-	if req.Language != "" {
-		params.Language = openaisdk.String(req.Language)
+	if params.Model == openaisdk.AudioModelGPTTranscribe {
+		if req.Language != "" {
+			params.Languages = []string{req.Language}
+		}
+	} else {
+		params.ResponseFormat = openaisdk.AudioResponseFormatJSON
+		if req.Language != "" {
+			params.Language = openaisdk.String(req.Language)
+		}
 	}
 
-	resp, err := t.client.Audio.Transcriptions.New(ctx, params)
+	resp, err := t.client.Audio.Transcriptions.New(ctx, params, ai.RequestOptions(ctx)...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to send OpenAI transcription request")
 	}
+	language := resp.Language
+	if len(resp.Languages) == 1 {
+		language = resp.Languages[0].Code
+	}
 	return &stt.Response{
 		Text:     resp.Text,
-		Language: resp.Language,
+		Language: language,
 	}, nil
-}
-
-func normalizeEndpoint(endpoint string) (string, error) {
-	endpoint = strings.TrimSpace(endpoint)
-	if endpoint == "" {
-		endpoint = defaultEndpoint
-	}
-	if _, err := url.ParseRequestURI(endpoint); err != nil {
-		return "", errors.Wrap(err, "invalid OpenAI endpoint")
-	}
-	return strings.TrimRight(endpoint, "/"), nil
 }
 
 func normalizeAudioMetadata(req stt.Request) (string, string, error) {

@@ -4,12 +4,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { TimelineViewProvider, useView } from "@/contexts/ViewContext";
 
 const storageKey = "memos-view-setting";
-const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true };
-const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false };
+const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3 };
+const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1 };
 
 function Probe() {
-  const { timeBasis, orderByTimeAsc, maxColumns, compactMode } = useView();
-  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns, compactMode })}</output>;
+  const { timeBasis, orderByTimeAsc, maxColumns } = useView();
+  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns })}</output>;
 }
 
 function renderRoute(path: string) {
@@ -35,14 +35,7 @@ const settings = () => JSON.parse(screen.getByRole("status").textContent ?? "{}"
 describe("Timeline display settings scope", () => {
   beforeEach(() => localStorage.setItem(storageKey, JSON.stringify(saved)));
 
-  it.each([
-    "/",
-    "/explore",
-    "/?creator=alice",
-    "/spaces/test",
-    "/spaces/test/explore",
-    "/Spaces/test/Explore/",
-  ])("applies saved preferences to %s", (path) => {
+  it.each(["/", "/explore", "/?creator=alice", "/spaces/test", "/Spaces/test/"])("applies saved preferences to %s", (path) => {
     renderRoute(path);
     expect(settings()).toEqual(saved);
   });

@@ -1,7 +1,7 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { useEffect } from "react";
-import { toast } from "react-hot-toast";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { showErrorToast } from "@/lib/toast";
 
 interface UseMemoDetailErrorOptions {
   error: Error | null;
@@ -21,11 +21,11 @@ const useMemoDetailError = ({ error }: UseMemoDetailErrorOptions) => {
         return;
       }
 
-      toast.error(error.message);
+      showErrorToast(error.message);
       return;
     }
 
-    toast.error(error.message);
+    showErrorToast(error.message);
   }, [error, navigateTo]);
 };
 

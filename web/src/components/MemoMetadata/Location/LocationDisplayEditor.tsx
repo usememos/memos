@@ -8,6 +8,7 @@ import {
   MetadataRowRemoveControl,
 } from "@/components/MemoMetadata/MetadataSection";
 import type { Location } from "@/types/proto/api/memo_service_pb";
+import { useTranslate } from "@/utils/i18n";
 import { getLocationCoordinatesText, getLocationDisplayText } from "./locationHelpers";
 
 interface LocationDisplayEditorProps {
@@ -17,6 +18,7 @@ interface LocationDisplayEditorProps {
 
 /** The draft's location as one metadata row; the remove control shows once the row is engaged. */
 const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRemove }) => {
+  const t = useTranslate();
   const displayText = getLocationDisplayText(location);
 
   return (
@@ -26,7 +28,7 @@ const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRem
         {displayText}
       </span>
       <MetadataRowDetail parts={[getLocationCoordinatesText(location)]} />
-      {onRemove && <MetadataRowRemoveControl label="Remove location" onClick={onRemove} />}
+      {onRemove && <MetadataRowRemoveControl label={t("editor.remove-location")} onClick={onRemove} />}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	coreuser "github.com/usememos/memos/core/user"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -49,23 +50,11 @@ func canViewerAccessUserEmail(viewer, user *store.User) bool {
 }
 
 func convertUserRoleFromStore(role store.Role) apipb.User_Role {
-	switch role {
-	case store.RoleAdmin:
-		return apipb.User_ADMIN
-	case store.RoleUser:
-		return apipb.User_USER
-	default:
-		return apipb.User_ROLE_UNSPECIFIED
-	}
+	return coreuser.RoleFromStore(role)
 }
 
 func convertUserRoleToStore(role apipb.User_Role) store.Role {
-	switch role {
-	case apipb.User_ADMIN:
-		return store.RoleAdmin
-	default:
-		return store.RoleUser
-	}
+	return coreuser.RoleToStore(role)
 }
 
 // extractImageInfo extracts image type and base64 data from a data URI.
@@ -90,6 +79,8 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 		return storepb.UserSetting_WEBHOOKS, nil
 	case apipb.UserSetting_Key_name[int32(apipb.UserSetting_TAGS)]:
 		return storepb.UserSetting_TAGS, nil
+	case apipb.UserSetting_Key_name[int32(apipb.UserSetting_EDITOR)]:
+		return storepb.UserSetting_EDITOR, nil
 	default:
 		return storepb.UserSetting_KEY_UNSPECIFIED, errors.Errorf("unknown setting key: %s", key)
 	}
@@ -106,6 +97,8 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 		return apipb.UserSetting_Key_name[int32(apipb.UserSetting_WEBHOOKS)]
 	case storepb.UserSetting_TAGS:
 		return apipb.UserSetting_Key_name[int32(apipb.UserSetting_TAGS)]
+	case storepb.UserSetting_EDITOR:
+		return apipb.UserSetting_Key_name[int32(apipb.UserSetting_EDITOR)]
 	default:
 		return "unknown"
 	}
@@ -171,6 +164,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			setting.Value = &apipb.UserSetting_TagsSetting_{
 				TagsSetting: &apipb.UserSetting_TagsSetting{Tags: map[string]*apipb.UserSetting_TagMetadata{}},
 			}
+		case storepb.UserSetting_EDITOR:
+			setting.Value = &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{},
+			}
 		default:
 			return nil
 		}
@@ -221,6 +218,12 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 	case storepb.UserSetting_TAGS:
 		setting.Value = &apipb.UserSetting_TagsSetting_{
 			TagsSetting: convertUserTagsSettingFromStore(storeSetting.GetTags()),
+		}
+	case storepb.UserSetting_EDITOR:
+		setting.Value = &apipb.UserSetting_EditorSetting_{
+			EditorSetting: &apipb.UserSetting_EditorSetting{
+				SourceMode: storeSetting.GetEditor().GetSourceMode(),
+			},
 		}
 	default:
 		return nil
@@ -276,6 +279,16 @@ func convertUserSettingToStore(apiSetting *apipb.UserSetting, userID int32, key 
 			}
 		} else {
 			return nil, errors.Errorf("tags setting is required")
+		}
+	case storepb.UserSetting_EDITOR:
+		if editor := apiSetting.GetEditorSetting(); editor != nil {
+			storeSetting.Value = &storepb.UserSetting_Editor{
+				Editor: &storepb.EditorUserSetting{
+					SourceMode: editor.SourceMode,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("editor setting is required")
 		}
 	default:
 		return nil, errors.Errorf("unsupported setting key: %v", key)

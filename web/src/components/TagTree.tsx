@@ -1,13 +1,13 @@
-import { ChevronRightIcon, HashIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
   SIDEBAR_ROW_BOX_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
-  SIDEBAR_ROW_ICON_CLASSES,
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
-  SidebarRowIconSlot,
+  SidebarTagMark,
+  SidebarTagMarkSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "@/components/AppSidebar/SidebarRow";
@@ -42,7 +42,7 @@ interface TagTreeExpansion {
 const EMPTY_EXPANSION: TagTreeExpansion = { expanded: [] };
 
 // A structural row toggles like any other, so it hovers like one too — just quieter at rest.
-const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-muted-foreground/65");
+const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "text-mu-text-secondary/65");
 
 /** One announcement for a tag row in either layout, so tree and flat mode never drift apart. */
 export const tagRowAriaLabel = (t: ReturnType<typeof useTranslate>, tag: string, amount: number) =>
@@ -88,19 +88,15 @@ const parentPathsOf = (tag: string): string[] => {
   return segments.slice(0, -1).map((_, index) => segments.slice(0, index + 1).join("/"));
 };
 
-const TagMark = ({ className }: { className?: string }) => (
-  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} strokeWidth={1.8} />
-);
-
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
     className={cn(
-      "me-auto size-3.5 shrink-0 text-muted-foreground/70 transition-transform",
+      "mu-icon-sm",
+      "me-auto shrink-0 text-mu-text-secondary/70 transition-transform",
       open ? "rotate-90" : "rtl:rotate-180",
       className,
     )}
-    strokeWidth={1.8}
   />
 );
 
@@ -135,7 +131,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
         className={cn(
           SIDEBAR_ROW_BOX_CLASSES,
           isTag ? sidebarRowStateClasses(state) : STRUCTURAL_ROW_CLASSES,
-          isAncestorOfActiveTag && !isActive && "text-foreground/75",
+          isAncestorOfActiveTag && !isActive && "text-mu-text/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.
         // Same 12px step the memo outline indents by.
@@ -152,7 +148,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_SLOT_BUTTON_CLASSES}
             onClick={() => onToggle(tag.text)}
           >
-            <TagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
+            <SidebarTagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
             <Chevron open={open} className="hidden group-hover:block group-has-[:focus-visible]:block" />
           </button>
         )}
@@ -165,7 +161,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_LABEL_CLASSES}
             onClick={() => onTagClick(tag.text)}
           >
-            {!hasSubTags && <SidebarRowIconSlot icon={HashIcon} />}
+            {!hasSubTags && <SidebarTagMarkSlot />}
             <span ref={labelRef} className="min-w-0 flex-1 truncate">
               {tag.key}
             </span>

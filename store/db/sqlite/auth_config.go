@@ -11,8 +11,8 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// IsRetryableAuthenticationMutationError reports whether err is a transient SQLite locking failure.
-func (*DB) IsRetryableAuthenticationMutationError(err error) bool {
+// IsRetryableTransactionError reports whether err is a transient SQLite locking failure.
+func (*DB) IsRetryableTransactionError(err error) bool {
 	var sqliteErr *msqlite.Error
 	if !errors.As(err, &sqliteErr) {
 		return false
@@ -21,19 +21,11 @@ func (*DB) IsRetryableAuthenticationMutationError(err error) bool {
 	return code == sqlite3.SQLITE_BUSY || code == sqlite3.SQLITE_LOCKED
 }
 
-// ApplyAuthenticationConfigMutation validates and applies an auth mutation in a serializable transaction.
-func (d *DB) ApplyAuthenticationConfigMutation(ctx context.Context, mutation *store.AuthenticationConfigMutation) error {
-	tx, err := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
-	if err != nil {
-		return errors.Wrap(err, "failed to begin authentication configuration transaction")
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
+// ApplyAuthenticationConfigMutationTx validates and applies an auth mutation within tx, a serializable transaction.
+func (*DB) ApplyAuthenticationConfigMutationTx(ctx context.Context, tx *sql.Tx, mutation *store.AuthenticationConfigMutation) error {
 	state := &store.AuthenticationConfigState{}
 	general := &store.InstanceSetting{}
-	err = tx.QueryRowContext(ctx, `SELECT name, value, description FROM system_setting WHERE name = ?`, "GENERAL").Scan(
+	err := tx.QueryRowContext(ctx, `SELECT name, value, description FROM system_setting WHERE name = ?`, "GENERAL").Scan(
 		&general.Name, &general.Value, &general.Description,
 	)
 	if err == nil {
@@ -75,9 +67,6 @@ func (d *DB) ApplyAuthenticationConfigMutation(ctx context.Context, mutation *st
 	}
 	if err != nil {
 		return errors.Wrap(err, "failed to apply authentication configuration mutation")
-	}
-	if err := tx.Commit(); err != nil {
-		return errors.Wrap(err, "failed to commit authentication configuration transaction")
 	}
 	return nil
 }

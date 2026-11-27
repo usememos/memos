@@ -27,7 +27,16 @@ func insertUserIdentity(ctx context.Context, e execer, create *store.UserIdentit
 }
 
 func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
-	result, err := insertUserIdentity(ctx, d.db, create)
+	return createUserIdentity(ctx, d.db, create)
+}
+
+// CreateUserIdentityTx is CreateUserIdentity within tx.
+func (*DB) CreateUserIdentityTx(ctx context.Context, tx *sql.Tx, create *store.UserIdentity) (*store.UserIdentity, error) {
+	return createUserIdentity(ctx, tx, create)
+}
+
+func createUserIdentity(ctx context.Context, q dbExecutor, create *store.UserIdentity) (*store.UserIdentity, error) {
+	result, err := insertUserIdentity(ctx, q, create)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create user identity")
 	}
@@ -37,7 +46,7 @@ func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity)
 		return nil, err
 	}
 	id := int32(rawID)
-	list, err := d.ListUserIdentities(ctx, &store.FindUserIdentity{ID: &id})
+	list, err := listUserIdentities(ctx, q, &store.FindUserIdentity{ID: &id})
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +110,15 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 }
 
 func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
+	return listUserIdentities(ctx, d.db, find)
+}
+
+// ListUserIdentitiesTx is ListUserIdentities within tx.
+func (*DB) ListUserIdentitiesTx(ctx context.Context, tx *sql.Tx, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
+	return listUserIdentities(ctx, tx, find)
+}
+
+func listUserIdentities(ctx context.Context, q dbExecutor, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if find.ID != nil {
@@ -116,7 +134,7 @@ func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentit
 		where, args = append(where, "`extern_uid` = ?"), append(args, *find.ExternUID)
 	}
 
-	rows, err := d.db.QueryContext(ctx, `
+	rows, err := q.QueryContext(ctx, `
 		SELECT
 			id,
 			user_id,
@@ -157,6 +175,15 @@ func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentit
 }
 
 func (d *DB) DeleteUserIdentities(ctx context.Context, delete *store.DeleteUserIdentity) error {
+	return deleteUserIdentities(ctx, d.db, delete)
+}
+
+// DeleteUserIdentitiesTx is DeleteUserIdentities within tx.
+func (*DB) DeleteUserIdentitiesTx(ctx context.Context, tx *sql.Tx, delete *store.DeleteUserIdentity) error {
+	return deleteUserIdentities(ctx, tx, delete)
+}
+
+func deleteUserIdentities(ctx context.Context, q dbExecutor, delete *store.DeleteUserIdentity) error {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if delete.ID != nil {
@@ -169,7 +196,7 @@ func (d *DB) DeleteUserIdentities(ctx context.Context, delete *store.DeleteUserI
 		where, args = append(where, "`provider` = ?"), append(args, *delete.Provider)
 	}
 
-	if _, err := d.db.ExecContext(ctx, "DELETE FROM `user_identity` WHERE "+strings.Join(where, " AND "), args...); err != nil {
+	if _, err := q.ExecContext(ctx, "DELETE FROM `user_identity` WHERE "+strings.Join(where, " AND "), args...); err != nil {
 		return err
 	}
 	return nil

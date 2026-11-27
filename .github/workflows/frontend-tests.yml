@@ -7,14 +7,12 @@ on:
     branches: [main]
     paths:
       - "web/**"
+      - ".github/actions/setup-web/**"
+      - ".github/workflows/frontend-tests.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: "24"
-  PNPM_VERSION: "11.0.1"
 
 jobs:
   lint:
@@ -24,21 +22,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.2.0
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: web/pnpm-lock.yaml
-
-      - name: Install dependencies
-        working-directory: web
-        run: pnpm install --frozen-lockfile
+      - name: Setup web
+        uses: ./.github/actions/setup-web
 
       - name: Run lint
         working-directory: web
@@ -55,21 +40,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.2.0
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: web/pnpm-lock.yaml
-
-      - name: Install dependencies
-        working-directory: web
-        run: pnpm install --frozen-lockfile
+      - name: Setup web
+        uses: ./.github/actions/setup-web
 
       - name: Build frontend
         working-directory: web

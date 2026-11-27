@@ -1,17 +1,16 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Button, Dialog, Field, Input, Select } from "@usememos/ui";
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
+import { useFieldErrors } from "@/hooks/useFieldErrors";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { User, User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./Settings/ManagedByConfigurationChip";
 
 interface Props {
   open: boolean;
@@ -22,19 +21,31 @@ interface Props {
 
 function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: Props) {
   const t = useTranslate();
+  const fieldErrors = useFieldErrors<"username" | "password">();
   const [user, setUser] = useState(
     create(UserSchema, initialUser ? { name: initialUser.name, username: initialUser.username, role: initialUser.role } : {}),
   );
   const requestState = useLoading(false);
   const isCreating = !initialUser;
+  // The password is write-only, so configuration never locks it.
+  const managed = useManagedResource(initialUser?.name ?? "");
+  const roleOptions = [
+    { value: User_Role.USER, label: t("setting.member.user") },
+    { value: User_Role.ADMIN, label: t("setting.member.admin") },
+  ];
 
+  // The dialog stays mounted while closed, so each opening starts again from the saved user;
+  // otherwise a cancelled edit, such as a typed password, is sent with the next change.
   useEffect(() => {
+    if (!open) return;
+    fieldErrors.clear("username");
+    fieldErrors.clear("password");
     if (initialUser) {
       setUser(create(UserSchema, { name: initialUser.name, username: initialUser.username, role: initialUser.role }));
     } else {
       setUser(create(UserSchema, {}));
     }
-  }, [initialUser]);
+  }, [open, initialUser]);
 
   const setPartialUser = (state: Partial<User>) => {
     setUser({
@@ -45,7 +56,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
 
   const handleConfirm = async () => {
     if (isCreating && (!user.username || !user.password)) {
-      toast.error("Username and password cannot be empty");
+      fieldErrors.set(!user.username ? "username" : "password", t("setting.member.username-password-required"));
       return;
     }
 
@@ -53,7 +64,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
       requestState.setLoading();
       if (isCreating) {
         await userServiceClient.createUser({ user });
-        toast.success("Create user successfully");
+        toast.add({ title: t("setting.member.create-success"), type: "success" });
       } else {
         const updateMask = [];
         if (user.username !== initialUser?.username) {
@@ -67,13 +78,13 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
         }
         const userToUpdate = create(UserSchema, { ...user, name: initialUser?.name ?? user.name });
         await userServiceClient.updateUser({ user: userToUpdate, updateMask: create(FieldMaskSchema, { paths: updateMask }) });
-        toast.success("Update user successfully");
+        toast.add({ title: t("setting.member.update-success"), type: "success" });
       }
       requestState.setFinish();
       onSuccess?.();
       onOpenChange(false);
     } catch (error: unknown) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: isCreating ? "Create user" : "Update user",
         onError: () => requestState.setError(),
       });
@@ -81,69 +92,80 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</Dialog.Title>
+        {managed ? (
+          <div className="flex">
+            <ManagedByConfigurationChip resource={managed} />
+          </div>
+        ) : null}
         <div className="flex flex-col gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="username">{t("common.username")}</Label>
+          <Field.Root invalid={!!fieldErrors.errors.username}>
+            <Field.Label>{t("common.username")}</Field.Label>
             <Input
               id="username"
               type="text"
               placeholder={t("common.username")}
+              disabled={isFieldManaged(managed, "username")}
               value={user.username}
-              onChange={(e) =>
+              onChange={(e) => (
+                fieldErrors.clear("username"),
                 setPartialUser({
                   username: e.target.value,
                 })
-              }
+              )}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">{t("common.password")}</Label>
+            {fieldErrors.errors.username && <Field.Error match>{fieldErrors.errors.username}</Field.Error>}
+          </Field.Root>
+          <Field.Root invalid={!!fieldErrors.errors.password}>
+            <Field.Label>{t("common.password")}</Field.Label>
             <Input
               id="password"
               type="password"
               placeholder={t("common.password")}
               autoComplete="off"
               value={user.password}
-              onChange={(e) =>
+              onChange={(e) => (
+                fieldErrors.clear("password"),
                 setPartialUser({
                   password: e.target.value,
                 })
-              }
+              )}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label>{t("common.role")}</Label>
-            <RadioGroup
-              value={String(user.role)}
-              onValueChange={(value) => setPartialUser({ role: Number(value) as User_Role })}
-              className="flex flex-row gap-4"
+            {fieldErrors.errors.password && <Field.Error match>{fieldErrors.errors.password}</Field.Error>}
+          </Field.Root>
+          <Field.Root>
+            <Field.Label>{t("common.role")}</Field.Label>
+            <Select.Root
+              items={roleOptions}
+              disabled={isFieldManaged(managed, "role")}
+              value={user.role}
+              onValueChange={(role) => role !== null && setPartialUser({ role })}
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value={String(User_Role.USER)} id="user" />
-                <Label htmlFor="user">{t("setting.member.user")}</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value={String(User_Role.ADMIN)} id="admin" />
-                <Label htmlFor="admin">{t("setting.member.admin")}</Label>
-              </div>
-            </RadioGroup>
-          </div>
+              <Select.Trigger>
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Popup>
+                {roleOptions.map((option) => (
+                  <Select.Item key={option.value} value={option.value}>
+                    {option.label}
+                  </Select.Item>
+                ))}
+              </Select.Popup>
+            </Select.Root>
+          </Field.Root>
         </div>
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button disabled={requestState.isLoading} onClick={handleConfirm}>
+          <Button variant="primary" disabled={requestState.isLoading} onClick={handleConfirm}>
             {t("common.confirm")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

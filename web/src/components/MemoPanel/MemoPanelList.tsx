@@ -1,20 +1,16 @@
+import { Button } from "@usememos/ui";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { type MemoDraftSeed, MemoEditor } from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import type { MemoTimeDisplay } from "@/components/MemoView/types";
-import { buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
-import { useView } from "@/contexts/ViewContext";
-import { cn } from "@/lib/utils";
+import { useDevicePreferences } from "@/hooks/useDevicePreferences";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-
-// The cards' own bottom margin sets the gap; the row's edge lines up with theirs.
-const COMPOSE_ROW_CLASS = cn(buttonVariants({ variant: "quiet", size: "sm" }), "self-start");
 
 export interface MemoPanelCompose {
   /** Where the new memo is composed, such as `calendar:<date>`; each scope keeps its own draft. */
@@ -52,7 +48,7 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
   const { selectedSpaceName, creatorUsername } = useSpaceContext();
-  const { compactMode } = useView();
+  const { compactMode } = useDevicePreferences();
   const [composingFor, setComposingFor] = useState<string>();
   const composing = composingFor === selectionKey;
   const onComposingChange = compose?.onComposingChange;
@@ -89,7 +85,7 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
           />
         ))}
       </MentionResolutionProvider>
-      {emptyText && memos.length === 0 && <p className="text-sm text-muted-foreground">{emptyText}</p>}
+      {emptyText && memos.length === 0 && <p className="mu-body text-mu-text-secondary">{emptyText}</p>}
       {compose &&
         isUserSettingsInitialized &&
         (composing ? (
@@ -105,10 +101,16 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
             onCancel={() => setComposingFor(undefined)}
           />
         ) : (
-          <button type="button" className={COMPOSE_ROW_CLASS} onClick={() => setComposingFor(selectionKey)}>
-            <PlusIcon strokeWidth={1.8} />
-            <span>{compose.label}</span>
-          </button>
+          // The cards' own bottom margin sets the gap; the row's edge lines up with theirs.
+          <Button
+            variant="ghost"
+            size="sm"
+            className="self-start"
+            icon={<PlusIcon className="mu-icon" />}
+            onClick={() => setComposingFor(selectionKey)}
+          >
+            {compose.label}
+          </Button>
         ))}
     </NewMemoProvider>
   );

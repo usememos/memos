@@ -9,12 +9,12 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/common_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { canManageMemo } from "@/utils/user";
-import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
+import { MemoBody, MemoCommentListView, MemoHeader, MemoParentStripView } from "./components";
 import MemoPinnedMark from "./components/MemoPinnedMark";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
-import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
-import { isMemoDetailPath, resolveMemoParentPage } from "./navigation";
+import { MemoViewContext } from "./MemoViewContext";
+import { isMemoDetailPath, resolveMemoParentPage, showsParentStrip } from "./navigation";
 import type { MemoViewHandle, MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
@@ -32,7 +32,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     showPinned,
     showSpace,
   } = props;
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
 
@@ -108,7 +108,10 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
-  const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+  const showParentStrip = showsParentStrip(location.pathname, memoData);
+  // A card carries one strip at most: above it for what it comments on, or below it for its comments.
+  const showCommentPreview = !isInMemoDetailPage && !showParentStrip && memoData.commentCount > 0;
+  const hasStrip = showParentStrip || showCommentPreview;
 
   // The card width is only needed by the share-image dialog. Keep feed cards
   // free of a permanent ResizeObserver and measure only while that dialog is open.
@@ -182,14 +185,28 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
 
   const article = (
     <article
-      className={cn(MEMO_CARD_BASE_CLASSES, "group/memo", showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      className={cn(
+        MEMO_CARD_BASE_CLASSES,
+        "group/memo",
+        hasStrip ? "mb-0" : "mb-2",
+        showParentStrip && "rounded-t-none",
+        showCommentPreview && "rounded-b-none",
+        className,
+      )}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      {showPinned && memoData.pinned && <MemoPinnedMark />}
-      <MemoHeader timeDisplay={timeDisplay} showCreator={showCreator} showVisibility={showVisibility} showSpace={showSpace} />
+      {/* The pinned mark steps aside while the memo is edited in place. */}
+      {showPinned && memoData.pinned && !isEditing && <MemoPinnedMark />}
+      <MemoHeader
+        cardRef={cardRef}
+        timeDisplay={timeDisplay}
+        showCreator={showCreator}
+        showVisibility={showVisibility}
+        showSpace={showSpace}
+      />
 
-      <MemoBody compact={compact} />
+      <MemoBody compact={compact} showCreator={showCreator} />
 
       {previewState.items.length > 0 && (
         <Suspense fallback={null}>
@@ -198,6 +215,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
             onOpenChange={setPreviewOpen}
             items={previewState.items}
             initialIndex={previewState.index}
+            drawingContext={{ memo: memoData, canEdit: !readonly }}
           />
         </Suspense>
       )}
@@ -210,10 +228,11 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     </article>
   );
 
-  const memoDisplay = showCommentPreview ? (
+  const memoDisplay = hasStrip ? (
     <div className="w-full mb-2">
+      {showParentStrip && <MemoParentStripView />}
       {article}
-      <MemoCommentListView />
+      {showCommentPreview && <MemoCommentListView />}
     </div>
   ) : (
     article

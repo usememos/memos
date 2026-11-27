@@ -36,9 +36,7 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
-vi.mock("react-hot-toast", () => ({
-  default: { success: vi.fn(), error: vi.fn() },
-}));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 
 const createMemo = (state: State, parent = ""): Memo =>
   ({

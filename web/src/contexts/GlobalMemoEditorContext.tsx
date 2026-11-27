@@ -3,7 +3,6 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { useLocation } from "react-router-dom";
 import { getSidebarRouteKind } from "@/components/AppSidebar/routes";
 import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -47,7 +46,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const { isUserSettingsInitialized } = useAuth();
   const desktop = useMediaQuery("md");
   const [initialHome] = useState(() => ({ location, user: currentUserName, space: selectedSpaceName }));
-  const homeAutoFocusPending = useRef(desktop && getSidebarRouteKind(location.pathname) === "home" && Boolean(currentUserName));
+  const routeKind = getSidebarRouteKind(location.pathname);
+  // The timeline a signed-in user writes into: the personal Home, or a Space's.
+  const onComposingTimeline = routeKind === "home" || (routeKind === "explore" && Boolean(selectedSpaceName));
+  const homeAutoFocusPending = useRef(desktop && onComposingTimeline && Boolean(currentUserName));
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
   // One snapshot taken when the composer opens: keyed by the user who opened it, so
   // signing out closes the composer in the same render and a different user signing
@@ -150,16 +152,14 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
       >
         {editorIsOpen && (
           <DialogPrimitive.Portal>
-            <DialogPrimitive.Backdrop className="fixed inset-0 z-overlay bg-transparent" />
+            <DialogPrimitive.Backdrop className="fixed inset-0 z-(--mu-layer-overlay) bg-transparent" />
             <DialogPrimitive.Popup
-              className="fixed inset-0 z-overlay outline-none"
+              className="fixed inset-0 z-(--mu-layer-overlay) outline-none"
               initialFocus
               finalFocus={resolveFinalFocus}
               aria-modal="true"
             >
-              <VisuallyHidden>
-                <DialogPrimitive.Title>{t("editor.new-memo")}</DialogPrimitive.Title>
-              </VisuallyHidden>
+              <DialogPrimitive.Title className="mu-visually-hidden">{t("editor.new-memo")}</DialogPrimitive.Title>
               <MemoEditor
                 autoFocus
                 draft={{ scope: "global", space: opened?.space }}
@@ -172,7 +172,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
                 onFocusModeExit={requestCloseEditor}
                 onSavingChange={reportSaving}
               />
-              <DialogPrimitive.Close className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:end-3 focus-visible:top-3 focus-visible:z-dropdown focus-visible:h-9 focus-visible:rounded-md focus-visible:bg-background focus-visible:px-3 focus-visible:text-sm focus-visible:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+              <DialogPrimitive.Close className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:end-3 focus-visible:top-3 focus-visible:z-(--mu-layer-popup) focus-visible:h-9 focus-visible:rounded-mu-md focus-visible:bg-mu-canvas focus-visible:px-3 mu-label border border-transparent mu-focus focus-visible:border-mu-focus">
                 {t("common.close")}
               </DialogPrimitive.Close>
             </DialogPrimitive.Popup>

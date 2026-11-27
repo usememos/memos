@@ -15,6 +15,5 @@ export const clientSaveOperations: MemoSaveOperations = {
       memo: create(MemoSchema, update as Record<string, unknown>),
       updateMask: create(FieldMaskSchema, { paths }),
     }),
-  createMemo: (memo, parent) =>
-    parent ? memoServiceClient.createMemoComment({ parent, comment: memo }) : memoServiceClient.createMemo({ memo }),
+  createMemo: (memo, parent) => memoServiceClient.createMemo({ memo: parent ? { ...memo, parent } : memo }),
 };

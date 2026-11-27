@@ -21,7 +21,7 @@ import (
 // NewTestingStore creates a new testing store with a fresh database.
 // Each test gets its own isolated database:
 //   - SQLite: new temp file per test
-//   - MySQL/PostgreSQL: new database per test in shared container
+//   - MySQL/MariaDB/PostgreSQL: new database per test in shared container
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	driver := getDriverFromEnv()
 	profile := getTestingProfileForDriver(t, driver)

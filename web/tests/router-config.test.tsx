@@ -1,6 +1,7 @@
 import { isValidElement } from "react";
 import { matchRoutes, type RouteObject } from "react-router-dom";
 import { describe, expect, it } from "vitest";
+import MainLayout from "@/layouts/MainLayout";
 import { ROUTES, routeConfig } from "@/router";
 import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "@/router/guards";
 import { CALENDAR_ROUTE_PATTERN, SPACE_ROUTE_PATTERN } from "@/router/routes";
@@ -41,19 +42,24 @@ function hasAncestorOfType(routes: RouteObject[], path: string, guardType: unkno
 }
 
 describe("router configuration", () => {
-  it.each([
-    "/spaces/product",
-    "/spaces/product/explore",
-    "/spaces/product/calendar/2026/09",
-    "/spaces/product/attachments",
-  ])("gates %s with authentication and Space access", (path) => {
-    const types = matchRoutes(routeConfig, path)?.map(({ route }) => elementType(route));
-    expect(types).toContain(RequireAuthRoute);
-    expect(types).toContain(SpaceRoute);
-    expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
+  it("uses the same page gutters for the timeline, memo details, and shared memos", () => {
+    for (const path of [ROUTES.EXPLORE, "memos/:uid", "memos/shares/:token"]) {
+      expect(hasAncestorOfType(routeConfig, path, MainLayout)).toBe(true);
+    }
   });
-  it("keeps unknown Space subroutes outside collection pages", () => {
-    const matches = matchRoutes(routeConfig, "/spaces/product/unknown");
+
+  it.each(["/spaces/product", "/spaces/product/calendar/2026/09", "/spaces/product/attachments"])(
+    "gates %s with authentication and Space access",
+    (path) => {
+      const types = matchRoutes(routeConfig, path)?.map(({ route }) => elementType(route));
+      expect(types).toContain(RequireAuthRoute);
+      expect(types).toContain(SpaceRoute);
+      expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
+    },
+  );
+  // A Space has one timeline, so it has no Explore page of its own.
+  it.each(["/spaces/product/unknown", "/spaces/product/explore"])("keeps %s outside collection pages", (path) => {
+    const matches = matchRoutes(routeConfig, path);
     expect(matches?.at(-1)?.route.path).toBe("*");
     expect(matches?.map(({ route }) => elementType(route))).not.toContain(SpaceRoute);
   });

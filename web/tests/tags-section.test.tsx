@@ -2,7 +2,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SIDEBAR_ROW_BOX_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SIDEBAR_ROW_SLOT_CLASSES } from "@/components/AppSidebar/SidebarRow";
-import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagsSection from "@/components/AppSidebar/TagsSection";
 import { MemoFilterProvider } from "@/contexts/MemoFilterContext";
 
@@ -26,8 +25,8 @@ describe("TagsSection", () => {
     expect(heading.parentElement).toHaveTextContent(/^common.tags$/);
 
     const trigger = screen.getByRole("button", { name: "common.tags: common.more" });
-    expect(trigger).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
-    expect(trigger.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
+    expect(trigger).toHaveClass("mu-button", "mu-button-ghost", "mu-button-icon", "mu-s-xs");
+    expect(trigger.querySelector("svg")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "common.tags: memo.layout-list" })).not.toBeInTheDocument();
     expect(screen.queryByRole("menuitemcheckbox")).not.toBeInTheDocument();
   });

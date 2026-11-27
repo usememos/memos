@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 /** How the header names the memo's time: relative to now, or just the clock time for lists that already name the day. */
@@ -25,6 +26,7 @@ export interface MemoViewHandle {
 }
 
 export interface MemoHeaderProps {
+  cardRef?: RefObject<HTMLElement | null>;
   timeDisplay?: MemoTimeDisplay;
   showCreator?: boolean;
   showVisibility?: boolean;
@@ -33,4 +35,6 @@ export interface MemoHeaderProps {
 
 export interface MemoBodyProps {
   compact?: boolean;
+  /** Mirrors the header's: while editing, the session's timestamp row leads with the creator. */
+  showCreator?: boolean;
 }

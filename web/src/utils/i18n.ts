@@ -1,4 +1,5 @@
-import { FallbackLngObjList } from "i18next";
+import { FallbackLngObjList, TOptions } from "i18next";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import i18n, { locales, TLocale } from "@/i18n";
 import enTranslation from "@/locales/en.json";
@@ -80,16 +81,23 @@ type NestedKeyOf<T, K = keyof T> = K extends keyof T & (string | number)
   ? `${K}` | (T[K] extends object ? `${K}.${NestedKeyOf<T[K]>}` : never)
   : never;
 
+// A plural message is stored as `key_one`, `key_other`, … and looked up by its base `key`
+// with a `count`, so i18next picks each language's own plural form.
+type PluralBase<K> = K extends `${infer Base}_other` ? Base : never;
+
 // Represents the keys of nested translation objects.
-export type Translations = NestedKeyOf<typeof enTranslation>;
+export type Translations = NestedKeyOf<typeof enTranslation> | PluralBase<NestedKeyOf<typeof enTranslation>>;
 
 // Represents a typed translation function.
 type TypedT = (key: Translations, params?: Record<string, unknown>) => string;
 
 export const useTranslate = (): TypedT => {
-  const { t } = useTranslation<Translations>();
-  return t;
+  const { t } = useTranslation();
+  return useCallback<TypedT>((key, params) => t(key, params as TOptions), [t]);
 };
+
+/** The same typed lookup for code outside React components, such as error helpers. */
+export const translate: TypedT = (key, params) => i18n.t(key, params as TOptions);
 
 export const isValidLocale = (locale: string | undefined | null): boolean => {
   if (!locale) return false;

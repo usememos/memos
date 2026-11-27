@@ -18,6 +18,8 @@ dist/
 .idea/
 .vscode/
 /.worktrees/
+# Local browser automation screenshots, snapshots, logs and audit scripts
+/.playwright-mcp/
 # Project-scoped pnpm store, created under whichever directory pnpm runs in
 # when --config.store-dir is set without an existing store; it contains a
 # symlink back to the workspace.

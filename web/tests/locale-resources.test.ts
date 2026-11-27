@@ -19,7 +19,7 @@ const placeholders = (value: string) =>
 const source = flatten(english);
 const locales = import.meta.glob<{ default: Messages }>("../src/locales/*.json", { eager: true });
 const sourceFiles = import.meta.glob<string>(
-  ["../src/**/*.{ts,tsx}", "!../src/types/proto/**", "!../src/**/*.d.ts", "!../src/**/*.test.{ts,tsx}"],
+  ["../src/**/*.{ts,tsx}", "!../src/types/proto/**", "!../src/lib/emoji-data.ts", "!../src/**/*.d.ts", "!../src/**/*.test.{ts,tsx}"],
   { eager: true, query: "?raw", import: "default" },
 );
 
@@ -31,6 +31,7 @@ const referenceFor = (key: string) => source[key] ?? (pluralSuffix.test(key) ? s
 // when the matching t() call exists; never exempt an entire namespace from checks.
 const dynamicKeyParts: Record<string, readonly string[]> = {
   "attachment-library.tabs.${}": ["audio", "documents", "media"],
+  "editor.drawing.color-${}": ["blue", "gray", "green", "ink", "orange", "red", "teal", "violet"],
   "live-update.${}": ["connected", "connecting", "disconnected"],
   "memo.${}": ["layout-auto", "layout-columns", "layout-list"],
   "memo.${}-description": ["layout-auto", "layout-columns", "layout-list"],
@@ -174,12 +175,6 @@ describe("locale resources", () => {
 
       expect(messages["setting.storage.filepath-template-description"]).toContain("assets/{timestamp}_{uuid}_{filename}");
       expect(messages["setting.memo-export.import-detail"]).toMatch(/zip/i);
-      for (const key of ["transcription-model-placeholder-openai", "transcription-model-placeholder-gemini"]) {
-        expect(messages[`setting.ai.${key}`]).toBe(source[`setting.ai.${key}`]);
-      }
-      for (const model of ["whisper-1", "gpt-4o-transcribe", "whisper-large-v3-turbo"]) {
-        expect(messages["setting.ai.transcription-model-help"]).toContain(model);
-      }
     });
   }
 });

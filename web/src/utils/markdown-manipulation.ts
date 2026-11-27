@@ -1,11 +1,8 @@
 // Utilities for manipulating markdown strings using AST parsing
-// Uses mdast for accurate task detection that properly handles code blocks
+// Uses the editor's syntax tree for accurate task detection that properly handles code blocks
 
-import type { ListItem } from "mdast";
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
-import { visit } from "unist-util-visit";
+import { visit } from "@usememos/editor";
+import { parseMemoAst } from "@/lib/memo-ast";
 
 interface TaskInfo {
   lineNumber: number;
@@ -15,18 +12,13 @@ interface TaskInfo {
 // Extract all task list items from markdown using AST parsing
 // This correctly ignores task-like patterns inside code blocks
 function extractTasksFromAst(markdown: string): TaskInfo[] {
-  const tree = fromMarkdown(markdown, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
-
   const tasks: TaskInfo[] = [];
 
-  visit(tree, "listItem", (node: ListItem) => {
-    // Only process actual task list items (those with a checkbox)
-    if (typeof node.checked === "boolean" && node.position?.start.line) {
+  visit(parseMemoAst(markdown), (node) => {
+    // Only process actual task list items (those with a checkbox); a list item's first line holds its marker
+    if (node.type === "listItem" && node.task && node.lines) {
       tasks.push({
-        lineNumber: node.position.start.line - 1, // Convert to 0-based
+        lineNumber: node.lines.start - 1, // Convert to 0-based
         checked: node.checked,
       });
     }
@@ -138,18 +130,13 @@ export function createUniqueSlugGenerator(reservedSlugs: Iterable<string> = []):
 }
 
 export function extractTasks(markdown: string): TaskItem[] {
-  const tree = fromMarkdown(markdown, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
-
   const lines = markdown.split("\n");
   const tasks: TaskItem[] = [];
   let taskIndex = 0;
 
-  visit(tree, "listItem", (node: ListItem) => {
-    if (typeof node.checked === "boolean" && node.position?.start.line) {
-      const lineNumber = node.position.start.line - 1;
+  visit(parseMemoAst(markdown), (node) => {
+    if (node.type === "listItem" && node.task && node.lines) {
+      const lineNumber = node.lines.start - 1;
       const line = lines[lineNumber];
 
       // Extract indentation

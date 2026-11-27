@@ -32,6 +32,11 @@ export const editorActions = {
     payload: files,
   }),
 
+  setAttachmentOrder: (order: string[]): EditorAction => ({
+    type: "SET_ATTACHMENT_ORDER",
+    payload: order,
+  }),
+
   toggleFocusMode: (): EditorAction => ({
     type: "TOGGLE_FOCUS_MODE",
   }),
@@ -51,11 +56,6 @@ export const editorActions = {
     payload: timestamps,
   }),
 
-  setJustSaved: (value: boolean): EditorAction => ({
-    type: "SET_JUST_SAVED",
-    payload: value,
-  }),
-
   setRecorderBusy: (value: boolean): EditorAction => ({
     type: "SET_RECORDER_BUSY",
     payload: value,
@@ -65,6 +65,10 @@ export const editorActions = {
     type: "ACCEPT_SUGGESTION",
     payload: id,
   }),
+
+  setDrawingSaveError: (value: EditorState["drawingSaveError"]): EditorAction => ({ type: "SET_DRAWING_SAVE_ERROR", payload: value }),
+
+  setDrawingMemoUpdate: (value: boolean): EditorAction => ({ type: "SET_DRAWING_MEMO_UPDATE", payload: value }),
 
   reset: (): EditorAction => ({
     type: "RESET",

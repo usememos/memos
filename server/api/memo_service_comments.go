@@ -2,97 +2,38 @@ package api
 
 import (
 	"context"
-	stderrors "errors"
 	"log/slog"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-// CreateMemoComment creates a comment on an existing memo.
-func (s *APIService) CreateMemoComment(ctx context.Context, request *apipb.CreateMemoCommentRequest) (*apipb.Memo, error) {
-	memoUID, err := ExtractMemoUIDFromName(request.Parent)
+// resolveMemoCommentParent loads the memo a new comment names as its parent
+// and checks that the caller may comment on it: the parent must be readable by
+// the caller and not archived.
+func (s *APIService) resolveMemoCommentParent(ctx context.Context, parentName string) (*store.Memo, error) {
+	parentUID, err := ExtractMemoUIDFromName(parentName)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent memo name: %v", err)
 	}
-	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	parent, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &parentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
-	if relatedMemo == nil {
+	if parent == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-
-	// Check memo visibility before allowing comment.
-	user, err := s.fetchCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
-	}
-	if user == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
+	if err := s.checkMemoReadAccess(ctx, parent); err != nil {
 		return nil, err
 	}
-	if err := s.checkMemoReadAccess(ctx, relatedMemo); err != nil {
-		return nil, err
-	}
-	if relatedMemo.RowStatus != store.Normal {
+	if parent.RowStatus != store.Normal {
 		return nil, status.Errorf(codes.FailedPrecondition, "cannot comment on an archived memo")
 	}
-	if request.Comment == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "comment is required")
-	}
-
-	memoUID, err = ValidateAndGenerateUID(request.CommentId)
-	if err != nil {
-		return nil, err
-	}
-	if memoUID == relatedMemo.UID {
-		return nil, status.Error(codes.InvalidArgument, "a memo cannot comment on itself")
-	}
-	prepared, err := s.prepareMemoCreate(ctx, user, request.Comment, memoUID)
-	if err != nil {
-		return nil, err
-	}
-	// A comment is a memo row, so it counts against the memo limit too.
-	if err := s.checkMemoQuota(ctx, user.ID); err != nil {
-		return nil, err
-	}
-	if err := s.createMemoWithMutation(ctx, user, prepared.memo, &relatedMemo.ID, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
-		return nil, mapMemoCreateError(err, memoUID, "failed to create memo comment")
-	}
-	memo := prepared.memo
-	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &memo.ID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to load memo comment attachments")
-	}
-	relations, err := s.loadMemoRelations(ctx, memo)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to load memo relations")
-	}
-	memoComment, err := s.convertMemoFromStore(ctx, memo, nil, attachments, relations)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to convert memo comment")
-	}
-
-	s.createMemoCommentNotification(ctx, user.ID, memo, relatedMemo)
-
-	if err := s.DispatchMemoCommentCreatedWebhook(ctx, memo, relatedMemo, relatedMemo.CreatorID); err != nil {
-		slog.Warn("Failed to dispatch memo comment created webhook", slog.Any("err", err))
-	}
-
-	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, relatedMemo, "")
-
-	s.SSEHub.publishMemoChanged()
-
-	return memoComment, nil
+	return parent, nil
 }
 
 // createMemoCommentNotification records the comment in the related memo
@@ -134,132 +75,57 @@ func (s *APIService) createMemoCommentNotification(ctx context.Context, creatorI
 	}
 }
 
-func (s *APIService) ListMemoComments(ctx context.Context, request *apipb.ListMemoCommentsRequest) (*apipb.ListMemoCommentsResponse, error) {
-	memoUID, err := ExtractMemoUIDFromName(request.Parent)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo")
-	}
-	if memo == nil {
-		return nil, status.Errorf(codes.NotFound, "memo not found")
-	}
-	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
-		return nil, err
-	}
-	accessScope, _, err := s.resolveMemoAccessScope(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "%v", err)
-	}
-
-	var limit, offset int
-	if request.PageToken != "" {
-		var pageToken apipb.PageToken
-		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
-		}
-		limit = normalizePageSize(pageToken.Limit)
-		offset = max(int(pageToken.Offset), 0)
-	} else {
-		limit = normalizePageSize(request.PageSize)
-	}
-	limitPlusOne := limit + 1
-	normal := store.Normal
-	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
-		CommentContextMemoID: &memo.ID,
-		RowStatus:            &normal,
-		Access:               accessScope,
-		Limit:                &limitPlusOne,
-		Offset:               &offset,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memo comments")
-	}
-
-	nextPageToken := ""
-	if len(memos) == limitPlusOne {
-		memos = memos[:limit]
-		nextPageToken, err = getPageToken(limit, offset+limit)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
-		}
-	}
-
+// batchCountMemoComments returns, for each of the memos that has any, the
+// number of active comments directly on it that the caller can read. Each
+// comment is authorized by its own audience, the same rule a comment listing
+// applies.
+func (s *APIService) batchCountMemoComments(ctx context.Context, memos []*store.Memo) (map[int32]int32, error) {
+	counts := make(map[int32]int32)
 	if len(memos) == 0 {
-		response := &apipb.ListMemoCommentsResponse{
-			Comments:      []*apipb.Memo{},
-			NextPageToken: nextPageToken,
-		}
-		return response, nil
+		return counts, nil
 	}
-
 	memoIDs := make([]int32, 0, len(memos))
-
 	for _, memo := range memos {
 		memoIDs = append(memoIDs, memo.ID)
 	}
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{MemoIDList: memoIDs})
+	commentType := store.MemoRelationComment
+	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
+		RelatedMemoIDList: memoIDs,
+		Type:              &commentType,
+	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		return nil, errors.Wrap(err, "failed to list comment relations")
+	}
+	if len(relations) == 0 {
+		return counts, nil
 	}
 
-	memoReactionsMap := make(map[int32][]*store.Reaction)
-	for _, reaction := range reactions {
-		memoReactionsMap[reaction.MemoID] = append(memoReactionsMap[reaction.MemoID], reaction)
+	commentIDs := make([]int32, 0, len(relations))
+	for _, relation := range relations {
+		commentIDs = append(commentIDs, relation.MemoID)
 	}
-
-	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoIDList: memoIDs})
+	accessScope, _, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list attachments")
+		return nil, err
 	}
-	attachmentMap := make(map[int32][]*store.Attachment)
-	for _, attachment := range attachments {
-		attachmentMap[*attachment.MemoID] = append(attachmentMap[*attachment.MemoID], attachment)
-	}
-
-	// RELATIONS (batch load to avoid N+1)
-	relationMap, err := s.batchConvertMemoRelations(ctx, memos, false)
+	normal := store.Normal
+	comments, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		IDList:         commentIDs,
+		RowStatus:      &normal,
+		ExcludeContent: true,
+		Access:         accessScope,
+	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
+		return nil, errors.Wrap(err, "failed to list comment memos")
 	}
-	creatorIDs := make([]int32, 0, len(memos)+len(reactions))
-	for _, memo := range memos {
-		creatorIDs = append(creatorIDs, memo.CreatorID)
+	readable := make(map[int32]struct{}, len(comments))
+	for _, comment := range comments {
+		readable[comment.ID] = struct{}{}
 	}
-	for _, reaction := range reactions {
-		creatorIDs = append(creatorIDs, reaction.CreatorID)
-	}
-	creatorMap, err := s.listUsersByID(ctx, creatorIDs)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
-	}
-	var memosResponse []*apipb.Memo
-	for _, m := range memos {
-		reactions := memoReactionsMap[m.ID]
-		attachments := attachmentMap[m.ID]
-		relations := relationMap[m.ID]
-
-		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
-		if err != nil {
-			if stderrors.Is(err, errMemoCreatorNotFound) {
-				slog.Warn("Skipping memo comment with missing creator",
-					slog.Int64("memo_id", int64(m.ID)),
-					slog.String("memo_uid", m.UID),
-					slog.Int64("creator_id", int64(m.CreatorID)),
-					slog.String("parent", request.Parent),
-				)
-				continue
-			}
-			return nil, errors.Wrap(err, "failed to convert memo")
+	for _, relation := range relations {
+		if _, ok := readable[relation.MemoID]; ok {
+			counts[relation.RelatedMemoID]++
 		}
-		memosResponse = append(memosResponse, memoMessage)
 	}
-
-	response := &apipb.ListMemoCommentsResponse{
-		Comments:      memosResponse,
-		NextPageToken: nextPageToken,
-	}
-	return response, nil
+	return counts, nil
 }

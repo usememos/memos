@@ -1,6 +1,6 @@
 # Memo Attachment and Image Filters Design
 
-Status: Draft (implemented, not yet merged)
+Status: Implemented in 26.10.0
 
 Date: 2026-10-22
 
@@ -250,3 +250,28 @@ The `FieldKindExists` kind makes further relation-backed flags one schema entry 
 
 `title`, which the payload already stores, is still not a filter field. A scalar JSON string field would allow `title.contains(...)`
 and a `has_title` presence flag; it is a content fact and belongs in the payload where it already is.
+
+## Amendments
+
+### 2026-11-15 (26.11.1) — Attachment lookup indexes
+
+The deferred lookup index is added in schema 26.11.1 after measurements showed
+that SQLite attachment filters repeatedly scan blob overflow pages. SQLite and
+MySQL use `(memo_id, type)` to cover both existence predicates. PostgreSQL uses
+`memo_id` alone because its unbounded MIME text can exceed the B-tree entry limit.
+
+Index creation runs in the existing startup migration. Upgrades require stopping
+all instances and other writers, migrating once, then restarting, as described in
+[the migration procedure](../../store/migration/README.md#coordinating-an-upgrade).
+The migrations reject conflicting index definitions; MySQL also accepts a
+completed index when retrying after an implicit DDL commit.
+
+### 2026-11-16 (26.11.2) — Simplify index migration scripts
+
+The attachment lookup index migration adds a performance index without auditing
+existing definitions. MySQL uses ordinary `CREATE INDEX`, matching its 26.10
+migrations; SQLite and PostgreSQL use `CREATE INDEX IF NOT EXISTS`. Migration
+versions handle restarts after a completed upgrade. Recovery after a partially
+committed MySQL migration remains an execution-wide concern, with no special
+recovery SQL in this script. Tests verify fresh installs, ordinary upgrades,
+data preservation, and restarts after successful upgrades.

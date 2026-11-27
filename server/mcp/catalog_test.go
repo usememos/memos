@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"encoding/json"
+	"maps"
 	"strconv"
 	"strings"
 	"testing"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
-	require.Len(t, curatedOperationIDs, 36)
+	require.Len(t, curatedOperationIDs, 34)
 
 	for _, operationID := range curatedOperationIDs {
 		require.NotContains(t, operationID, "Admin")
@@ -129,14 +130,6 @@ func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
 			omittedProperties: []string{"name"},
 		},
 		{
-			name:        "comment defaults state and visibility",
-			operationID: "MemoService_CreateMemoComment",
-			arguments: map[string]any{
-				"memo": "memos/abc123",
-				"body": map[string]any{"content": "comment"},
-			},
-		},
-		{
 			name:        "set attachments gets name from path",
 			operationID: "MemoService_SetMemoAttachments",
 			arguments: map[string]any{
@@ -155,7 +148,7 @@ func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
 			omittedProperties: []string{"name"},
 		},
 		{
-			name:        "upsert reaction gets name from path",
+			name:        "upsert reaction gets parent from path",
 			operationID: "MemoService_UpsertMemoReaction",
 			arguments: map[string]any{
 				"memo": "memos/abc123",
@@ -165,7 +158,7 @@ func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
 					},
 				},
 			},
-			omittedProperties: []string{"name"},
+			omittedProperties: []string{"parent"},
 		},
 	}
 
@@ -374,6 +367,29 @@ func TestValidateOperationOverridesRejectsStaleKey(t *testing.T) {
 	// override.
 	delete(registry, "MemoService_UpdateMemo")
 	require.ErrorContains(t, validateOperationOverrides(registry), "MemoService_UpdateMemo")
+}
+
+func TestValidateOperationOverridesRejectsStaleOmittedProperty(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	// A binding rename (name -> parent) must be reported instead of leaving the
+	// path-bound field exposed in the body schema.
+	operation := registry["MemoService_UpsertMemoReaction"]
+	renamed := cloneSchema(operation.RequestBodySchema)
+	properties := maps.Clone(schemaProperties(renamed["properties"]))
+	properties["name"] = properties["parent"]
+	delete(properties, "parent")
+	renamed["properties"] = properties
+	registry["MemoService_UpsertMemoReaction"] = &openAPIOperation{
+		OperationID:       operation.OperationID,
+		RequestBodySchema: renamed,
+	}
+	err = validateOperationOverrides(registry)
+	require.ErrorContains(t, err, `omits property "parent"`)
+	require.ErrorContains(t, err, "MemoService_UpsertMemoReaction")
 }
 
 func TestBuildCuratedToolsRejectsDuplicateToolNames(t *testing.T) {

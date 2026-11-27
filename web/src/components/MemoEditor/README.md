@@ -23,9 +23,11 @@ MemoEditor                 memo level: name | draft seed, mode, data, draft stor
     └── Editor             MemoMarkdown editable, with the composer's extensions, behind EditorController
 ```
 
-- **`MemoMarkdown.tsx`** binds the editor to memos once: the memo Markdown dialect, the theme in the app's CSS variables, translated labels, the image and link URL policy, the memo syntax extensions (math, footnotes, tags, mentions, highlighted code, Mermaid diagrams drawn by Pele, sanitized HTML) and the stylesheet. `useMemoDecorations` is the one flow for tag colors and resolved mentions, with one redecorate effect. Everything a surface adds sits around this component; nothing in memos styles the editor's own classes. The tag and mention classes memos hands the editor apply in source mode too, so the parts that draw a pill take the `rich:` variant (index.css), which is everything outside the editor's `.mbe-source-mode` root; source mode shows a tag as text in its color.
-- **`view/`** is the read-only surface over `MemoMarkdown`: tags and mentions navigate, in-memo anchors scroll, a paragraph that is one bare link becomes a preview card through the editor's block view (`linkCards.ts`), the page's search matches are painted, and heading ids match the outline. Tag and mention clicks arrive through the editor's `onClick` callbacks, so nothing in memos matches the editor's class names or mutates its DOM. Previews that have Markdown but no memo query (the link-memo search, the share image) use `MemoContentView` directly.
+- **`MemoMarkdown.tsx`** binds the editor to memos once: the memo Markdown dialect, the theme in the app's CSS variables, translated labels, the image and link URL policy, the memo syntax extensions (math, footnotes, tags, mentions, highlighted code, Mermaid diagrams drawn by Pele), raw HTML through the editor's `sanitizeHtml` option (`memoSanitizeHtml`: DOMPurify with memos' allowlist in `lib/html-sanitize-schema.ts`, trusted iframe hosts, and link and image defaults; loaded on first use) and the stylesheet. `useMemoDecorations` is the one flow for tag colors and resolved mentions, with one redecorate effect. Everything a surface adds sits around this component; nothing in memos styles the editor's own classes. The tag and mention classes memos hands the editor apply in source mode too, so the parts that draw an inline tint take the `rich:` variant (index.css), which is everything outside the editor's `.mbe-source-mode` root; source mode shows a tag as text in its color.
+- **`view/`** is the read-only surface over `MemoMarkdown`: tags and mentions navigate, in-memo anchors scroll, a paragraph that is one bare link becomes a preview card through the editor's block view (`linkCards.ts`), the page's search matches are painted, and heading ids match the outline. Tag and mention clicks arrive through the editor's `onClick` callbacks. Read-only tags with a click handler are focusable buttons; Enter activates on press and Space on release through the same click callback. Editable tags remain text. Nothing in memos matches the editor's class names or mutates its DOM. Previews that have Markdown but no memo query (the link-memo search, the share image) use `MemoContentView` directly.
 - **`edit/`** is the editing surface: `EditSession` renders the chrome (timestamp, attachments, suggestions, toolbar, focus mode, audio recording) over the draft store `MemoEditor` provides, persists the draft while open, and saves through the memo mutations. `Editor.tsx` is the composer's editor: `MemoMarkdown` editable with the composer's own extensions (`#tag` and `:emoji` autocomplete, file paste and drop), behind the `EditorController` contract in `controller.ts`.
+
+Memo content uses 16px text on 24px lines with 12px between blocks; the editor keeps list rows compact. Rich-text code blocks use the full `well` fill so they remain distinct from the surrounding surface in Dark; Markdown source mode stays transparent. Task items use `control-edge` for their checkbox border and darken Dark's pale accent behind the editor's white checkmark. Callouts use the app's accent, success, warning and danger colors. Custom tag tints bound lightness and sRGB channels so black and white remain visible across themes without coloring the text.
 
 Code blocks use lazy-loaded `@pierre/highlights` tokens as editor decorations, without an HTML conversion. GitHub Light and GitHub Dark Dimmed colors follow the document's color scheme; ordinary text and structural punctuation keep the editor's text color. Unsupported languages, unavailable WebAssembly, or browsers without `light-dark()` colors leave the code as plain text. Highlighting never changes the saved Markdown.
 
@@ -39,7 +41,7 @@ Code blocks use lazy-loaded `@pierre/highlights` tokens as editor decorations, w
 
 ### State
 
-A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscribe to one slice via `useEditorSelector`, so typing re-renders only what reads `content`. `state.content` is the document as Markdown and the single source of truth. UI flags (focus mode, loading, pending inline images), metadata (visibility, Space, attachments, relations, location), timestamps, local files awaiting upload and accepted suggestions live beside it.
+A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscribe to one slice via `useEditorSelector`, so typing re-renders only what reads `content`. `state.content` is the document as Markdown and the single source of truth. UI flags (focus mode, loading, pending inline images), metadata (visibility, Space, attachments, relations, location), timestamps, local files awaiting upload, the shared order of saved attachments and new files (`attachmentOrder`) and accepted suggestions live beside it.
 
 ### The editor contract
 
@@ -47,15 +49,46 @@ A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscrib
 
 ### Formatting and source mode
 
-Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text, with its syntax highlighted, and edits it as text; `useSourceMode` remembers the choice per device. To people it is "Markdown mode", the ＋ menu's item with the pilcrow (the word processors' "show formatting marks" glyph), checked while on; in code it keeps the editor's name, source mode. Nothing in the editor names the mode: the text shows it, as it does in Obsidian and GitLab, and the memo's chrome stays the memo's. Switching changes no text and emits no change. In source mode the toolbar, slash menu, block handle and link card do not show; the `#tag` and `:emoji` popups open as in rich mode, the formatting keys edit the Markdown, and the checklist chip toggles the task marker on the caret's line through the same `toggleTaskList` command. The controller reads tags and checklists from the text parsed as a memo. The source text is in the body font (the editor's `sourceFont` token is left at its default) so a switch keeps the text's rhythm; nothing in memos targets the editor's source classes.
+Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text, with its syntax highlighted, and edits it as text; `useSourceMode` (`@/hooks/useSourceMode`) keeps the choice in the account's `EDITOR` user setting (`source_mode`), so it follows the user to every device; a switch applies at once and reverts if saving fails, and Settings → Editor changes the same value. To people it is "Markdown mode", the ＋ menu's item with the code glyph (Lucide `CodeXml`), checked while on; in code it keeps the editor's name, source mode. Switching changes no text and emits no change. In source mode the toolbar, slash menu, block handle and link card do not show; the `#tag` and `:emoji` popups open as in rich mode, the formatting keys edit the Markdown, and the checklist chip toggles the task marker on the caret's line through the same `toggleTaskList` command. The controller reads tags and checklists from the text parsed as a memo. The source text is in the body font (the editor's `sourceFont` token is left at its default) so a switch keeps the text's rhythm; nothing in memos targets the editor's source classes.
 
 ### Saving
 
-`useMemoSave` validates the draft, uploads local files, and hands the save to `memoService.save` with the operations it runs: the server's current copy (fetched into the detail cache to diff against), `useUpdateMemo` and `useCreateMemo`. Hosts that close after saving (edit, comment) hold a brief "Saved" confirmation before the session resets; the in-place composer resets at once. Uploads that landed before a failed save stay on the draft as attachments so a retry does not upload them again.
+`useMemoSave` validates the draft, uploads local files, and hands the save to `memoService.save` with the operations it runs: the server's current copy (fetched into the detail cache to diff against), `useUpdateMemo` and `useCreateMemo`. A successful save resets the session and notifies the host immediately; editing and comment hosts close without a timed confirmation, and the in-place composer is ready for the next memo. The commit button stays mounted with its original label through validation and saving; its spinner and any drawing-save error use the same leading slot. Uploads that landed before a failed save stay on the draft as attachments so a retry does not upload them again. The save keeps the draft's attachment order (`edit/utils/attachmentOrder.ts`): new files land where they were dragged among the saved ones, not after them.
+
+### Attachments, links and place
+
+The draft's attachments take the saved memo's shape: images, videos and drawings are a gallery with the saved memo's arrangement at the composer's 10rem height (`resolveEditorGalleryLayout`), and audio and files are rows in one headerless list that continues with the draft's links and place. The rows' glyphs say what each is. Saved attachments and new files share one order, a list of keys (an attachment's name, a new file's preview URL, or for an edited drawing the name of the attachment it replaces); it stays empty until the first reorder. Tiles reorder by drag (a long press on touch) or Alt + arrow keys; rows by their grip (drag, or arrow keys on the focused grip). `useDragReorder` does this on pointer events, without a drag library. Links and the place have no order. A tile's actions (insert into the text, edit a drawing, remove) are dark keys in its corner on hover, or one More menu on touch; "New" and "Edited" labels mark files not saved yet. While a memo is edited in place, the memos that link to it stay listed, read-only.
+
+### Drawings
+
+The contract and acceptance cases are in
+[`docs/design/drawing-annotation-and-recovery.md`](../../../../docs/design/drawing-annotation-and-recovery.md).
+Canvas is pinned to `26.11.3`; its editable PNG remains an ordinary image outside the drawing UI.
+
+The insert menu starts a drawing. Ordinary local and instance-hosted images offer **Markup**; editable PNGs offer
+**Edit markup**. Annotation loads the original bytes, opens a locked background with a clean undo baseline, and starts with red
+ink. Applying it keeps the original and inserts a new `.canvas.png` beside it. Saved image previews provide the same annotation
+flow, with **Save copy** binding directly to that memo. External images and motion-photo groups are excluded.
+
+The sheet has one short commit action: **Add** for new work, **Save** for edits, and **Save copy** for direct annotation or a copy
+required by ownership. The editor's own save uploads pending files. An owned saved drawing uses `LocalFile.replaces`, preserving
+its attachment name and links. Input is frozen before export until the host accepts or rejects it. Retries retain acknowledged
+uploads in memory and finish the remaining bind or timestamp update; partial failures show an exception icon and tooltip.
+
+This first release has no Memos markup-draft UI or persistence. **Close** confirms discarding unsaved changes; it does not retain a
+recoverable markup. There is no Continue entry, no markup-dependent memo-save blocker, and no permanent More/Download/Discard menu.
+Normal states add no copy or badges to the canvas. Viewing and editing share one dialog and Canvas instance, retaining the visible content, pan and zoom across mode changes. Both modes keep a ghost X at the top left and the current action at the top right, without bordered action containers or a visible mode heading. A live zoom percentage opens the same four-action zoom menu in both modes (zoom in, zoom out, fit, reset to 100%). The trigger stays at the bottom left, above the phone tools bar and clear of the safe area. Editing adds the tools bar at the top center on desktop and at the bottom on phones. Available phone Undo/Redo actions follow X as quiet ghost icons; unavailable history actions are omitted. Returning to view focuses Edit; discarding restores the accepted scene.
+
+Canvas `26.11.3` provides checkpoints for a future recovery integration. The current editor's text-only localStorage draft behavior
+is unchanged and excludes local file bytes. The server preserves editable PNGs unchanged (`server/fileserver/drawing_png_test.go`).
+Browser regressions live in `tests/browser/`: run `pnpm test:drawings` after `pnpm exec playwright install chromium`. They verify
+image preparation, original bytes/order, active Chinese text at export, desktop/360px controls, and view/edit content, viewport, focus and discard behavior.
 
 ### Suggestions
 
 Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; edits and comments show none. `EditorSuggestions` hides until the draft has text, drops suggestions already satisfied or accepted, and shows at most three. Acceptance history lives in the store so Undo does not immediately resuggest, and clears with the draft.
+
+When text generation is configured, the `#` picker also offers **Suggest tags with AI** below the saved tags it lists; with no tag to list it shows the command only when the picker is asked for (Ctrl+Space). Choosing it removes the active search token and sends the draft with up to 64 frequently used personal tags. Returned tags are added after the contextual tags, checklist and visibility suggestions already in the row, beyond their three slots, so a late answer moves nothing. An empty answer stays until the draft is cleared and offers Retry once the draft has changed; a spent hourly budget says so without Retry. Each click applies one suggestion to the draft.
 
 ### Presentation: in a card, inline, hosted
 
@@ -63,11 +96,15 @@ Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; ed
 - **Inline** (Home, panels): the session brings its own frame. The ＋ menu offers focus mode, which expands it over the page; the exit button minimizes it back.
 - **Hosted** (`onFocusModeExit`): a host presents the session full-screen and owns that frame (`contexts/GlobalMemoEditorContext.tsx`). It mounts straight into focus mode and exits by calling back to dismiss the host.
 
+Focus mode is a sheet narrower than the page (`max-w-3xl`): its header, text and footer share one left edge, and the text is set larger (`MEMO_FOCUS_EDITOR_THEME`). Its header row shows only the memo's time on the left, as `TimestampPopover`: the time control once the memo has one (an edit, or a new memo dated from the calendar), otherwise "Now" in the viewer's language. The button that leaves the frame is on the right.
+
 The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded. A host that knows an editor is coming calls `preloadMemoEditing()`: the router loads it with the Home page for a signed-in user, so the composer renders with the page, and the comment section loads it while the pointer is on its button. Until it is loaded a new draft shows a still of the empty composer, the same frame, placeholder line and toolbar height, so nothing moves when the session takes its place.
 
 ### Destination and visibility
 
-`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. New top-level memos and edits of top-level memos the user can manage offer the Space row; a draft seed's `space` fixes a new memo's placement; comments never offer it because their Space is their parent's. An edit that changes the Space sends `space` and `visibility` together so the server validates the move as one transition.
+`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. The toolbar button and menu use the same audience name. When the toolbar is narrow, the Space name shortens first; the open menu wraps long labels. New top-level memos and edits of top-level memos the user can manage offer the Space row; a draft seed's `space` fixes a new memo's placement; comments never offer it because their Space is their parent's.
+
+A new draft starts with the audience of where it is written (`defaultVisibilityFor` in `edit/initialState.ts`), and returns to it after each save: a memo composed into a Space is for the Space's members, a comment takes its parent's audience, and anything else takes the author's default. Choosing a Space in a new memo's menu moves an untouched audience to the Space's members, and leaving the Space moves it back. A comment that takes the Space audience is saved in its parent's Space; the parent is read from whatever query holds it, so a comment whose parent is not loaded starts from the author's default. A restored draft keeps its own audience. An edit that changes the Space sends `space` and `visibility` together so the server validates the move as one transition.
 
 ## Directory structure
 
@@ -91,6 +128,7 @@ MemoEditor/
 ## Testing
 
 - `tests/memo-record.test.tsx`: reads by name, freshness, optimistic patches, the comment mutations.
+- `tests/browser/editor-style.spec.ts`: source-mode transparency and rich-text code backgrounds in Light, Dark and Paper; run `pnpm exec playwright test --config tests/browser/editor-style.config.ts` from `web/`.
 - `tests/memo-editor-view.test.tsx`: view mode by name, task ticking through the mutation.
 - `tests/memo-content-view.test.tsx`, `tests/editor.test.tsx`: the surfaces over the binding.
 - `tests/use-memo-init.test.tsx`, `tests/draft-key.test.ts`, `tests/use-auto-save.test.tsx`: drafts and keys.

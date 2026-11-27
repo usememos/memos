@@ -29,8 +29,10 @@ import { State } from "@/types/proto/api/common_pb";
 
 const wrapper = ({ children }: { children: ReactNode }) => children as never;
 
+// The hook buckets by the viewer's local calendar day, so build fixtures at
+// local noon: UTC midnight is the previous day in time zones west of UTC.
 const ts = (year: number, month: number, day: number) => ({
-  seconds: BigInt(Math.floor(Date.UTC(year, month - 1, day) / 1000)),
+  seconds: BigInt(Math.floor(new Date(year, month - 1, day, 12).getTime() / 1000)),
   nanos: 0,
 });
 

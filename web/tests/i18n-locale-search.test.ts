@@ -40,7 +40,11 @@ describe("locale search helpers", () => {
   });
 
   it("keeps Hebrew keys within the current English catalog", () => {
-    expect(flattenTranslationKeys(enTranslation).sort()).toEqual(expect.arrayContaining(flattenTranslationKeys(heTranslation).sort()));
+    // Hebrew plurals have a `two` category that English lacks; like tests/locale-resources.test.ts,
+    // accept an extra plural category when English has the message's `_other` form.
+    const englishKeys = new Set(flattenTranslationKeys(enTranslation));
+    const inEnglish = (key: string) => englishKeys.has(key) || englishKeys.has(key.replace(/_(zero|one|two|few|many|other)$/, "_other"));
+    expect(flattenTranslationKeys(heTranslation).filter((key) => !inEnglish(key))).toEqual([]);
     expect(heTranslation.setting).toHaveProperty("ai");
     expect(heTranslation.setting).toHaveProperty("notification");
     expect(heTranslation.auth).not.toHaveProperty("host-tip");

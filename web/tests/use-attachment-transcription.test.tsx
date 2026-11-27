@@ -1,13 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { act, renderHook } from "@testing-library/react";
-import { toast } from "react-hot-toast";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useAttachmentTranscription } from "@/components/MemoEditor/edit/hooks/useAttachmentTranscription";
 import { transcriptionService } from "@/components/MemoEditor/edit/services";
+import { showErrorToast, toast } from "@/lib/toast";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 const audio = create(AttachmentSchema, { name: "attachments/voice", filename: "voice.wav", type: "audio/wav" });
 afterEach(() => {
   vi.restoreAllMocks();
@@ -43,7 +43,7 @@ describe("attachment transcription lifecycle", () => {
     const { result } = renderHook(() => useAttachmentTranscription(onText));
     await act(() => result.current.transcribeAttachment(audio));
     expect(onText).not.toHaveBeenCalled();
-    expect(toast.error).toHaveBeenCalledWith("No speech detected");
+    expect(showErrorToast).toHaveBeenCalledWith("No speech detected");
     expect(result.current.transcribingAttachment).toBeUndefined();
   });
 
@@ -55,7 +55,7 @@ describe("attachment transcription lifecycle", () => {
     const { result } = renderHook(() => useAttachmentTranscription(onText));
     await act(() => result.current.transcribeAttachment(audio));
     expect(onText).not.toHaveBeenCalled();
-    expect(toast.error).toHaveBeenCalledWith("Provider unavailable");
+    expect(showErrorToast).toHaveBeenCalledWith("Provider unavailable");
     expect(result.current.transcribingAttachment).toBeUndefined();
     await act(() => result.current.transcribeAttachment(audio));
     expect(onText).toHaveBeenCalledExactlyOnceWith("Retry works");
@@ -67,7 +67,7 @@ describe("attachment transcription lifecycle", () => {
     const { result } = renderHook(() => useAttachmentTranscription(onText));
     await act(() => result.current.transcribeAttachment(audio));
     expect(onText).not.toHaveBeenCalled();
-    expect(toast.error).toHaveBeenCalledWith("Failed to transcribe audio");
+    expect(showErrorToast).toHaveBeenCalledWith("Failed to transcribe audio");
     expect(result.current.transcribingAttachment).toBeUndefined();
   });
 
@@ -88,6 +88,6 @@ describe("attachment transcription lifecycle", () => {
       await completion;
     });
     expect(onText).not.toHaveBeenCalled();
-    expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ type: "success" }));
   });
 });

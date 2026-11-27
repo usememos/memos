@@ -5,8 +5,30 @@ import {
   isMemoResourcePath,
   resolveMemoDetailOrigin,
   resolveMemoParentPage,
+  showsParentStrip,
   withMemoFilter,
 } from "@/components/MemoView/navigation";
+
+describe("parent strip", () => {
+  const comment = { name: "memos/comment", parent: "memos/parent" };
+
+  it("shows on a comment's card wherever the comment is listed away from its thread", () => {
+    for (const pathname of ["/", "/explore", "/archived", "/calendar/2026/11", "/spaces/team", "/memos/unrelated"]) {
+      expect(showsParentStrip(pathname, comment)).toBe(true);
+    }
+  });
+
+  it("stays off on the comment's own page, on its parent's page and on a shared memo", () => {
+    expect(showsParentStrip("/memos/comment", comment)).toBe(false);
+    expect(showsParentStrip("/memos/parent", comment)).toBe(false);
+    expect(showsParentStrip("/memos/shares/token", comment)).toBe(false);
+  });
+
+  it("never shows on a top-level memo", () => {
+    expect(showsParentStrip("/", { name: "memos/top" })).toBe(false);
+    expect(showsParentStrip("/", { name: "memos/top", parent: "" })).toBe(false);
+  });
+});
 
 describe("memo view navigation", () => {
   it("captures the complete collection origin", () => {
@@ -53,16 +75,13 @@ describe("memo view navigation", () => {
     expect(resolveMemoDetailOrigin(createMemoNavigationState("/explore?filter=tagSearch%3Awork"))).toBe("/explore?filter=tagSearch%3Awork");
   });
 
-  it.each([
-    "/memos/123",
-    "/memos/123/",
-    "/Memos/123",
-    "/memos/shares/token",
-    "/Memos/Shares/token/",
-  ])("does not treat %s as its own origin", (pathname) => {
-    expect(isMemoDetailPath(pathname, "memos/123")).toBe(true);
-    expect(resolveMemoParentPage({ pathname, search: "", memoName: "memos/123" })).toBe("/");
-  });
+  it.each(["/memos/123", "/memos/123/", "/Memos/123", "/memos/shares/token", "/Memos/Shares/token/"])(
+    "does not treat %s as its own origin",
+    (pathname) => {
+      expect(isMemoDetailPath(pathname, "memos/123")).toBe(true);
+      expect(resolveMemoParentPage({ pathname, search: "", memoName: "memos/123" })).toBe("/");
+    },
+  );
 
   it("does not confuse a different memo route with the current memo detail", () => {
     const pathname = "/memos/1234";
@@ -74,14 +93,12 @@ describe("memo view navigation", () => {
     expect(isMemoDetailPath("/memos/shares/token/extra", "memos/123")).toBe(false);
   });
 
-  it.each([
-    "/memos/123",
-    "/Memos/123/",
-    "/memos/shares/token",
-    "/Memos/Shares/token/",
-  ])("recognizes %s as a Memo resource route", (pathname) => {
-    expect(isMemoResourcePath(pathname)).toBe(true);
-  });
+  it.each(["/memos/123", "/Memos/123/", "/memos/shares/token", "/Memos/Shares/token/"])(
+    "recognizes %s as a Memo resource route",
+    (pathname) => {
+      expect(isMemoResourcePath(pathname)).toBe(true);
+    },
+  );
 
   it.each(["/", "/memos", "/memos/123/extra", "/memos/shares/token/extra"])("rejects %s as a Memo resource route", (pathname) => {
     expect(isMemoResourcePath(pathname)).toBe(false);

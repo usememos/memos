@@ -31,8 +31,9 @@ export const SPACE_ROUTE_PATTERN = "/spaces/:spaceUid";
 /** Collection pages that exist both globally and beneath a Space. */
 const COLLECTION_ROUTE_PATTERNS = [ROUTES.HOME, ROUTES.EXPLORE, ROUTES.ATTACHMENTS, CALENDAR_ROUTE_PATTERN, ROUTES.MAP];
 
-const isCollectionPathname = (pathname: string): boolean =>
-  COLLECTION_ROUTE_PATTERNS.some((path) => matchPath({ path, caseSensitive: false }, pathname) !== null);
+const matchesPathname = (path: string, pathname: string): boolean => matchPath({ path, caseSensitive: false }, pathname) !== null;
+
+const isCollectionPathname = (pathname: string): boolean => COLLECTION_ROUTE_PATTERNS.some((path) => matchesPathname(path, pathname));
 
 export interface CollectionRoute {
   spaceName?: string;
@@ -41,7 +42,11 @@ export interface CollectionRoute {
   isCollection: boolean;
 }
 
-/** The URL owns collection scope; unknown Space subroutes are not collection pages. */
+/**
+ * The URL owns collection scope; unknown Space subroutes are not collection pages.
+ * A Space has one timeline, every member's memos, so its twin is Explore: a Space has no
+ * personal Home and no Explore page of its own.
+ */
 export const resolveCollectionRoute = (path: string): CollectionRoute => {
   const pathname = (path.split(/[?#]/, 1)[0] || ROUTES.HOME).replace(/\/+$/, "") || ROUTES.HOME;
   const spaceMatch = matchPath({ path: `${SPACE_ROUTE_PATTERN}/*`, caseSensitive: false }, pathname);
@@ -49,8 +54,10 @@ export const resolveCollectionRoute = (path: string): CollectionRoute => {
   const uid = spaceMatch.params.spaceUid ?? "";
   const collectionPath = `/${spaceMatch.params["*"] ?? ""}`;
   // An encoded slash decodes into a UID that cannot round-trip through buildCollectionPath.
-  if (!uid || uid.includes("/") || !isCollectionPathname(collectionPath)) return { pathname, isCollection: false };
-  return { spaceName: `spaces/${uid}`, pathname: collectionPath, isCollection: true };
+  if (!uid || uid.includes("/") || !isCollectionPathname(collectionPath) || matchesPathname(ROUTES.EXPLORE, collectionPath)) {
+    return { pathname, isCollection: false };
+  }
+  return { spaceName: `spaces/${uid}`, pathname: collectionPath === ROUTES.HOME ? ROUTES.EXPLORE : collectionPath, isCollection: true };
 };
 
 /** Builds a collection URL from a global collection pathname and an optional Space. */
@@ -59,7 +66,8 @@ export const buildCollectionPath = (pathname: string, spaceName?: string): strin
   if (!route.isCollection) return pathname;
   if (!spaceName) return route.pathname;
   const base = `/spaces/${encodeURIComponent(extractSpaceUidFromName(spaceName))}`;
-  return route.pathname === ROUTES.HOME ? base : `${base}${route.pathname}`;
+  // Home and Explore both land on the Space's one timeline.
+  return route.pathname === ROUTES.HOME || matchesPathname(ROUTES.EXPLORE, route.pathname) ? base : `${base}${route.pathname}`;
 };
 
 /** Carries the current Space into another collection view. */
@@ -83,7 +91,10 @@ export const withCollectionCreator = (search: string, username?: string): string
 /** The canonical all-Space collection for one creator. */
 export const getCreatorHomePath = (username: string): string => `${ROUTES.HOME}${withCollectionCreator("", username)}`;
 
-/** Home is personal; Explore is all readable creators. Other collection views keep explicit creator filters. */
+/**
+ * Home is personal; Explore and a Space's timeline are all readable creators. Other collection
+ * views keep explicit creator filters.
+ */
 export const getCollectionHomePath = (location: { pathname: string; search: string }): string => {
   const route = resolveCollectionRoute(location.pathname);
   const home =
@@ -128,10 +139,26 @@ export const getCreatorSwitchPath = (
   return `${pathname}${withCollectionCreator(location.search, creator)}${location.hash || ""}`;
 };
 
-/** Switching preserves collection views and their query; other pages start at Home. */
+/**
+ * Home and Explore are the places outside every Space: your own memos, or everyone's. Choosing
+ * one leaves the Space and keeps the current collection view; other pages start at its timeline.
+ */
+export const getPlaceSwitchPath = (location: { pathname: string; search: string; hash?: string }, username?: string): string => {
+  const route = resolveCollectionRoute(location.pathname);
+  if (!route.isCollection) return username ? ROUTES.HOME : ROUTES.EXPLORE;
+  return getCreatorSwitchPath({ ...location, pathname: route.pathname }, username, username);
+};
+
+/**
+ * Switching preserves collection views and their query; other pages start at Home. A Space's
+ * timeline is never narrowed to one creator, so entering it drops the creator, and leaving it
+ * returns to the personal Home, not to Explore.
+ */
 export const getSpaceSwitchPath = (location: { pathname: string; search: string; hash?: string }, spaceName?: string): string => {
   const route = resolveCollectionRoute(location.pathname);
-  return route.isCollection
-    ? `${buildCollectionPath(route.pathname, spaceName)}${location.search}${location.hash || ""}`
-    : buildCollectionPath(ROUTES.HOME, spaceName);
+  if (!route.isCollection) return buildCollectionPath(ROUTES.HOME, spaceName);
+  const isTimeline = route.pathname === ROUTES.HOME || matchesPathname(ROUTES.EXPLORE, route.pathname);
+  const pathname = isTimeline && route.spaceName && !spaceName ? ROUTES.HOME : route.pathname;
+  const search = isTimeline && spaceName ? withCollectionCreator(location.search) : location.search;
+  return `${buildCollectionPath(pathname, spaceName)}${search}${location.hash || ""}`;
 };

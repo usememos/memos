@@ -1,5 +1,5 @@
+import { Badge } from "@usememos/ui";
 import SpaceIcon from "@/components/SpaceIcon";
-import { Badge } from "@/components/ui/badge";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
@@ -26,18 +26,14 @@ const MemoSpaceBadge = ({ spaceName }: MemoSpaceBadgeProps) => {
 
   return (
     <Badge
-      variant="outline"
-      shape="pill"
+      tone="outline"
       title={accessibleLabel}
-      className={cn(
-        "min-w-0 shrink gap-1 border-border/60 bg-muted/30 px-1.5 py-0 text-[11px] font-normal text-muted-foreground",
-        showUid && uid ? "max-w-52 sm:max-w-64" : "max-w-36 sm:max-w-48",
-      )}
+      className={cn("min-w-0 shrink", showUid && uid ? "max-w-52 sm:max-w-64" : "max-w-36 sm:max-w-48")}
+      icon={<SpaceIcon icon={knownSpace?.icon} size={12} />}
     >
-      <SpaceIcon icon={knownSpace?.icon} size={12} />
       <span className="flex min-w-0 items-baseline overflow-hidden">
         <span className="min-w-0 flex-1 truncate">
-          {knownTitle && <span className="sr-only">{spaceLabel}: </span>}
+          {knownTitle && <span className="mu-visually-hidden">{spaceLabel}: </span>}
           {title}
         </span>
         {showUid && uid ? (
@@ -45,7 +41,7 @@ const MemoSpaceBadge = ({ spaceName }: MemoSpaceBadgeProps) => {
             <span aria-hidden="true" className="max-w-[48%] shrink-0 truncate font-mono">
               {` · ${formatSpaceUidForDisplay(identityName)}`}
             </span>
-            <span className="sr-only"> ({uid})</span>
+            <span className="mu-visually-hidden"> ({uid})</span>
           </>
         ) : null}
       </span>

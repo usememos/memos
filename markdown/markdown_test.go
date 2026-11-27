@@ -98,6 +98,48 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Item 1 Item 2 Item 3",
 		},
 		{
+			name:      "nested tight list items",
+			content:   "- a\n  - b",
+			maxLength: 100,
+			expected:  "a b",
+		},
+		{
+			name:      "nested ordered list items",
+			content:   "1. one\n   1. two",
+			maxLength: 100,
+			expected:  "one two",
+		},
+		{
+			name:      "nested task list items",
+			content:   "- [ ] buy milk\n  - [ ] oat",
+			maxLength: 100,
+			expected:  "buy milk oat",
+		},
+		{
+			name:      "quote inside a tight list item",
+			content:   "- a\n  > b",
+			maxLength: 100,
+			expected:  "a b",
+		},
+		{
+			name:      "hard line break with trailing spaces",
+			content:   "first line  \nsecond line",
+			maxLength: 100,
+			expected:  "first line second line",
+		},
+		{
+			name:      "hard line break with backslash",
+			content:   "first line\\\nsecond line",
+			maxLength: 100,
+			expected:  "first line second line",
+		},
+		{
+			name:      "truncate multi-byte text across paragraphs",
+			content:   strings.Repeat("日", 50) + "\n\n" + strings.Repeat("本", 20),
+			maxLength: 64,
+			expected:  strings.Repeat("日", 50) + " ...",
+		},
+		{
 			name:      "inline code preserved",
 			content:   "`console.log('hello')`",
 			maxLength: 100,
@@ -181,6 +223,54 @@ func TestGenerateSnippet(t *testing.T) {
 			maxLength: 100,
 			expected:  "Check out https://usememos.com for more info.",
 		},
+		{
+			name:      "backslash escapes",
+			content:   "Tom \\& Jerry \\*not emphasis\\*",
+			maxLength: 100,
+			expected:  "Tom & Jerry *not emphasis*",
+		},
+		{
+			name:      "entity and numeric references",
+			content:   "Fish &amp; chips &copy; 2026 &#35;1 &#x41;",
+			maxLength: 100,
+			expected:  "Fish & chips © 2026 #1 A",
+		},
+		{
+			name:      "escaped ampersand keeps the entity literal",
+			content:   "Write \\&amp; for an ampersand",
+			maxLength: 100,
+			expected:  "Write &amp; for an ampersand",
+		},
+		{
+			name:      "escaped backslash before an entity",
+			content:   "a \\\\&amp; b",
+			maxLength: 100,
+			expected:  "a \\& b",
+		},
+		{
+			name:      "unknown entity is kept",
+			content:   "Fish &nosuch; chips",
+			maxLength: 100,
+			expected:  "Fish &nosuch; chips",
+		},
+		{
+			name:      "escaped hash is not a tag",
+			content:   "Issue \\#42 is fixed",
+			maxLength: 100,
+			expected:  "Issue #42 is fixed",
+		},
+		{
+			name:      "backslash before a letter is kept",
+			content:   "Saved in C:\\Users\\me",
+			maxLength: 100,
+			expected:  "Saved in C:\\Users\\me",
+		},
+		{
+			name:      "code span keeps backslashes and entities",
+			content:   "Run `a\\*b &amp; c` now",
+			maxLength: 100,
+			expected:  "Run a\\*b &amp; c now",
+		},
 	}
 
 	for _, tt := range tests {
@@ -215,6 +305,46 @@ func TestGenerateSnippet(t *testing.T) {
 	for _, tt := range tagTests {
 		t.Run(tt.name, func(t *testing.T) {
 			snippet, err := svcWithTags.GenerateSnippet([]byte(tt.content), tt.maxLength)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, snippet)
+		})
+	}
+
+	svcWithTagsAndMentions := NewService(WithTagExtension(), WithMentionExtension())
+	mentionTests := []struct {
+		name      string
+		content   string
+		maxLength int
+		expected  string
+	}{
+		{
+			name:      "mention only",
+			content:   "@alice",
+			maxLength: 100,
+			expected:  "@alice",
+		},
+		{
+			name:      "text with mentions and tags",
+			content:   "Ask @Alice-2 and @bob about #release",
+			maxLength: 100,
+			expected:  "Ask @Alice-2 and @bob about #release",
+		},
+		{
+			name:      "formatted mention before soft line break",
+			content:   "Ping **@alice**\nfor review",
+			maxLength: 100,
+			expected:  "Ping @alice for review",
+		},
+		{
+			name:      "mention alongside email and URL",
+			content:   "Email support@example.com or ask @alice at https://usememos.com",
+			maxLength: 100,
+			expected:  "Email support@example.com or ask @alice at https://usememos.com",
+		},
+	}
+	for _, tt := range mentionTests {
+		t.Run(tt.name, func(t *testing.T) {
+			snippet, err := svcWithTagsAndMentions.GenerateSnippet([]byte(tt.content), tt.maxLength)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, snippet)
 		})
@@ -379,7 +509,7 @@ func TestExtractInlineImage(t *testing.T) {
 }
 
 func TestExtractAllTitle(t *testing.T) {
-	svc := NewService(WithTagExtension())
+	svc := NewService(WithTagExtension(), WithMentionExtension())
 
 	tests := []struct {
 		name    string
@@ -401,13 +531,62 @@ func TestExtractAllTitle(t *testing.T) {
 			content: "Intro\n\n# Late Heading",
 			title:   "",
 		},
+		{
+			name:    "h1 with mention",
+			content: "# 1:1 with @Alice-2\n\nNotes.",
+			title:   "1:1 with @Alice-2",
+		},
+		{
+			name:    "h1 with tag",
+			content: "# Release #v2 notes\n\nBody.",
+			title:   "Release #v2 notes",
+		},
+		{
+			name:    "h1 with formatted mention and tag",
+			content: "# Review **@alice** on #work/q4",
+			title:   "Review @alice on #work/q4",
+		},
+		{
+			name:    "h1 with autolinks",
+			content: "# Docs https://usememos.com www.usememos.com <https://example.com> <ops@example.com>",
+			title:   "Docs https://usememos.com www.usememos.com https://example.com ops@example.com",
+		},
+		{
+			name:    "h1 with inline math and email",
+			content: "# Formula $a+b$ by alice@example.com",
+			title:   "Formula $a+b$ by alice@example.com",
+		},
+		{
+			name:    "multiline setext h1",
+			content: "First line\nSecond line\n===========",
+			title:   "First line Second line",
+		},
+		{
+			name:    "h1 with backslash escape",
+			content: "# 1\\. Intro\n\nBody.",
+			title:   "1. Intro",
+		},
+		{
+			name:    "h1 with entity reference",
+			content: "# Fish &amp; chips\n\nBody.",
+			title:   "Fish & chips",
+		},
+		{
+			name:    "h1 with code span",
+			content: "# Use `a\\*b`\n\nBody.",
+			title:   "Use a\\*b",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			data, err := svc.ExtractAll([]byte(tt.content))
 			require.NoError(t, err)
-			assert.Equal(t, tt.title, data.Property.Title, "Title")
+			assert.Equal(t, tt.title, data.Property.Title, "ExtractAll Title")
+
+			props, err := svc.ExtractProperties([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.title, props.Title, "ExtractProperties Title")
 		})
 	}
 }
@@ -1113,6 +1292,20 @@ More content here with ` + "`inline code`" + ` and other elements.
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := svc.GenerateSnippet(content, 200)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+// BenchmarkGenerateSnippetLongParagraph parses one long line with the
+// extensions the server enables. Its cost should grow linearly with the line.
+func BenchmarkGenerateSnippetLongParagraph(b *testing.B) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	content := []byte("#journal " + strings.Repeat("Some text that a person might write in a daily note, with a few more words about the day. ", 50))
+
+	for b.Loop() {
+		_, err := svc.GenerateSnippet(content, 64)
 		if err != nil {
 			b.Fatal(err)
 		}

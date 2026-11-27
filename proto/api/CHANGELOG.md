@@ -6,15 +6,19 @@ Record schema, REST route, and behavior breaks here. API compatibility is checke
 
 Add entries under a `## Unreleased` heading. After the release ships, rename it to the release tag.
 
+`IdentityProvider`, `InstanceSetting`, and `User` are also the declarative configuration file format. When a break removes or
+renames a field a configuration file can set, say that files setting it are rejected from this release and what to write
+instead, and update `core/configuration/testdata/compat/` in the same change. After a release ships, copy
+`testdata/compat/unreleased/` to a directory named for the release tag.
+
 ```markdown
 ## Unreleased
 
 ### Breaking
 
-- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
-  the web client and is no longer an instance setting. `MemoRelatedSetting.reactions` moves to field number 1. A
-  deployment config file that still sets `enableDoubleClickEdit` is rejected.
 - `MemoService.ListShortcuts`: removed. Use `UserService.ListMemoViews`.
+- `InstanceSetting.StorageSetting.upload_size_limit_mb`: removed. Configuration files that set `uploadSizeLimitMb` are
+  rejected from this release; set the `UPLOAD_BYTES` usage limit instead.
 
 ### Deprecated
 
@@ -25,18 +29,84 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 
 ### Breaking
 
+- When changing an AI provider's type or endpoint through `UpdateInstanceSetting`, supply its API key again.
+  Updates to the same connection still accept an empty key to keep the stored credential.
+- The `AI` instance setting is admin only. `GetInstanceSetting` no longer returns it, with hidden fields, to other
+  signed-in users; they read which AI features are ready from the new `InstanceProfile.ai_features`.
+- An AI capability is on when it is set and off when it is unset. `InstanceSetting.TranscriptionConfig` and
+  `TextGenerationConfig` require both `provider_id` and `model`; an empty `provider_id` no longer means off, and
+  the transcription model is no longer chosen by the server when left empty. A stored transcription setting
+  without a model reads as off: set its provider and model again.
+- `UpdateInstanceSetting` replaces the `AI` setting whole, like every other setting. Omitting `transcription` or
+  `text_generation` turns that capability off instead of keeping the stored one.
+- `UpdateInstanceSetting` lists the models of each AI provider that is new or whose type, endpoint or key changed,
+  and refuses the save when the key is rejected, the endpoint cannot be reached or redirects, or the provider does not
+  answer in time. The error carries an `AI_*` `google.rpc.ErrorInfo` reason.
+- `InstanceSetting.AIProviderType` names the service a provider connects to instead of the protocol its endpoint
+  speaks. `OPENAI` is OpenAI itself; other services that speak the OpenAI API use their own type (`DEEPSEEK`,
+  `OPENROUTER`, `OLLAMA`) or `OPENAI_COMPATIBLE`. An `OPENAI` provider with another endpoint keeps working, as OpenAI
+  behind a proxy, but is offered only what OpenAI serves: change its type to describe the real service.
+  `AIService.ListAIProviderTypes` describes every type.
+- An AI provider endpoint equal to its type's default is stored, and returned, as empty. The `*_COMPATIBLE` types
+  require an endpoint; `OLLAMA` and the `*_COMPATIBLE` types accept an empty API key.
+- `UpdateInstanceSetting` refuses a capability whose provider type cannot serve it, such as an `ANTHROPIC` provider
+  for transcription.
+- Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
+  Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
+  `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.
+- A comment is a memo with a `parent`, and the comment-specific surface is removed:
+  - `MemoService.ListMemos` returns comments. Add `parent == null` to `filter` to list top-level memos only, the
+    previous behavior. `filter` gains the field `parent` (a memo resource name, or `null`); it supports `==` and
+    comparisons against `null`. `UserService.GetUserStats` and `ListUserStats` count comments unless their `filter`
+    excludes them the same way.
+  - `MemoService.ListMemoComments` and `ListMemoCommentsRequest`/`ListMemoCommentsResponse` are removed, with
+    `GET /api/memos/{memo}/comments`. Use `ListMemos` with `filter: parent == "memos/{memo}"`. Each comment is listed
+    by its own audience; the listing neither requires nor grants access to the parent.
+  - `MemoService.CreateMemoComment` and `CreateMemoCommentRequest` are removed, with
+    `POST /api/memos/{memo}/comments`. Use `CreateMemo` with `memo.parent` set; `Memo.parent` is now settable on
+    creation and immutable afterwards. The created memo's `parent` is populated in the response.
+  - `MemoRelation.Type.COMMENT` is removed and its number reserved. `Memo.relations`, `ListMemoRelations` and
+    `SetMemoRelations` carry `REFERENCE` relations only. Read `Memo.parent` for a comment's parent and the new
+    `Memo.comment_count` for the number of comments on a memo.
+  - The MCP tools `memo_list_memo_comments` and `memo_create_memo_comment` are removed; `memo_list_memos` and
+    `memo_create_memo` cover them.
+
+## 26.10.0
+
+### Breaking
+
+- `UserService.ExportMemos` and `ExportMemosRequest` are removed. Export is an instance-administrator download at
+  `GET /file/users/{username}/export`, authenticated like attachments (Bearer header or session cookie), streaming the
+  archive with `Content-Disposition`. One export runs at a time per instance; a second request receives `429`. Members
+  ask an administrator for their archive. `ImportMemos` is unchanged.
 - Access tokens are now bound to the user's password hash and become invalid immediately after a password change or
   an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
   again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.
 - Usage limits replace the instance-wide upload size and memo content caps. `StorageSetting.upload_size_limit_mb`
-  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated; `MemoRelatedSetting`
-  fields are now `enable_double_click_edit = 1` and `reactions = 2`. The limits are the `USAGE_LIMITS` instance
-  setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole through
-  `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry applies to
-  all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns the limit
-  set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
+  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated. The limits are the
+  `USAGE_LIMITS` instance setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole
+  through `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry
+  applies to all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns
+  the limit set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
   `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
-
+- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
+  the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`.
+- The deployment configuration files under `/etc/secrets` (`memos-idp-*.json`, `memos-instance-setting-*.json`)
+  introduced in v0.31.0 are no longer read, and the stored values they overrode take effect again. Identity providers,
+  instance settings, bootstrap users, and their linked identities are declared instead as `memos.api.Configuration`
+  documents in the configuration directory (`--config-dir` or `MEMOS_CONFIG_DIR`, default `/etc/memos/config`), applied
+  at startup unless `--config-apply=off`, or through `memos config plan` and `memos config apply`. Keep an identity
+  provider's UID when moving it so linked accounts keep working. An API write that changes a field a file manages
+  returns `FAILED_PRECONDITION` with `ErrorInfo{reason: MANAGED_BY_CONFIGURATION}` naming the file and fields;
+  `GET /api/instance/configuration` (administrators) lists what is managed.
+- `CreateIdentityProvider` and `UpdateIdentityProvider` validate the provider as it will be stored and return
+  `INVALID_ARGUMENT` when it has no title, an invalid `identifier_filter`, no `client_id`, a non-absolute or non-HTTP(S)
+  `auth_url`, `token_url`, or `user_info_url`, an empty scope entry, or no `field_mapping.identifier`. A request that
+  omitted `config` or `field_mapping` previously failed with `INTERNAL`.
+- `UpdateInstanceSetting` for `STORAGE` requires every new or changed S3 storage to have `endpoint`, `region`, `bucket`,
+  `access_key_id`, and `access_key_secret` (an empty secret still keeps the stored one). For `GENERAL`,
+  `week_start_day_offset` must be between -1 and 6. `BASIC` cannot be written. Notification validation errors name
+  fields in proto form (`smtp_host`, `use_tls`).
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from
     `/api/v1/sse` to `/api/sse`.

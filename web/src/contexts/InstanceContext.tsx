@@ -4,6 +4,7 @@ import { instanceServiceClient } from "@/connect";
 import { useAccessSetting, useUpdateInstanceSetting } from "@/hooks/useInstanceQueries";
 import {
   InstanceProfile,
+  InstanceProfile_AIFeaturesSchema,
   InstanceProfileSchema,
   InstanceSetting,
   InstanceSetting_AccessSetting,
@@ -13,8 +14,6 @@ import {
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
-  InstanceSetting_MemoRelatedSetting,
-  InstanceSetting_MemoRelatedSettingSchema,
   InstanceSetting_NotificationSetting,
   InstanceSetting_NotificationSettingSchema,
   InstanceSetting_StorageSetting,
@@ -45,11 +44,12 @@ interface InstanceState {
 interface InstanceContextValue extends InstanceState {
   accessSetting: InstanceSetting_AccessSetting;
   generalSetting: InstanceSetting_GeneralSetting;
-  memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
   notificationSetting: InstanceSetting_NotificationSetting;
   aiSetting: InstanceSetting_AISetting;
   initialize: () => Promise<void>;
+  /** Loads the profile again, for a caller whose identity changed. */
+  refreshProfile: () => Promise<void>;
   fetchSetting: (key: InstanceSetting_Key) => Promise<void>;
   fetchSettings: (keys: InstanceSetting_Key[]) => Promise<void>;
   updateSetting: (setting: InstanceSetting) => Promise<void>;
@@ -87,14 +87,6 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_GeneralSettingSchema, {});
   }, [state.settings]);
 
-  const memoRelatedSetting = useMemo((): InstanceSetting_MemoRelatedSetting => {
-    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}MEMO_RELATED`);
-    if (setting?.value.case === "memoRelatedSetting") {
-      return setting.value.value;
-    }
-    return create(InstanceSetting_MemoRelatedSettingSchema, {});
-  }, [state.settings]);
-
   const storageSetting = useMemo((): InstanceSetting_StorageSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}STORAGE`);
     if (setting?.value.case === "storageSetting") {
@@ -119,31 +111,39 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_AISettingSchema, {});
   }, [state.settings]);
 
+  // The profile differs by caller: the admin and the AI features are only sent to a signed-in
+  // user, so it is loaded again when the identity changes.
+  const refreshProfile = useCallback(
+    () =>
+      instanceServiceClient
+        .getInstanceProfile({})
+        .then((profile) => {
+          // Managed attachment URLs are resolved against the instance URL, and the
+          // parser runs outside React (card layout estimation), so it reads the
+          // value from module scope rather than from this context.
+          setManagedAttachmentInstanceUrl(profile.instanceUrl);
+          setState((prev) => ({
+            ...prev,
+            profile,
+            isProfileInitialized: true,
+            profileLoaded: true,
+          }));
+        })
+        .catch((error) => {
+          console.error("Failed to initialize instance profile:", error);
+          setState((prev) => ({ ...prev, isProfileInitialized: true }));
+        }),
+    [],
+  );
+
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
 
-    const profileRequest = instanceServiceClient
-      .getInstanceProfile({})
-      .then((profile) => {
-        // Managed attachment URLs are resolved against the instance URL, and the
-        // parser runs outside React (card layout estimation), so it reads the
-        // value from module scope rather than from this context.
-        setManagedAttachmentInstanceUrl(profile.instanceUrl);
-        setState((prev) => ({
-          ...prev,
-          profile,
-          isProfileInitialized: true,
-          profileLoaded: true,
-        }));
-      })
-      .catch((error) => {
-        console.error("Failed to initialize instance profile:", error);
-        setState((prev) => ({ ...prev, isProfileInitialized: true }));
-      });
+    const profileRequest = refreshProfile();
 
     const settingsRequest = instanceServiceClient
       .batchGetInstanceSettings({
-        names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL), buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED)],
+        names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL)],
       })
       .then((settingsResponse) => {
         for (const setting of settingsResponse.instanceSettings) {
@@ -163,7 +163,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       isInitialized: true,
       isLoading: false,
     }));
-  }, []);
+  }, [refreshProfile]);
 
   const fetchSettings = useCallback(async (keys: InstanceSetting_Key[]) => {
     const names = keys
@@ -230,7 +230,16 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
                 ...prev.profile,
                 accessMode: updatedSetting.value.value.accessMode,
               }
-            : prev.profile,
+            : updatedSetting.value.case === "aiSetting"
+              ? {
+                  ...prev.profile,
+                  // The server only stores a capability with a provider and a model, so a set one is ready.
+                  aiFeatures: create(InstanceProfile_AIFeaturesSchema, {
+                    transcription: !!updatedSetting.value.value.transcription,
+                    tagSuggestions: !!updatedSetting.value.value.textGeneration,
+                  }),
+                }
+              : prev.profile,
         settings: isAccessSetting ? prev.settings : [...prev.settings.filter((s) => s.name !== updatedSetting.name), updatedSetting],
       }));
     },
@@ -243,11 +252,11 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       ...state,
       accessSetting,
       generalSetting,
-      memoRelatedSetting,
       storageSetting,
       notificationSetting,
       aiSetting,
       initialize,
+      refreshProfile,
       fetchSetting,
       fetchSettings,
       updateSetting,
@@ -256,11 +265,11 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       state,
       accessSetting,
       generalSetting,
-      memoRelatedSetting,
       storageSetting,
       notificationSetting,
       aiSetting,
       initialize,
+      refreshProfile,
       fetchSetting,
       fetchSettings,
       updateSetting,

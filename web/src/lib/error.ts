@@ -1,6 +1,7 @@
 import { BinaryReader } from "@bufbuild/protobuf/wire";
 import { type Code, ConnectError } from "@connectrpc/connect";
 import { formatFileSize } from "@/utils/format";
+import { translate } from "@/utils/i18n";
 
 /** google.rpc.ErrorInfo, the mandatory detail on every server error (AIP-193). */
 export interface ErrorInfo {
@@ -12,6 +13,24 @@ export interface ErrorInfo {
 export const ERROR_REASON_RATE_LIMITED = "RATE_LIMITED";
 export const ERROR_REASON_CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED";
 export const ERROR_REASON_QUOTA_EXCEEDED = "QUOTA_EXCEEDED";
+
+// Why a call to the instance's AI provider failed. The server sends the reason with an English
+// message; the wording shown comes from here, so it is translated.
+const AI_FAILURE_MESSAGES = {
+  AI_PROVIDER_AUTH_FAILED: "error.ai-auth-failed",
+  AI_MODEL_NOT_FOUND: "error.ai-model-not-found",
+  AI_PROVIDER_QUOTA_EXHAUSTED: "error.ai-quota-exhausted",
+  AI_PROVIDER_RATE_LIMITED: "error.ai-rate-limited",
+  AI_REQUEST_REJECTED: "error.ai-request-rejected",
+  AI_PROVIDER_UNREACHABLE: "error.ai-unreachable",
+  AI_PROVIDER_TIMEOUT: "error.ai-timeout",
+  AI_PROVIDER_REDIRECTED: "error.ai-redirected",
+  AI_PROVIDER_ERROR: "error.ai-invalid-response",
+  AI_INVALID_RESPONSE: "error.ai-invalid-response",
+} as const;
+
+/** A reason the server gives for a failed AI provider call. */
+export type AIFailureReason = keyof typeof AI_FAILURE_MESSAGES;
 
 const ERROR_INFO_TYPE = "google.rpc.ErrorInfo";
 
@@ -94,40 +113,46 @@ export function getQuotaExceededMessage(error: unknown): string | undefined {
   const usage = Number(info.metadata.usage ?? "");
   switch (info.metadata.metric) {
     case "MEMO_COUNT":
-      return `You have reached your limit of ${limit} memos. Delete memos to create new ones.`;
+      return translate("error.quota-memo-count", { limit });
     case "STORAGE_BYTES":
-      return `This upload would exceed your storage limit of ${formatFileSize(limit)}. You are using ${formatFileSize(usage)}.`;
+      return translate("error.quota-storage", { limit: formatFileSize(limit), usage: formatFileSize(usage) });
     case "UPLOAD_BYTES":
-      return `This file is larger than your limit of ${formatFileSize(limit)} per file.`;
+      return translate("error.quota-upload", { limit: formatFileSize(limit) });
     case "MEMO_CONTENT_BYTES":
-      return `This memo is larger than your limit of ${formatFileSize(limit)} per memo. Shorten the content to save it.`;
+      return translate("error.quota-memo-content", { limit: formatFileSize(limit) });
     default:
-      return "You have reached a usage limit.";
+      return translate("error.quota-generic");
   }
 }
 
 function formatWait(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return translate("error.wait-seconds", { count: seconds });
   const minutes = Math.ceil(seconds / 60);
-  return minutes < 60 ? `${minutes} min` : `${Math.ceil(minutes / 60)} h`;
+  return minutes < 60
+    ? translate("error.wait-minutes", { count: minutes })
+    : translate("error.wait-hours", { count: Math.ceil(minutes / 60) });
 }
 
 export function hasConnectCode(error: unknown, ...codes: Code[]): error is ConnectError {
   return error instanceof ConnectError && codes.includes(error.code);
 }
 
-export function getErrorMessage(error: unknown, fallback = "Unknown error"): string {
+export function getErrorMessage(error: unknown, fallback = translate("common.unknown-error")): string {
   if (error instanceof ConnectError) {
     const retryAfter = getRetryAfterSeconds(error);
     if (retryAfter !== undefined) {
-      return `Too many requests. Try again in ${formatWait(retryAfter)}.`;
+      return translate("error.too-many-requests", { wait: formatWait(retryAfter) });
     }
     if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
-      return "Complete the verification challenge and try again.";
+      return translate("error.challenge-required");
     }
     const limitMessage = getQuotaExceededMessage(error);
     if (limitMessage !== undefined) {
       return limitMessage;
+    }
+    const aiFailure = AI_FAILURE_MESSAGES[getErrorInfo(error)?.reason as keyof typeof AI_FAILURE_MESSAGES];
+    if (aiFailure) {
+      return translate(aiFailure);
     }
     return error.rawMessage || fallback;
   }

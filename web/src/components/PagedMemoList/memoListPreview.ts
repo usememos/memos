@@ -15,12 +15,12 @@ const toPlainLine = (line: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-/** Splits memo markdown into a list-row title (first text line) and a one-line description (the rest). */
+/** Splits memo markdown into a list-row title (first text line) and a description (the next text line). */
 export const getMemoListPreview = (content: string): MemoListPreview => {
   const lines = content
     .split(/\r?\n/)
     .filter((line) => !FENCE_OR_RULE.test(line))
     .map(toPlainLine)
     .filter(Boolean);
-  return { title: lines[0] ?? "", description: lines.slice(1).join(" ") };
+  return { title: lines[0] ?? "", description: lines[1] ?? "" };
 };

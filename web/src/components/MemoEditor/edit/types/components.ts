@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { EditorFileOrigin } from "../extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
-import type { LocalFile } from "./attachment";
+import type { DrawingSource, LocalFile } from "./attachment";
 
 /** What MemoEditor hands an editing session: its subject, the host's defaults, and where the draft lives. */
 export interface EditSessionProps {
@@ -12,14 +13,20 @@ export interface EditSessionProps {
   draftKey: string;
   /** Inside a card that is the frame already: no background, border or padding of its own outside focus mode. */
   frameless?: boolean;
+  /** Leads the timestamp row, before the time: the card's creator while it edits in place. */
+  timestampLead?: ReactNode;
   placeholder?: string;
   /** Existing memo to edit; the session starts from it and persists no draft. */
   memo?: Memo;
   parentMemoName?: string;
+  /** The parent's Space, when the commenter is given it: a comment shared with a Space is filed there. */
+  parentSpace?: string;
   /** Context-derived suggestions for a new top-level memo. */
   suggestions?: readonly MemoSuggestion[];
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
+  /** The audience a new memo or comment starts with, and returns to after each save; see `defaultVisibilityFor`. */
+  defaultVisibility?: Visibility;
   /** A callback can decide whether focus is still appropriate after draft restoration. */
   autoFocus?: boolean | (() => boolean);
   /**
@@ -50,6 +57,7 @@ export interface EditSessionProps {
 }
 
 export interface EditorContentProps {
+  onSuggestTags?: (content: string) => void;
   placeholder?: string;
   sourceMode: EditorSourceModeToggle;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
@@ -81,10 +89,14 @@ export interface EditorToolbarProps {
   space?: string;
   /** Only unscoped, new top-level memos can choose a destination. */
   canChooseSpace?: boolean;
+  /** The audience the draft started with: a new memo placed in a Space leaves it for the Space's members, and returns to it. */
+  defaultVisibility?: Visibility;
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
   sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
+  /** Opens the drawing sheet for a new drawing. */
+  onDrawingClick?: () => void;
 }
 
 export interface EditorMetadataProps {
@@ -95,6 +107,10 @@ export interface EditorMetadataProps {
   uploadingLocalFileURLs: ReadonlySet<string>;
   onInsertAttachments: (attachments: Attachment[]) => void;
   onInsertLocalFiles: (localFiles: LocalFile[]) => void;
+  /** Opens a drawing attachment in the drawing sheet. */
+  onEditDrawing?: (source: DrawingSource) => void;
+  /** The attachment row whose drawing is being opened. */
+  openingDrawing?: string;
 }
 
 export interface AudioRecorderPanelProps {
@@ -129,6 +145,7 @@ export interface InsertMenuProps {
   viewToggles?: EditorViewToggles;
   sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
+  onDrawingClick?: () => void;
 }
 
 export interface AudienceMenuProps {

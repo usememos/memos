@@ -119,6 +119,20 @@ func TestCheckUpload(t *testing.T) {
 	require.Zero(t, s.sumCalls, "no storage limit in the user's entry, so no sum query")
 }
 
+func TestCheckReplace(t *testing.T) {
+	ctx := context.Background()
+	s := &fakeStore{storage: 900, setting: setting(&entry{AllUsers: true, StorageBytes: new(int64(1000)), UploadBytes: new(int64(300))})}
+
+	require.NoError(t, CheckReplace(ctx, s, 1, 250, 150), "only the 100 extra bytes count: 900 - 150 + 250 = 1000")
+	require.Equal(t, &Refusal{Metric: MetricStorageBytes, Limit: 1000, Usage: 900, Index: 0}, AsRefusal(CheckReplace(ctx, s, 1, 251, 150)))
+	require.Equal(t, &Refusal{Metric: MetricUploadBytes, Limit: 300, Usage: 301, Index: 0}, AsRefusal(CheckReplace(ctx, s, 1, 301, 400)))
+
+	s.sumCalls = 0
+	s.storage = 5000
+	require.NoError(t, CheckReplace(ctx, s, 1, 100, 200), "a smaller file is never refused for storage, even over the limit")
+	require.Zero(t, s.sumCalls, "a file no larger than the one it replaces needs no sum query")
+}
+
 func TestCheckFileSize(t *testing.T) {
 	ctx := context.Background()
 	s := &fakeStore{storage: 1 << 40, setting: setting(&entry{AllUsers: true, StorageBytes: new(int64(1)), UploadBytes: new(int64(200))})}

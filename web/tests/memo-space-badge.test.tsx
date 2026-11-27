@@ -42,7 +42,7 @@ describe("MemoSpaceBadge", () => {
     render(<MemoSpaceBadge spaceName="spaces/product" />);
 
     const badge = screen.getByTitle("Space: Product");
-    expect(badge).toHaveAttribute("data-slot", "badge");
+    expect(badge).toHaveClass("mu-badge", "mu-badge-outline");
     expect(badge.querySelector(".lucide-astroid")).not.toBeNull();
   });
 

@@ -1,8 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { LoaderCircleIcon } from "lucide-react";
+import { Spinner } from "@usememos/ui";
 import { type KeyboardEvent, type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import RelativeTime from "@/components/RelativeTime";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { useAuth } from "@/contexts/AuthContext";
 import { useView } from "@/contexts/ViewContext";
 import { isMemoBlurred } from "@/lib/tag";
@@ -93,7 +92,7 @@ const MemoSplitView = ({
     <div className="flex w-full items-start gap-4">
       <nav
         aria-label={t("memo.split-view-list")}
-        className="sticky top-3 flex max-h-[calc(100svh-1.5rem)] w-72 shrink-0 flex-col overflow-hidden rounded-lg border border-border/70 bg-card md:top-6 md:max-h-[calc(100svh-3rem)]"
+        className="sticky top-3 flex max-h-[calc(100svh-1.5rem)] w-72 shrink-0 flex-col overflow-hidden rounded-mu-lg border border-mu-line/70 bg-mu-surface md:top-6 md:max-h-[calc(100svh-3rem)]"
       >
         <ul ref={listRef} onScroll={fetchIfNearEnd} onKeyDown={handleListKeyDown} className="min-h-0 flex-1 overflow-y-auto p-1">
           {memos.map((memo) => {
@@ -111,17 +110,16 @@ const MemoSplitView = ({
                   tabIndex={active ? 0 : -1}
                   onClick={() => select(key)}
                   className={cn(
-                    "flex w-full flex-col items-start gap-0.5 rounded-md px-2.5 py-2 text-start transition-colors",
-                    FOCUS_VISIBLE_OUTLINE_CLASSES,
-                    active ? "bg-accent text-accent-foreground" : "hover:bg-accent/50",
+                    "mu-focus flex w-full flex-col items-start gap-0.5 rounded-mu-md border border-transparent px-2.5 py-2 text-start transition-colors focus-visible:border-mu-focus",
+                    active ? "bg-mu-hover text-mu-text" : "text-mu-text hover:bg-mu-hover/65",
                   )}
                 >
-                  <span className={cn("w-full truncate text-sm font-medium", !title && "italic text-muted-foreground")}>
+                  <span className={cn("mu-label w-full truncate", !title && "italic text-mu-text-secondary")}>
                     {blurred ? t("memo.sensitive-content") : title || t("memo.split-view-untitled")}
                   </span>
-                  {description && <span className="w-full truncate text-xs text-muted-foreground">{description}</span>}
+                  {description && <span className="mu-caption w-full truncate text-mu-text-secondary">{description}</span>}
                   {timestamp && (
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="mu-caption text-mu-text-secondary">
                       <RelativeTime date={timestampDate(timestamp)} />
                     </span>
                   )}
@@ -132,7 +130,7 @@ const MemoSplitView = ({
         </ul>
         {isFetchingNextPage && (
           <div className="flex justify-center py-2">
-            <LoaderCircleIcon className="size-4 animate-spin text-muted-foreground" />
+            <Spinner size="sm" label={t("editor.blocks.loading")} />
           </div>
         )}
         {listFooter}

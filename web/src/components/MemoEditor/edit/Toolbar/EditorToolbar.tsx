@@ -1,8 +1,6 @@
-import { CheckIcon, CornerDownLeftIcon, LoaderIcon } from "lucide-react";
-import type { FC } from "react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Button, Tooltip } from "@usememos/ui";
+import { CircleAlertIcon } from "lucide-react";
+import { type FC, useId } from "react";
 import { type Location, Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { primaryModifierGlyph } from "@/utils/platform";
@@ -12,17 +10,6 @@ import type { EditorToolbarProps } from "../types";
 import AudienceMenu from "./AudienceMenu";
 import InsertMenu from "./InsertMenu";
 
-/**
- * Save shortcut as key caps, shown in the commit button's tooltip rather than on
- * the button itself so the primary action reads as a plain verb.
- */
-const ShortcutKeys: FC = () => (
-  <kbd className="inline-flex items-center gap-px rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-2xs leading-none font-medium">
-    {primaryModifierGlyph()}
-    <CornerDownLeftIcon className="size-2.5" strokeWidth={2.5} />
-  </kbd>
-);
-
 export const EditorToolbar: FC<EditorToolbarProps> = ({
   onSave,
   onCancel,
@@ -30,10 +17,12 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   parentMemoName,
   space,
   canChooseSpace,
+  defaultVisibility,
   onAudioRecorderClick,
   viewToggles,
   sourceMode,
   onInsertImages,
+  onDrawingClick,
 }) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
@@ -44,15 +33,12 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   const blockedReason = useEditorSelector((s) => validationService.canSave(s).reason);
   const blockedReasonDetail = useEditorSelector((s) => validationService.canSave(s).detail);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
-  const justSaved = useEditorSelector((s) => s.ui.justSaved);
+  const drawingSaveError = useEditorSelector((s) => s.drawingSaveError);
   const isUploading = useEditorSelector((s) => s.ui.isLoading.uploading);
   const location = useEditorSelector((s) => s.metadata.location);
   const visibility = useEditorSelector((s) => s.metadata.visibility);
-  // The save transaction is in flight or its confirmation is holding the
-  // editor open; either way the toolbar is frozen.
-  const committing = isSaving || justSaved;
   const blockedMessage =
-    valid || committing
+    valid || isSaving
       ? undefined
       : blockedReason
         ? t(blockedReason, blockedReasonDetail ? { url: blockedReasonDetail } : undefined)
@@ -61,6 +47,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   // updated, a reply becomes a comment, and a new memo is simply saved. A memo
   // is stored with a visibility, not posted, so messaging verbs stay out.
   const commitLabel = memoName ? t("common.update") : parentMemoName ? t("editor.comment") : t("editor.save");
+  const loadingLabel = memoName ? t("editor.updating") : parentMemoName ? t("editor.commenting") : t("editor.saving");
 
   const handleLocationChange = (next?: Location) => {
     dispatch(actions.setMetadata({ location: next }));
@@ -71,52 +58,57 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   };
 
   const handleSpaceChange = (next?: string) => {
-    dispatch(actions.setMetadata({ space: next, ...(!next && visibility === Visibility.SPACE ? { visibility: Visibility.PRIVATE } : {}) }));
+    // A new memo placed in a Space is shared with its members, unless its audience was
+    // already changed; an existing memo is moved without touching its audience. Leaving
+    // the Space takes the Space audience with it: back to the author's default for a new
+    // memo, and to the narrowest audience for an existing one.
+    const unplacedVisibility = memoName ? Visibility.PRIVATE : (defaultVisibility ?? Visibility.PRIVATE);
+    let nextVisibility: Visibility | undefined;
+    if (!next && visibility === Visibility.SPACE) nextVisibility = unplacedVisibility;
+    if (next && !memoName && visibility === unplacedVisibility) nextVisibility = Visibility.SPACE;
+    dispatch(actions.setMetadata({ space: next, ...(nextVisibility === undefined ? {} : { visibility: nextVisibility }) }));
   };
 
-  const commitButton = justSaved ? (
-    <Button size="sm" disabled>
-      {t("editor.saved")}
-      <CheckIcon className="size-3.5" strokeWidth={2.5} />
-    </Button>
-  ) : blockedMessage ? (
-    // A disabled button fires no pointer events, so a focusable wrapper hosts the tooltip.
-    <Tooltip>
-      <TooltipTrigger render={<span className="inline-flex" tabIndex={0} aria-label={blockedMessage} />}>
-        <Button size="sm" disabled>
-          {commitLabel}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="top">{blockedMessage}</TooltipContent>
-    </Tooltip>
-  ) : (
-    // The same trigger stays mounted through the save so the button keeps focus;
-    // only its tooltip is switched off. Both modifiers save (see
-    // buildEditorExtensions), so both are announced.
-    <Tooltip disabled={isSaving}>
-      <TooltipTrigger render={<Button size="sm" onClick={onSave} disabled={isSaving} aria-keyshortcuts="Meta+Enter Control+Enter" />}>
-        {/* While saving, a spinner covers the label in the same grid cell so the button keeps its width. */}
-        <span className="grid place-items-center">
-          <span className={cn("col-start-1 row-start-1", isSaving && "invisible")}>{commitLabel}</span>
-          <LoaderIcon className={cn("col-start-1 row-start-1 size-3.5 animate-spin", !isSaving && "invisible")} strokeWidth={2.5} />
+  const blockedReasonId = useId();
+  const commitButton = (
+    <Tooltip.Root disabled={isSaving}>
+      <Tooltip.Trigger
+        render={
+          <Button
+            variant="primary"
+            icon={drawingSaveError ? <CircleAlertIcon /> : undefined}
+            onClick={onSave}
+            disabled={Boolean(blockedMessage)}
+            focusableWhenDisabled
+            loading={isSaving}
+            loadingLabel={loadingLabel}
+            aria-describedby={blockedMessage ? blockedReasonId : undefined}
+            aria-keyshortcuts="Meta+Enter Control+Enter"
+          />
+        }
+      >
+        {commitLabel}
+      </Tooltip.Trigger>
+      {/* The save shortcut shows in the tooltip, so the primary action reads as a plain verb. */}
+      <Tooltip.Popup side="top" shortcut={blockedMessage ? undefined : `${primaryModifierGlyph()} Enter`}>
+        {blockedMessage ?? (drawingSaveError ? t(drawingSaveError) : commitLabel)}
+      </Tooltip.Popup>
+      {blockedMessage && (
+        <span id={blockedReasonId} className="mu-visually-hidden">
+          {blockedMessage}
         </span>
-      </TooltipTrigger>
-      <TooltipContent side="top">
-        <span className="flex items-center gap-1.5">
-          {commitLabel}
-          <ShortcutKeys />
-        </span>
-      </TooltipContent>
-    </Tooltip>
+      )}
+    </Tooltip.Root>
   );
 
   return (
-    // Every control on this rail is 28px, the same box as the sidebar's compose control and nav pills.
-    <div className="flex w-full min-w-0 flex-row items-center justify-between gap-1">
+    // md controls with mu-compact: 14px labels and 16px icons at 28px, the sidebar's height.
+    // The portaled menus use the regular md row.
+    <div className="mu-compact flex w-full min-w-0 flex-row items-center justify-between gap-1">
       <div className="flex min-w-0 flex-1 flex-row items-center justify-start gap-1">
         <InsertMenu
           isUploading={isUploading}
-          isSaving={committing}
+          isSaving={isSaving}
           location={location}
           onLocationChange={handleLocationChange}
           memoName={memoName}
@@ -124,19 +116,20 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           viewToggles={viewToggles}
           sourceMode={sourceMode}
           onInsertImages={onInsertImages}
+          onDrawingClick={onDrawingClick}
         />
         <AudienceMenu
           value={visibility}
           space={space}
           onChange={handleVisibilityChange}
           onSpaceChange={canChooseSpace ? handleSpaceChange : undefined}
-          disabled={committing}
+          disabled={isSaving}
         />
       </div>
 
       <div className="flex shrink-0 flex-row items-center justify-end gap-1">
         {onCancel && (
-          <Button variant="quiet" size="sm" onClick={onCancel} disabled={committing}>
+          <Button variant="ghost" onClick={onCancel} disabled={isSaving}>
             {t("common.cancel")}
           </Button>
         )}

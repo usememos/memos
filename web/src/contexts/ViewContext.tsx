@@ -12,7 +12,7 @@ interface ViewState {
   orderByTimeAsc: boolean;
   timeBasis?: MemoTimeBasis;
   sortTimeField?: MemoTimeBasis;
-  compactMode: boolean;
+  fullWidth: boolean;
   maxColumns: MemoMaxColumns;
   splitView: boolean;
 }
@@ -20,13 +20,13 @@ interface ViewState {
 interface ViewContextValue {
   orderByTimeAsc: boolean;
   timeBasis: MemoTimeBasis;
-  compactMode: boolean;
+  fullWidth: boolean;
   maxColumns: MemoMaxColumns;
   /** List memo titles in a side pane and read the selected memo beside it. */
   splitView: boolean;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
-  setCompactMode: (value: boolean) => void;
+  setFullWidth: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
   setSplitView: (value: boolean) => void;
 }
@@ -35,8 +35,7 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1, splitView: false };
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, maxColumns: 1 };
+const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, fullWidth: false, maxColumns: 1, splitView: false };
 
 export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
   const getInitialState = (): ViewState => {
@@ -52,7 +51,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
           timeBasis,
-          compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
+          fullWidth: Boolean(data.fullWidth ?? DEFAULT_VIEW_STATE.fullWidth),
           maxColumns,
           splitView: Boolean(data.splitView ?? DEFAULT_VIEW_STATE.splitView),
         };
@@ -86,7 +85,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
 
   const setOrderByTimeAsc = (value: boolean) => updateState({ orderByTimeAsc: value });
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
-  const setCompactMode = (value: boolean) => updateState({ compactMode: value });
+  const setFullWidth = (value: boolean) => updateState({ fullWidth: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
   const setSplitView = (value: boolean) => updateState({ splitView: value });
 
@@ -95,12 +94,12 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
       value={{
         orderByTimeAsc: activeState.orderByTimeAsc,
         timeBasis,
-        compactMode: activeState.compactMode,
+        fullWidth: activeState.fullWidth,
         maxColumns: activeState.maxColumns,
         splitView: activeState.splitView,
         setOrderByTimeAsc,
         setTimeBasis,
-        setCompactMode,
+        setFullWidth,
         setMaxColumns,
         setSplitView,
       }}

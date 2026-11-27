@@ -17,7 +17,7 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
       <img
         src={getAttachmentThumbnailUrl(attachment)}
         alt={attachment.filename}
-        className={cn("w-full h-full object-cover rounded-lg cursor-pointer", className)}
+        className={cn("w-full h-full object-cover rounded-mu-lg cursor-pointer", className)}
         onClick={onClick}
         onError={(e) => {
           const target = e.currentTarget;
@@ -32,11 +32,11 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
   }
 
   if (attachmentType === "video/*") {
-    return <video src={sourceUrl} className={cn("w-full h-full object-cover rounded-lg", className)} controls preload="none" />;
+    return <video src={sourceUrl} className={cn("w-full h-full object-cover rounded-mu-lg", className)} controls preload="none" />;
   }
 
   if (attachmentType === "audio/*") {
-    return <audio src={sourceUrl} className={cn("w-full rounded-lg", className)} controls preload="none" />;
+    return <audio src={sourceUrl} className={cn("w-full rounded-mu-lg", className)} controls preload="none" />;
   }
 
   return null;

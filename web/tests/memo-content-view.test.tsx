@@ -75,6 +75,15 @@ describe("memo view", () => {
     await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [x] First\n- [x] Second\n\nNote"));
   });
 
+  it("lets an owner tick a task in a quote, changing only its bracket", async () => {
+    const onTaskToggle = vi.fn();
+    const content = "- [ ] First\n\n> - [ ] Quoted\n>   - [ ] Nested";
+    const { container } = renderMemo(content, { onTaskToggle });
+    const checkboxes = container.querySelectorAll<HTMLInputElement>("input.mbe-checkbox");
+    fireEvent.mouseDown(checkboxes[2]!);
+    await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [ ] First\n\n> - [ ] Quoted\n>   - [x] Nested"));
+  });
+
   it("keeps tasks locked for readers", () => {
     const { container } = renderMemo("- [ ] First");
     expect(container.querySelector("input.mbe-checkbox")).toBeDisabled();
@@ -86,6 +95,74 @@ describe("tags and mentions", () => {
     renderMemo("Plan #work today");
     fireEvent.click(screen.getByText("#work"));
     expect(state.addFilter).toHaveBeenCalledWith({ factor: "tagSearch", value: "work" });
+  });
+
+  it.each(["Enter", " "])("activates a focusable tag with %j without scrolling or bubbling", (key) => {
+    const onKeyDown = vi.fn();
+    const onTagClick = vi.fn();
+    render(
+      <div onKeyDown={onKeyDown}>
+        <MemoMarkdown value="Plan #work today" onTagClick={onTagClick} />
+      </div>,
+    );
+    const tag = screen.getByRole("button", { name: "#work" });
+    expect(tag).toHaveAttribute("tabindex", "0");
+    expect(tag).toHaveClass("mu-focus");
+    tag.focus();
+    expect(tag).toHaveFocus();
+    expect(fireEvent.keyDown(tag, { key })).toBe(false);
+    expect(onTagClick).toHaveBeenCalledTimes(key === "Enter" ? 1 : 0);
+    fireEvent.keyDown(tag, { key, repeat: true });
+    fireEvent.keyUp(tag, { key });
+    expect(onTagClick).toHaveBeenCalledExactlyOnceWith("work");
+    expect(onKeyDown).not.toHaveBeenCalled();
+  });
+
+  it("cancels Space activation when focus leaves the tag", () => {
+    const onTagClick = vi.fn();
+    render(<MemoMarkdown value="#work #life" onTagClick={onTagClick} />);
+    const work = screen.getByRole("button", { name: "#work" });
+    const life = screen.getByRole("button", { name: "#life" });
+    work.focus();
+    fireEvent.keyDown(work, { key: " " });
+    life.focus();
+    fireEvent.keyUp(life, { key: " " });
+    expect(onTagClick).not.toHaveBeenCalled();
+  });
+
+  it("keeps tags as text without a click handler and while editing", () => {
+    const onTagClick = vi.fn();
+    const { rerender } = render(<MemoMarkdown value="#work" />);
+    expect(screen.queryByRole("button", { name: "#work" })).not.toBeInTheDocument();
+
+    rerender(<MemoMarkdown value="#work" onTagClick={onTagClick} />);
+    expect(screen.getByRole("button", { name: "#work" })).toHaveAttribute("tabindex", "0");
+
+    rerender(<MemoMarkdown value="#work" editable onTagClick={onTagClick} />);
+    const tag = screen.getByText("#work");
+    expect(tag).not.toHaveAttribute("role");
+    expect(tag).not.toHaveAttribute("tabindex");
+    fireEvent.keyDown(tag, { key: "Enter" });
+    fireEvent.keyUp(tag, { key: " " });
+    expect(onTagClick).not.toHaveBeenCalled();
+
+    rerender(<MemoMarkdown value="#work" onTagClick={onTagClick} />);
+    const button = screen.getByRole("button", { name: "#work" });
+    fireEvent.keyDown(button, { key: "Enter" });
+    expect(onTagClick).toHaveBeenCalledExactlyOnceWith("work");
+
+    rerender(<MemoMarkdown value="#work" />);
+    expect(screen.getByText("#work")).not.toHaveAttribute("tabindex");
+  });
+
+  it("uses the latest tag handler for keyboard activation", () => {
+    const first = vi.fn();
+    const latest = vi.fn();
+    const { rerender } = render(<MemoMarkdown value="#work" onTagClick={first} />);
+    rerender(<MemoMarkdown value="#work" onTagClick={latest} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: "#work" }), { key: "Enter" });
+    expect(first).not.toHaveBeenCalled();
+    expect(latest).toHaveBeenCalledExactlyOnceWith("work");
   });
 
   it("opens the collection filtered by the tag from a memo detail page", () => {
@@ -186,6 +263,32 @@ describe("raw HTML", () => {
     expect(container.querySelector("summary em")).toHaveTextContent("more");
     expect(screen.getByText("Supporting text.")).toBeInTheDocument();
   });
+
+  it("renders Markdown between disclosure tags inside the one section", async () => {
+    const { container } = renderMemo("<details>\n<summary>x</summary>\n\n**bold**\n\n</details>");
+    expect(container.querySelectorAll(".mbe-details")).toHaveLength(1);
+    expect(container.querySelector(".mbe-details")).toHaveTextContent("x");
+    expect(container.querySelector("[data-in-section] strong")).toHaveTextContent("bold");
+    expect(container).not.toHaveTextContent("<details>");
+  });
+
+  it("renders Markdown between HTML tags inside the one element", async () => {
+    const { container } = renderMemo('<div align="center">\n\n**bold**\n\n</div>');
+    await waitFor(() => expect(container.querySelector('div[align="center"] strong')).toHaveTextContent("bold"));
+    expect(container.querySelectorAll('div[align="center"]')).toHaveLength(1);
+    expect(container).not.toHaveTextContent("<div");
+  });
+
+  it("keeps trusted embeds and drops other iframes, handlers and scripts", async () => {
+    const { container } = renderMemo(
+      '<iframe src="https://www.youtube.com/embed/abc123"></iframe>\n\n<iframe src="https://evil.example/embed"></iframe>\n\n<div onclick="alert(1)">hi</div>\n\n<script>alert(2)</script>',
+    );
+    await waitFor(() => expect(container.querySelector('iframe[src^="https://www.youtube.com/embed/abc123"]')).not.toBeNull());
+    expect(container.querySelectorAll("iframe")).toHaveLength(1);
+    expect(container.querySelector("[onclick]")).toBeNull();
+    expect(container.querySelector("script")).toBeNull();
+    expect(container).not.toHaveTextContent("alert");
+  });
 });
 
 describe("callouts and collapsible sections", () => {
@@ -250,6 +353,12 @@ describe("links", () => {
     expect(scrollIntoView).toHaveBeenCalled();
     expect(open).not.toHaveBeenCalled();
     expect(container.querySelector('a[href="sms:+44"]')).not.toBeNull();
+  });
+
+  it("keeps a link whose scheme hands off to another app", () => {
+    const { container } = renderMemo("[vault](obsidian://open?vault=notes) [channel](slack://channel?team=T123)");
+    expect(container.querySelector('a[href="obsidian://open?vault=notes"]')).not.toBeNull();
+    expect(container.querySelector('a[href="slack://channel?team=T123"]')).not.toBeNull();
   });
 });
 

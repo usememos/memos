@@ -59,7 +59,9 @@ describe("CreateWebhookDialog", () => {
     expect(await screen.findByDisplayValue("whsec_created-secret")).toBeInTheDocument();
     expect(onSuccess).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "common.close" }).find((button) => button.classList.contains("mu-button-primary"))!,
+    );
     expect(onSuccess).toHaveBeenCalledTimes(1);
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });

@@ -13,9 +13,7 @@ const state = vi.hoisted(() => ({
   onOpenChange: vi.fn(),
 }));
 
-vi.mock("react-hot-toast", () => ({
-  default: { error: vi.fn(), success: vi.fn() },
-}));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 
 vi.mock("@/hooks/useSpaceQueries", () => ({
   useCreateSpaceInvitation: () => ({ isPending: false, mutateAsync: state.mutateAsync }),
@@ -37,26 +35,15 @@ vi.mock("@/components/UserAvatar", () => ({
   default: () => <span aria-hidden />,
 }));
 
-vi.mock("@/components/ui/dialog", () => ({
-  Dialog: ({ open, children }: { open: boolean; children: ReactNode }) => (open ? children : null),
-  DialogContent: ({ children }: { children: ReactNode }) => <div role="dialog">{children}</div>,
-  DialogDescription: ({ children }: { children: ReactNode }) => <p>{children}</p>,
-  DialogFooter: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  DialogHeader: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  DialogTitle: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
-}));
-
-vi.mock("@/components/ui/select", () => ({
-  Select: ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => (
-    <select aria-label="role-select" value={value} onChange={(event) => onValueChange(event.target.value)}>
-      <option value="2">Space user</option>
-      <option value="1">Space admin</option>
-    </select>
-  ),
-  SelectContent: () => null,
-  SelectItem: () => null,
-  SelectTrigger: () => null,
-  SelectValue: () => null,
+vi.mock("@usememos/ui", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@usememos/ui")>()),
+  Dialog: {
+    Root: ({ open, children }: { open: boolean; children: ReactNode }) => (open ? children : null),
+    Popup: ({ children }: { children: ReactNode }) => <div role="dialog">{children}</div>,
+    Description: ({ children }: { children: ReactNode }) => <p>{children}</p>,
+    Footer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    Title: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
+  },
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -129,7 +116,7 @@ describe("InviteSpaceMemberDialog", () => {
     expect(screen.getByText(/@alice · Active Memos user/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Alice/ }));
-    fireEvent.change(screen.getByLabelText("role-select"), { target: { value: String(SpaceMember_Role.ADMIN) } });
+    fireEvent.click(screen.getByRole("radio", { name: /setting\.spaces\.space-admin/ }));
     fireEvent.click(screen.getByRole("button", { name: "Send invitation" }));
     await act(async () => Promise.resolve());
 

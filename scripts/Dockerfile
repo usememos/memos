@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.27.2-alpine AS backend
+FROM --platform=$BUILDPLATFORM golang:1.27.4-alpine AS backend
 WORKDIR /backend-build
 
 # Install build dependencies

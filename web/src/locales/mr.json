@@ -21,29 +21,26 @@
     "web-clipper-platforms": "क्रोम + फायरफॉक्स"
   },
   "auth": {
+    "callback-failed-title": "साइन इन पूर्ण होऊ शकले नाही",
     "create-your-account": "तुमचे खाते तयार करा",
+    "hide-password": "पासवर्ड लपवा",
+    "incorrect-credentials": "वापरकर्तानाव किंवा पासवर्ड चुकीचा आहे.",
     "new-password": "नवीन पासवर्ड",
     "repeat-new-password": "नवीन पासवर्डची पुनरावृत्ती करा",
+    "show-password": "पासवर्ड दाखवा",
     "sign-in-tip": "आधीपासूनच एक खाते आहे?",
     "sign-up-tip": "अजून खाते नाही?",
     "admin-sign-in": "प्रशासक साइन-इन",
-    "admin-sign-in-tip": "प्रशासकांसाठी पासवर्ड साइन-इन उपलब्ध राहते.",
     "back-to-sign-in": "साइन इन वर परत जा",
     "continue-with": "{{provider}} सह सुरू ठेवा",
+    "redirecting-to-provider": "{{provider}} कडे पाठवत आहे…",
+    "signing-in": "साइन इन करत आहे…",
     "create-admin-account": "प्रशासक खाते तयार करा",
-    "explore-public-memos": "या इन्स्टन्सवरील सार्वजनिक मेमो तपासा",
-    "first-run": "प्रथम रन",
     "setup-description": "या इन्स्टन्ससाठी प्रशासक खाते तयार करा.",
-    "setup-note": "हे खाते इन्स्टन्स सेटिंग्ज, सदस्य आणि आयडेंटिटी प्रोव्हायडर्सचे मालक आहे.",
     "setup-title": "तुमचा इन्स्टन्स सेट अप करा",
     "signin-unavailable-description": "पासवर्ड साइन-इन बंद आहे आणि कोणतेही आयडेंटिटी प्रोव्हायडर्स कॉन्फिगर केलेले नाहीत. साइन-इन पद्धत सक्षम करण्यासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
     "signin-unavailable-title": "साइन-इन उपलब्ध नाही",
-    "signup-unavailable-description": "पासवर्ड खाती बंद आहेत आणि कोणतेही आयडेंटिटी प्रोव्हायडर्स कॉन्फिगर केलेले नाहीत. प्रवेशासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
-    "signup-unavailable-title": "साइन-अप उपलब्ध नाही",
-    "signups-closed-description": "या इन्स्टन्सवर नवीन खाती अक्षम केली आहेत. तुम्हाला प्रवेशाची आवश्यकता असल्यास तुमच्या प्रशासकाशी संपर्क साधा.",
-    "signups-closed-title": "नोंदणी बंद झाली आहे",
-    "sso-signup-tip": "आपले खाते तयार करण्यासाठी खालीलपैकी एका प्रदात्याद्वारे साइन इन करा.",
-    "welcome-back": "आपले पुन्हा स्वागत आहे."
+    "signups-closed-description": "या इन्स्टन्सवर नवीन खाती अक्षम केली आहेत. तुम्हाला प्रवेशाची आवश्यकता असल्यास तुमच्या प्रशासकाशी संपर्क साधा."
   },
   "common": {
     "about": "बद्दल",
@@ -55,7 +52,6 @@
     "attachments": "संलग्नक",
     "avatar": "अवतार",
     "basic": "मूलभूत",
-    "browse": "ब्राउझ करा",
     "calendar": "दिनदर्शिका",
     "cancel": "रद्द करा",
     "clear": "साफ",
@@ -93,6 +89,8 @@
     "memo": "मेमो",
     "memos": "मेमो",
     "more": "अधिक",
+    "move-down": "Move down",
+    "move-up": "Move up",
     "name": "नाव",
     "nickname": "टोपणनाव",
     "open": "उघडा",
@@ -102,7 +100,6 @@
     "profile": "प्रोफाइल",
     "referenced-by": "याने संदर्भित",
     "referencing": "संदर्भ देत आहे",
-    "relations": "संबंध",
     "resources": "संसाधने",
     "restore": "पुनर्संचयित करा",
     "role": "भूमिका",
@@ -138,12 +135,35 @@
     "resize-sidebar": "साइडबारचा आकार बदला",
     "sign-in-to-memos": "Memos मध्ये साइन इन करा",
     "unlink": "अनलिंक करा",
-    "view-all": "सर्व पहा"
+    "open-navigation": "नेव्हिगेशन उघडा",
+    "navigation": "नेव्हिगेशन",
+    "primary-navigation": "मुख्य",
+    "download": "डाउनलोड करा",
+    "download-name": "{{name}} डाउनलोड करा",
+    "open-name": "{{name}} उघडा",
+    "preview-name": "{{name}} चे पूर्वावलोकन",
+    "no-content": "मजकूर नाही",
+    "previous": "मागील",
+    "next": "पुढील",
+    "retry": "पुन्हा प्रयत्न करा",
+    "docs": "दस्तऐवज",
+    "calendar-for-month": "{{month}} चे कॅलेंडर",
+    "date-at-time": "{{date}}, {{time}} वाजता",
+    "selected-location": "निवडलेले स्थान",
+    "choose-location": "स्थान निवडा",
+    "unknown-error": "अज्ञात त्रुटी",
+    "error-occurred": "एक त्रुटी आली"
   },
   "locale-picker": {
     "no-language-feedback": "भाषा सापडली नाही? अभिप्राय सबमिट करा"
   },
   "editor": {
+    "suggest-tags": "AI वापरून टॅग सुचवा",
+    "no-suggested-tags": "सुचवण्यासाठी टॅग नाहीत",
+    "tag-suggestions-label": "टॅग सूचना",
+    "tag-suggestions-error": "टॅग सूचना उपलब्ध नाहीत",
+    "tag-suggestions-limit": "टॅग सूचनांची मर्यादा गाठली आहे. नंतर पुन्हा प्रयत्न करा.",
+    "set-visibility": "दृश्यमानता {{visibility}} अशी सेट करा",
     "suggestions": "सूचना",
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",
@@ -152,17 +172,66 @@
     "markdown-mode": "Markdown मोड",
     "no-changes-detected": "कोणतेही बदल आढळले नाहीत",
     "save": "जतन",
+    "saving": "जतन करत आहे…",
+    "updating": "अद्ययावत करत आहे…",
+    "commenting": "टिप्पणी पाठवत आहे…",
     "insert-menu": {
       "add-location": "स्थान जोडा",
       "link-memo": "लिंक मेमो",
       "image-upload-stopped": "प्रतिमा अपलोड थांबले {{completed}}/{{total}}",
       "insert-image": "प्रतिमा घाला",
+      "drawing": "मार्कअप",
       "keep-as-attachments": "संलग्नक म्हणून ठेवा",
       "retry-image-upload": "पुन्हा प्रयत्न करा",
       "uploading-inline-image": "सामग्रीवर अपलोड करत आहे",
       "uploading-images": "प्रतिमा अपलोड करत आहे {{completed}}/{{total}}",
       "add-attachment": "जोडपत्र जोडा",
       "image-upload-failed": "काही प्रतिमा अपलोड होऊ शकल्या नाहीत. पुन्हा प्रयत्न करा किंवा अपलोड केलेल्या फाइल्स जोडपत्रे म्हणून ठेवा."
+    },
+    "drawing": {
+      "edit": "मार्कअप संपादित करा",
+      "tools": "साधने",
+      "tool-select": "निवडा",
+      "tool-pen": "पेन",
+      "tool-eraser": "खोडरबर",
+      "tool-rectangle": "आयत",
+      "tool-ellipse": "लंबवर्तुळ",
+      "tool-arrow": "बाण",
+      "tool-text": "मजकूर",
+      "style": "रंग आणि जाडी",
+      "color": "रंग",
+      "width": "जाडी",
+      "width-thin": "पातळ",
+      "width-medium": "मध्यम",
+      "width-thick": "जाड",
+      "color-ink": "शाई",
+      "color-gray": "राखाडी",
+      "color-red": "लाल",
+      "color-orange": "नारिंगी",
+      "color-green": "हिरवा",
+      "color-teal": "निळसर हिरवा",
+      "color-blue": "निळा",
+      "color-violet": "जांभळा",
+      "undo": "पूर्ववत करा",
+      "redo": "पुन्हा करा",
+      "zoom": "झूम",
+      "zoom-to-fit": "विंडोमध्ये बसवा",
+      "discard-title": "हे रेखाचित्र टाकून द्यायचे?",
+      "discard-description": "ते अजून मेमोमध्ये जोडलेले नाही.",
+      "discard-edit-title": "तुमचे बदल टाकून द्यायचे?",
+      "discard-edit-description": "रेखाचित्र उघडण्यापूर्वी जसे होते तसेच राहील.",
+      "keep-drawing": "रेखाचित्र सुरू ठेवा",
+      "discard": "टाकून द्या",
+      "open-failed": "रेखाचित्र उघडता आले नाही. पुन्हा प्रयत्न करा.",
+      "export-failed": "रेखाचित्र जतन करता आले नाही. पुन्हा प्रयत्न करा.",
+      "image-failed": "प्रतिमा रेखाचित्रात जोडता आली नाही.",
+      "saved-without-drawing": "मेमो जतन केला, पण रेखाचित्र जतन झाले नाही. पुन्हा प्रयत्नासाठी परत जतन करा.",
+      "annotate": "मार्कअप",
+      "save-copy": "प्रत जतन करा",
+      "unavailable": "गंतव्य उपलब्ध नाही.",
+      "saved-needs-update": "चित्र जतन झाले. नोंद अद्ययावत करण्याचा पुन्हा प्रयत्न करा.",
+      "changed-save-copy": "मूळ बदलले आहे. एक प्रत जतन करा.",
+      "bind-failed": "चित्र अपलोड झाले. नोंदीत जोडण्याचा पुन्हा प्रयत्न करा."
     },
     "audio-recorder": {
       "attachment-label": "ऑडिओ रेकॉर्डिंग",
@@ -199,7 +268,6 @@
     "footnotes": "तळटीपा",
     "back-to-reference": "संदर्भाकडे परत जा",
     "new-memo": "नवीन मेमो",
-    "saved": "जतन केले",
     "validation": {
       "cannot-save": "जतन करू शकत नाही",
       "content-required": "सामग्री, संलग्नक किंवा फाईल आवश्यक आहे",
@@ -256,7 +324,19 @@
       "alt-text-placeholder": "प्रतिमेचे वर्णन करा…",
       "image-unavailable": "प्रतिमा उपलब्ध नाही",
       "resize-image": "प्रतिमेचा आकार बदला"
-    }
+    },
+    "attachments": {
+      "edited": "संपादित",
+      "new": "नवीन",
+      "remove": "संलग्नक काढा",
+      "reorder": "{{name}} चा क्रम बदला",
+      "reorder-hint": "ओढा, किंवा बाण कळा वापरा"
+    },
+    "remove-relation": "संबंध काढा",
+    "remove-location": "स्थान काढा",
+    "recording-unsupported": "या ब्राउझरमध्ये ऑडिओ रेकॉर्डिंग समर्थित नाही.",
+    "microphone-denied": "मायक्रोफोनची परवानगी नाकारली गेली.",
+    "recording-failed": "ऑडिओ रेकॉर्डिंग सुरू करण्यात अयशस्वी."
   },
   "inbox": {
     "failed-to-load": "इनबॉक्स आयटम लोड करण्यात अयशस्वी",
@@ -265,14 +345,28 @@
     "unread": "न वाचलेले",
     "space-invitation": "तुम्हाला एका स्पेसमध्ये सामील होण्यासाठी आमंत्रित केले",
     "space-invitation-accepted": "तुम्ही या स्पेसमध्ये सामील झाला आहात.",
-    "space-invitation-open": "स्पेस उघडा"
+    "space-invitation-open": "स्पेस उघडा",
+    "commented-on-memo": "ने तुमच्या मेमोवर टिप्पणी केली",
+    "mentioned-in-comment": "ने एका टिप्पणीत तुमचा उल्लेख केला",
+    "mentioned-in-memo": "ने एका मेमोमध्ये तुमचा उल्लेख केला",
+    "original": "मूळ:",
+    "memo-label": "मेमो:",
+    "comment-heading": "टिप्पणी",
+    "memo-heading": "मेमो",
+    "empty-memo": "रिकामा मेमो",
+    "empty-comment": "रिकामी टिप्पणी"
   },
   "memo": {
+    "no-memos-yet": "अजून कोणतेही मेमो नाहीत",
+    "no-matching-memos": "जुळणारे मेमो नाहीत",
+    "clear-filters": "फिल्टर्स काढून टाका",
     "pinned": "पिन केलेले",
     "click-to-show-sensitive-content": "संवेदनशील सामग्री दाखवण्यासाठी क्लिक करा",
     "comment": {
       "self": "टिप्पण्या",
-      "write-a-comment": "टिप्पणी लिहा"
+      "write-a-comment": "टिप्पणी लिहा",
+      "view-all-count_one": "{{count}} टिप्पणी पहा",
+      "view-all-count_other": "सर्व {{count}} टिप्पण्या पहा"
     },
     "copy-content": "सामग्रीची प्रत बनवा",
     "copy-link": "लिंकची प्रत बनवा",
@@ -286,7 +380,8 @@
       "has-image": "प्रतिमा आहे",
       "has-link": "लिंक आहे",
       "has-location": "स्थान आहे",
-      "has-task-list": "कार्यसूची आहे"
+      "has-task-list": "कार्यसूची आहे",
+      "remove": "फिल्टर काढा"
     },
     "compact-mode": "संक्षिप्त मोड",
     "link-preview": "दुवा पूर्वावलोकन",
@@ -294,6 +389,13 @@
     "order-by": "क्रमवारी",
     "show-less": "कमी दाखवा",
     "show-more": "अधिक दाखवा",
+    "audience": {
+      "heading": "हे कोण पाहू शकते?",
+      "private": "फक्त मी",
+      "space": "स्पेसचे सदस्य",
+      "protected": "साइन इन केलेले वापरकर्ते",
+      "public": "सर्वजण"
+    },
     "visibility": {
       "private": "खाजगी",
       "protected": "संरक्षित",
@@ -332,15 +434,14 @@
       "open-image": "प्रतिमा म्हणून शेअर करा"
     },
     "new-badge": "नविन",
-    "parent-loading": "मूळ मेमो लोड होत आहे…",
-    "parent-load-error": "मूळ मेमो लोड होऊ शकला नाही.",
-    "parent-unavailable": "मूळ मेमो अनुपलब्ध",
+    "parent-loading": "पालक मेमो लोड होत आहे…",
+    "parent-load-error": "पालक मेमो लोड होऊ शकला नाही.",
+    "parent-unavailable": "पालक मेमो अनुपलब्ध",
     "parent-unavailable-description": "तो कदाचित हटवला गेला असेल किंवा तुमचा प्रवेश आता नसेल.",
     "moved": "ज्ञापन हलवले",
-    "back-to": "{{source}} कडे परत",
     "count-memos-updated-in-date": "{{count}} {{memos}} हे {{date}} वर अद्यतनित केले",
     "connections": "जोडण्या",
-    "grid-compact-hint": "ग्रिड लेआउटमध्ये नेहमी संक्षिप्त कार्ड वापरले जातात.",
+    "grid-compact-hint": "लांब मेमो संकुचित करा. ग्रिड लेआउटमध्ये हा पर्याय नेहमी सक्षम असतो.",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीनवर मावतील तितके स्तंभ",
@@ -358,11 +459,17 @@
       "updated": "कार्ये अद्यतनित केली"
     },
     "view-options": "पाहण्याचे पर्याय",
-    "sensitive-content": "Sensitive content",
-    "split-view": "Split view",
-    "split-view-description": "Memo list beside the open memo",
-    "split-view-list": "Memo list",
-    "split-view-untitled": "No text"
+    "add-reaction": "प्रतिक्रिया जोडा",
+    "remove-reaction": "प्रतिक्रिया काढून टाका",
+    "full-width": "पूर्ण रुंदी",
+    "full-width-hint": "मेमो कालरेषेची संपूर्ण रुंदी वापरा.",
+    "include-comments": "टिप्पण्या समाविष्ट करा",
+    "include-comments-hint": "याद्यांमध्ये मेमोसोबत टिप्पण्या दाखवा.",
+    "sensitive-content": "संवेदनशील मजकूर",
+    "split-view": "विभाजित दृश्य",
+    "split-view-description": "उघडलेल्या मेमोशेजारी मेमो सूची",
+    "split-view-list": "मेमो सूची",
+    "split-view-untitled": "मजकूर नाही"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",
@@ -377,7 +484,9 @@
     "restored-successfully": "यशस्वीरित्या पुनर्संचयित केले",
     "succeed-copy-content": "सामग्री यशस्वीरित्या कॉपी केली.",
     "succeed-copy-link": "लिंक यशस्वीरित्या कॉपी केली.",
-    "update-succeed": "अपडेट यशस्वी झाले"
+    "update-succeed": "अपडेट यशस्वी झाले",
+    "not-signed-in": "तुम्ही साइन इन केलेले नाही.",
+    "invalid-datetime": "अवैध तारीख आणि वेळ. 2023-12-31 23:59:59 हे स्वरूप वापरा."
   },
   "reference": {
     "no-memos-found": "कोणतेही मेमो आढळले नाहीत",
@@ -410,9 +519,11 @@
       "list-title": "सदस्य यादी",
       "no-members-found": "कोणतेही सदस्य आढळले नाहीत",
       "archived": "संग्रहित",
-      "member-column": "सदस्य",
       "active": "सक्रिय",
-      "summary-column": "सारांश"
+      "export-memos": "मेमो निर्यात करा",
+      "username-password-required": "वापरकर्तानाव आणि पासवर्ड रिकामे असू शकत नाहीत",
+      "create-success": "वापरकर्ता तयार केला",
+      "update-success": "वापरकर्ता अपडेट केला"
     },
     "my-account": {
       "label": "माझे खाते"
@@ -436,13 +547,148 @@
       "theme-description": "निवडलेली थीम या डिव्हाइसवर त्वरित लागू करते.",
       "theme": "थीम",
       "uploads-privacy-description": "अपलोड केलेल्या मीडियासोबत सबमिट केलेल्या गोपनीयतेसाठी संवेदनशील माहितीवर नियंत्रण ठेवा.",
-      "uploads-privacy-title": "अपलोड आणि गोपनीयता"
+      "uploads-privacy-title": "अपलोड आणि गोपनीयता",
+      "theme-system": "सिस्टमनुसार",
+      "theme-system-short": "सिस्टम",
+      "theme-light": "लाइट",
+      "theme-dark": "डार्क",
+      "theme-paper": "पेपर"
+    },
+    "editor": {
+      "label": "संपादक",
+      "markdown-mode-description": "मेमो स्वरूपित मजकुराऐवजी Markdown मजकूर म्हणून लिहा आणि संपादित करा."
     },
     "memo-view": {
       "create": "दृश्य तयार करा",
       "delete-confirm": "तुम्हाला दृश्य `{{title}}` हटवायचे आहे याची खात्री आहे का?",
       "delete-success": "दृश्य `{{title}}` यशस्वीरित्या हटवले",
-      "change-icon": "व्ह्यू आयकॉन बदला"
+      "change-icon": "व्ह्यू आयकॉन बदला",
+      "page-description": "फील्ड, ऑपरेटर, वेळ सहाय्यक आणि टॅग जुळवणी वापरून पुन्हा वापरता येणारी दृश्ये तयार करा. उदाहरणांपासून सुरुवात करा, नंतर जतन करण्यापूर्वी तपासा.",
+      "edit": "दृश्य संपादित करा",
+      "form-description": "दृश्याला नाव द्या आणि ते लागू करणारी मेमो फिल्टर एक्सप्रेशन ठरवा.",
+      "title-placeholder": "पिन केलेले, अलीकडील नोंदी, काम",
+      "filter-help": "{{and}}, {{or}} आणि {{not}} वापरून एक्सप्रेशन एकत्र करा. वेळ फील्ड टाइमस्टॅम्प असतात — {{now}}, {{duration}}, {{timestamp}} आणि {{year}} सारखे ॲक्सेसर वापरा. टॅग {{sets}} ला समर्थन देतात, आणि {{size}} लांबी मोजते.",
+      "validate": "तपासा",
+      "all": "सर्व दृश्ये",
+      "loading": "दृश्ये लोड होत आहेत…",
+      "load-failed": "दृश्ये लोड करता आली नाहीत.",
+      "empty-title": "अद्याप कोणतेही दृश्य नाही",
+      "empty-description": "तुम्हाला हवे असलेल्या मेमोंकडे पटकन परत जाण्यासाठी फिल्टर जतन करा.",
+      "examples-title": "एक्सप्रेशनची उदाहरणे",
+      "fields-title": "समर्थित फील्ड",
+      "title-filter-required": "शीर्षक आणि फिल्टर रिकामे असू शकत नाहीत",
+      "filter-valid": "फिल्टर एक्सप्रेशन वैध दिसते",
+      "create-success": "दृश्य तयार केले",
+      "update-success": "दृश्य अपडेट केले",
+      "examples": {
+        "pinned": {
+          "title": "पिन केलेले",
+          "description": "फक्त पिन केलेले मेमो."
+        },
+        "recent": {
+          "title": "अलीकडील नोंदी",
+          "description": "मागील एका तासात तयार केलेले मेमो."
+        },
+        "public": {
+          "title": "सार्वजनिक मेमो",
+          "description": "फक्त सार्वजनिक मेमो."
+        },
+        "project-tags": {
+          "title": "प्रोजेक्ट टॅग",
+          "description": "एक किंवा अधिक अचूक टॅगशी जुळवा."
+        },
+        "untagged": {
+          "title": "टॅगशिवाय",
+          "description": "कोणताही टॅग नसलेले मेमो."
+        },
+        "archive-tree": {
+          "title": "संग्रह वृक्ष",
+          "description": "उपसर्गानुसार श्रेणीबद्ध टॅग जुळवा."
+        },
+        "unassigned": {
+          "title": "न नेमलेले",
+          "description": "कोणत्याही स्पेसमध्ये नसलेले मेमो."
+        },
+        "one-space": {
+          "title": "एका स्पेसमध्ये",
+          "description": "एखाद्या स्पेसमध्ये ठेवलेले मेमो. स्पेसच्या URL किंवा सेटिंग्जमधील स्पेस ID वापरा."
+        },
+        "open-tasks": {
+          "title": "अपूर्ण कामे",
+          "description": "अपूर्ण कामे असलेले मेमो."
+        },
+        "links-or-code": {
+          "title": "लिंक किंवा कोड",
+          "description": "लिंक किंवा कोड ब्लॉक असलेले मेमो."
+        },
+        "no-location": {
+          "title": "स्थानाशिवाय",
+          "description": "जोडलेले स्थान नसलेले मेमो."
+        },
+        "with-attachments": {
+          "title": "संलग्नकांसह",
+          "description": "किमान एक संलग्न फाइल असलेले मेमो."
+        },
+        "photos": {
+          "title": "फोटो",
+          "description": "मजकुरात किंवा संलग्न फाइल म्हणून प्रतिमा दाखवणारे मेमो."
+        },
+        "content-search": {
+          "title": "मजकूर शोध",
+          "description": "मेमोच्या मजकुरात शोधा."
+        },
+        "starts-with": {
+          "title": "याने सुरू होणारे",
+          "description": "ज्यांचा मजकूर विशिष्ट मजकुराने सुरू होतो असे मेमो (endsWith देखील)."
+        },
+        "regex": {
+          "title": "Regex जुळवणी",
+          "description": "रेग्युलर एक्सप्रेशनने मजकूर जुळवा."
+        },
+        "all-tags-complete": {
+          "title": "सर्व टॅग पूर्ण",
+          "description": "प्रत्येक टॅग -done ने संपतो (फक्त टॅग असलेले मेमो)."
+        },
+        "one-project-tag": {
+          "title": "एक प्रोजेक्ट टॅग",
+          "description": "नेमका एक टॅग अटीशी जुळतो."
+        },
+        "any-tags": {
+          "title": "यापैकी कोणताही टॅग",
+          "description": "टॅग दिलेल्या संचाशी जुळतात."
+        },
+        "exact-tags": {
+          "title": "नेमके हेच टॅग",
+          "description": "नेमक्या याच संचाचे टॅग, त्यापेक्षा जास्त नाही."
+        },
+        "year-2024": {
+          "title": "2024 चे मेमो",
+          "description": "कॅलेंडर वर्षानुसार फिल्टर करा."
+        },
+        "weekend": {
+          "title": "आठवड्याच्या शेवटच्या नोंदी",
+          "description": "रविवारी किंवा शनिवारी तयार केलेले (0 = रविवार)."
+        },
+        "long": {
+          "title": "लांब नोंदी",
+          "description": "280 पेक्षा जास्त अक्षरांचे मेमो."
+        }
+      }
+    },
+    "configuration": {
+      "label": "कॉन्फिगरेशन",
+      "description": "कॉन्फिगरेशन फायलींद्वारे सेट केलेली संसाधने. ती बदलण्यासाठी फाइल संपादित करा आणि लागू करा; इन्स्टन्सचा उर्वरित भाग इथे संपादनयोग्य राहतो.",
+      "managed-by": "कॉन्फिगरेशनद्वारे व्यवस्थापित",
+      "managed-tooltip": "{{source}} मध्ये सेट केले आहे. हे बदलण्यासाठी फाइल संपादित करा आणि लागू करा.",
+      "resource": "संसाधन",
+      "source": "फाइल",
+      "managed-fields": "व्यवस्थापित फील्ड",
+      "whole-resource": "सर्व फील्ड",
+      "ignored-fields": "इथे संपादनयोग्य",
+      "serial": "अनुक्रमांक",
+      "last-apply": "शेवटचे लागू",
+      "applied-by": "लागू करणारे",
+      "nothing-managed": "कोणतेही कॉन्फिगरेशन लागू केलेले नाही. सर्व काही इथेच सेट होते."
     },
     "sso": {
       "authorization-endpoint": "अधिकृतता एन्डपाॅंइन्ट",
@@ -472,7 +718,6 @@
       "basic-settings": "मूलभूत सेटिंग्ज",
       "basic-settings-description": "OAuth तपशील भरण्यापूर्वी प्रदाता ओळख, प्रदर्शित नाव आणि पर्यायी ओळखकर्ता नियम सेट करा.",
       "client-secret-optional-description": "विद्यमान क्लायंट सिक्रेट अपरिवर्तित ठेवण्यासाठी रिकामे सोडा.",
-      "configuration": "कॉन्फिगरेशन",
       "configuration-summary-description": "संपूर्ण कॉन्फिगरेशन थेट न दाखवता, प्रदात्याला ओळखण्यासाठी आणि त्याचे ऑडिट करण्यासाठी मदत करणाऱ्या आवश्यक गोष्टी दाखवा.",
       "create-sso-description": "प्रशासक-व्यवस्थापित सिंगल साइन-ऑनसाठी एक नवीन ओळख प्रदाता तयार करा.",
       "endpoints": "एंडपॉइंट्स",
@@ -494,7 +739,6 @@
       "not-linked-description": "अद्याप कोणतीही बाह्य ओळख लिंक केलेली नाही. तुम्ही नंतर साइन इन करण्यासाठी हा प्रोव्हायडर कनेक्ट करू शकता.",
       "oauth-configuration": "OAuth कॉन्फिगरेशन",
       "oauth-configuration-description": "साइन-इन दरम्यान वापरलेले OAuth क्लायंट क्रेडेंशियल्स आणि प्रोव्हायडर एंडपॉइंट्स भरा.",
-      "provider": "प्रोव्हायडर",
       "provider-id": "प्रोव्हायडर आयडी",
       "provider-id-description": "फक्त लहान लिपीतील अक्षरे, अंक आणि हायफन वापरा. ​​हे मूल्य प्रोव्हायडर रिसोर्स नावाचा भाग बनते.",
       "redirect-url-description": "हा कॉलबॅक URL तुमच्या आयडेंटिटी प्रोव्हायडरकडे नोंदवा जेणेकरून ऑथोरायझेशन कोड फ्लो पूर्ण होऊ शकेल.",
@@ -503,7 +747,9 @@
       "scopes-description": "स्कोप्स स्पेसने वेगळे करा. बहुतेक प्रोव्हायडर्सना फक्त प्रोफाइल किंवा ईमेल ऍक्सेस सारख्या लहान संचाची आवश्यकता असते.",
       "template-description": "प्रोव्हायडर प्रीसेटपासून सुरुवात करा, नंतर तुमच्या टेनंटसाठी क्रेडेंशियल्स आणि एंडपॉइंट्स समायोजित करा.",
       "unlink-success": "{{name}} अनलिंक केले.",
-      "update-sso-description": "प्रोव्हायडर कॉन्फिगरेशनचे पुनरावलोकन करा, त्यानंतर बदलणारी फील्ड्स सेव्ह करा."
+      "update-sso-description": "प्रोव्हायडर कॉन्फिगरेशनचे पुनरावलोकन करा, त्यानंतर बदलणारी फील्ड्स सेव्ह करा.",
+      "invalid-config": "ओळख प्रदात्याचे कॉन्फिगरेशन अवैध आहे.",
+      "provider-id-placeholder": "उदा. github, okta-corp"
     },
     "storage": {
       "accesskey": "प्रवेश की",
@@ -551,7 +797,8 @@
       "customize-server": {
         "description": "वर्णन",
         "icon-url": "चिन्ह URL",
-        "title": "सर्व्हर सानुकूलित करा"
+        "title": "सर्व्हर सानुकूलित करा",
+        "dialog-description": "तुमच्या इन्स्टन्सचे स्वरूप आणि सेटिंग्ज सानुकूलित करा."
       },
       "server-name": "सर्व्हरचे नाव",
       "label": "प्रणाली",
@@ -581,8 +828,6 @@
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
       "never-applies": "Never applies",
       "never-applies-description": "Every user named here is caught by an earlier entry.",
       "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
@@ -657,7 +902,9 @@
       "danger-area-description": "येथे अपरिवर्तनीय खाते क्रिया आहेत. पुढे जाण्यापूर्वी त्यांचे काळजीपूर्वक पुनरावलोकन करा.",
       "delete-account": "खाते हटवा",
       "delete-account-description": "हे खाते आणि या इन्स्टन्सवरील सर्व संबंधित प्रवेश कायमस्वरूपी काढून टाका. ही क्रिया पूर्ववत केली जाऊ शकत नाही.",
-      "email-in-use": "हा ईमेल आधीच दुसऱ्या खात्याद्वारे वापरला जात आहे."
+      "email-in-use": "हा ईमेल आधीच दुसऱ्या खात्याद्वारे वापरला जात आहे.",
+      "avatar-too-large": "2 MB किंवा त्याहून लहान प्रतिमा निवडा.",
+      "avatar-unreadable": "ही प्रतिमा वाचता येत नाही. दुसरी फाइल वापरून पाहा."
     },
     "instance": {
       "disallow-change-nickname": "टोपणनाव बदलण्यास मनाई करा",
@@ -677,16 +924,6 @@
       "disallow-password-auth-description": "वापरकर्त्यांना पासवर्ड लॉगिनऐवजी आयडेंटिटी प्रोव्हायडरद्वारे साइन इन करणे आवश्यक करा.",
       "disallow-user-registration-description": "नवीन वापरकर्त्यांना साइन-अप पेजवरून खाती तयार करण्यापासून प्रतिबंधित करा.",
       "week-start-day-description": "कॅलेंडर-शैलीतील दृश्यांमध्ये दर्शविल्या जाणाऱ्या पहिल्या दिवसावर नियंत्रण ठेवते."
-    },
-    "memo": {
-      "reactions": "प्रतिक्रिया",
-      "label": "मेमो",
-      "reactions-required": "प्रतिक्रियांची यादी रिकामी असू नये",
-      "add-reaction": "प्रतिक्रिया जोडा",
-      "configured-reactions": "कॉन्फिगर केलेल्या प्रतिक्रिया",
-      "reaction-placeholder": "उदा. 👍",
-      "reactions-description": "वापरकर्ते मेमोंवर लागू करू शकतील असे प्रतिक्रिया पर्याय परिभाषित करा.",
-      "remove-reaction": "प्रतिक्रिया काढून टाका"
     },
     "webhook": {
       "create-dialog": {
@@ -713,7 +950,6 @@
       },
       "no-webhooks-found": "कोणतेही वेबहुक आढळले नाहीत.",
       "title": "वेबहुक्स",
-      "url": "URL",
       "label": "वेबहुक्स"
     },
     "tags": {
@@ -734,27 +970,26 @@
       "used-count": "{{count}} मेमो"
     },
     "ai": {
+      "key-reentry": "प्रकार किंवा एंडपॉइंट बदलल्यास API की पुन्हा टाकावी लागेल.",
+      "provider-type-openai": "OpenAI-सुसंगत",
+      "delete-provider-description": "यामुळे प्रदाता आणि त्याची जतन केलेली API की काढली जाईल.",
+      "text-generation-title": "मजकूर निर्मिती",
+      "text-generation-description": "टॅग सूचनांसाठी प्रदाता निवडा आणि त्याच्या मजकूर मॉडेलचा आयडी प्रविष्ट करा.",
+      "text-generation-disabled": "काहीही नाही — मजकूर निर्मिती अक्षम",
+      "model-help": "प्रदात्याचा मॉडेल आयडेंटिफायर वापरा, उदा. {{example}}.",
+      "model-required": "मॉडेल आवश्यक आहे.",
       "endpoint": "एन्डपाॅंईन्ट",
-      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
-      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
       "add-provider": "प्रोव्हायडर जोडा",
       "api-key": "API की",
       "api-key-required": "API की आवश्यक आहे.",
-      "byok-description": "तुमच्या स्वतःच्या खात्यातील API की वापरून OpenAI किंवा Gemini शी कनेक्ट करा. Memos या सर्व्हरवरून थेट प्रोव्हायडरला कॉल करते.",
-      "byok-key-note": "तुमच्या प्रोव्हायडर खात्यातील की वापरा; Memos सामायिक AI क्रेडेन्शियल्स बंडल करत नाही.",
-      "byok-label": "BYOK",
-      "byok-model-note": "Memos ऑडिओ ट्रान्सक्रिप्शनसारख्या वैशिष्ट्यांसाठी समर्थित मॉडेल्स निवडते.",
+      "byok-description": "तुमच्या खात्याच्या API कीने एखादी AI सेवा, किंवा तुम्ही चालवत असलेला मॉडेल सर्व्हर जोडा. Memos या सर्व्हरवरून थेट त्याला कॉल करते.",
       "byok-storage-note": "कीज या इन्स्टन्सवर राहतात आणि सेटिंग्ज लोड झाल्यावर मास्क केल्या जातात.",
-      "byok-title": "तुमचे स्वतःचे AI खाते वापरा",
-      "configured": "कॉन्फिगर केले",
       "current-key": "सध्याची की: {{key}}",
-      "default-endpoint": "डीफॉल्ट एंडपॉइंट",
-      "delete-provider": "AI प्रोव्हायडर `{{title}}` हटवायचे आहे का?",
-      "dialog-description": "तुमच्या स्वतःच्या प्रोव्हायडर खात्यातून एक की जोडा. Memos प्रत्येक प्रोव्हायडरसाठी अंगभूत मॉडेल्स वापरते; संग्रहित की कायम ठेवण्यासाठी संपादन करताना API की रिकामी सोडा.",
+      "delete-provider-impact": "हा प्रदाता हटवल्यास ही वैशिष्ट्ये बंद होतील: {{features}}.",
+      "delete-provider": "AI प्रोव्हायडर “{{title}}” हटवायचे आहे का?",
       "edit-provider": "प्रोव्हायडर संपादित करा",
       "endpoint-hint": "अधिकृत प्रोव्हायडर एंडपॉइंट वापरण्यासाठी रिकामे सोडा.",
-      "integrations-description": "प्रोव्हायडर की इन्स्टन्स मालकाद्वारे पुरवल्या जातात आणि सर्व्हर-साइड AI वैशिष्ट्यांद्वारे वापरल्या जातात.",
-      "integrations-title": "AI इंटिग्रेशन्स",
+      "integrations-title": "प्रदाते",
       "keep-api-key": "विद्यमान की कायम ठेवण्यासाठी रिकामे सोडा",
       "label": "AI",
       "no-providers": "कोणतेही AI प्रोव्हायडर कॉन्फिगर केलेले नाहीत.",
@@ -762,19 +997,49 @@
       "provider-title-required": "प्रोव्हायडरचे नाव आवश्यक आहे.",
       "provider-type": "प्रोव्हायडरचा प्रकार",
       "transcription-description": "मेमो कंपोझरमध्ये ऑडिओ रेकॉर्ड करताना स्पीच-टू-टेक्स्ट सेटिंग्ज वापरल्या जातात.",
-      "transcription-empty-providers": "ट्रान्सक्रिप्शन सक्षम करण्यासाठी प्रथम एआय इंटिग्रेशन जोडा.",
       "transcription-language-help": "ISO 639-1 शॉर्ट कोड (उदा. en, de, zh). ऑटो-डिटेक्टसाठी रिकामे सोडा.",
       "transcription-language-placeholder": "ऑटो-डिटेक्ट",
       "transcription-language": "डीफॉल्ट भाषा",
-      "transcription-model-help": "फ्री टेक्स्ट. प्रोव्हायडरचा मॉडेल आयडेंटिफायर वापरा — उदा. whisper-1, gpt-4o-transcribe, whisper-large-v3-turbo.",
       "transcription-model": "मॉडेल",
       "transcription-no-provider": "काहीही नाही — ट्रान्सक्रिप्शन अक्षम",
-      "transcription-prompt-help": "विशेष नामे आणि पारिभाषिक शब्दांचे स्पेलिंग सुधारते. OpenAI Whisper याला एक सॉफ्ट हिंट मानते (Whisper ची मर्यादा अंदाजे २२४ टोकन्स आहे). Gemini याला जनरेशन प्रॉम्प्टमध्ये एक शाब्दिक सूचना मानते.",
+      "transcription-prompt-help": "विशेष नामे आणि पारिभाषिक शब्दांचे स्पेलिंग सुधारते.",
       "transcription-prompt-placeholder": "नावे: एलिस, बॉब. शब्दसूची: कुबरनेट्स, OAuth.",
       "transcription-prompt": "प्रॉम्प्ट हिंट्स",
       "transcription-provider": "प्रोव्हायडर",
       "transcription-title": "ट्रान्सक्रिप्शन",
-      "transcription-warning-no-key": "निवडलेल्या प्रोव्हायडरमध्ये API की सेट केलेली नाही. एक की जोडण्यासाठी वरील इंटिग्रेशन संपादित करा."
+      "try-it": "वापरून पाहा",
+      "checking-connection": "कनेक्शन तपासत आहे…",
+      "try-transcription-title": "लिप्यंतरण वापरून पाहा",
+      "try-transcription-description": "ऑडिओ रेकॉर्ड किंवा अपलोड करा आणि त्याचे लिप्यंतरण पाहा. प्रत्येक रन तुमच्या प्रदात्याला खरी विनंती असते; काहीही जतन होत नाही.",
+      "try-tags-title": "टॅग सूचना वापरून पाहा",
+      "try-tags-description": "एक नोंद लिहा आणि तिला कोणते टॅग मिळतील ते पाहा. प्रत्येक रन तुमच्या प्रदात्याला खरी विनंती असते; काहीही जतन होत नाही.",
+      "try-note": "नोंद",
+      "suggest-tags": "टॅग सुचवा",
+      "suggested-tags": "सुचवलेले टॅग",
+      "suggested-tags-empty": "सुचवलेले टॅग येथे दिसतील",
+      "no-tags-suggested": "या नोंदीसाठी कोणतेही टॅग सुचवले नाहीत.",
+      "transcript-empty": "लिप्यंतरण येथे दिसेल",
+      "record": "रेकॉर्ड करा",
+      "upload-audio": "फाइल अपलोड करा",
+      "audio-formats": "MP3, M4A, WAV, WebM · 25 MB पर्यंत",
+      "copy-transcript": "लिप्यंतरण कॉपी करा",
+      "try-uses-saved": "जतन केलेली सेटिंग्ज वापरते. तुमचे बदल वापरून पाहण्यासाठी जतन करा.",
+      "provider-type-anthropic-compatible": "Anthropic-सुसंगत",
+      "status": "स्थिती",
+      "used-by": "यासाठी वापर",
+      "not-used": "वापरात नाही",
+      "status-connected": "जोडलेले",
+      "status-invalid-key": "अवैध की",
+      "status-unreachable": "पोहोचता येत नाही",
+      "status-out-of-credit": "क्रेडिट संपले",
+      "status-error": "त्रुटी",
+      "cannot-transcribe": "लिप्यंतरण करू शकत नाही",
+      "no-models-listed": "यादीतील कोणतेही मॉडेल जुळत नाही. तुम्ही लिहिलेला ID जसाच्या तसा वापरला जातो.",
+      "endpoint-required": "एन्डपॉइंट आवश्यक आहे.",
+      "optional": "पर्यायी",
+      "request-url": "विनंत्या {{url}} वर जातात",
+      "get-api-key": "API की मिळवा",
+      "local-endpoint-hint": "memos सर्व्हर या पत्त्याशी जोडतो, म्हणून localhost म्हणजे तोच सर्व्हर. memos Docker मध्ये चालत असल्यास host.docker.internal किंवा Compose सेवेचे नाव वापरा."
     },
     "memo-export": {
       "review-file": "फाईल",
@@ -814,7 +1079,9 @@
       "review-existing": "तुमच्या खात्यात आधीच आहे",
       "review-exported": "यांच्याद्वारे निर्यात केले",
       "review-memos": "फाइलमध्ये मेमो",
-      "review-new": "तयार केले जाईल"
+      "review-new": "तयार केले जाईल",
+      "export-admin-only": "फक्त प्रशासक मेमो निर्यात करू शकतात. तुमच्या निर्यात फाइलसाठी प्रशासकाला विचारा.",
+      "export-busy": "दुसरी निर्यात सुरू आहे. थोड्या वेळाने पुन्हा प्रयत्न करा."
     },
     "spaces": {
       "general": "सामान्य",
@@ -953,7 +1220,8 @@
   },
   "tooltip": {
     "link-memo": "मेमो लिंक करा",
-    "select-location": "स्थान"
+    "select-location": "स्थान",
+    "link-memo-description": "लिंक करण्यासाठी मेमो शोधा आणि निवडा"
   },
   "live-update": {
     "connected": "थेट अद्यतने सक्रिय",
@@ -1042,9 +1310,15 @@
     "loading": "मेमो लोड होत आहेत…",
     "new-here": "येथे लिहा",
     "saved-outside-filter": "सेव्ह केले. हा मेमो सध्याच्या नकाशा निकालांच्या बाहेर आहे.",
-    "open-memo": "मेमो उघडा"
+    "open-memo": "मेमो उघडा",
+    "open-in-google-maps": "Google Maps मध्ये उघडा",
+    "location-description": "नकाशावर स्थान निवडा किंवा निर्देशांक स्वतः टाका",
+    "latitude": "अक्षांश",
+    "longitude": "रेखांश",
+    "place-placeholder": "आधी एक ठिकाण निवडा."
   },
   "calendar": {
+    "more-memos": "आणखी {{count}}",
     "new-memo-on-day": "आजच्या दिवशी नवीन मेमो",
     "next-year": "पुढील वर्षी",
     "no-memos-in-month": "{{month}} मध्ये कोणतेही मेमो नाहीत",
@@ -1072,7 +1346,6 @@
     "text": "मजकूर"
   },
   "space": {
-    "all-spaces": "सर्व स्पेस",
     "icon": {
       "change": "स्पेस आयकॉन बदला",
       "kind": "आयकॉनचा प्रकार",
@@ -1082,7 +1355,7 @@
       "search-emoji": "इमोजी शोधा किंवा पेस्ट करा…",
       "no-results": "जुळणारे काही नाही",
       "emoji-help": "एक सामान्य इमोजी निवडा किंवा तुमचा स्वतःचा पेस्ट करा.",
-      "reset": "डीफॉल्टवर रीसेट करा",
+      "reset": "डीफॉल्ट चिन्ह वापरा",
       "use-emoji": "{{emoji}} वापरा"
     },
     "unavailable": "ही जागा अस्तित्वात नाही किंवा तुम्हाला तिचा ॲक्सेस नाही.",
@@ -1105,5 +1378,111 @@
     "name-placeholder": "उदा. उत्पादन",
     "spaces": "स्पेसेस",
     "switch": "स्पेस बदला"
+  },
+  "welcome": {
+    "title": "Memos मध्ये आपले स्वागत आहे",
+    "headline": "तुमच्या रोजच्या विचारांसाठी साध्या नोंदी.",
+    "intro-write": "एक वाक्यसुद्धा पूर्ण मेमो असू शकते.",
+    "intro-keep": "प्रत्येक मेमो तुम्ही तो लिहिलेल्या दिवसासोबत राहतो.",
+    "intro-share": "काय खाजगी राहील हे तुम्ही ठरवता.",
+    "write": "लिहिणे",
+    "write-sub": "एक वाक्यसुद्धा पूर्ण मेमो असू शकते.",
+    "no-title": "शीर्षक नाही",
+    "no-title-text": "मेमो विचारापासूनच सुरू होतो. भरण्यासाठी कोणतेही शीर्षक नसते.",
+    "markdown": "Markdown",
+    "markdown-text": "तुम्हाला हवे तेव्हा Markdown तुमच्या शब्दांना रचना देते.",
+    "attach": "जोडणे",
+    "attach-text": "प्रतिमा, फाइल्स, ऑडिओ आणि ठिकाण ＋ मधून जोडले जातात.",
+    "keep": "जपणे",
+    "keep-sub": "प्रत्येक मेमो तुम्ही तो लिहिलेल्या दिवसासोबत राहतो.",
+    "calendar-text": "दिनदर्शिका कोणत्याही दिवसाकडे परत नेते.",
+    "tags-text": "# नंतरचा शब्द टॅग बनतो, आणि टॅग कालरेषा फिल्टर करतो.",
+    "views-text": "कस्टम दृश्य एक फिल्टर जतन करते.",
+    "map-text": "ठिकाण असलेले मेमो नकाशावर दिसतात.",
+    "share": "शेअर करणे",
+    "share-sub": "मेमो खाजगी म्हणून सुरू होतात. काय शेअर करायचे आणि काय प्रकाशित करायचे हे तुम्ही ठरवता.",
+    "visibility-text": "प्रत्येक मेमोची स्वतःची सेटिंग असते. नवीन मेमो फक्त तुमच्यासाठी, खाजगी म्हणून सुरू होतात; सार्वजनिक मेमोला एक लिंक असते जी कोणीही उघडू शकते.",
+    "spaces-text": "स्पेसमध्ये सदस्य तुमच्यासोबत लिहितात, आणि प्रत्येकजण आपले मेमो आपल्याकडे ठेवतो.",
+    "comments": "टिप्पण्या",
+    "comments-text": "जो कोणी मेमो पाहू शकतो, तो त्याखाली उत्तर देऊ शकतो.",
+    "skip": "वगळा",
+    "next": "पुढे",
+    "done": "पूर्ण",
+    "page-of": "पृष्ठ {{current}} / {{total}}",
+    "reopen": "स्वागत मार्गदर्शक",
+    "reopen-note": "नवीन खाते सर्वप्रथम पाहते त्या चार स्क्रीन.",
+    "sample": {
+      "today": "आज, 10:42",
+      "today-early": "आज, 9:18",
+      "yesterday": "काल, 15:20",
+      "comment-age": "2 ता",
+      "memo-preview": "अधिक साधी पहिली स्क्रीन. एक इनपुट, मग पूर्वावलोकन.",
+      "memo-release": "पुढील रिलीजपूर्वी",
+      "task-sketch": "पहिल्या स्क्रीनचे रेखाटन करणे",
+      "task-polish": "पूर्वावलोकन सुबक करणे",
+      "write-lead": "पहिले पाऊल लहान ठेवावे.",
+      "write-strong": "तपशील तेव्हा दाखवावेत",
+      "write-tail": "जेव्हा त्यांची गरज असेल.",
+      "write-task": "छोटा चेंजलॉग लिहिणे",
+      "view": "अपूर्ण कामे",
+      "space": "उत्पादन",
+      "share-memo": "लोकांना साइन अप करायला सांगण्यापूर्वी निकाल दाखवून पाहावा.",
+      "comment": "सहमत. पूर्वावलोकनानेच पटवून दिले.",
+      "tag-design": "डिझाइन",
+      "tag-project": "प्रकल्प",
+      "tag-reading": "वाचन",
+      "tag-ideas": "कल्पना"
+    }
+  },
+  "error": {
+    "title": "काहीतरी चुकले",
+    "description": "एक अनपेक्षित त्रुटी आली. हे नेटवर्क समस्येमुळे किंवा ॲप्लिकेशनमधील समस्येमुळे झाले असू शकते.",
+    "description-update": "एक अनपेक्षित त्रुटी आली. हे नेटवर्क समस्येमुळे किंवा ॲप्लिकेशन अपडेटमुळे झाले असू शकते. सहसा पेज रीलोड केल्याने हे दुरुस्त होते.",
+    "details": "त्रुटीचा तपशील",
+    "reload": "ॲप्लिकेशन रीलोड करा",
+    "not-found": "तुम्ही शोधत असलेले पेज सापडले नाही.",
+    "permission-denied": "परवानगी नाकारली",
+    "too-many-requests": "खूप जास्त विनंत्या. {{wait}} नंतर पुन्हा प्रयत्न करा.",
+    "ai-auth-failed": "प्रदात्याने API की नाकारली किंवा प्रवेश नाकारला.",
+    "ai-model-not-found": "प्रदात्याला हे मॉडेल किंवा एंडपॉइंट सापडले नाही.",
+    "ai-quota-exhausted": "प्रदात्याच्या खात्यात क्रेडिट शिल्लक नाही किंवा खर्चाची मर्यादा ओलांडली आहे.",
+    "ai-rate-limited": "प्रदाता या कीसाठी विनंत्या मर्यादित करत आहे. थोडा वेळ थांबून पुन्हा प्रयत्न करा किंवा त्याचा कोटा तपासा.",
+    "ai-request-rejected": "प्रदात्याने विनंती नाकारली. मॉडेल आणि ते समर्थित करत असलेले पॅरामीटर तपासा.",
+    "ai-unreachable": "प्रदात्याच्या एंडपॉइंटशी कनेक्ट होता आले नाही. URL आणि नेटवर्क तपासा.",
+    "ai-timeout": "प्रदात्याने वेळेत प्रतिसाद दिला नाही.",
+    "ai-redirected": "एंडपॉइंटने विनंती पुनर्निर्देशित केली. अंतिम URL टाका.",
+    "ai-invalid-response": "प्रदात्याने वापरण्यायोग्य प्रतिसाद दिला नाही. एंडपॉइंट आणि मॉडेल तपासा.",
+    "wait-seconds": "{{count}} से.",
+    "wait-minutes": "{{count}} मि.",
+    "wait-hours": "{{count}} ता.",
+    "challenge-required": "पडताळणी आव्हान पूर्ण करा आणि पुन्हा प्रयत्न करा.",
+    "quota-memo-count": "तुम्ही {{limit}} मेमोंची तुमची मर्यादा गाठली आहे. नवीन मेमो तयार करण्यासाठी काही मेमो हटवा.",
+    "quota-storage": "हे अपलोड तुमची {{limit}} स्टोरेज मर्यादा ओलांडेल. तुम्ही {{usage}} वापरत आहात.",
+    "quota-upload": "ही फाइल प्रति फाइल {{limit}} या तुमच्या मर्यादेपेक्षा मोठी आहे.",
+    "quota-memo-content": "हा मेमो प्रति मेमो {{limit}} या तुमच्या मर्यादेपेक्षा मोठा आहे. जतन करण्यासाठी मजकूर कमी करा.",
+    "quota-generic": "तुम्ही वापराची मर्यादा गाठली आहे.",
+    "sign-in-failed": "साइन इन करण्यात अयशस्वी.",
+    "sign-up-failed": "साइन अप अयशस्वी",
+    "authenticate-failed": "प्रमाणीकरण अयशस्वी.",
+    "update-profile-failed": "प्रोफाइल अपडेट करण्यात अयशस्वी",
+    "unlink-identity-failed": "ओळख प्रदाता अनलिंक करण्यात अयशस्वी.",
+    "link-identity-failed": "खाते जोडणे सुरू करता आले नाही. पुन्हा प्रयत्न करा."
+  },
+  "attachment-preview": {
+    "title": "संलग्नक पूर्वावलोकन",
+    "description": "संलग्नक पूर्वावलोकन संवाद. बंद करण्यासाठी Escape दाबा, आयटम बदलण्यासाठी डावी किंवा उजवी बाण की वापरा, आणि नियंत्रणे, माउस व्हील, डबल टॅप किंवा पिंच जेश्चरने प्रतिमा झूम करा.",
+    "close": "पूर्वावलोकन बंद करा",
+    "previous": "मागील आयटम",
+    "next": "पुढील आयटम",
+    "reset-zoom": "झूम रीसेट करा",
+    "image-alt": "पूर्वावलोकन प्रतिमा {{index}}/{{count}}",
+    "live-photo-alt": "लाइव्ह फोटो पूर्वावलोकन {{index}}/{{count}}",
+    "play-live-photo": "लाइव्ह फोटो प्ले करण्यासाठी होव्हर करा किंवा दाबा"
+  },
+  "audio-player": {
+    "seek": "{{name}} मध्ये पुढे-मागे जा",
+    "back": "{{seconds}} सेकंद मागे",
+    "forward": "{{seconds}} सेकंद पुढे",
+    "speed": "प्लेबॅक वेग {{rate}}x"
   }
 }

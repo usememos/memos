@@ -3,6 +3,8 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
 import {
   type InfiniteData,
+  type Mutation,
+  type MutationKey,
   type QueryClient,
   queryOptions,
   useInfiniteQuery,
@@ -15,10 +17,11 @@ import { memoServiceClient } from "@/connect";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoShareKeys } from "@/hooks/useMemoShareQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { buildMemoCommentsFilter, buildMemoNamesFilter } from "@/lib/cel-filter";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import { shouldRetry } from "@/lib/query-client";
-import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/memo_service_pb";
-import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
+import type { ListMemosRequest, ListMemosResponse, Memo, Reaction } from "@/types/proto/api/memo_service_pb";
+import { ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 // Query keys factory for consistent cache management
 export const memoKeys = {
@@ -28,6 +31,7 @@ export const memoKeys = {
   details: () => [...memoKeys.all, "detail"] as const,
   detail: (name: string) => [...memoKeys.details(), name] as const,
   comments: (name: string) => [...memoKeys.all, "comments", name] as const,
+  lookup: (name: string) => [...memoKeys.all, "lookup", name] as const,
   linkMetadata: (url: string) => [...memoKeys.all, "linkMetadata", url] as const,
 };
 
@@ -70,9 +74,9 @@ function discardUnavailableMemo(client: QueryClient, name: string) {
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 
-// The shapes a memo query holds: a memo list response (`memos`), a comment list
-// response (`comments`), a bare array (the calendar month), the infinite-query
-// pages of either response, or one memo (a detail or a shared memo).
+// The shapes a memo query holds: a memo list response (`memos`, which is also what
+// a memo's comments are listed as), a bare array (the calendar month), the
+// infinite-query pages of a list response, or one memo (a detail or a shared memo).
 
 function isMemo(data: unknown): data is Memo {
   return typeof data === "object" && data !== null && typeof (data as { name?: unknown }).name === "string" && "content" in data;
@@ -82,10 +86,6 @@ function isMemoListResponse(data: unknown): data is ListMemosResponse {
   return typeof data === "object" && data !== null && Array.isArray((data as { memos?: unknown }).memos);
 }
 
-function isMemoCommentsResponse(data: unknown): data is { comments: Memo[] } {
-  return typeof data === "object" && data !== null && Array.isArray((data as { comments?: unknown }).comments);
-}
-
 function isInfiniteData(data: unknown): data is InfiniteData<unknown> {
   return typeof data === "object" && data !== null && Array.isArray((data as { pages?: unknown }).pages);
 }
@@ -93,7 +93,6 @@ function isInfiniteData(data: unknown): data is InfiniteData<unknown> {
 function memosOfPage(page: unknown): Memo[] | undefined {
   if (Array.isArray(page)) return page as Memo[];
   if (isMemoListResponse(page)) return page.memos;
-  if (isMemoCommentsResponse(page)) return page.comments;
   return undefined;
 }
 
@@ -101,8 +100,7 @@ function memosOfPage(page: unknown): Memo[] | undefined {
 function withMemos<T>(page: T, memos: Memo[]): T {
   if (memosOfPage(page) === memos) return page;
   if (Array.isArray(page)) return memos as T;
-  if (isMemoListResponse(page)) return { ...page, memos } as T;
-  return { ...(page as object), comments: memos } as T;
+  return { ...(page as object), memos } as T;
 }
 
 /** Maps every page of memos in a collection query, keeping references where nothing changed. */
@@ -180,7 +178,7 @@ export function findMemoRecord(queryClient: QueryClient, name: string): Memo | n
   let foundAt = -1;
   for (const root of MEMO_QUERY_ROOTS) {
     for (const query of queryClient.getQueryCache().findAll({ queryKey: root })) {
-      if (query.state.dataUpdatedAt <= foundAt) continue;
+      if (query.state.dataUpdatedAt < foundAt || (query.state.dataUpdatedAt === foundAt && !isMemo(query.state.data))) continue;
       const memo = findMemoInQueryData(query.state.data, name);
       if (memo) {
         found = memo;
@@ -195,6 +193,19 @@ function patchMemoInCollectionQueries(queryClient: QueryClient, update: MemoPatc
   queryClient.setQueriesData<unknown>({ queryKey: memoKeys.all }, (data: unknown) =>
     isMemo(data) ? data : mapMemoCollection(data, (memos) => patchMemos(memos, update)),
   );
+}
+
+/** Updates reactions wherever a memo is cached without replacing its other fields. */
+export function updateMemoReactions(queryClient: QueryClient, name: string, update: (reactions: Reaction[]) => Reaction[]) {
+  const current = findMemoRecord(queryClient, name);
+  if (!current) return;
+  const reactions = update(current.reactions);
+  const patch = (memo: Memo) => (memo.name === name ? { ...memo, reactions } : memo);
+  for (const root of MEMO_QUERY_ROOTS) {
+    queryClient.setQueriesData<unknown>({ queryKey: root }, (data: unknown) =>
+      isMemo(data) ? patch(data) : mapMemoCollection(data, (memos) => memos.map(patch)),
+    );
+  }
 }
 
 /**
@@ -232,6 +243,87 @@ export function useMemoByName(name: string, options?: { enabled?: boolean }) {
   return {
     data,
     isUnavailable: record === null,
+    isLoading: record === undefined && query.isLoading,
+    error: record === undefined ? query.error : null,
+  };
+}
+
+type MemoLookupWaiter = { resolve: (memo: Memo | null) => void; reject: (error: unknown) => void };
+
+/** One request carries at most this many names; a page of comments rarely names more parents. */
+const MEMO_LOOKUP_BATCH_SIZE = 50;
+const pendingMemoLookups = new Map<string, MemoLookupWaiter[]>();
+let memoLookupScheduled = false;
+
+async function getMemoOrNull(name: string): Promise<Memo | null> {
+  try {
+    return await memoServiceClient.getMemo({ name });
+  } catch (error) {
+    if (isMemoUnavailableError(error)) return null;
+    throw error;
+  }
+}
+
+async function flushMemoLookups() {
+  memoLookupScheduled = false;
+  const lookups = new Map(pendingMemoLookups);
+  pendingMemoLookups.clear();
+  const names = [...lookups.keys()];
+  const settle = (name: string, outcome: (waiter: MemoLookupWaiter) => void) => lookups.get(name)?.forEach(outcome);
+
+  for (let start = 0; start < names.length; start += MEMO_LOOKUP_BATCH_SIZE) {
+    const batch = names.slice(start, start + MEMO_LOOKUP_BATCH_SIZE);
+    try {
+      const { memos } = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, { filter: buildMemoNamesFilter(batch), pageSize: batch.length }),
+      );
+      const listed = new Map(memos.map((memo) => [memo.name, memo]));
+      await Promise.all(
+        batch.map(async (name) => {
+          try {
+            // The list holds active memos only. One it leaves out may be archived and still
+            // readable, or gone; asking for it by name tells which.
+            const memo = listed.get(name) ?? (await getMemoOrNull(name));
+            settle(name, (waiter) => waiter.resolve(memo));
+          } catch (error) {
+            settle(name, (waiter) => waiter.reject(error));
+          }
+        }),
+      );
+    } catch (error) {
+      for (const name of batch) settle(name, (waiter) => waiter.reject(error));
+    }
+  }
+}
+
+/** Resolves a memo by name, or `null` when it is unavailable. Lookups made together share one list request. */
+function lookupMemo(name: string): Promise<Memo | null> {
+  return new Promise((resolve, reject) => {
+    pendingMemoLookups.set(name, [...(pendingMemoLookups.get(name) ?? []), { resolve, reject }]);
+    if (memoLookupScheduled) return;
+    // A timer, not a microtask: the cards of one render start their lookups in separate effects.
+    memoLookupScheduled = true;
+    setTimeout(flushMemoLookups, 0);
+  });
+}
+
+/**
+ * A memo by name for a line that only names it, such as a comment card naming its parent:
+ * the copy a query already holds, or else a lookup batched with the others made at the same
+ * time. A list of such cards costs one request for all the memos they name, not one each.
+ */
+export function useMemoLookup(name: string, options?: { enabled?: boolean }) {
+  const record = useMemoRecord(name);
+  const query = useQuery({
+    queryKey: memoKeys.lookup(name),
+    queryFn: () => lookupMemo(name),
+    enabled: (options?.enabled ?? true) && record === undefined,
+    retry: shouldRetry,
+    staleTime: 1000 * 60,
+  });
+  return {
+    data: record ?? undefined,
+    isUnavailable: record === null || (record === undefined && query.data === null),
     isLoading: record === undefined && query.isLoading,
     error: record === undefined ? query.error : null,
   };
@@ -300,13 +392,13 @@ export function useLinkMetadata(url: string, options?: { enabled?: boolean }) {
   });
 }
 
-/** Creates a memo, or a comment on `parent`; the server fills the comment's parent and relation. */
+/** Creates a memo, or a comment on `parent`: a memo created with that parent. */
 export function useCreateMemo() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ memo, parent }: { memo: Memo; parent?: string }) => {
-      return parent ? await memoServiceClient.createMemoComment({ parent, comment: memo }) : await memoServiceClient.createMemo({ memo });
+      return await memoServiceClient.createMemo({ memo: parent ? { ...memo, parent } : memo });
     },
     onSuccess: (newMemo, { parent }) => {
       queryClient.setQueryData(memoKeys.detail(newMemo.name), newMemo);
@@ -323,21 +415,73 @@ export function useCreateMemo() {
   });
 }
 
-export function useUpdateMemo() {
+/**
+ * Resolves when the update made with `variables` is the oldest of its memo's updates still pending. A memo's updates
+ * are sent one at a time, in the order they were made: sent together, two quick updates of one memo (pin then unpin)
+ * can finish in either order, and the older reply would overwrite the newer change in the cache. React Query's
+ * `scope` orders mutations the same way, but holds a queued one while the page is hidden, so an update made just
+ * before leaving the tab would stay unsent until the return.
+ */
+function memoUpdateTurn(queryClient: QueryClient, mutationKey: MutationKey, variables: unknown): Promise<void> {
+  const cache = queryClient.getMutationCache();
+  // An update no longer in the cache (the client was cleared) has nothing left to wait for.
+  const isTurn = () =>
+    cache.findAll({ mutationKey, exact: true, status: "pending" }).findIndex((mutation) => mutation.state.variables === variables) <= 0;
+  if (isTurn()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsubscribe = cache.subscribe(() => {
+      if (!isTurn()) return;
+      unsubscribe();
+      resolve();
+    });
+  });
+}
+
+/** What a memo update keeps while it is pending: the memo to roll back to, and its optimistic patch. */
+type MemoUpdateContext = { previousMemo?: Memo; memoPatch?: MemoPatch };
+
+/** Updates memo `name`; its updates share one queue. Only a caller with no memo to update yet passes `undefined`. */
+export function useUpdateMemo(name: string | undefined) {
   const queryClient = useQueryClient();
+  // A key per memo, which is what its queue is found by. A hook that moves to another memo detaches from its running
+  // update, which would otherwise take on the new key and leave its memo's queue.
+  const mutationKey = ["memo-update", name];
+  // This memo's updates queued behind the one settling now, oldest first. That one still counts as pending and is the oldest.
+  const queuedUpdates = () => queryClient.getMutationCache().findAll({ mutationKey, exact: true, status: "pending" }).slice(1);
+  // Puts the queued updates on `base`, the memo as the update settling now leaves it: each takes the memo under it as
+  // its rollback snapshot and adds its optimistic patch. A snapshot taken earlier holds the patches of the updates ahead
+  // of it, saved or not, and none of their replies. Returns the memo with every queued patch on it.
+  const rebaseQueued = (base: Memo, queued: Mutation[]) =>
+    queued.reduce((memo, { state }) => {
+      const context = state.context as MemoUpdateContext | undefined;
+      if (!context?.memoPatch) return memo;
+      context.previousMemo = memo;
+      return { ...memo, ...context.memoPatch };
+    }, base);
+  // Refetches what an update changes outside the memo itself: the lists it belongs to, and its parent's comments.
+  const invalidateAround = (memo: Memo) => {
+    queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+    if (memo.parent) {
+      // The parent's comment list, and the parent itself, which carries the comment count.
+      queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.parent) });
+    }
+  };
 
   return useMutation({
-    mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
+    mutationKey,
+    mutationFn: async (variables: { update: Partial<Memo>; updateMask: string[] }) => {
+      await memoUpdateTurn(queryClient, mutationKey, variables);
       const memo = await memoServiceClient.updateMemo({
-        memo: create(MemoSchema, update as Record<string, unknown>),
-        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+        memo: create(MemoSchema, variables.update as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: variables.updateMask }),
       });
       return memo;
     },
-    onMutate: async ({ update, updateMask }) => {
-      if (updateMask.includes("space")) return { previousMemo: undefined };
+    onMutate: async ({ update, updateMask }): Promise<MemoUpdateContext> => {
+      if (updateMask.includes("space")) return {};
       if (!update.name) {
-        return { previousMemo: undefined };
+        return {};
       }
 
       // Cancel outgoing refetches to prevent race conditions
@@ -354,35 +498,54 @@ export function useUpdateMemo() {
       }
       patchMemoInCollectionQueries(queryClient, memoPatch);
 
-      return { previousMemo };
+      return { previousMemo, memoPatch };
     },
-    onError: (_err, { update }, context) => {
-      // Rollback on error
-      if (context?.previousMemo && update.name) {
-        queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
-        patchMemoInCollectionQueries(queryClient, context.previousMemo);
-      } else {
-        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+    onError: (_err, _variables, context) => {
+      const queued = queuedUpdates();
+      const previousMemo = context?.previousMemo;
+      // Roll back to the memo before this update, with the patches of the updates queued behind it kept on top
+      if (previousMemo) {
+        const restored = rebaseQueued(previousMemo, queued);
+        queryClient.setQueryData(memoKeys.detail(previousMemo.name), restored);
+        patchMemoInCollectionQueries(queryClient, restored);
       }
+      // A newer update queued behind this one refetches instead: a refetch sent now could answer after its reply.
+      if (queued.length > 0) return;
+      if (!previousMemo) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+        return;
+      }
+      // The server's copy, in case it is what refused the update, and the refetches an update saved ahead of this one
+      // left to it.
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(previousMemo.name) });
+      invalidateAround(previousMemo);
     },
     onSuccess: (updatedMemo, { updateMask }) => {
+      const queued = queuedUpdates();
       if (updateMask.includes("space")) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.all });
-      }
-      // Update cache with server response
-      queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
-      patchMemoInCollectionQueries(queryClient, updatedMemo);
-      // Invalidate lists to refresh
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      if (updatedMemo.parent) {
-        // The parent's comment list, and the parent itself, which carries the comment relation.
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
-        queryClient.invalidateQueries({ queryKey: memoKeys.detail(updatedMemo.parent) });
+        if (queued.length === 0) {
+          queryClient.invalidateQueries({ queryKey: memoKeys.all });
+        } else {
+          // Awaiting the queue here would keep this mutation pending and prevent the next update from starting.
+          const cache = queryClient.getMutationCache();
+          const unsubscribe = cache.subscribe(() => {
+            if (cache.findAll({ mutationKey, exact: true, status: "pending" }).length > 0) return;
+            unsubscribe();
+            queryClient.invalidateQueries({ queryKey: memoKeys.all });
+          });
+        }
       }
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // Placement changes move linked attachments between scoped libraries.
       queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
+      // Update cache with server response, under the patches of the updates queued behind this one
+      const memo = rebaseQueued(updatedMemo, queued);
+      queryClient.setQueryData(memoKeys.detail(updatedMemo.name), memo);
+      patchMemoInCollectionQueries(queryClient, memo);
+      // A newer update queued behind this one refetches instead: a refetch sent now could answer after its reply.
+      if (queued.length > 0) return;
+      invalidateAround(updatedMemo);
     },
   });
 }
@@ -408,13 +571,14 @@ export function useDeleteMemo() {
   });
 }
 
+/** The comments directly on memo `name`, newest first: the memos whose parent it is. */
 export function useMemoComments(name: string, options?: { enabled?: boolean; pageSize?: number }) {
   return useQuery({
     queryKey: [...memoKeys.comments(name), options?.pageSize ?? 0],
     queryFn: async () => {
-      const response = await memoServiceClient.listMemoComments(
-        create(ListMemoCommentsRequestSchema, {
-          parent: name,
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          filter: buildMemoCommentsFilter(name),
           pageSize: options?.pageSize ?? 0,
         }),
       );
@@ -432,9 +596,9 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
   return useInfiniteQuery({
     queryKey: [...memoKeys.comments(name), "infinite", pageSize],
     queryFn: async ({ pageParam }) => {
-      const response = await memoServiceClient.listMemoComments(
-        create(ListMemoCommentsRequestSchema, {
-          parent: name,
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          filter: buildMemoCommentsFilter(name),
           pageSize,
           pageToken: pageParam || "",
         }),
@@ -443,7 +607,7 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
-    select: (data) => data.pages.flatMap((page) => page.comments),
+    select: (data) => data.pages.flatMap((page) => page.memos),
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 60, // 1 minute
   });

@@ -1,3 +1,5 @@
+import { Button } from "@usememos/ui";
+import copy from "copy-to-clipboard";
 import {
   ApertureIcon,
   CalendarArrowUpIcon,
@@ -15,9 +17,8 @@ import {
   TimerIcon,
   XIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
-import { Button } from "@/components/ui/button";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -41,11 +42,11 @@ interface MediaMetadataDetailsProps {
 
 const DetailRow = ({ icon: Icon, label, value, secondary, action }: DetailRowProps) => (
   <div className="grid grid-cols-[1rem_minmax(0,1fr)_auto] gap-x-2.5 py-2.5">
-    <Icon className="mt-0.5 size-3.5 text-white/38" strokeWidth={1.75} aria-hidden="true" />
+    <Icon className="mu-icon-sm mt-0.5 text-mu-text-secondary" aria-hidden="true" />
     <div className="min-w-0">
-      <div className="text-[11px] font-medium leading-4 text-white/45">{label}</div>
-      <div className="mt-0.5 break-words text-[13px] leading-5 text-white/88 tabular-nums">{value}</div>
-      {secondary && <div className="mt-0.5 text-[11px] leading-4 text-white/48">{secondary}</div>}
+      <div className="mu-label-sm text-mu-text-secondary">{label}</div>
+      <div className="mt-0.5 break-words mu-caption text-mu-text tabular-nums">{value}</div>
+      {secondary && <div className="mt-0.5 mu-caption text-mu-text-secondary">{secondary}</div>}
     </div>
     {action && <div className="self-center">{action}</div>}
   </div>
@@ -53,61 +54,57 @@ const DetailRow = ({ icon: Icon, label, value, secondary, action }: DetailRowPro
 
 const DetailSection = ({ title, children }: { title: string; children: ReactNode }) => (
   <section>
-    <h3 className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/32">{title}</h3>
-    <div className="divide-y divide-white/[0.07]">{children}</div>
+    <h3 className="mb-0.5 mu-label-sm text-mu-text-secondary">{title}</h3>
+    <div className="divide-y divide-mu-line">{children}</div>
   </section>
-);
-
-const IconAction = ({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) => (
-  <Button
-    type="button"
-    variant="ghost"
-    size="icon"
-    title={label}
-    aria-label={label}
-    onClick={onClick}
-    className="inline-flex size-7 items-center justify-center rounded-full text-white/48 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
-  >
-    {children}
-  </Button>
 );
 
 const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDetailsProps) => {
   const t = useTranslate();
   const [showMap, setShowMap] = useState(false);
   const [coordinatesCopied, setCoordinatesCopied] = useState(false);
+  const copyAttemptId = useRef(0);
   const copyResetTimer = useRef<number | undefined>(undefined);
   const locale = i18n.language;
   const details = useMemo(() => buildMediaMetadataDisplay(item.attachments, locale), [item.attachments, locale]);
+  const copyCoordinatesLabel = coordinatesCopied
+    ? t("attachment-details.actions.copied")
+    : t("attachment-details.actions.copy-coordinates");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShowMap(false);
     setCoordinatesCopied(false);
-  }, [item.id]);
-
-  useEffect(
-    () => () => {
+    return () => {
+      copyAttemptId.current += 1;
       if (copyResetTimer.current !== undefined) {
         window.clearTimeout(copyResetTimer.current);
+        copyResetTimer.current = undefined;
       }
-    },
-    [],
-  );
+    };
+  }, [item.id]);
 
   const copyCoordinates = async () => {
-    if (!details.location || !navigator.clipboard) {
+    if (!details.location) {
       return;
     }
+    const attemptId = ++copyAttemptId.current;
+    let copied = false;
     try {
-      await navigator.clipboard.writeText(`${details.location.latitude}, ${details.location.longitude}`);
+      copied = await copy(`${details.location.latitude}, ${details.location.longitude}`);
     } catch {
+      return;
+    }
+    if (!copied || attemptId !== copyAttemptId.current) {
       return;
     }
     setCoordinatesCopied(true);
     if (copyResetTimer.current !== undefined) {
       window.clearTimeout(copyResetTimer.current);
     }
-    copyResetTimer.current = window.setTimeout(() => setCoordinatesCopied(false), 1600);
+    copyResetTimer.current = window.setTimeout(() => {
+      copyResetTimer.current = undefined;
+      setCoordinatesCopied(false);
+    }, 1600);
   };
 
   const hasFileDetails = Boolean(details.file || details.dimensions || details.duration || details.uploaded);
@@ -115,28 +112,29 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
   const hasCameraDetails = Boolean(details.camera || details.lens || details.exposure);
 
   return (
+    // The panel sits over the photo, so it is a dark-theme scope and draws with the dark tokens whatever the app's theme.
     <aside
       id={id}
       aria-label={t("attachment-details.title")}
+      data-theme="dark"
       className={cn(
-        "absolute inset-x-0 bottom-0 z-40 flex max-h-[72vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/10 bg-neutral-950/96 text-white shadow-2xl backdrop-blur-xl lg:inset-y-0 lg:left-auto lg:w-[22rem] lg:max-h-none lg:rounded-none lg:border-l lg:border-t-0 lg:bg-black/82",
+        "absolute inset-x-0 bottom-0 z-40 flex max-h-[72vh] flex-col overflow-hidden rounded-t-mu-2xl border-t border-mu-line bg-mu-surface/96 text-mu-text backdrop-blur-xl lg:inset-y-0 lg:left-auto lg:w-[22rem] lg:max-h-none lg:rounded-none lg:border-l lg:border-t-0 lg:bg-mu-surface/85",
         className,
       )}
     >
-      <div className="mx-auto mt-2 h-1 w-8 rounded-full bg-white/18 lg:hidden" aria-hidden="true" />
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.08] px-4 pb-3 pt-3 lg:pt-20">
+      <div className="mx-auto mt-2 h-1 w-8 rounded-full bg-mu-text-secondary/40 lg:hidden" aria-hidden="true" />
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-mu-line px-4 pb-3 pt-3 lg:pt-20">
         <div>
-          <h2 className="text-sm font-medium text-white/92">{t("attachment-details.title")}</h2>
-          <p className="mt-0.5 max-w-[16rem] truncate text-xs text-white/42">{item.filename}</p>
+          <h2 className="mu-label text-mu-text">{t("attachment-details.title")}</h2>
+          <p className="mt-0.5 max-w-[16rem] truncate mu-caption text-mu-text-secondary">{item.filename}</p>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={onClose}
-          className="inline-flex size-8 items-center justify-center rounded-full text-white/55 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 lg:hidden"
+          className="lg:hidden"
           aria-label={t("attachment-details.actions.hide")}
-        >
-          <XIcon className="size-4" aria-hidden="true" />
-        </button>
+          icon={<XIcon />}
+        />
       </header>
 
       <div className="overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
@@ -191,25 +189,22 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
                   details.location.altitude ? `${t("attachment-details.fields.altitude")} · ${details.location.altitude}` : undefined
                 }
                 action={
-                  <IconAction
-                    label={coordinatesCopied ? t("attachment-details.actions.copied") : t("attachment-details.actions.copy-coordinates")}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    title={copyCoordinatesLabel}
+                    aria-label={copyCoordinatesLabel}
+                    icon={coordinatesCopied ? <CheckIcon className="mu-icon-sm" /> : <CopyIcon className="mu-icon-sm" />}
                     onClick={() => void copyCoordinates()}
-                  >
-                    {coordinatesCopied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
-                  </IconAction>
+                  />
                 }
               />
-              <button
-                type="button"
-                onClick={() => setShowMap((visible) => !visible)}
-                className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-3 text-xs text-white/62 transition-colors hover:border-white/18 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
-              >
-                <MapIcon className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
+              <Button variant="neutral" size="sm" className="mt-2" onClick={() => setShowMap((visible) => !visible)} icon={<MapIcon />}>
                 {showMap ? t("attachment-details.actions.hide-map") : t("attachment-details.actions.show-map")}
-              </button>
+              </Button>
               {showMap && (
                 <LazyLocationPicker
-                  className="mt-3 h-44 rounded-xl border-white/10"
+                  className="mt-3 h-44 rounded-mu-xl border-mu-line"
                   latlng={{ lat: details.location.latitude, lng: details.location.longitude }}
                   readonly
                 />
@@ -218,14 +213,14 @@ const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDet
           )}
 
           {!details.hasSavedMetadata && (
-            <p className="rounded-xl border border-white/[0.07] px-3 py-2.5 text-xs leading-5 text-white/42">
+            <p className="rounded-mu-xl border border-mu-line px-3 py-2.5 mu-caption text-mu-text-secondary">
               {t("attachment-details.empty")}
             </p>
           )}
 
           {details.sourceExifOrientation !== undefined && (
-            <details className="group border-t border-white/[0.08] pt-3">
-              <summary className="cursor-pointer select-none text-[11px] font-medium text-white/42 hover:text-white/65">
+            <details className="group border-t border-mu-line pt-3">
+              <summary className="cursor-pointer select-none mu-label-sm text-mu-text-secondary hover:text-mu-text">
                 {t("attachment-details.sections.technical")}
               </summary>
               <div className="mt-2">

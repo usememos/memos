@@ -57,7 +57,7 @@ describe("<SignIn>", () => {
   it("waits for identity providers before choosing the sign-in method", () => {
     const { container, rerender } = renderPage();
 
-    expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+    expect(container.querySelector(".mu-skeleton")).toBeInTheDocument();
     expect(screen.queryByText("auth.signin-unavailable-title")).not.toBeInTheDocument();
     expect(screen.queryByTestId("password-sign-in")).not.toBeInTheDocument();
     expect(screen.queryByTestId("identity-providers")).not.toBeInTheDocument();

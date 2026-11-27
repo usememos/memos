@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -193,33 +192,6 @@ func TestUsageLimitsSettingUpdate(t *testing.T) {
 	require.True(t, got.GetUsageLimitsSetting().Limits[1].AllUsers)
 }
 
-func TestUsageLimitsDeploymentFile(t *testing.T) {
-	ctx := context.Background()
-	ts := NewTestService(t)
-	defer ts.Cleanup()
-	admin, err := ts.CreateHostUser(ctx, "file-admin")
-	require.NoError(t, err)
-	adminCtx := ts.CreateUserContext(ctx, admin.ID)
-
-	dir := t.TempDir()
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-usage-limits.json"),
-		[]byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"memoCount":"1"}]}}`), 0o600))
-	require.NoError(t, ts.Store.LoadDeploymentConfigurationDir(ctx, dir))
-
-	got, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
-	require.NoError(t, err)
-	require.Len(t, got.GetUsageLimitsSetting().Limits, 1)
-	require.Equal(t, int64(1), got.GetUsageLimitsSetting().Limits[0].GetMemoCount())
-	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: usageLimitsSetting(&usageLimitEntry{AllUsers: true})})
-	require.Equal(t, codes.FailedPrecondition, status.Code(err))
-
-	// The file-provided limit is enforced.
-	_, err = ts.Service.CreateMemo(adminCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "first", Visibility: apipb.Visibility_PRIVATE}})
-	require.NoError(t, err)
-	_, err = ts.Service.CreateMemo(adminCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "second", Visibility: apipb.Visibility_PRIVATE}})
-	requireQuotaExceeded(t, err, "MEMO_COUNT", api.BuildUserName(admin.Username))
-}
-
 func TestMemoLimitEnforcement(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
@@ -256,7 +228,9 @@ func TestMemoLimitEnforcement(t *testing.T) {
 	require.Equal(t, int64(2), count, "a refused create writes no memo")
 
 	// A comment is a memo row: it is refused at the limit and writes nothing.
-	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: first.Name, Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC}})
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(first.Name), Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
+	})
 	requireQuotaExceeded(t, err, "MEMO_COUNT", userName)
 	count, err = ts.Store.CountUserMemos(ctx, user.ID)
 	require.NoError(t, err)
@@ -333,7 +307,9 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	got, err := ts.Service.GetMemo(userCtx, &apipb.GetMemoRequest{Name: memo.Name})
 	require.NoError(t, err)
 	require.Equal(t, memo.Content, got.Content, "a refused edit leaves content unchanged")
-	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: memo.Name, Comment: &apipb.Memo{Content: strings.Repeat("a", 8193), Visibility: apipb.Visibility_PRIVATE}})
+	_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{Parent: new(memo.Name), Content: strings.Repeat("a", 8193), Visibility: apipb.Visibility_PRIVATE},
+	})
 	requireQuotaExceeded(t, err, "MEMO_CONTENT_BYTES", subject)
 
 	setUsageLimits(adminCtx, t, ts,

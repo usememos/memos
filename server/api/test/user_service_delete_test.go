@@ -101,35 +101,35 @@ func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	peerCommentOnOwnMemo, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: ownMemo.Name,
-		Comment: &apipb.Memo{
+	peerCommentOnOwnMemo, err := ts.Service.CreateMemo(peerCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(ownMemo.Name),
 			Content:    "peer comment on owner memo",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	peerNestedCommentOnOwnMemo, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: peerCommentOnOwnMemo.Name,
-		Comment: &apipb.Memo{
+	peerNestedCommentOnOwnMemo, err := ts.Service.CreateMemo(peerCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(peerCommentOnOwnMemo.Name),
 			Content:    "peer nested comment on owner memo",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	userCommentOnForeignMemo, err := ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent: foreignMemo.Name,
-		Comment: &apipb.Memo{
+	userCommentOnForeignMemo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(foreignMemo.Name),
 			Content:    "owner comment on peer memo",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
-	peerReplyToUserComment, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: userCommentOnForeignMemo.Name,
-		Comment: &apipb.Memo{
+	peerReplyToUserComment, err := ts.Service.CreateMemo(peerCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(userCommentOnForeignMemo.Name),
 			Content:    "peer reply to owner comment",
 			Visibility: apipb.Visibility_PUBLIC,
 		},

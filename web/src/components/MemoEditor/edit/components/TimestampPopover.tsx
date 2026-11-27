@@ -1,6 +1,7 @@
-import { type FC, useId, useRef, useState } from "react";
+import { Field, Input, Popover } from "@usememos/ui";
+import { type FC, useRef, useState } from "react";
 import { MEMO_TIME_CONTROL_CLASSES } from "@/components/MemoView/constants";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import i18n from "@/i18n";
 import { useTranslate } from "@/utils/i18n";
 import { useEditorContext, useEditorSelector } from "../state";
 
@@ -26,7 +27,6 @@ const TimestampInput: FC<{
   date: Date | undefined;
   onChange: (date: Date) => void;
 }> = ({ label, date, onChange }) => {
-  const id = useId();
   const initialValue = useRef(date ? formatDate(date) : "");
   const [value, setValue] = useState(initialValue.current);
   const [invalid, setInvalid] = useState(false);
@@ -43,38 +43,43 @@ const TimestampInput: FC<{
   };
 
   return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="text-xs font-medium text-muted-foreground">
+    <Field.Root invalid={invalid}>
+      <Field.Label>
         {label}
-        {value !== initialValue.current && <span className="text-primary ml-0.5">*</span>}
-      </label>
-      <input
-        id={id}
+        {value !== initialValue.current && <span className="text-mu-primary ml-0.5">*</span>}
+      </Field.Label>
+      <Input
         type="text"
-        className="block w-full rounded-md border border-border bg-background px-2 py-1 text-sm font-mono data-[invalid=true]:border-destructive"
-        data-invalid={invalid}
+        className="font-mono"
         aria-invalid={invalid}
         placeholder={DATETIME_FORMAT}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         onBlur={() => setInvalid(!parseDate(value))}
       />
-    </div>
+    </Field.Root>
   );
 };
 
+/** "Now" in the viewer's language, the word the memo card shows for a memo written this moment. */
+function nowLabel(): string {
+  const word = new Intl.RelativeTimeFormat(i18n.language, { numeric: "auto" }).format(0, "second");
+  return word.charAt(0).toLocaleUpperCase(i18n.language) + word.slice(1);
+}
+
+/** The memo's time as a control; a memo being written that has no time yet reads "Now". */
 export const TimestampPopover: FC = () => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   const createTime = useEditorSelector((s) => s.timestamps.createTime);
   const updateTime = useEditorSelector((s) => s.timestamps.updateTime);
 
-  if (!createTime) return null;
+  if (!createTime) return <span className="shrink-0 whitespace-nowrap mu-caption text-mu-text-secondary select-none">{nowLabel()}</span>;
 
   return (
-    <Popover>
-      <PopoverTrigger render={<button type="button" className={MEMO_TIME_CONTROL_CLASSES} />}>{formatDate(createTime)}</PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-2 pt-1 space-y-1">
+    <Popover.Root>
+      <Popover.Trigger render={<button type="button" className={MEMO_TIME_CONTROL_CLASSES} />}>{formatDate(createTime)}</Popover.Trigger>
+      <Popover.Popup align="start" className="w-auto">
         <TimestampInput
           label={t("common.created-at")}
           date={createTime}
@@ -85,7 +90,7 @@ export const TimestampPopover: FC = () => {
           date={updateTime}
           onChange={(d) => dispatch(actions.setTimestamps({ updateTime: d }))}
         />
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 };

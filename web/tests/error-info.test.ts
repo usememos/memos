@@ -1,6 +1,7 @@
 import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import i18n from "@/i18n";
 import { ERROR_REASON_RATE_LIMITED, getErrorInfo, getErrorMessage, getRetryAfterSeconds, hasErrorReason } from "@/lib/error";
 
 function encodeErrorInfo(reason: string, domain: string, metadata: Record<string, string>): Uint8Array {
@@ -32,6 +33,9 @@ function rateLimitError(retryAfterSeconds: string): ConnectError {
   return error;
 }
 
+// The messages come from the English catalog, which loads on demand.
+beforeAll(() => i18n.changeLanguage("en"));
+
 describe("ErrorInfo decoding", () => {
   it("reads reason, domain and metadata from the detail", () => {
     const info = getErrorInfo(rateLimitError("42"));
@@ -47,6 +51,21 @@ describe("ErrorInfo decoding", () => {
     expect(getRetryAfterSeconds(rateLimitError("42"))).toBe(42);
     expect(getErrorMessage(rateLimitError("42"))).toBe("Too many requests. Try again in 42s.");
     expect(getErrorMessage(rateLimitError("300"))).toBe("Too many requests. Try again in 5 min.");
+  });
+
+  it("words a failed AI provider call from its reason, not the server's English message", () => {
+    const failure = (reason: string) => {
+      const error = new ConnectError("the provider rejected the API key or denied access", Code.FailedPrecondition);
+      error.details.push({ type: "google.rpc.ErrorInfo", value: encodeErrorInfo(reason, "memos.api", { upstream_status: "401" }) });
+      return error;
+    };
+    expect(getErrorMessage(failure("AI_PROVIDER_AUTH_FAILED"))).toBe("The provider rejected the API key or denied access.");
+    expect(getErrorMessage(failure("AI_PROVIDER_QUOTA_EXHAUSTED"))).toBe(
+      "The provider account is out of credit or over its spending limit.",
+    );
+    expect(getErrorMessage(failure("AI_PROVIDER_ERROR"))).toBe(getErrorMessage(failure("AI_INVALID_RESPONSE")));
+    // A reason this client does not know keeps the server's message.
+    expect(getErrorMessage(failure("AI_SOMETHING_NEW"))).toBe("the provider rejected the API key or denied access");
   });
 
   it("leaves other errors alone", () => {

@@ -516,6 +516,13 @@ func (r *renderer) renderJSONListContains(field Field, value string) (renderResu
 }
 
 func (r *renderer) renderScalarInCondition(field Field, values []ValueExpr) (renderResult, error) {
+	if field.Type != FieldTypeString && field.Type != FieldTypeInt {
+		return renderResult{}, errors.Errorf("field %q does not support IN() comparisons", field.Name)
+	}
+	if len(values) == 0 {
+		return renderResult{sql: "1 = 0"}, nil
+	}
+
 	placeholders := make([]string, 0, len(values))
 
 	for _, v := range values {
@@ -848,7 +855,7 @@ func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
 	case DialectSQLite:
 		return fmt.Sprintf("%s IS TRUE", expr), nil
 	case DialectMySQL:
-		return fmt.Sprintf("COALESCE(%s, CAST('false' AS JSON)) = CAST('true' AS JSON)", expr), nil
+		return fmt.Sprintf("COALESCE(%s, JSON_EXTRACT('false', '$')) = JSON_EXTRACT('true', '$')", expr), nil
 	case DialectPostgres:
 		return fmt.Sprintf("(%s)::boolean IS TRUE", expr), nil
 	default:

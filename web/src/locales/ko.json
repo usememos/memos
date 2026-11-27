@@ -21,29 +21,26 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "로그인을 완료하지 못했습니다",
     "create-your-account": "계정 만들기",
+    "hide-password": "비밀번호 숨기기",
+    "incorrect-credentials": "사용자 이름 또는 비밀번호가 올바르지 않습니다.",
     "new-password": "새 비밀번호",
     "repeat-new-password": "새 비밀번호 재확인",
+    "show-password": "비밀번호 표시",
     "sign-in-tip": "이미 계정이 있으신가요?",
     "sign-up-tip": "아직 계정이 없으신가요?",
     "admin-sign-in": "관리자 로그인",
-    "admin-sign-in-tip": "관리자는 비밀번호 로그인을 계속 사용할 수 있습니다.",
     "back-to-sign-in": "로그인으로 돌아가기",
     "continue-with": "{{provider}}으로 계속 진행",
+    "redirecting-to-provider": "{{provider}} 로그인 페이지로 이동 중…",
+    "signing-in": "로그인 중…",
     "create-admin-account": "관리자 계정 생성",
-    "explore-public-memos": "이 인스턴스의 공개 메모 보기",
-    "first-run": "첫 실행",
     "setup-description": "이 인스턴스의 관리자 계정을 생성합니다.",
-    "setup-note": "이 계정은 인스턴스 설정, 멤버 및 ID 공급자를 소유합니다.",
     "setup-title": "인스턴스 설정",
     "signin-unavailable-description": "암호 로그인이 비활성화되어 있고 ID 공급자가 구성되어 있지 않습니다. 관리자에게 로그인 방법을 활성화하도록 요청하십시오.",
     "signin-unavailable-title": "로그인할 수 없습니다.",
-    "signup-unavailable-description": "암호 계정이 비활성화되어 있고 ID 공급자가 구성되어 있지 않습니다. 관리자에게 액세스 권한을 요청하십시오.",
-    "signup-unavailable-title": "가입할 수 없습니다.",
-    "signups-closed-description": "이 인스턴스에서 새 계정이 비활성화되어 있습니다. 액세스가 필요한 경우 관리자에게 문의하십시오.",
-    "signups-closed-title": "가입이 마감되었습니다.",
-    "sso-signup-tip": "아래 제공업체로 로그인하여 계정을 만드세요.",
-    "welcome-back": "다시 오신 것을 환영합니다."
+    "signups-closed-description": "이 인스턴스에서 새 계정이 비활성화되어 있습니다. 액세스가 필요한 경우 관리자에게 문의하십시오."
   },
   "common": {
     "about": "정보",
@@ -55,7 +52,6 @@
     "attachments": "첨부파일",
     "avatar": "아바타",
     "basic": "기본",
-    "browse": "둘러보기",
     "calendar": "달력",
     "cancel": "취소",
     "clear": "정리하기",
@@ -93,6 +89,8 @@
     "memo": "메모",
     "memos": "메모",
     "more": "더보기",
+    "move-down": "아래로 이동",
+    "move-up": "위로 이동",
     "name": "이름",
     "nickname": "닉네임",
     "open": "열기",
@@ -102,7 +100,6 @@
     "profile": "프로필",
     "referenced-by": "참조됨",
     "referencing": "참조중",
-    "relations": "관계",
     "resources": "리소스",
     "restore": "복원",
     "role": "역할",
@@ -138,12 +135,35 @@
     "resize-sidebar": "사이드바 크기 조정",
     "sign-in-to-memos": "Memos에 로그인",
     "unlink": "연결 해제",
-    "view-all": "모두 보기"
+    "open-navigation": "탐색 메뉴 열기",
+    "navigation": "탐색",
+    "primary-navigation": "기본",
+    "download": "다운로드",
+    "download-name": "{{name}} 다운로드",
+    "open-name": "{{name}} 열기",
+    "preview-name": "{{name}} 미리보기",
+    "no-content": "내용 없음",
+    "previous": "이전",
+    "next": "다음",
+    "retry": "다시 시도",
+    "docs": "문서",
+    "calendar-for-month": "{{month}} 달력",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "선택한 위치",
+    "choose-location": "위치를 선택하세요",
+    "unknown-error": "알 수 없는 오류",
+    "error-occurred": "오류가 발생했습니다"
   },
   "locale-picker": {
     "no-language-feedback": "언어를 찾을 수 없나요? 피드백 제출"
   },
   "editor": {
+    "suggest-tags": "AI로 태그 추천",
+    "no-suggested-tags": "추천할 태그가 없습니다",
+    "tag-suggestions-label": "태그 추천",
+    "tag-suggestions-error": "태그 추천을 사용할 수 없습니다",
+    "tag-suggestions-limit": "태그 추천 한도에 도달했습니다. 나중에 다시 시도하세요.",
+    "set-visibility": "공개 범위를 ‘{{visibility}}’(으)로 설정",
     "suggestions": "제안",
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
@@ -152,6 +172,9 @@
     "markdown-mode": "Markdown 모드",
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
+    "saving": "저장 중…",
+    "updating": "업데이트 중…",
+    "commenting": "댓글 전송 중…",
     "insert-menu": {
       "add-location": "위치 추가",
       "link-memo": "링크 메모",
@@ -159,10 +182,56 @@
       "image-upload-failed": "일부 이미지를 업로드할 수 없습니다. 다시 시도하거나 업로드된 파일을 첨부 파일로 유지하세요.",
       "image-upload-stopped": "이미지 업로드 중지됨 {{completed}}/{{total}}",
       "insert-image": "이미지 삽입",
+      "drawing": "마크업",
       "keep-as-attachments": "첨부 파일로 유지",
       "retry-image-upload": "다시 시도",
       "uploading-inline-image": "콘텐츠에 업로드 중",
       "uploading-images": "이미지 업로드 중 {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "edit": "마크업 편집",
+      "tools": "도구",
+      "tool-select": "선택",
+      "tool-pen": "펜",
+      "tool-eraser": "지우개",
+      "tool-rectangle": "사각형",
+      "tool-ellipse": "타원",
+      "tool-arrow": "화살표",
+      "tool-text": "텍스트",
+      "style": "색상 및 굵기",
+      "color": "색상",
+      "width": "굵기",
+      "width-thin": "얇음",
+      "width-medium": "보통",
+      "width-thick": "굵음",
+      "color-ink": "잉크",
+      "color-gray": "회색",
+      "color-red": "빨간색",
+      "color-orange": "주황색",
+      "color-green": "초록색",
+      "color-teal": "청록색",
+      "color-blue": "파란색",
+      "color-violet": "보라색",
+      "undo": "실행 취소",
+      "redo": "다시 실행",
+      "zoom": "확대/축소",
+      "zoom-to-fit": "화면에 맞추기",
+      "discard-title": "이 그림을 삭제할까요?",
+      "discard-description": "아직 메모에 추가되지 않았습니다.",
+      "discard-edit-title": "변경 사항을 삭제할까요?",
+      "discard-edit-description": "그림은 열기 전 상태 그대로 유지됩니다.",
+      "keep-drawing": "계속 그리기",
+      "discard": "삭제",
+      "open-failed": "그림을 열 수 없습니다. 다시 시도하세요.",
+      "export-failed": "그림을 저장할 수 없습니다. 다시 시도하세요.",
+      "image-failed": "이미지를 그림에 추가할 수 없습니다.",
+      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요.",
+      "annotate": "마크업",
+      "save-copy": "사본 저장",
+      "unavailable": "저장 위치를 사용할 수 없습니다.",
+      "saved-needs-update": "그림이 저장되었습니다. 메모 업데이트를 다시 시도하세요.",
+      "changed-save-copy": "원본이 변경되었습니다. 사본을 저장하세요.",
+      "bind-failed": "그림이 업로드되었습니다. 메모에 추가를 다시 시도하세요."
     },
     "audio-recorder": {
       "attachment-label": "오디오 녹음",
@@ -199,7 +268,6 @@
     "footnotes": "각주",
     "back-to-reference": "참조로 돌아가기",
     "new-memo": "새 메모",
-    "saved": "저장됨",
     "validation": {
       "cannot-save": "저장할 수 없음",
       "content-required": "콘텐츠, 첨부 파일 또는 파일이 필요합니다",
@@ -256,7 +324,19 @@
       "alt-text-placeholder": "이미지 설명 입력…",
       "image-unavailable": "이미지를 사용할 수 없음",
       "resize-image": "이미지 크기 조절"
-    }
+    },
+    "attachments": {
+      "edited": "편집됨",
+      "new": "새 항목",
+      "remove": "첨부파일 제거",
+      "reorder": "{{name}} 순서 변경",
+      "reorder-hint": "드래그하거나 화살표 키를 사용하세요"
+    },
+    "remove-relation": "연결 제거",
+    "remove-location": "위치 제거",
+    "recording-unsupported": "이 브라우저에서는 오디오 녹음을 지원하지 않습니다.",
+    "microphone-denied": "마이크 권한이 거부되었습니다.",
+    "recording-failed": "오디오 녹음을 시작하지 못했습니다."
   },
   "inbox": {
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
@@ -265,14 +345,28 @@
     "unread": "읽지 않음",
     "space-invitation": "공간에 초대되었습니다.",
     "space-invitation-accepted": "이 공간에 참여하셨습니다.",
-    "space-invitation-open": "빈 공간"
+    "space-invitation-open": "빈 공간",
+    "commented-on-memo": "님이 내 메모에 댓글을 남겼습니다",
+    "mentioned-in-comment": "님이 댓글에서 나를 언급했습니다",
+    "mentioned-in-memo": "님이 메모에서 나를 언급했습니다",
+    "original": "원본:",
+    "memo-label": "메모:",
+    "comment-heading": "댓글",
+    "memo-heading": "메모",
+    "empty-memo": "빈 메모",
+    "empty-comment": "빈 댓글"
   },
   "memo": {
+    "no-memos-yet": "아직 메모가 없습니다",
+    "no-matching-memos": "일치하는 메모가 없습니다",
+    "clear-filters": "필터 지우기",
     "pinned": "고정됨",
     "click-to-show-sensitive-content": "숨겨진 콘텐츠 보기",
     "comment": {
       "self": "댓글",
-      "write-a-comment": "댓글 작성"
+      "write-a-comment": "댓글 작성",
+      "view-all-count_one": "댓글 {{count}}개 모두 보기",
+      "view-all-count_other": "댓글 {{count}}개 모두 보기"
     },
     "copy-content": "콘텐츠 복사",
     "copy-link": "링크 복사",
@@ -286,7 +380,8 @@
       "has-image": "이미지 있음",
       "has-link": "링크있음",
       "has-location": "위치 있음",
-      "has-task-list": "할일목록있음"
+      "has-task-list": "할일목록있음",
+      "remove": "필터 제거"
     },
     "compact-mode": "간략 보기",
     "link-preview": "링크 미리보기",
@@ -294,6 +389,13 @@
     "order-by": "정렬 기준",
     "show-less": "간략히 보기",
     "show-more": "더보기",
+    "audience": {
+      "heading": "누가 볼 수 있나요?",
+      "private": "나만",
+      "space": "공간 멤버",
+      "protected": "로그인한 사용자",
+      "public": "모든 사람"
+    },
     "visibility": {
       "private": "나만 볼 수 있음",
       "protected": "멤버 전용",
@@ -332,15 +434,14 @@
       "open-image": "이미지로 공유"
     },
     "new-badge": "신규",
-    "parent-loading": "원본 메모 불러오는 중…",
-    "parent-load-error": "원본 메모를 불러올 수 없습니다.",
-    "parent-unavailable": "원본 메모를 사용할 수 없습니다.",
+    "parent-loading": "상위 메모 불러오는 중…",
+    "parent-load-error": "상위 메모를 불러올 수 없습니다.",
+    "parent-unavailable": "상위 메모를 사용할 수 없습니다.",
     "parent-unavailable-description": "메모가 삭제되었거나 더 이상 접근 권한이 없을 수 있습니다.",
     "moved": "메모가 이동되었습니다.",
-    "back-to": "{{source}}으로 돌아가기",
     "count-memos-updated-in-date": "{{count}} {{memos}}이 {{date}}에 업데이트되었습니다.",
     "connections": "연결",
-    "grid-compact-hint": "그리드 레이아웃은 항상 컴팩트 카드를 사용합니다.",
+    "grid-compact-hint": "긴 메모를 접습니다. 그리드 레이아웃에서는 항상 활성화됩니다.",
     "layout": "레이아웃",
     "layout-auto": "자동",
     "layout-auto-description": "화면에 맞는 열 개수",
@@ -358,11 +459,17 @@
       "updated": "작업 업데이트됨"
     },
     "view-options": "보기 옵션",
-    "sensitive-content": "Sensitive content",
-    "split-view": "Split view",
-    "split-view-description": "Memo list beside the open memo",
-    "split-view-list": "Memo list",
-    "split-view-untitled": "No text"
+    "add-reaction": "반응 추가",
+    "remove-reaction": "반응 제거",
+    "full-width": "전체 너비",
+    "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다.",
+    "include-comments": "댓글 포함",
+    "include-comments-hint": "목록에 메모와 함께 댓글을 표시합니다.",
+    "sensitive-content": "민감한 콘텐츠",
+    "split-view": "분할 보기",
+    "split-view-description": "열린 메모 옆에 메모 목록 표시",
+    "split-view-list": "메모 목록",
+    "split-view-untitled": "텍스트 없음"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
@@ -377,7 +484,9 @@
     "restored-successfully": "성공적으로 복구했습니다",
     "succeed-copy-content": "콘텐츠를 클립보드에 복사했습니다.",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
-    "update-succeed": "업데이트 성공"
+    "update-succeed": "업데이트 성공",
+    "not-signed-in": "로그인하지 않았습니다.",
+    "invalid-datetime": "날짜와 시간이 올바르지 않습니다. 2023-12-31 23:59:59 형식을 사용하세요."
   },
   "reference": {
     "no-memos-found": "메모를 찾을 수 없습니다",
@@ -410,9 +519,11 @@
       "list-title": "멤버 목록",
       "no-members-found": "회원을 찾을 수 없습니다.",
       "archived": "보관 목록",
-      "member-column": "멤버",
       "active": "활성",
-      "summary-column": "요약"
+      "export-memos": "메모 내보내기",
+      "username-password-required": "사용자 이름과 비밀번호는 비워 둘 수 없습니다",
+      "create-success": "사용자를 만들었습니다",
+      "update-success": "사용자를 업데이트했습니다"
     },
     "my-account": {
       "label": "내 계정"
@@ -436,13 +547,148 @@
       "theme-description": "선택한 테마를 이 기기에 즉시 적용합니다.",
       "theme": "테마",
       "uploads-privacy-description": "업로드된 미디어와 함께 제출되는 개인 정보 보호에 민감한 정보를 관리합니다.",
-      "uploads-privacy-title": "업로드 및 개인 정보 보호"
+      "uploads-privacy-title": "업로드 및 개인 정보 보호",
+      "theme-system": "시스템 설정과 동기화",
+      "theme-system-short": "시스템",
+      "theme-light": "라이트",
+      "theme-dark": "다크",
+      "theme-paper": "페이퍼"
+    },
+    "editor": {
+      "label": "편집기",
+      "markdown-mode-description": "메모를 서식 있는 텍스트 대신 Markdown 텍스트로 작성하고 편집합니다."
     },
     "memo-view": {
       "create": "뷰 만들기",
       "delete-confirm": "보기 `{{title}}`를 정말로 삭제하시겠습니까?",
       "delete-success": "보기 `{{title}}`가 성공적으로 삭제되었습니다",
-      "change-icon": "뷰 아이콘 변경"
+      "change-icon": "뷰 아이콘 변경",
+      "page-description": "필드, 연산자, 시간 도우미, 태그 일치를 사용해 재사용할 수 있는 보기를 만드세요. 예시에서 시작한 다음 저장하기 전에 검증하세요.",
+      "edit": "보기 편집",
+      "form-description": "보기의 이름을 정하고 적용할 메모 필터 표현식을 정의하세요.",
+      "title-placeholder": "고정됨, 최근 메모, 업무",
+      "filter-help": "{{and}}, {{or}}, {{not}}으로 표현식을 조합하세요. 시간 필드는 타임스탬프입니다. {{now}}, {{duration}}, {{timestamp}}와 {{year}} 같은 접근자를 사용하세요. 태그는 {{sets}}를 지원하며, {{size}}는 길이를 잽니다.",
+      "validate": "검증",
+      "all": "모든 보기",
+      "loading": "보기를 불러오는 중…",
+      "load-failed": "보기를 불러오지 못했습니다.",
+      "empty-title": "아직 보기가 없습니다",
+      "empty-description": "필터를 저장하면 필요한 메모로 빠르게 돌아갈 수 있습니다.",
+      "examples-title": "표현식 예시",
+      "fields-title": "지원되는 필드",
+      "title-filter-required": "제목과 필터는 비워 둘 수 없습니다",
+      "filter-valid": "필터 표현식이 올바릅니다",
+      "create-success": "보기를 만들었습니다",
+      "update-success": "보기를 업데이트했습니다",
+      "examples": {
+        "pinned": {
+          "title": "고정됨",
+          "description": "고정된 메모만."
+        },
+        "recent": {
+          "title": "최근 메모",
+          "description": "지난 1시간 동안 만든 메모."
+        },
+        "public": {
+          "title": "공개 메모",
+          "description": "공개 메모만."
+        },
+        "project-tags": {
+          "title": "프로젝트 태그",
+          "description": "하나 이상의 태그와 정확히 일치."
+        },
+        "untagged": {
+          "title": "태그 없음",
+          "description": "태그가 하나도 없는 메모."
+        },
+        "archive-tree": {
+          "title": "보관 트리",
+          "description": "계층형 태그를 접두사로 일치."
+        },
+        "unassigned": {
+          "title": "미지정",
+          "description": "어떤 공간에도 속하지 않은 메모."
+        },
+        "one-space": {
+          "title": "특정 공간",
+          "description": "공간에 속한 메모. 공간 URL이나 설정에 있는 공간 ID를 사용하세요."
+        },
+        "open-tasks": {
+          "title": "미완료 할 일",
+          "description": "완료되지 않은 할 일이 있는 메모."
+        },
+        "links-or-code": {
+          "title": "링크 또는 코드",
+          "description": "링크나 코드 블록이 포함된 메모."
+        },
+        "no-location": {
+          "title": "위치 없음",
+          "description": "위치가 첨부되지 않은 메모."
+        },
+        "with-attachments": {
+          "title": "첨부파일 있음",
+          "description": "파일이 하나 이상 첨부된 메모."
+        },
+        "photos": {
+          "title": "사진",
+          "description": "본문이나 첨부파일로 이미지를 보여 주는 메모."
+        },
+        "content-search": {
+          "title": "내용 검색",
+          "description": "메모 내용에서 텍스트를 검색합니다."
+        },
+        "starts-with": {
+          "title": "다음으로 시작",
+          "description": "내용이 특정 텍스트로 시작하는 메모(endsWith도 지원)."
+        },
+        "regex": {
+          "title": "정규식 일치",
+          "description": "정규 표현식으로 내용을 일치시킵니다."
+        },
+        "all-tags-complete": {
+          "title": "모든 태그 완료",
+          "description": "모든 태그가 -done으로 끝남(태그가 있는 메모만)."
+        },
+        "one-project-tag": {
+          "title": "프로젝트 태그 하나",
+          "description": "조건에 맞는 태그가 정확히 하나."
+        },
+        "any-tags": {
+          "title": "이 태그 중 하나",
+          "description": "태그가 지정한 집합과 겹침."
+        },
+        "exact-tags": {
+          "title": "정확히 이 태그",
+          "description": "정확히 이 집합의 태그만 있고 그 외는 없음."
+        },
+        "year-2024": {
+          "title": "2024년 메모",
+          "description": "달력 연도로 필터링합니다."
+        },
+        "weekend": {
+          "title": "주말 메모",
+          "description": "일요일 또는 토요일에 작성(0 = 일요일)."
+        },
+        "long": {
+          "title": "긴 메모",
+          "description": "280자보다 긴 메모."
+        }
+      }
+    },
+    "configuration": {
+      "label": "구성",
+      "description": "구성 파일로 설정된 리소스입니다. 변경하려면 파일을 편집한 뒤 적용하세요. 인스턴스의 나머지는 여기에서 계속 편집할 수 있습니다.",
+      "managed-by": "구성으로 관리됨",
+      "managed-tooltip": "{{source}}에서 설정됩니다. 변경하려면 파일을 편집한 뒤 적용하세요.",
+      "resource": "리소스",
+      "source": "파일",
+      "managed-fields": "관리되는 필드",
+      "whole-resource": "모든 필드",
+      "ignored-fields": "여기서 편집 가능",
+      "serial": "일련번호",
+      "last-apply": "마지막 적용",
+      "applied-by": "적용한 주체",
+      "nothing-managed": "적용된 구성이 없습니다. 모든 설정은 여기에서 합니다."
     },
     "sso": {
       "authorization-endpoint": "인증 엔드포인트",
@@ -472,7 +718,6 @@
       "basic-settings": "기본 설정",
       "basic-settings-description": "OAuth 세부 정보를 입력하기 전에 공급자 ID, 표시 이름 및 선택적 식별자 규칙을 설정하십시오.",
       "client-secret-optional-description": "기존 클라이언트 암호를 변경하지 않으려면 비워 두십시오.",
-      "configuration": "구성",
       "configuration-summary-description": "전체 구성을 인라인으로 노출하지 않고 공급자를 식별하고 감사하는 데 도움이 되는 필수 정보를 표시합니다.",
       "create-sso-description": "관리자가 관리하는 싱글 사인온(SSO)을 위한 새 ID 공급자를 생성합니다.",
       "endpoints": "엔드포인트",
@@ -494,7 +739,6 @@
       "not-linked-description": "아직 외부 ID가 연결되지 않았습니다. 나중에 이 공급자를 연결하여 로그인할 수 있습니다.",
       "oauth-configuration": "OAuth 구성",
       "oauth-configuration-description": "OAuth 클라이언트 자격 증명과 로그인 시 사용되는 공급자 엔드포인트를 입력합니다.",
-      "provider": "공급자",
       "provider-id": "공급자 ID",
       "provider-id-description": "소문자, 숫자 및 하이픈만 사용 가능합니다. 이 값은 공급자 리소스 이름의 일부가 됩니다.",
       "redirect-url-description": "인증 코드 흐름을 완료할 수 있도록 이 콜백 URL을 ID 공급자에 등록합니다.",
@@ -503,7 +747,9 @@
       "scopes-description": "범위는 공백으로 구분합니다. 대부분의 공급자는 프로필 또는 이메일 액세스와 같은 소수의 범위만 필요합니다.",
       "template-description": "공급자 사전 설정에서 시작하여 테넌트에 맞게 자격 증명과 엔드포인트를 조정합니다.",
       "unlink-success": "연결되지 않은 {{name}}.",
-      "update-sso-description": "공급자 구성을 검토한 다음 변경해야 하는 필드를 저장합니다."
+      "update-sso-description": "공급자 구성을 검토한 다음 변경해야 하는 필드를 저장합니다.",
+      "invalid-config": "ID 공급자 구성이 올바르지 않습니다.",
+      "provider-id-placeholder": "예: github, okta-corp"
     },
     "storage": {
       "accesskey": "액세스 키",
@@ -551,7 +797,8 @@
       "customize-server": {
         "description": "설명",
         "icon-url": "아이콘 URL",
-        "title": "서버 커스터마이징"
+        "title": "서버 커스터마이징",
+        "dialog-description": "인스턴스의 모양과 설정을 사용자 지정하세요."
       },
       "server-name": "서버 이름",
       "label": "시스템",
@@ -562,47 +809,45 @@
       "custom-code-title": "사용자 지정 코드"
     },
     "usage-limits": {
-      "add-entry": "Add entry",
-      "add-title": "Add entry",
-      "all-users": "All users",
-      "all-users-description": "Everyone not named above. This is the default.",
-      "applies-to": "Applies to",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "default-hint": "Leave a field empty for no limit.",
-      "default-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
-      "edit-title": "Edit entry",
-      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
-      "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
-      "never-applies": "Never applies",
-      "never-applies-description": "Every user named here is caught by an earlier entry.",
-      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "add-entry": "항목 추가",
+      "add-title": "항목 추가",
+      "all-users": "모든 사용자",
+      "all-users-description": "위 항목에 지정되지 않은 모든 사용자입니다. 기본값입니다.",
+      "applies-to": "적용 대상",
+      "content-size": "메모 내용 (KiB)",
+      "content-size-column": "메모 내용",
+      "content-size-description": "Markdown을 포함한 메모 본문 하나의 UTF-8 크기입니다.",
+      "default-hint": "제한하지 않으려면 비워 두세요.",
+      "default-title": "모든 사용자 한도",
+      "description": "사용자별 저장량을 제한해 이 인스턴스를 빠르고 안정적으로 유지합니다. 각 항목은 그 항목에 지정된 사용자에게 적용되는 한도 전체입니다.",
+      "edit-title": "항목 편집",
+      "entry-hint": "제한하지 않으려면 비워 두세요. 각 값은 모든 사용자 항목의 값에서 시작합니다.",
+      "file-size": "가장 큰 파일 (MiB)",
+      "file-size-column": "가장 큰 파일",
+      "invalid": "메모 개수는 정수로, 크기는 표시된 단위로 입력하세요.",
+      "label": "사용 한도",
+      "memos": "메모",
+      "memos-description": "댓글과 보관된 메모를 포함합니다.",
+      "never-applies": "적용되지 않음",
+      "never-applies-description": "여기에 지정된 사용자가 모두 위쪽 항목에 이미 해당됩니다.",
+      "order-note": "항목은 위에서 아래 순서로 확인합니다. 사용자를 처음 지정한 항목이 그 사용자의 한도가 되고, 그 아래 항목은 그 사용자에게 적용되지 않습니다. 마지막 항목은 나머지 모든 사용자에게 적용됩니다.",
       "position": "#",
-      "remove": "Remove",
-      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
-      "remove-title": "Remove this entry?",
-      "remove-user": "Remove {{name}}",
-      "removed": "Entry removed",
-      "row-actions": "Actions for entry {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Add a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "users": "Users",
-      "users-description": "The entry applies to each of these users.",
-      "users-required": "Name at least one user."
+      "remove": "삭제",
+      "remove-description": "이 항목에 지정된 사용자에게는 그 사용자를 지정한 다음 항목이나 모든 사용자 항목이 적용됩니다.",
+      "remove-title": "이 항목을 삭제할까요?",
+      "remove-user": "{{name}} 제거",
+      "removed": "항목이 삭제되었습니다.",
+      "row-actions": "{{name}} 항목 작업",
+      "saved": "사용 한도가 저장되었습니다.",
+      "select-user": "사용자 추가",
+      "storage": "저장 공간 (MiB)",
+      "storage-column": "저장 공간",
+      "storage-description": "업로드한 파일의 전체 크기입니다. 외부 링크는 포함되지 않습니다.",
+      "title": "사용 한도",
+      "unlimited": "무제한",
+      "users": "사용자",
+      "users-description": "이 항목은 다음 사용자 각각에게 적용됩니다.",
+      "users-required": "사용자를 한 명 이상 지정하세요."
     },
     "access-token": {
       "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
@@ -646,18 +891,20 @@
       "update-information": "정보 변경",
       "username-note": "로그인하는 데 사용됨",
       "attachment-storage": "사용 중인 저장소",
-      "usage-description": "Limits set by the admin of this instance. Comments and archived memos count as memos.",
-      "usage-file-size": "Largest file",
-      "usage-memos": "Memos",
-      "usage-of": "{{usage}} of {{limit}}",
-      "usage-storage": "Storage",
-      "usage-title": "Usage limits",
+      "usage-description": "이 인스턴스의 관리자가 정한 한도입니다. 댓글과 보관된 메모도 메모로 셉니다.",
+      "usage-file-size": "가장 큰 파일",
+      "usage-memos": "메모",
+      "usage-of": "{{usage}} / {{limit}}",
+      "usage-storage": "저장 공간",
+      "usage-title": "사용 한도",
       "storage-usage-error": "첨부 파일 저장 공간을 사용할 수 없습니다.",
       "danger-area": "위험 영역",
       "danger-area-description": "되돌릴 수 없는 계정 작업이 여기에 있습니다. 계속하기 전에 주의 깊게 검토하십시오.",
       "delete-account": "계정 삭제",
       "delete-account-description": "이 계정과 이 인스턴스에서 연결된 모든 액세스 권한을 영구적으로 제거합니다. 이 작업은 되돌릴 수 없습니다.",
-      "email-in-use": "이 이메일 주소는 이미 다른 계정에서 사용 중입니다."
+      "email-in-use": "이 이메일 주소는 이미 다른 계정에서 사용 중입니다.",
+      "avatar-too-large": "2MB 이하의 이미지를 선택하세요.",
+      "avatar-unreadable": "이 이미지를 읽을 수 없습니다. 다른 파일을 사용해 보세요."
     },
     "instance": {
       "disallow-change-nickname": "닉네임 변경 금지",
@@ -677,16 +924,6 @@
       "disallow-password-auth-description": "사용자가 암호 로그인 대신 ID 공급자를 통해 로그인하도록 요구합니다.",
       "disallow-user-registration-description": "신규 사용자가 가입 페이지에서 계정을 만들지 못하도록 합니다.",
       "week-start-day-description": "캘린더 스타일 보기에서 표시되는 첫 번째 날짜를 제어합니다."
-    },
-    "memo": {
-      "reactions": "반응",
-      "label": "메모",
-      "reactions-required": "반응 목록은 비워둘 수 없습니다.",
-      "add-reaction": "반응 추가",
-      "configured-reactions": "구성된 반응",
-      "reaction-placeholder": "예: 👍",
-      "reactions-description": "사용자가 메모에 적용할 수 있는 반응 옵션을 정의합니다.",
-      "remove-reaction": "반응 제거"
     },
     "webhook": {
       "create-dialog": {
@@ -713,7 +950,6 @@
       },
       "no-webhooks-found": "Webhook이 없습니다.",
       "title": "Webhook",
-      "url": "URL",
       "label": "Webhook"
     },
     "tags": {
@@ -734,27 +970,26 @@
       "used-count": "{{count}} 메모"
     },
     "ai": {
+      "key-reentry": "유형이나 엔드포인트를 변경하면 API 키를 다시 입력해야 합니다.",
+      "provider-type-openai": "OpenAI 호환",
+      "delete-provider-description": "제공업체와 저장된 API 키가 삭제됩니다.",
+      "text-generation-title": "텍스트 생성",
+      "text-generation-description": "태그 추천에 사용할 제공업체를 선택하고 텍스트 모델 ID를 입력하세요.",
+      "text-generation-disabled": "없음 - 텍스트 생성 비활성화",
+      "model-help": "제공업체의 모델 식별자를 사용하세요(예: {{example}}).",
+      "model-required": "모델이 필요합니다.",
       "endpoint": "엔드포인트",
-      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
-      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
       "add-provider": "공급자 추가",
       "api-key": "API 키",
       "api-key-required": "API 키가 필요합니다.",
-      "byok-description": "본인 계정의 API 키를 사용하여 OpenAI 또는 Gemini에 연결합니다. Memos은 이 서버에서 공급자를 직접 호출합니다.",
-      "byok-key-note": "공급자 계정의 키를 사용합니다. Memos은 공유 AI 자격 증명을 포함하지 않습니다.",
-      "byok-label": "BYOK(Bring Your Own Key)",
-      "byok-model-note": "Memos은 오디오 전사와 같은 기능에 대해 지원되는 모델을 선택합니다.",
+      "byok-description": "내 계정의 API 키로 AI 서비스를, 또는 직접 운영하는 모델 서버를 연결합니다. Memos는 이 서버에서 직접 호출합니다.",
       "byok-storage-note": "키는 이 인스턴스에 저장되며 설정이 로드될 때 마스킹됩니다.",
-      "byok-title": "본인 AI 계정 사용",
-      "configured": "구성됨",
       "current-key": "현재 키: {{key}}",
-      "default-endpoint": "기본 엔드포인트",
-      "delete-provider": "AI 공급자 `{{title}}`을 삭제하시겠습니까?",
-      "dialog-description": "공급자 계정에서 키를 추가하세요. Memos은 각 공급자에 대한 내장 모델을 사용합니다. 저장된 키를 유지하려면 편집하는 동안 API 키를 비워 두세요.",
+      "delete-provider-impact": "이 제공업체를 삭제하면 다음 기능이 비활성화됩니다: {{features}}.",
+      "delete-provider": "AI 공급자 “{{title}}”을 삭제하시겠습니까?",
       "edit-provider": "공급자 편집",
       "endpoint-hint": "공식 공급자 엔드포인트를 사용하려면 비워 두세요.",
-      "integrations-description": "공급자 키는 인스턴스 소유자가 제공하며 서버 측 AI 기능에서 사용됩니다.",
-      "integrations-title": "AI 통합",
+      "integrations-title": "제공업체",
       "keep-api-key": "기존 키를 유지하려면 비워 두세요.",
       "label": "AI",
       "no-providers": "구성된 AI 공급자가 없습니다.",
@@ -762,19 +997,49 @@
       "provider-title-required": "공급자 이름은 필수입니다.",
       "provider-type": "공급자 유형",
       "transcription-description": "메모 작성기에서 오디오를 녹음할 때 사용되는 음성-텍스트 변환 설정입니다.",
-      "transcription-empty-providers": "전사 기능을 활성화하려면 먼저 AI 통합을 추가하세요.",
       "transcription-language-help": "ISO 639-1 단축 코드(예: en, de, zh). 자동 감지를 위해 비워 두십시오.",
       "transcription-language-placeholder": "자동 감지",
       "transcription-language": "기본 언어",
-      "transcription-model-help": "자유 텍스트. 공급자의 모델 식별자를 사용하십시오. 예: whisper-1, gpt-4o-transcribe, whisper-large-v3-turbo.",
       "transcription-model": "모델",
       "transcription-no-provider": "없음 - 텍스트 변환 비활성화",
-      "transcription-prompt-help": "고유명사와 전문 용어의 맞춤법을 개선합니다. OpenAI 및 Whisper은 이를 소프트 힌트로 처리합니다(Whisper 제한은 약 224 토큰입니다). Gemini은 생성 프롬프트 내의 리터럴 명령으로 처리합니다.",
+      "transcription-prompt-help": "고유명사와 전문 용어의 맞춤법을 개선합니다.",
       "transcription-prompt-placeholder": "이름: Alice, Bob. 용어집: kubernetes, OAuth.",
       "transcription-prompt": "프롬프트 힌트",
       "transcription-provider": "공급자",
       "transcription-title": "전사",
-      "transcription-warning-no-key": "선택한 공급자에 API 키가 설정되어 있지 않습니다. 위의 통합을 편집하여 키를 추가하세요."
+      "try-it": "사용해 보기",
+      "checking-connection": "연결을 확인하는 중…",
+      "try-transcription-title": "받아쓰기 사용해 보기",
+      "try-transcription-description": "오디오를 녹음하거나 업로드해 받아쓴 텍스트를 확인하세요. 실행할 때마다 제공자에게 실제 요청이 전송되며, 아무것도 저장되지 않습니다.",
+      "try-tags-title": "태그 제안 사용해 보기",
+      "try-tags-description": "메모를 작성해 어떤 태그가 붙는지 확인하세요. 실행할 때마다 제공자에게 실제 요청이 전송되며, 아무것도 저장되지 않습니다.",
+      "try-note": "메모",
+      "suggest-tags": "태그 제안",
+      "suggested-tags": "제안된 태그",
+      "suggested-tags-empty": "제안된 태그가 여기에 표시됩니다",
+      "no-tags-suggested": "이 메모에 제안된 태그가 없습니다.",
+      "transcript-empty": "받아쓴 텍스트가 여기에 표시됩니다",
+      "record": "녹음",
+      "upload-audio": "파일 업로드",
+      "audio-formats": "MP3, M4A, WAV, WebM · 최대 25MB",
+      "copy-transcript": "받아쓴 텍스트 복사",
+      "try-uses-saved": "저장된 설정을 사용합니다. 변경 사항을 사용해 보려면 저장하세요.",
+      "provider-type-anthropic-compatible": "Anthropic 호환",
+      "status": "상태",
+      "used-by": "사용 기능",
+      "not-used": "사용 안 함",
+      "status-connected": "연결됨",
+      "status-invalid-key": "잘못된 키",
+      "status-unreachable": "연결할 수 없음",
+      "status-out-of-credit": "크레딧 부족",
+      "status-error": "오류",
+      "cannot-transcribe": "전사 불가",
+      "no-models-listed": "목록에 일치하는 모델이 없습니다. 입력한 ID를 그대로 사용합니다.",
+      "endpoint-required": "엔드포인트가 필요합니다.",
+      "optional": "선택 사항",
+      "request-url": "요청 주소: {{url}}",
+      "get-api-key": "API 키 발급",
+      "local-endpoint-hint": "memos 서버가 이 주소로 연결하므로 localhost는 그 서버를 뜻합니다. memos를 Docker에서 실행한다면 host.docker.internal이나 Compose 서비스 이름을 사용하세요."
     },
     "memo-export": {
       "review-file": "파일",
@@ -814,7 +1079,9 @@
       "review-exported": "내보낸 사용자",
       "review-memos": "파일의 메모",
       "review-new": "생성 예정",
-      "import-success": "새 메모 {{created}}개를 가져오고 메모 {{updated}}개를 업데이트했습니다."
+      "import-success": "새 메모 {{created}}개를 가져오고 메모 {{updated}}개를 업데이트했습니다.",
+      "export-admin-only": "관리자만 메모를 내보낼 수 있습니다. 내보내기 파일은 관리자에게 요청하세요.",
+      "export-busy": "다른 내보내기가 진행 중입니다. 잠시 후 다시 시도하세요."
     },
     "spaces": {
       "general": "일반",
@@ -953,7 +1220,8 @@
   },
   "tooltip": {
     "link-memo": "메모 링크",
-    "select-location": "위치"
+    "select-location": "위치",
+    "link-memo-description": "연결할 메모를 검색하고 선택하세요"
   },
   "live-update": {
     "connected": "실시간 업데이트 활성화",
@@ -1042,9 +1310,15 @@
     "loading": "메모 로드 중…",
     "new-here": "여기에 입력하세요",
     "saved-outside-filter": "저장되었습니다. 이 메모는 현재 지도 결과 범위 밖에 있습니다.",
-    "open-memo": "메모 열기"
+    "open-memo": "메모 열기",
+    "open-in-google-maps": "Google Maps에서 열기",
+    "location-description": "지도에서 위치를 선택하거나 좌표를 직접 입력하세요",
+    "latitude": "위도",
+    "longitude": "경도",
+    "place-placeholder": "먼저 위치를 선택하세요."
   },
   "calendar": {
+    "more-memos": "{{count}}개 더",
     "new-memo-on-day": "오늘 새 메모가 있습니다.",
     "next-year": "내년",
     "no-memos-in-month": "{{month}}년 동안 메모가 없습니다.",
@@ -1072,7 +1346,6 @@
     "text": "텍스트"
   },
   "space": {
-    "all-spaces": "모든 스페이스",
     "icon": {
       "change": "공간 아이콘 변경",
       "kind": "아이콘 유형",
@@ -1082,7 +1355,7 @@
       "search-emoji": "이모지 검색 또는 붙여넣기…",
       "no-results": "일치하는 항목 없음",
       "emoji-help": "일반적인 이모지를 선택하거나 직접 붙여넣으세요.",
-      "reset": "기본값으로 재설정",
+      "reset": "기본 아이콘 사용",
       "use-emoji": "{{emoji}} 사용"
     },
     "unavailable": "이 공간이 없거나 접근 권한이 없습니다.",
@@ -1105,5 +1378,111 @@
     "name-placeholder": "예: 제품",
     "spaces": "공간",
     "switch": "공간 전환"
+  },
+  "welcome": {
+    "title": "Memos에 오신 것을 환영합니다",
+    "headline": "일상의 생각을 위한 간단한 메모.",
+    "intro-write": "한 문장만으로도 하나의 메모가 됩니다.",
+    "intro-keep": "각 메모는 작성한 날과 함께 남습니다.",
+    "intro-share": "무엇을 비공개로 둘지는 직접 정합니다.",
+    "write": "쓰기",
+    "write-sub": "한 문장만으로도 하나의 메모가 됩니다.",
+    "no-title": "제목 없음",
+    "no-title-text": "메모는 생각 그 자체에서 시작합니다. 채워야 할 제목은 없습니다.",
+    "markdown": "Markdown",
+    "markdown-text": "원할 때 Markdown으로 글에 구조를 더할 수 있습니다.",
+    "attach": "첨부",
+    "attach-text": "이미지, 파일, 오디오, 위치는 ＋로 추가합니다.",
+    "keep": "보관",
+    "keep-sub": "각 메모는 작성한 날과 함께 남습니다.",
+    "calendar-text": "달력에서 어느 날로든 돌아갈 수 있습니다.",
+    "tags-text": "# 뒤의 단어는 태그가 되고, 태그는 타임라인을 필터링합니다.",
+    "views-text": "사용자 지정 보기는 필터를 저장합니다.",
+    "map-text": "위치가 있는 메모는 지도에 표시됩니다.",
+    "share": "공유",
+    "share-sub": "메모는 비공개로 시작합니다. 무엇을 공유하고 무엇을 공개할지는 직접 정합니다.",
+    "visibility-text": "메모마다 각자의 설정이 있습니다. 새 메모는 나만 볼 수 있는 비공개로 시작하고, 공개 메모에는 누구나 열 수 있는 링크가 있습니다.",
+    "spaces-text": "공간에서는 구성원이 나와 나란히 글을 쓰고, 각자 자신의 메모를 가집니다.",
+    "comments": "댓글",
+    "comments-text": "메모를 볼 수 있는 사람은 누구나 그 아래에 답글을 남길 수 있습니다.",
+    "skip": "건너뛰기",
+    "next": "다음",
+    "done": "완료",
+    "page-of": "{{total}}페이지 중 {{current}}페이지",
+    "reopen": "환영 안내",
+    "reopen-note": "새 계정이 처음 보게 되는 네 개의 화면.",
+    "sample": {
+      "today": "오늘 10:42",
+      "today-early": "오늘 9:18",
+      "yesterday": "어제 15:20",
+      "comment-age": "2시간",
+      "memo-preview": "더 단순한 첫 화면. 입력란 하나, 그다음 미리보기.",
+      "memo-release": "다음 릴리스 전에",
+      "task-sketch": "첫 화면 스케치하기",
+      "task-polish": "미리보기 다듬기",
+      "write-lead": "첫걸음은 작게.",
+      "write-strong": "자세한 내용은",
+      "write-tail": "필요할 때 보여 준다.",
+      "write-task": "짧은 변경 기록 쓰기",
+      "view": "미완료 작업",
+      "space": "제품",
+      "share-memo": "가입을 요청하기 전에 결과부터 보여 주는 편이 낫겠다.",
+      "comment": "동의해요. 미리보기가 설득력이 있었어요.",
+      "tag-design": "디자인",
+      "tag-project": "프로젝트",
+      "tag-reading": "독서",
+      "tag-ideas": "아이디어"
+    }
+  },
+  "error": {
+    "title": "문제가 발생했습니다",
+    "description": "예기치 않은 오류가 발생했습니다. 네트워크 문제나 애플리케이션 문제 때문일 수 있습니다.",
+    "description-update": "예기치 않은 오류가 발생했습니다. 네트워크 문제나 애플리케이션 업데이트 때문일 수 있습니다. 보통 새로고침하면 해결됩니다.",
+    "details": "오류 세부 정보",
+    "reload": "애플리케이션 새로고침",
+    "not-found": "찾으시는 페이지를 찾을 수 없습니다.",
+    "permission-denied": "권한이 없습니다",
+    "too-many-requests": "요청이 너무 많습니다. {{wait}} 후에 다시 시도하세요.",
+    "ai-auth-failed": "제공업체가 API 키를 거부했거나 액세스를 허용하지 않았습니다.",
+    "ai-model-not-found": "제공업체에서 이 모델 또는 엔드포인트를 찾을 수 없습니다.",
+    "ai-quota-exhausted": "제공업체 계정의 크레딧이 소진되었거나 지출 한도를 초과했습니다.",
+    "ai-rate-limited": "제공업체가 이 키의 요청을 제한하고 있습니다. 잠시 후 다시 시도하거나 할당량을 확인하세요.",
+    "ai-request-rejected": "제공업체가 요청을 거부했습니다. 모델과 지원하는 매개변수를 확인하세요.",
+    "ai-unreachable": "제공업체 엔드포인트에 연결할 수 없습니다. URL과 네트워크를 확인하세요.",
+    "ai-timeout": "제공업체가 제시간에 응답하지 않았습니다.",
+    "ai-redirected": "엔드포인트가 요청을 리디렉션했습니다. 최종 URL을 입력하세요.",
+    "ai-invalid-response": "제공업체가 사용할 수 있는 응답을 반환하지 않았습니다. 엔드포인트와 모델을 확인하세요.",
+    "wait-seconds": "{{count}}초",
+    "wait-minutes": "{{count}}분",
+    "wait-hours": "{{count}}시간",
+    "challenge-required": "인증 확인을 완료한 후 다시 시도하세요.",
+    "quota-memo-count": "메모 한도인 {{limit}}개에 도달했습니다. 새 메모를 만들려면 메모를 삭제하세요.",
+    "quota-storage": "이 업로드는 저장 공간 한도인 {{limit}}을(를) 초과합니다. 현재 {{usage}}을(를) 사용 중입니다.",
+    "quota-upload": "이 파일은 파일당 한도인 {{limit}}보다 큽니다.",
+    "quota-memo-content": "이 메모는 메모당 한도인 {{limit}}보다 큽니다. 저장하려면 내용을 줄이세요.",
+    "quota-generic": "사용 한도에 도달했습니다.",
+    "sign-in-failed": "로그인하지 못했습니다.",
+    "sign-up-failed": "가입하지 못했습니다",
+    "authenticate-failed": "인증하지 못했습니다.",
+    "update-profile-failed": "프로필을 업데이트하지 못했습니다",
+    "unlink-identity-failed": "ID 공급자 연결을 해제하지 못했습니다.",
+    "link-identity-failed": "계정 연결을 시작하지 못했습니다. 다시 시도하세요."
+  },
+  "attachment-preview": {
+    "title": "첨부파일 미리보기",
+    "description": "첨부파일 미리보기 대화상자입니다. Esc 키를 눌러 닫고, 왼쪽 또는 오른쪽 화살표 키로 항목을 전환하며, 컨트롤, 마우스 휠, 두 번 탭 또는 핀치 동작으로 이미지를 확대할 수 있습니다.",
+    "close": "미리보기 닫기",
+    "previous": "이전 항목",
+    "next": "다음 항목",
+    "reset-zoom": "확대/축소 초기화",
+    "image-alt": "미리보기 이미지 {{index}}/{{count}}",
+    "live-photo-alt": "라이브 포토 미리보기 {{index}}/{{count}}",
+    "play-live-photo": "마우스를 올리거나 눌러서 라이브 포토 재생"
+  },
+  "audio-player": {
+    "seek": "{{name}} 재생 위치",
+    "back": "{{seconds}}초 뒤로",
+    "forward": "{{seconds}}초 앞으로",
+    "speed": "재생 속도 {{rate}}x"
   }
 }

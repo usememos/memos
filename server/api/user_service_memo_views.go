@@ -238,6 +238,47 @@ func (s *APIService) DeleteMemoView(ctx context.Context, request *apipb.DeleteMe
 	return &emptypb.Empty{}, nil
 }
 
+// ReorderMemoViews sets the order of the saved memo views owned by a user.
+func (s *APIService) ReorderMemoViews(ctx context.Context, request *apipb.ReorderMemoViewsRequest) (*apipb.ReorderMemoViewsResponse, error) {
+	user, err := ResolveUserByName(ctx, s.Store, request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	if err := s.requireCallerIs(ctx, user); err != nil {
+		return nil, err
+	}
+
+	namePrefix := constructMemoViewName(user.Username, "")
+	memoViewIDs := make([]string, 0, len(request.Names))
+	for _, name := range request.Names {
+		memoViewID, ok := strings.CutPrefix(name, namePrefix)
+		if !ok || memoViewID == "" || strings.Contains(memoViewID, "/") {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo view name: %s", name)
+		}
+		memoViewIDs = append(memoViewIDs, memoViewID)
+	}
+
+	storeMemoViews, ok, err := s.Store.ReorderUserMemoViews(ctx, user.ID, memoViewIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to reorder memo views: %v", err)
+	}
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "names must list each of the user's memo views exactly once")
+	}
+
+	memoViews := make([]*apipb.MemoView, 0, len(storeMemoViews))
+	for _, memoView := range storeMemoViews {
+		memoViews = append(memoViews, convertMemoViewFromStore(user.Username, memoView))
+	}
+
+	return &apipb.ReorderMemoViewsResponse{
+		MemoViews: memoViews,
+	}, nil
+}
+
 func (s *APIService) validateFilter(ctx context.Context, filterStr string) error {
 	if filterStr == "" {
 		return errors.New("filter cannot be empty")

@@ -21,29 +21,26 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Inloggen kon niet worden voltooid",
     "create-your-account": "Maak je account",
+    "hide-password": "Wachtwoord verbergen",
+    "incorrect-credentials": "Onjuiste gebruikersnaam of onjuist wachtwoord.",
     "new-password": "Nieuw wachtwoord",
     "repeat-new-password": "Nieuw wachtwoord herhalen",
+    "show-password": "Wachtwoord tonen",
     "sign-in-tip": "Al een account?",
     "sign-up-tip": "Nog geen account?",
     "admin-sign-in": "Aanmelden als beheerder",
-    "admin-sign-in-tip": "Aanmelden met wachtwoord blijft beschikbaar voor beheerders.",
     "back-to-sign-in": "Terug naar aanmelden",
     "continue-with": "Doorgaan met {{provider}}",
+    "redirecting-to-provider": "Doorsturen naar {{provider}}…",
+    "signing-in": "Bezig met aanmelden…",
     "create-admin-account": "Beheerdersaccount aanmaken",
-    "explore-public-memos": "Openbare memo's op deze instantie bekijken",
-    "first-run": "Eerste keer uitvoeren",
     "setup-description": "Maak het beheerdersaccount voor deze instantie aan.",
-    "setup-note": "Dit account beheert de instantie-instellingen, leden en identiteitsproviders.",
     "setup-title": "Stel uw instantie in",
     "signin-unavailable-description": "Aanmelden met wachtwoord is uitgeschakeld en er zijn geen identiteitsproviders geconfigureerd. Vraag uw beheerder om een ​​aanmeldmethode in te schakelen.",
     "signin-unavailable-title": "Aanmelden is niet beschikbaar",
-    "signup-unavailable-description": "Wachtwoordaccounts zijn uitgeschakeld en er zijn geen identiteitsproviders geconfigureerd. Vraag uw beheerder om toegang.",
-    "signup-unavailable-title": "Registreren is niet beschikbaar",
-    "signups-closed-description": "Nieuwe accounts zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder als u toegang nodig hebt.",
-    "signups-closed-title": "Aanmelden is gesloten",
-    "sso-signup-tip": "Meld u hieronder aan met een provider om uw account aan te maken.",
-    "welcome-back": "Welkom terug."
+    "signups-closed-description": "Nieuwe accounts zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder als u toegang nodig hebt."
   },
   "common": {
     "about": "Over",
@@ -55,7 +52,6 @@
     "attachments": "Bijlagen",
     "avatar": "Avatar",
     "basic": "Simpel",
-    "browse": "Bladeren",
     "calendar": "Kalender",
     "cancel": "Annuleren",
     "clear": "Leegmaken",
@@ -93,6 +89,8 @@
     "memo": "Memo",
     "memos": "Memos",
     "more": "Meer",
+    "move-down": "Move down",
+    "move-up": "Move up",
     "name": "Naam",
     "nickname": "Bijnaam",
     "open": "Openen",
@@ -102,7 +100,6 @@
     "profile": "Profiel",
     "referenced-by": "Gerefereerd door",
     "referencing": "Verwijst naar",
-    "relations": "Relaties",
     "resources": "Bronnen",
     "restore": "Terugzetten",
     "role": "Rol",
@@ -138,12 +135,35 @@
     "resize-panel": "Paneelgrootte aanpassen",
     "resize-sidebar": "Zijbalkgrootte aanpassen",
     "sign-in-to-memos": "Aanmelden bij Memos",
-    "view-all": "Alles bekijken"
+    "open-navigation": "Navigatie openen",
+    "navigation": "Navigatie",
+    "primary-navigation": "Hoofd",
+    "download": "Downloaden",
+    "download-name": "{{name}} downloaden",
+    "open-name": "{{name}} openen",
+    "preview-name": "Voorbeeld van {{name}}",
+    "no-content": "Geen inhoud",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "retry": "Opnieuw proberen",
+    "docs": "Documentatie",
+    "calendar-for-month": "Kalender voor {{month}}",
+    "date-at-time": "{{date}} om {{time}}",
+    "selected-location": "Geselecteerde locatie",
+    "choose-location": "Kies een locatie",
+    "unknown-error": "Onbekende fout",
+    "error-occurred": "Er is een fout opgetreden"
   },
   "locale-picker": {
     "no-language-feedback": "Taal niet gevonden? Geef feedback"
   },
   "editor": {
+    "suggest-tags": "Tags voorstellen met AI",
+    "no-suggested-tags": "Geen tags om voor te stellen",
+    "tag-suggestions-label": "Tagsuggesties",
+    "tag-suggestions-error": "Tagsuggesties zijn niet beschikbaar",
+    "tag-suggestions-limit": "Limiet voor tagsuggesties bereikt. Probeer het later opnieuw.",
+    "set-visibility": "Zichtbaarheid instellen op {{visibility}}",
     "suggestions": "Suggesties",
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",
@@ -158,12 +178,61 @@
       "image-upload-failed": "Sommige afbeeldingen konden niet worden geüpload. Probeer het opnieuw of bewaar de geüploade bestanden als bijlagen.",
       "image-upload-stopped": "Afbeelding uploaden gestopt {{completed}}/{{total}}",
       "insert-image": "Afbeelding invoegen",
+      "drawing": "Markering",
       "keep-as-attachments": "Bewaren als bijlagen",
       "uploading-inline-image": "Uploaden naar inhoud",
       "uploading-images": "Afbeeldingen uploaden {{completed}}/{{total}}"
     },
+    "drawing": {
+      "edit": "Markering bewerken",
+      "tools": "Gereedschap",
+      "tool-select": "Selecteren",
+      "tool-pen": "Pen",
+      "tool-eraser": "Gum",
+      "tool-rectangle": "Rechthoek",
+      "tool-ellipse": "Ellips",
+      "tool-arrow": "Pijl",
+      "tool-text": "Tekst",
+      "style": "Kleur en dikte",
+      "color": "Kleur",
+      "width": "Dikte",
+      "width-thin": "Dun",
+      "width-medium": "Gemiddeld",
+      "width-thick": "Dik",
+      "color-ink": "Inkt",
+      "color-gray": "Grijs",
+      "color-red": "Rood",
+      "color-orange": "Oranje",
+      "color-green": "Groen",
+      "color-teal": "Blauwgroen",
+      "color-blue": "Blauw",
+      "color-violet": "Violet",
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "zoom": "Zoomen",
+      "zoom-to-fit": "Passend maken",
+      "discard-title": "Deze tekening weggooien?",
+      "discard-description": "Hij is nog niet aan de memo toegevoegd.",
+      "discard-edit-title": "Wijzigingen weggooien?",
+      "discard-edit-description": "De tekening blijft zoals hij was voordat je hem opende.",
+      "keep-drawing": "Verder tekenen",
+      "discard": "Weggooien",
+      "open-failed": "Kan de tekening niet openen. Probeer het opnieuw.",
+      "export-failed": "Kan de tekening niet opslaan. Probeer het opnieuw.",
+      "image-failed": "Kan de afbeelding niet aan de tekening toevoegen.",
+      "saved-without-drawing": "De memo is opgeslagen, maar de tekening niet. Sla opnieuw op om het nog eens te proberen.",
+      "annotate": "Markering",
+      "save-copy": "Kopie opslaan",
+      "unavailable": "De bestemming is niet beschikbaar.",
+      "saved-needs-update": "Tekening opgeslagen. Probeer de memo opnieuw bij te werken.",
+      "changed-save-copy": "Het origineel is gewijzigd. Sla een kopie op.",
+      "bind-failed": "Tekening geüpload. Probeer deze opnieuw aan de memo toe te voegen."
+    },
     "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
+    "saving": "Bezig met opslaan…",
+    "updating": "Bezig met bijwerken…",
+    "commenting": "Reactie wordt verzonden…",
     "audio-recorder": {
       "attachment-label": "Audio-opname",
       "attachment-label-with-time": "Audio-opname {{time}}",
@@ -199,7 +268,6 @@
     "footnotes": "Voetnoten",
     "back-to-reference": "Terug naar de verwijzing",
     "new-memo": "Nieuwe memo",
-    "saved": "Opgeslagen",
     "validation": {
       "cannot-save": "Kan niet opslaan",
       "content-required": "Inhoud, bijlage of bestand vereist",
@@ -256,7 +324,19 @@
       "alt-text-placeholder": "Beschrijf de afbeelding…",
       "image-unavailable": "Afbeelding niet beschikbaar",
       "resize-image": "Afbeeldingsgrootte wijzigen"
-    }
+    },
+    "attachments": {
+      "edited": "Bewerkt",
+      "new": "Nieuw",
+      "remove": "Bijlage verwijderen",
+      "reorder": "{{name}} verplaatsen",
+      "reorder-hint": "Sleep, of gebruik de pijltjestoetsen"
+    },
+    "remove-relation": "Koppeling verwijderen",
+    "remove-location": "Locatie verwijderen",
+    "recording-unsupported": "Audio opnemen wordt niet ondersteund in deze browser.",
+    "microphone-denied": "Toegang tot de microfoon is geweigerd.",
+    "recording-failed": "Kan audio-opname niet starten."
   },
   "inbox": {
     "failed-to-load": "Postvak-item laden mislukt",
@@ -265,7 +345,16 @@
     "unread": "Ongelezen",
     "space-invitation": "Je bent uitgenodigd om deel te nemen aan een ruimte",
     "space-invitation-accepted": "Je hebt je bij deze ruimte aangesloten.",
-    "space-invitation-open": "Ruimte openen"
+    "space-invitation-open": "Ruimte openen",
+    "commented-on-memo": "heeft gereageerd op je memo",
+    "mentioned-in-comment": "heeft je genoemd in een opmerking",
+    "mentioned-in-memo": "heeft je genoemd in een memo",
+    "original": "Origineel:",
+    "memo-label": "Memo:",
+    "comment-heading": "Opmerking",
+    "memo-heading": "Memo",
+    "empty-memo": "Lege memo",
+    "empty-comment": "Lege opmerking"
   },
   "live-update": {
     "connected": "Live-updates actief",
@@ -273,11 +362,16 @@
     "disconnected": "Live-updates niet beschikbaar"
   },
   "memo": {
+    "no-memos-yet": "Nog geen memo’s",
+    "no-matching-memos": "Geen overeenkomende memo's",
+    "clear-filters": "Filters wissen",
     "pinned": "Vastgezet",
     "click-to-show-sensitive-content": "Klik om NSFW-inhoud te tonen",
     "comment": {
       "self": "Opmerkingen",
-      "write-a-comment": "Schrijf een opmerking"
+      "write-a-comment": "Schrijf een opmerking",
+      "view-all-count_one": "{{count}} opmerking bekijken",
+      "view-all-count_other": "Alle {{count}} opmerkingen bekijken"
     },
     "copy-content": "Inhoud kopiëren",
     "copy-link": "Kopieer link",
@@ -291,7 +385,8 @@
       "has-image": "heeft afbeelding",
       "has-link": "heeftLink",
       "has-location": "heeft locatie",
-      "has-task-list": "heeftTakenlijst"
+      "has-task-list": "heeftTakenlijst",
+      "remove": "Filter verwijderen"
     },
     "compact-mode": "Compacte modus",
     "link-preview": "Linkvoorbeeld",
@@ -326,6 +421,13 @@
     },
     "show-less": "Minder tonen",
     "show-more": "Meer tonen",
+    "audience": {
+      "heading": "Wie kan dit zien?",
+      "private": "Alleen ik",
+      "space": "Leden van de ruimte",
+      "protected": "Ingelogde gebruikers",
+      "public": "Iedereen"
+    },
     "visibility": {
       "private": "Privé",
       "protected": "Werkruimte",
@@ -345,14 +447,13 @@
       "updated": "Taken bijgewerkt"
     },
     "new-badge": "Nieuw",
-    "parent-loading": "Originele memo laden…",
-    "parent-load-error": "De originele memo kon niet worden geladen.",
-    "parent-unavailable": "Originele memo niet beschikbaar",
+    "parent-loading": "Hoofdmemo laden…",
+    "parent-load-error": "De hoofdmemo kon niet worden geladen.",
+    "parent-unavailable": "Hoofdmemo niet beschikbaar",
     "parent-unavailable-description": "Deze is mogelijk verwijderd of je hebt er geen toegang meer toe.",
     "moved": "Memo verplaatst",
-    "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
-    "grid-compact-hint": "Rasterindelingen gebruiken altijd compacte kaarten.",
+    "grid-compact-hint": "Vouw langere memo’s samen. Altijd ingeschakeld bij rasterindelingen.",
     "layout": "Indeling",
     "layout-auto": "Automatisch",
     "layout-auto-description": "Zoveel kolommen als er op het scherm passen",
@@ -363,11 +464,17 @@
     "on-this-memo": "In deze memo",
     "parent-memo": "Hoofdmemo",
     "view-options": "Weergaveopties",
-    "sensitive-content": "Sensitive content",
-    "split-view": "Split view",
-    "split-view-description": "Memo list beside the open memo",
-    "split-view-list": "Memo list",
-    "split-view-untitled": "No text"
+    "add-reaction": "Reactie toevoegen",
+    "remove-reaction": "Reactie verwijderen",
+    "full-width": "Volledige breedte",
+    "full-width-hint": "Gebruik de volledige breedte van de memotijdlijn.",
+    "include-comments": "Opmerkingen opnemen",
+    "include-comments-hint": "Toon opmerkingen samen met memo's in lijsten.",
+    "sensitive-content": "Gevoelige inhoud",
+    "split-view": "Gesplitste weergave",
+    "split-view-description": "Memolijst naast de geopende memo",
+    "split-view-list": "Memolijst",
+    "split-view-untitled": "Geen tekst"
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",
@@ -382,7 +489,9 @@
     "restored-successfully": "Succesvol teruggezet",
     "succeed-copy-content": "Inhoud succesvol gekopieerd.",
     "succeed-copy-link": "Link gekopieerd naar klembord.",
-    "update-succeed": "Update voltooid"
+    "update-succeed": "Update voltooid",
+    "not-signed-in": "Je bent niet ingelogd.",
+    "invalid-datetime": "Ongeldige datum en tijd. Gebruik de notatie 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Geen memos gevonden",
@@ -452,7 +561,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Uw bijlageopslag is niet beschikbaar.",
-      "email-in-use": "Dit e-mailadres wordt al door een ander account gebruikt."
+      "email-in-use": "Dit e-mailadres wordt al door een ander account gebruikt.",
+      "avatar-too-large": "Kies een afbeelding van maximaal 2 MB.",
+      "avatar-unreadable": "Deze afbeelding kan niet worden gelezen. Probeer een ander bestand."
     },
     "instance": {
       "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
@@ -490,18 +601,10 @@
       "no-members-found": "Geen leden gevonden",
       "active": "Actief",
       "archived": "Gearchiveerd",
-      "member-column": "Lid",
-      "summary-column": "Samenvatting"
-    },
-    "memo": {
-      "label": "Memo",
-      "reactions": "Reacties",
-      "reactions-required": "Reactielijst mag niet leeg zijn",
-      "add-reaction": "Reactie toevoegen",
-      "configured-reactions": "Geconfigureerde reacties",
-      "reaction-placeholder": "bijv. 👍",
-      "reactions-description": "Definieer de reactieopties die gebruikers op memo's kunnen toepassen.",
-      "remove-reaction": "Reactie verwijderen"
+      "export-memos": "Memo's exporteren",
+      "username-password-required": "Gebruikersnaam en wachtwoord mogen niet leeg zijn",
+      "create-success": "Gebruiker aangemaakt",
+      "update-success": "Gebruiker bijgewerkt"
     },
     "my-account": {
       "label": "Mijn account"
@@ -525,13 +628,148 @@
       "theme-description": "Past het geselecteerde thema onmiddellijk toe op dit apparaat.",
       "theme": "Thema",
       "uploads-privacy-description": "Beheer privacygevoelige informatie die met geüploade media wordt verzonden.",
-      "uploads-privacy-title": "Uploads en privacy"
+      "uploads-privacy-title": "Uploads en privacy",
+      "theme-system": "Systeem volgen",
+      "theme-system-short": "Systeem",
+      "theme-light": "Licht",
+      "theme-dark": "Donker",
+      "theme-paper": "Papier"
+    },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Schrijf en bewerk memo's als Markdown-tekst in plaats van opgemaakte tekst."
     },
     "memo-view": {
       "create": "Weergave maken",
       "delete-confirm": "Weet je zeker dat je weergave `{{title}}` wilt verwijderen?",
       "delete-success": "Weergave `{{title}}` succesvol verwijderd",
-      "change-icon": "Weergavepictogram wijzigen"
+      "change-icon": "Weergavepictogram wijzigen",
+      "page-description": "Maak herbruikbare weergaven met velden, operatoren, tijdfuncties en labelvergelijking. Begin met de voorbeelden en valideer voordat je opslaat.",
+      "edit": "Weergave bewerken",
+      "form-description": "Geef de weergave een naam en definieer de memofilterexpressie die moet worden toegepast.",
+      "title-placeholder": "Vastgezet, Recente notities, Werk",
+      "filter-help": "Combineer expressies met {{and}}, {{or}} en {{not}}. Tijdvelden zijn tijdstempels — gebruik {{now}}, {{duration}}, {{timestamp}} en accessors zoals {{year}}. Labels ondersteunen {{sets}} en {{size}} meet de lengte.",
+      "validate": "Valideren",
+      "all": "Alle weergaven",
+      "loading": "Weergaven laden…",
+      "load-failed": "Kan weergaven niet laden.",
+      "empty-title": "Nog geen weergaven",
+      "empty-description": "Sla een filter op om snel terug te gaan naar de memo's die je nodig hebt.",
+      "examples-title": "Voorbeeldexpressies",
+      "fields-title": "Ondersteunde velden",
+      "title-filter-required": "Titel en filter mogen niet leeg zijn",
+      "filter-valid": "Filterexpressie lijkt geldig",
+      "create-success": "Weergave aangemaakt",
+      "update-success": "Weergave bijgewerkt",
+      "examples": {
+        "pinned": {
+          "title": "Vastgezet",
+          "description": "Alleen vastgezette memo's."
+        },
+        "recent": {
+          "title": "Recente notities",
+          "description": "Memo's die in het afgelopen uur zijn gemaakt."
+        },
+        "public": {
+          "title": "Openbare memo's",
+          "description": "Alleen openbare memo's."
+        },
+        "project-tags": {
+          "title": "Projectlabels",
+          "description": "Komt exact overeen met een of meer labels."
+        },
+        "untagged": {
+          "title": "Zonder labels",
+          "description": "Memo's zonder labels."
+        },
+        "archive-tree": {
+          "title": "Archiefboom",
+          "description": "Hiërarchische labels vergelijken op voorvoegsel."
+        },
+        "unassigned": {
+          "title": "Niet toegewezen",
+          "description": "Memo's die in geen enkele ruimte staan."
+        },
+        "one-space": {
+          "title": "In één ruimte",
+          "description": "Memo's in een ruimte. Gebruik de ruimte-ID uit de URL of de instellingen ervan."
+        },
+        "open-tasks": {
+          "title": "Openstaande taken",
+          "description": "Memo's met onafgeronde taken."
+        },
+        "links-or-code": {
+          "title": "Links of code",
+          "description": "Memo's met links of codeblokken."
+        },
+        "no-location": {
+          "title": "Geen locatie",
+          "description": "Memo's zonder gekoppelde locatie."
+        },
+        "with-attachments": {
+          "title": "Met bijlagen",
+          "description": "Memo's met minstens één bijgevoegd bestand."
+        },
+        "photos": {
+          "title": "Foto's",
+          "description": "Memo's die een afbeelding tonen, in de inhoud of als bijgevoegd bestand."
+        },
+        "content-search": {
+          "title": "Zoeken in inhoud",
+          "description": "Zoek tekst in de inhoud van memo's."
+        },
+        "starts-with": {
+          "title": "Begint met",
+          "description": "Memo's waarvan de inhoud met een tekst begint (ook endsWith)."
+        },
+        "regex": {
+          "title": "Regex-overeenkomst",
+          "description": "Vergelijk inhoud met een reguliere expressie."
+        },
+        "all-tags-complete": {
+          "title": "Alle labels voltooid",
+          "description": "Elk label eindigt op -done (alleen memo's met labels)."
+        },
+        "one-project-tag": {
+          "title": "Eén projectlabel",
+          "description": "Precies één label voldoet aan de voorwaarde."
+        },
+        "any-tags": {
+          "title": "Een van deze labels",
+          "description": "Labels overlappen met de opgegeven verzameling."
+        },
+        "exact-tags": {
+          "title": "Precies deze labels",
+          "description": "Gelabeld met precies deze verzameling, niets meer."
+        },
+        "year-2024": {
+          "title": "Memo's uit 2024",
+          "description": "Filter op kalenderjaar."
+        },
+        "weekend": {
+          "title": "Weekendnotities",
+          "description": "Gemaakt op een zondag of zaterdag (0 = zondag)."
+        },
+        "long": {
+          "title": "Lange notities",
+          "description": "Memo's langer dan 280 tekens."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Configuratie",
+      "description": "Resources die door configuratiebestanden worden ingesteld. Bewerk een bestand en pas het toe om ze te wijzigen; de rest van de instantie blijft hier bewerkbaar.",
+      "managed-by": "Beheerd door configuratie",
+      "managed-tooltip": "Ingesteld in {{source}}. Bewerk het bestand en pas het toe om dit te wijzigen.",
+      "resource": "Resource",
+      "source": "Bestand",
+      "managed-fields": "Beheerde velden",
+      "whole-resource": "Alle velden",
+      "ignored-fields": "Hier bewerkbaar",
+      "serial": "Volgnummer",
+      "last-apply": "Laatst toegepast",
+      "applied-by": "Toegepast door",
+      "nothing-managed": "Er is geen configuratie toegepast. Alles wordt hier ingesteld."
     },
     "sso": {
       "authorization-endpoint": "Autorisatie-eindpunt",
@@ -560,7 +798,6 @@
       "basic-settings": "Basisinstellingen",
       "basic-settings-description": "Stel de identiteit van de provider, de weergavenaam en de optionele identificatieregels in voordat u de OAuth-gegevens invult.",
       "client-secret-optional-description": "Laat dit veld leeg om het bestaande klantgeheim ongewijzigd te laten.",
-      "configuration": "Configuratie",
       "configuration-summary-description": "Toon de essentie die helpt bij het identificeren en controleren van een provider zonder de volledige inline configuratie bloot te leggen.",
       "create-sso-description": "Maak een nieuwe identiteitsprovider voor door de beheerder beheerde eenmalige aanmelding.",
       "endpoints": "Eindpunten",
@@ -582,7 +819,6 @@
       "not-linked-description": "Er is nog geen externe identiteit gekoppeld. Je kunt deze provider koppelen om er later mee in te loggen.",
       "oauth-configuration": "OAuth-configuratie",
       "oauth-configuration-description": "Vul de OAuth-clientreferenties in en de providereindpunten die zijn gebruikt tijdens het inloggen.",
-      "provider": "Aanbieder",
       "provider-id": "Provider-ID",
       "provider-id-description": "Alleen kleine letters, cijfers en koppeltekens. Deze waarde wordt onderdeel van de resourcenaam van de provider.",
       "provider-uid": "UID",
@@ -592,7 +828,9 @@
       "scopes-description": "Aparte scopes met spaties. De meeste providers hebben slechts een kleine set nodig, zoals profiel- of e-mailtoegang.",
       "template-description": "Begin met een vooraf ingestelde provider en pas vervolgens de referenties en eindpunten voor uw tenant aan.",
       "unlink-success": "Ontkoppelde {{name}}.",
-      "update-sso-description": "Controleer de providerconfiguratie en sla vervolgens de velden op die moeten veranderen."
+      "update-sso-description": "Controleer de providerconfiguratie en sla vervolgens de velden op die moeten veranderen.",
+      "invalid-config": "De configuratie van de identiteitsprovider is ongeldig.",
+      "provider-id-placeholder": "bijv. github, okta-corp"
     },
     "storage": {
       "accesskey": "Access key",
@@ -640,7 +878,8 @@
       "customize-server": {
         "description": "Beschrijving",
         "icon-url": "Pictogram-URL",
-        "title": "Server aanpassen"
+        "title": "Server aanpassen",
+        "dialog-description": "Pas het uiterlijk en de instellingen van je instantie aan."
       },
       "label": "Systeem",
       "server-name": "Servernaam",
@@ -670,8 +909,6 @@
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
       "never-applies": "Never applies",
       "never-applies-description": "Every user named here is caught by an earlier entry.",
       "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
@@ -718,7 +955,6 @@
       },
       "no-webhooks-found": "Geen webhooks gevonden.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {
@@ -739,25 +975,26 @@
       "used-count": "{{count}}-memo's"
     },
     "ai": {
+      "key-reentry": "Na het wijzigen van het type of eindpunt moet de API-sleutel opnieuw worden ingevoerd.",
+      "provider-type-openai": "OpenAI-compatibel",
+      "delete-provider-description": "Hiermee worden de provider en de opgeslagen API-sleutel verwijderd.",
+      "text-generation-title": "Tekstgeneratie",
+      "text-generation-description": "Kies een provider en voer de ID van het tekstmodel in voor tagsuggesties.",
+      "text-generation-disabled": "Geen — tekstgeneratie uitgeschakeld",
+      "model-help": "Gebruik de model-ID van de provider, bijv. {{example}}.",
+      "model-required": "Model is vereist.",
       "add-provider": "Aanbieder toevoegen",
       "api-key": "API-sleutel",
       "api-key-required": "API-sleutel is vereist.",
-      "byok-description": "Verbind OpenAI of Gemini met een API-sleutel uit uw eigen account. Memos belt de provider rechtstreeks vanaf deze server.",
-      "byok-key-note": "Gebruik een sleutel van uw provideraccount; Memos bundelt geen gedeelde AI-inloggegevens.",
-      "byok-label": "BYOK",
-      "byok-model-note": "Memos selecteert ondersteunde modellen voor functies zoals audiotranscriptie.",
+      "byok-description": "Koppel een AI-dienst met een API-sleutel van je eigen account, of een modelserver die je zelf draait. Memos roept die rechtstreeks aan vanaf deze server.",
       "byok-storage-note": "Sleutels blijven op deze instantie en worden gemaskeerd wanneer instellingen worden geladen.",
-      "byok-title": "Gebruik uw eigen AI-account",
-      "configured": "Geconfigureerd",
       "current-key": "Huidige sleutel: {{key}}",
-      "default-endpoint": "Standaardeindpunt",
-      "delete-provider": "AI-provider `{{title}}` verwijderen?",
-      "dialog-description": "Voeg een sleutel toe vanuit uw eigen provideraccount. Memos gebruikt voor elke provider ingebouwde modellen; laat de API-sleutel leeg tijdens het bewerken om de opgeslagen sleutel te behouden.",
+      "delete-provider-impact": "Als je deze provider verwijdert, worden deze functies uitgeschakeld: {{features}}.",
+      "delete-provider": "AI-provider “{{title}}” verwijderen?",
       "edit-provider": "Aanbieder bewerken",
       "endpoint": "Eindpunt",
       "endpoint-hint": "Laat dit leeg om het officiële eindpunt van de provider te gebruiken.",
-      "integrations-description": "Providersleutels worden geleverd door de instantie-eigenaar en gebruikt door AI-functies op de server.",
-      "integrations-title": "AI-integraties",
+      "integrations-title": "Providers",
       "keep-api-key": "Laat dit leeg om de bestaande sleutel te behouden",
       "label": "AI",
       "no-providers": "Geen AI-providers geconfigureerd.",
@@ -765,21 +1002,49 @@
       "provider-title-required": "Providernaam is vereist.",
       "provider-type": "Type aanbieder",
       "transcription-description": "Spraak-naar-tekst-instellingen die worden gebruikt bij het opnemen van audio in de memocomponist.",
-      "transcription-empty-providers": "Voeg eerst een AI-integratie toe om transcriptie in te schakelen.",
       "transcription-language-help": "ISO 639-1 korte code (bijv. en, de, zh). Laat leeg voor automatische detectie.",
       "transcription-language-placeholder": "automatisch detecteren",
       "transcription-language": "Standaardtaal",
-      "transcription-model-help": "Vrije tekst. Gebruik de modelidentificatie van de aanbieder, b.v. whisper-1, gpt-4o-transcribe, whisper-large-v3-turbo.",
-      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
-      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
       "transcription-model": "Model",
       "transcription-no-provider": "Geen — transcriptie uitgeschakeld",
-      "transcription-prompt-help": "Verbetert de spelling van eigennamen en jargon. OpenAI Whisper beschouwt dit als een zachte hint (Whisper-limiet is ongeveer 224-tokens). Gemini beschouwt het als een letterlijke instructie binnen de generatieprompt.",
+      "transcription-prompt-help": "Verbetert de spelling van eigennamen en jargon.",
       "transcription-prompt-placeholder": "Namen: Alice, Bob. Woordenlijst: kubernetes, OAuth.",
       "transcription-prompt": "Snelle tips",
       "transcription-provider": "Aanbieder",
       "transcription-title": "Transcriptie",
-      "transcription-warning-no-key": "De geselecteerde provider heeft geen API-sleutelset. Bewerk de bovenstaande integratie om er een toe te voegen."
+      "try-it": "Probeer het",
+      "checking-connection": "Verbinding controleren…",
+      "try-transcription-title": "Transcriptie proberen",
+      "try-transcription-description": "Neem audio op of upload het en bekijk de transcriptie. Elke run is een echt verzoek aan je provider; er wordt niets opgeslagen.",
+      "try-tags-title": "Tagsuggesties proberen",
+      "try-tags-description": "Schrijf een notitie en bekijk welke tags die zou krijgen. Elke run is een echt verzoek aan je provider; er wordt niets opgeslagen.",
+      "try-note": "Notitie",
+      "suggest-tags": "Tags voorstellen",
+      "suggested-tags": "Voorgestelde tags",
+      "suggested-tags-empty": "Voorgestelde tags verschijnen hier",
+      "no-tags-suggested": "Geen tags voorgesteld voor deze notitie.",
+      "transcript-empty": "De transcriptie verschijnt hier",
+      "record": "Opnemen",
+      "upload-audio": "Bestand uploaden",
+      "audio-formats": "MP3, M4A, WAV, WebM · tot 25 MB",
+      "copy-transcript": "Transcriptie kopiëren",
+      "try-uses-saved": "Gebruikt de opgeslagen instellingen. Sla op om je wijzigingen te proberen.",
+      "provider-type-anthropic-compatible": "Anthropic-compatibel",
+      "status": "Status",
+      "used-by": "Gebruikt door",
+      "not-used": "Niet in gebruik",
+      "status-connected": "Verbonden",
+      "status-invalid-key": "Ongeldige sleutel",
+      "status-unreachable": "Onbereikbaar",
+      "status-out-of-credit": "Tegoed op",
+      "status-error": "Fout",
+      "cannot-transcribe": "Kan niet transcriberen",
+      "no-models-listed": "Geen model in de lijst komt overeen. De ID die je typt, wordt ongewijzigd gebruikt.",
+      "endpoint-required": "Eindpunt is vereist.",
+      "optional": "Optioneel",
+      "request-url": "Verzoeken gaan naar {{url}}",
+      "get-api-key": "API-sleutel aanmaken",
+      "local-endpoint-hint": "De memos-server maakt verbinding met dit adres, dus localhost is die server. Draait memos in Docker, gebruik dan host.docker.internal of de naam van de Compose-service."
     },
     "notification": {
       "email-description": "Stuur e-mailkopieën voor memoopmerkingen en vermeldingen. Gmail werkt met smtp.gmail.com, poort 587, STARTTLS en een app-wachtwoord.",
@@ -872,7 +1137,9 @@
       "review-existing": "Al in uw account",
       "review-exported": "Geëxporteerd door",
       "review-memos": "Memos in bestand",
-      "review-new": "Wordt aangemaakt"
+      "review-new": "Wordt aangemaakt",
+      "export-admin-only": "Alleen beheerders kunnen memo's exporteren. Vraag een beheerder om je exportbestand.",
+      "export-busy": "Er loopt al een andere export. Probeer het zo opnieuw."
     },
     "spaces": {
       "general": "Algemeen",
@@ -958,7 +1225,8 @@
   },
   "tooltip": {
     "link-memo": "Memo linken",
-    "select-location": "Locatie"
+    "select-location": "Locatie",
+    "link-memo-description": "Zoek en selecteer een memo om te koppelen"
   },
   "demo": {
     "banner-description": "Wijzigingen zijn tijdelijk en kunnen worden gereset.",
@@ -1061,9 +1329,15 @@
     "loading": "Memo's laden…",
     "new-here": "Hier schrijven",
     "saved-outside-filter": "Opgeslagen. Deze memo valt buiten de huidige kaartresultaten.",
-    "open-memo": "Open memo"
+    "open-memo": "Open memo",
+    "open-in-google-maps": "Openen in Google Maps",
+    "location-description": "Selecteer een locatie op de kaart of voer handmatig coördinaten in",
+    "latitude": "Breedtegraad",
+    "longitude": "Lengtegraad",
+    "place-placeholder": "Kies eerst een positie."
   },
   "calendar": {
+    "more-memos": "+{{count}} meer",
     "new-memo-on-day": "Nieuwe memo op deze dag",
     "next-year": "Volgend jaar",
     "no-memos-in-month": "Geen memo's in {{month}}",
@@ -1072,7 +1346,6 @@
     "select-month": "Selecteer maand"
   },
   "space": {
-    "all-spaces": "Alle ruimtes",
     "icon": {
       "change": "Pictogram van de ruimte wijzigen",
       "kind": "Type pictogram",
@@ -1082,7 +1355,7 @@
       "search-emoji": "Emoji zoeken of plakken…",
       "no-results": "Geen overeenkomsten",
       "emoji-help": "Kies een veelgebruikte emoji of plak je eigen emoji.",
-      "reset": "Terugzetten naar standaardinstellingen",
+      "reset": "Standaardpictogram gebruiken",
       "use-emoji": "Gebruik {{emoji}}"
     },
     "unavailable": "Deze ruimte bestaat niet of je hebt er geen toegang toe.",
@@ -1105,5 +1378,111 @@
     "name-placeholder": "bijv. Product",
     "spaces": "Ruimtes",
     "switch": "Ruimte wisselen"
+  },
+  "welcome": {
+    "title": "Welkom bij Memos",
+    "headline": "Eenvoudige notities voor je dagelijkse gedachten.",
+    "intro-write": "Eén zin kan al een hele memo zijn.",
+    "intro-keep": "Elke memo blijft bij de dag waarop je hem schreef.",
+    "intro-share": "Jij bepaalt wat privé blijft.",
+    "write": "Schrijven",
+    "write-sub": "Eén zin kan al een hele memo zijn.",
+    "no-title": "Geen titel",
+    "no-title-text": "Een memo begint bij de gedachte zelf. Er is geen titel om in te vullen.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown geeft je woorden structuur wanneer je dat wilt.",
+    "attach": "Bijvoegen",
+    "attach-text": "Afbeeldingen, bestanden, audio en een locatie komen binnen via ＋.",
+    "keep": "Bewaren",
+    "keep-sub": "Elke memo blijft bij de dag waarop je hem schreef.",
+    "calendar-text": "De kalender brengt je terug naar elke dag.",
+    "tags-text": "Een woord na # wordt een label, en een label filtert de tijdlijn.",
+    "views-text": "Een eigen weergave slaat een filter op.",
+    "map-text": "Memo's met een locatie staan op de kaart.",
+    "share": "Delen",
+    "share-sub": "Memo's beginnen privé. Jij bepaalt wat je deelt en wat je publiceert.",
+    "visibility-text": "Elke memo heeft zijn eigen instelling. Nieuwe beginnen privé, alleen voor jou; een openbare memo heeft een link die iedereen kan openen.",
+    "spaces-text": "In een ruimte schrijven leden naast je, en ieder houdt zijn eigen memo's.",
+    "comments": "Reacties",
+    "comments-text": "Iedereen die een memo kan zien, kan eronder reageren.",
+    "skip": "Overslaan",
+    "next": "Volgende",
+    "done": "Klaar",
+    "page-of": "Pagina {{current}} van {{total}}",
+    "reopen": "Welkomstgids",
+    "reopen-note": "De vier schermen die een nieuw account als eerste ziet.",
+    "sample": {
+      "today": "Vandaag, 10:42",
+      "today-early": "Vandaag, 9:18",
+      "yesterday": "Gisteren, 15:20",
+      "comment-age": "2 u",
+      "memo-preview": "Een eenvoudiger eerste scherm. Eén invoerveld, daarna een voorbeeld.",
+      "memo-release": "Voor de volgende release",
+      "task-sketch": "Het eerste scherm schetsen",
+      "task-polish": "Het voorbeeld bijschaven",
+      "write-lead": "Houd de eerste stap klein.",
+      "write-strong": "Laat de details zien",
+      "write-tail": "wanneer ze nodig zijn.",
+      "write-task": "Een korte changelog schrijven",
+      "view": "Onvoltooide taken",
+      "space": "Product",
+      "share-memo": "Probeer het resultaat te laten zien voordat je mensen vraagt zich aan te melden.",
+      "comment": "Mee eens. Het voorbeeld deed het overtuigen.",
+      "tag-design": "ontwerp",
+      "tag-project": "project",
+      "tag-reading": "lezen",
+      "tag-ideas": "ideeën"
+    }
+  },
+  "error": {
+    "title": "Er is iets misgegaan",
+    "description": "Er is een onverwachte fout opgetreden. Dit kan komen door een netwerkprobleem of een probleem met de applicatie.",
+    "description-update": "Er is een onverwachte fout opgetreden. Dit kan komen door een netwerkprobleem of een update van de applicatie. Opnieuw laden lost het meestal op.",
+    "details": "Foutdetails",
+    "reload": "Applicatie opnieuw laden",
+    "not-found": "De pagina die je zoekt, kan niet worden gevonden.",
+    "permission-denied": "Toegang geweigerd",
+    "too-many-requests": "Te veel verzoeken. Probeer het over {{wait}} opnieuw.",
+    "ai-auth-failed": "De provider heeft de API-sleutel geweigerd of toegang ontzegd.",
+    "ai-model-not-found": "De provider kan dit model of eindpunt niet vinden.",
+    "ai-quota-exhausted": "Het provideraccount heeft geen tegoed meer of zit boven de bestedingslimiet.",
+    "ai-rate-limited": "De provider beperkt verzoeken voor deze sleutel. Wacht even en probeer het opnieuw, of controleer het quotum.",
+    "ai-request-rejected": "De provider heeft het verzoek afgewezen. Controleer het model en de parameters die het ondersteunt.",
+    "ai-unreachable": "Kan geen verbinding maken met het eindpunt van de provider. Controleer de URL en het netwerk.",
+    "ai-timeout": "De provider reageerde niet op tijd.",
+    "ai-redirected": "Het eindpunt heeft het verzoek omgeleid. Voer de uiteindelijke URL in.",
+    "ai-invalid-response": "De provider gaf geen bruikbaar antwoord. Controleer het eindpunt en het model.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} u",
+    "challenge-required": "Voltooi de verificatie en probeer het opnieuw.",
+    "quota-memo-count": "Je hebt je limiet van {{limit}} memo's bereikt. Verwijder memo's om nieuwe te maken.",
+    "quota-storage": "Deze upload zou je opslaglimiet van {{limit}} overschrijden. Je gebruikt {{usage}}.",
+    "quota-upload": "Dit bestand is groter dan je limiet van {{limit}} per bestand.",
+    "quota-memo-content": "Deze memo is groter dan je limiet van {{limit}} per memo. Maak de inhoud korter om hem op te slaan.",
+    "quota-generic": "Je hebt een gebruikslimiet bereikt.",
+    "sign-in-failed": "Inloggen mislukt.",
+    "sign-up-failed": "Registreren mislukt",
+    "authenticate-failed": "Authenticatie mislukt.",
+    "update-profile-failed": "Profiel bijwerken mislukt",
+    "unlink-identity-failed": "Ontkoppelen van identiteitsprovider mislukt.",
+    "link-identity-failed": "Koppelen van het account kon niet worden gestart. Probeer het opnieuw."
+  },
+  "attachment-preview": {
+    "title": "Voorbeeld van bijlage",
+    "description": "Voorbeeldvenster voor bijlagen. Druk op Escape om te sluiten, gebruik de pijltoetsen links of rechts om van item te wisselen en zoom in op afbeeldingen met de knoppen, het muiswiel, dubbeltikken of knijpen.",
+    "close": "Voorbeeld sluiten",
+    "previous": "Vorig item",
+    "next": "Volgend item",
+    "reset-zoom": "Zoom herstellen",
+    "image-alt": "Voorbeeldafbeelding {{index}} van {{count}}",
+    "live-photo-alt": "Voorbeeld van live-foto {{index}} van {{count}}",
+    "play-live-photo": "Beweeg erover of druk om de live-foto af te spelen"
+  },
+  "audio-player": {
+    "seek": "Afspeelpositie van {{name}}",
+    "back": "{{seconds}} seconden terug",
+    "forward": "{{seconds}} seconden vooruit",
+    "speed": "Afspeelsnelheid {{rate}}x"
   }
 }

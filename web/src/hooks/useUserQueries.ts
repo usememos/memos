@@ -12,6 +12,7 @@ import {
   UserNotification,
   UserNotification_Status,
   UserSetting,
+  UserSetting_EditorSetting,
   UserSetting_GeneralSetting,
   UserSetting_Key,
   UserSettingSchema,
@@ -167,23 +168,28 @@ export function useDeleteNotification() {
   });
 }
 
-export function useTagCounts(forCurrentUser = false) {
+/**
+ * Tag counts over the memos `filter` selects. A caller whose counts sit beside a memo list
+ * passes the list's comment scope, so a tag never counts comments the list leaves out.
+ */
+export function useTagCounts(forCurrentUser = false, options?: { filter?: string }) {
   const currentUser = useCurrentUser();
+  const filter = options?.filter;
 
   return useQuery<UserStats | Record<string, number>, Error, Record<string, number>>({
     queryKey:
       forCurrentUser && currentUser?.name
-        ? userKeys.userStats(currentUser.name)
-        : [...userKeys.stats(), "tagCounts", forCurrentUser ? "current" : "all"],
+        ? userKeys.userStats(currentUser.name, filter)
+        : [...userKeys.stats(), "tagCounts", forCurrentUser ? "current" : "all", filter ?? ""],
     queryFn: async (): Promise<UserStats | Record<string, number>> => {
       if (forCurrentUser) {
         if (!currentUser?.name) {
           return {};
         }
-        return userServiceClient.getUserStats({ name: currentUser.name });
+        return userServiceClient.getUserStats({ name: currentUser.name, filter });
       } else {
         // Fetch all user stats
-        const { userStats } = await userServiceClient.listUserStats({ parent: ALL_USERS_PARENT });
+        const { userStats } = await userServiceClient.listUserStats({ parent: ALL_USERS_PARENT, filter });
 
         // Aggregate tag counts from all users
         return mergeTagCounts(...userStats.map((stats) => stats.tagCounts));
@@ -305,6 +311,31 @@ export function useUpdateUserGeneralSetting(currentUserName?: string) {
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
       return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
+    },
+  });
+}
+
+// Hook to update the user's EDITOR setting
+export function useUpdateUserEditorSetting(currentUserName?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (editorSetting: UserSetting_EditorSetting) => {
+      if (!currentUserName) {
+        throw new Error("No current user");
+      }
+
+      const userSetting = create(UserSettingSchema, {
+        name: buildUserSettingName(currentUserName, UserSetting_Key.EDITOR),
+        value: { case: "editorSetting", value: editorSetting },
+      });
+      return await userServiceClient.updateUserSetting({
+        userSetting,
+        updateMask: create(FieldMaskSchema, { paths: ["source_mode"] }),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });

@@ -14,6 +14,7 @@ export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
 
   const handleMemoContentClick = useCallback(
     (e: React.MouseEvent) => {
+      if (e.button !== 0 || e.ctrlKey) return;
       const targetEl = e.target as HTMLElement;
       if (targetEl.tagName === "IMG") {
         const linkElement = targetEl.closest("a");

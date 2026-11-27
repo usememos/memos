@@ -4,8 +4,8 @@ import { loadTheme } from "@/utils/theme";
 describe("theme-color meta tags update", () => {
   beforeEach(() => {
     document.head.innerHTML = `
-      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9f5" />
-      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1d1f23" />
+      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa" />
+      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f0f" />
     `;
     localStorage.clear();
   });
@@ -16,8 +16,8 @@ describe("theme-color meta tags update", () => {
     const lightMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="light"]');
     const darkMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="dark"]');
 
-    expect(lightMeta?.content).toBe("#1d1f23");
-    expect(darkMeta?.content).toBe("#1d1f23");
+    expect(lightMeta?.content).toBe("#0f0f0f");
+    expect(darkMeta?.content).toBe("#0f0f0f");
   });
 
   it("restores adaptive meta tags when system theme is loaded", () => {
@@ -27,7 +27,7 @@ describe("theme-color meta tags update", () => {
     const lightMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="light"]');
     const darkMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="dark"]');
 
-    expect(lightMeta?.content).toBe("#faf9f5");
-    expect(darkMeta?.content).toBe("#1d1f23");
+    expect(lightMeta?.content).toBe("#fafafa");
+    expect(darkMeta?.content).toBe("#0f0f0f");
   });
 });

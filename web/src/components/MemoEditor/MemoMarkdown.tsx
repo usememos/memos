@@ -1,8 +1,9 @@
-import type { Editor, EditorMode, Extension } from "@usememos/editor";
+import type { Editor, EditorMode, Extension, Theme } from "@usememos/editor";
 import { MarkdownEditor, type MarkdownEditorProps } from "@usememos/editor/react";
 import "@usememos/editor/style.css";
 import { type Ref, useCallback, useMemo, useState } from "react";
-import { MEMO_EDITOR_THEME, MEMO_MARKDOWN, memoEditorLabels, memoExtensions, memoResolveUrl } from "@/lib/memo-markdown";
+import { MEMO_MARKDOWN } from "@/lib/memo-ast";
+import { MEMO_EDITOR_THEME, memoEditorLabels, memoExtensions, memoResolveUrl, memoSanitizeHtml } from "@/lib/memo-markdown";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useMemoDecorations } from "./useMemoDecorations";
@@ -38,6 +39,8 @@ export interface MemoMarkdownProps {
   toolbar?: boolean;
   /** The slash menu's items, or `false` for none. Read once. */
   slashMenu?: MarkdownEditorProps["slashMenu"];
+  /** The editor's look. Default MEMO_EDITOR_THEME. Updates live. */
+  theme?: Theme;
   className?: string;
 }
 
@@ -49,7 +52,7 @@ const assignRef = <T,>(ref: Ref<T> | undefined, value: T) => {
 /**
  * A memo's Markdown in memos' dialect, look and policy, shown by the same editor whether
  * read-only or editing: the memo syntax extensions (math, footnotes, tags, mentions,
- * highlighted code, Mermaid, sanitized HTML), the theme in the app's CSS variables, the
+ * highlighted code, Mermaid), raw HTML through memos' sanitizer, the theme in the app's CSS variables, the
  * translated labels, the image and link URL policy, and tags and mentions decorated from
  * the viewer's data. Everything a memo surface adds sits around this component.
  */
@@ -72,6 +75,7 @@ export const MemoMarkdown = (props: MemoMarkdownProps) => {
     attributes,
     toolbar,
     slashMenu,
+    theme = MEMO_EDITOR_THEME,
     className,
   } = props;
   const t = useTranslate();
@@ -105,11 +109,12 @@ export const MemoMarkdown = (props: MemoMarkdownProps) => {
       placeholder={placeholder}
       markdown={MEMO_MARKDOWN}
       extensions={allExtensions}
-      theme={MEMO_EDITOR_THEME}
+      theme={theme}
       labels={labels}
       attributes={attributes}
       resolveUrl={resolveUrl}
       referrerPolicy="no-referrer"
+      sanitizeHtml={memoSanitizeHtml}
       headingIds={headingIds}
       onLinkClick={onLinkClick}
       toolbar={toolbar}

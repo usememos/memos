@@ -1,26 +1,26 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { toast } from "react-hot-toast";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoDetailQueryOptions, useCreateMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
-import type { MemoSaveOperations } from "../services/memoService";
+import { DrawingNotSavedError, DrawingSavedError, type MemoSaveOperations, mergeUploadedAttachments } from "../services/memoService";
 import { useEditorContext } from "../state";
+import { renameUploadedKeys } from "../utils/attachmentOrder";
 import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
-
-/** How long a closing host shows "Saved" before it unmounts the editor. */
-const SAVED_CONFIRMATION_MS = 900;
 
 interface UseMemoSaveOptions {
   memoName?: string;
   parentMemoName?: string;
+  /** The parent's Space, where a comment shared with a Space is filed. */
+  parentSpace?: string;
   defaultSpace?: string;
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
@@ -38,6 +38,7 @@ interface UseMemoSaveOptions {
 export function useMemoSave({
   memoName,
   parentMemoName,
+  parentSpace,
   defaultSpace,
   defaultVisibility,
   defaultCreateTime,
@@ -48,18 +49,16 @@ export function useMemoSave({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const { mutateAsync: createMemo } = useCreateMemo();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memoName);
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
 
   return useCallback(async () => {
     const state = getState();
-    // A repeated shortcut during the saved confirmation is not an error worth
-    // a toast; the save already landed and the host is closing.
-    if (state.ui.justSaved) return;
+    if (state.ui.isLoading.saving) return;
     const { valid, reason, detail } = validationService.canSave(state);
     if (!valid) {
-      toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
+      showErrorToast(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
       return;
     }
 
@@ -77,10 +76,14 @@ export function useMemoSave({
       if (moved.length === 0) return;
       dispatch(
         actions.setMetadata({
-          attachments: [...current.metadata.attachments, ...moved.map((file) => uploaded.get(file.previewUrl) as Attachment)],
+          attachments: mergeUploadedAttachments(
+            current.metadata.attachments,
+            moved.map((file) => uploaded.get(file.previewUrl) as Attachment),
+          ),
         }),
       );
       dispatch(actions.setLocalFiles(current.localFiles.filter((file) => !uploaded.has(file.previewUrl))));
+      dispatch(actions.setAttachmentOrder(renameUploadedKeys(current.attachmentOrder, uploaded)));
     };
 
     const operations: MemoSaveOperations = {
@@ -109,14 +112,19 @@ export function useMemoSave({
         {
           memoName,
           parentMemoName,
+          parentSpace,
           space: defaultSpace,
-          onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
+          onFileUploaded: (file, attachment) => {
+            uploaded.set(file.previewUrl, attachment);
+            if (file.replaces) dispatch(actions.setDrawingMemoUpdate(true));
+            keepUploadedFiles();
+          },
         },
         operations,
       );
 
       if (!result.hasChanges) {
-        toast.error(t("editor.no-changes-detected"));
+        showErrorToast(t("editor.no-changes-detected"));
         onCancel?.();
         return;
       }
@@ -125,16 +133,7 @@ export function useMemoSave({
       discardDraft();
       // A moved memo may leave the feed it was edited in; say where it went.
       if (result.moved) {
-        toast.success(t("memo.moved"));
-      }
-
-      // Hosts that close after saving (edit, comment) hold a brief "Saved"
-      // confirmation on the toolbar while the caches refresh underneath. The
-      // in-place composer clears immediately, so it shows nothing.
-      if (memoName || parentMemoName) {
-        dispatch(actions.setLoading("saving", false));
-        dispatch(actions.setJustSaved(true));
-        await new Promise((resolve) => setTimeout(resolve, SAVED_CONFIRMATION_MS));
+        toast.add({ title: t("memo.moved"), type: "success" });
       }
 
       dispatch(actions.reset());
@@ -160,13 +159,24 @@ export function useMemoSave({
         void queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
         void queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       }
-      handleError(error, toast.error, {
+      if (error instanceof DrawingSavedError) {
+        dispatch(actions.setDrawingSaveError("editor.drawing.saved-needs-update"));
+        showErrorToast(t("editor.drawing.saved-needs-update"));
+        return;
+      }
+      if (error instanceof DrawingNotSavedError) {
+        dispatch(actions.setDrawingSaveError("editor.drawing.saved-without-drawing"));
+        // The rest of the memo is saved; only the drawing waits for another save.
+        console.error(error);
+        showErrorToast(t("editor.drawing.saved-without-drawing"));
+        return;
+      }
+      handleError(error, showErrorToast, {
         context: "Failed to save memo",
         fallbackMessage: errorService.getErrorMessage(error),
       });
     } finally {
       dispatch(actions.setLoading("saving", false));
-      dispatch(actions.setJustSaved(false));
     }
   }, [
     actions,
@@ -182,6 +192,7 @@ export function useMemoSave({
     onCancel,
     onConfirm,
     parentMemoName,
+    parentSpace,
     queryClient,
     t,
     updateMemo,

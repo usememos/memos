@@ -2,6 +2,9 @@ package test
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -13,6 +16,7 @@ import (
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
 )
 
 func TestGetInstanceProfile(t *testing.T) {
@@ -224,25 +228,15 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.NotNil(t, storageSetting)
 	})
 
-	t.Run("GetInstanceSetting - memo related setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - retired reaction setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetInstanceSetting for memo related setting
-		req := &apipb.GetInstanceSettingRequest{
+		_, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{
 			Name: "instance/settings/MEMO_RELATED",
-		}
-		resp, err := ts.Service.GetInstanceSetting(ctx, req)
-
-		// Verify response
-		require.NoError(t, err)
-		require.NotNil(t, resp)
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.Name)
-
-		// The memo related setting should have a memo_related_setting field
-		memoRelatedSetting := resp.GetMemoRelatedSetting()
-		require.NotNil(t, memoRelatedSetting)
+		})
+		require.Error(t, err)
 	})
 
 	t.Run("GetInstanceSetting - tags setting", func(t *testing.T) {
@@ -308,7 +302,7 @@ func TestGetInstanceSetting(t *testing.T) {
 			"SmtpPassword must never be returned in responses")
 	})
 
-	t.Run("GetInstanceSetting - AI setting requires authenticated user", func(t *testing.T) {
+	t.Run("GetInstanceSetting - AI setting is admin only", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -326,12 +320,11 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not authenticated")
 
-		resp, err := ts.Service.GetInstanceSetting(userCtx, req)
-		require.NoError(t, err)
-		require.NotNil(t, resp.GetAiSetting())
-		require.Empty(t, resp.GetAiSetting().GetProviders())
+		// Providers, endpoints and key hints are the admin's; other users read ai_features on the profile.
+		_, err = ts.Service.GetInstanceSetting(userCtx, req)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 
-		resp, err = ts.Service.GetInstanceSetting(adminCtx, req)
+		resp, err := ts.Service.GetInstanceSetting(adminCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp.GetAiSetting())
 		require.Empty(t, resp.GetAiSetting().GetProviders())
@@ -365,7 +358,7 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 			Names: []string{
 				"instance/settings/TAGS",
 				"instance/settings/GENERAL",
-				"instance/settings/MEMO_RELATED",
+				"instance/settings/ACCESS",
 			},
 		})
 
@@ -376,8 +369,8 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 		require.NotNil(t, resp.InstanceSettings[0].GetTagsSetting())
 		require.Equal(t, "instance/settings/GENERAL", resp.InstanceSettings[1].Name)
 		require.NotNil(t, resp.InstanceSettings[1].GetGeneralSetting())
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.InstanceSettings[2].Name)
-		require.NotNil(t, resp.InstanceSettings[2].GetMemoRelatedSetting())
+		require.Equal(t, "instance/settings/ACCESS", resp.InstanceSettings[2].Name)
+		require.NotNil(t, resp.InstanceSettings[2].GetAccessSetting())
 	})
 
 	t.Run("BatchGetInstanceSettings - admin-only setting requires admin", func(t *testing.T) {
@@ -526,7 +519,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		bothEncryptions.UseSsl = true
 		err = update(bothEncryptions)
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
-		require.Contains(t, err.Error(), "cannot enable both useTls and useSsl")
+		require.Contains(t, err.Error(), "cannot enable both use_tls and use_ssl")
 
 		for name, mutate := range map[string]func(*apipb.InstanceSetting_NotificationSetting_EmailSetting){
 			"host": func(e *apipb.InstanceSetting_NotificationSetting_EmailSetting) { e.SmtpHost = " " },
@@ -537,7 +530,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			mutate(email)
 			err := update(email)
 			require.Equal(t, codes.InvalidArgument, status.Code(err), "missing %s", name)
-			require.Contains(t, err.Error(), "requires smtpHost", "missing %s", name)
+			require.Contains(t, err.Error(), "requires smtp_host", "missing %s", name)
 		}
 
 		require.NoError(t, update(valid()))
@@ -931,6 +924,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+		endpoint := newAIModelsServer(t)
 
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
 			InstanceSetting: &apipb.InstanceSetting{
@@ -939,10 +933,11 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &apipb.InstanceSetting_AISetting{
 						Providers: []*apipb.InstanceSetting_AIProviderConfig{
 							{
-								Id:     "openai-main",
-								Title:  "OpenAI",
-								Type:   apipb.InstanceSetting_OPENAI,
-								ApiKey: "sk-original",
+								Id:       "openai-main",
+								Title:    "OpenAI",
+								Type:     apipb.InstanceSetting_OPENAI,
+								Endpoint: endpoint,
+								ApiKey:   "sk-original",
 							},
 						},
 					},
@@ -960,7 +955,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Empty(t, provider.GetApiKey(), "AI provider API key must never be returned in responses")
 		require.True(t, provider.GetApiKeySet())
 		require.Equal(t, "sk-o...inal", provider.GetApiKeyHint())
-		require.Equal(t, "https://api.openai.com/v1", provider.GetEndpoint())
+		require.Equal(t, endpoint, provider.GetEndpoint())
 
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
 			InstanceSetting: &apipb.InstanceSetting{
@@ -969,10 +964,11 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &apipb.InstanceSetting_AISetting{
 						Providers: []*apipb.InstanceSetting_AIProviderConfig{
 							{
-								Id:     "openai-main",
-								Title:  "OpenAI primary",
-								Type:   apipb.InstanceSetting_OPENAI,
-								ApiKey: "",
+								Id:       "openai-main",
+								Title:    "OpenAI primary",
+								Type:     apipb.InstanceSetting_OPENAI,
+								Endpoint: endpoint,
+								ApiKey:   "",
 							},
 						},
 					},
@@ -1057,6 +1053,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		oversizedLanguage := strings.Repeat("a", 33)
 		base.GetAiSetting().Transcription = &apipb.InstanceSetting_TranscriptionConfig{
 			ProviderId: "openai-main",
+			Model:      "whisper-1",
 			Language:   oversizedLanguage,
 		}
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: base})
@@ -1066,6 +1063,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		oversizedPrompt := strings.Repeat("a", 4097)
 		base.GetAiSetting().Transcription = &apipb.InstanceSetting_TranscriptionConfig{
 			ProviderId: "openai-main",
+			Model:      "whisper-1",
 			Prompt:     oversizedPrompt,
 		}
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: base})
@@ -1073,13 +1071,14 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Contains(t, err.Error(), "transcription prompt")
 	})
 
-	t.Run("UpdateInstanceSetting - transcription is preserved when omitted on update", func(t *testing.T) {
+	t.Run("UpdateInstanceSetting - AI setting is replaced whole, and an unset capability is off", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+		endpoint := newAIModelsServer(t)
 
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
 			InstanceSetting: &apipb.InstanceSetting{
@@ -1088,12 +1087,14 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &apipb.InstanceSetting_AISetting{
 						Providers: []*apipb.InstanceSetting_AIProviderConfig{
 							{
-								Id:     "openai-main",
-								Title:  "OpenAI",
-								Type:   apipb.InstanceSetting_OPENAI,
-								ApiKey: "sk-test",
+								Id:       "openai-main",
+								Title:    "OpenAI",
+								Type:     apipb.InstanceSetting_OPENAI,
+								Endpoint: endpoint,
+								ApiKey:   "sk-test",
 							},
 						},
+						TextGeneration: &apipb.InstanceSetting_TextGenerationConfig{ProviderId: "openai-main", Model: "text"},
 						Transcription: &apipb.InstanceSetting_TranscriptionConfig{
 							ProviderId: "openai-main",
 							Model:      "whisper-1",
@@ -1106,6 +1107,18 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		})
 		require.NoError(t, err)
 
+		// With both capabilities set, a signed-in user sees the features and nothing else.
+		reader, err := ts.CreateRegularUser(ctx, "reader")
+		require.NoError(t, err)
+		readerCtx := ts.CreateUserContext(ctx, reader.ID)
+		profile, err := ts.Service.GetInstanceProfile(readerCtx, &apipb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.True(t, profile.GetAiFeatures().GetTranscription())
+		require.True(t, profile.GetAiFeatures().GetTagSuggestions())
+		anonymous, err := ts.Service.GetInstanceProfile(ctx, &apipb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.Nil(t, anonymous.GetAiFeatures(), "only signed-in callers learn which features are on")
+
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
 			InstanceSetting: &apipb.InstanceSetting{
 				Name: "instance/settings/AI",
@@ -1113,10 +1126,11 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &apipb.InstanceSetting_AISetting{
 						Providers: []*apipb.InstanceSetting_AIProviderConfig{
 							{
-								Id:     "openai-main",
-								Title:  "OpenAI",
-								Type:   apipb.InstanceSetting_OPENAI,
-								ApiKey: "",
+								Id:       "openai-main",
+								Title:    "OpenAI",
+								Type:     apipb.InstanceSetting_OPENAI,
+								Endpoint: endpoint,
+								ApiKey:   "",
 							},
 						},
 					},
@@ -1127,10 +1141,103 @@ func TestUpdateInstanceSetting(t *testing.T) {
 
 		stored, err := ts.Store.GetInstanceAISetting(ctx)
 		require.NoError(t, err)
-		require.NotNil(t, stored.GetTranscription())
-		require.Equal(t, "openai-main", stored.GetTranscription().GetProviderId())
-		require.Equal(t, "whisper-1", stored.GetTranscription().GetModel())
-		require.Equal(t, "en", stored.GetTranscription().GetLanguage())
-		require.Equal(t, "names: Alice", stored.GetTranscription().GetPrompt())
+		require.Equal(t, "sk-test", stored.GetProviders()[0].GetApiKey(), "an empty key keeps the stored key")
+		require.Nil(t, stored.GetTranscription())
+		require.Nil(t, stored.GetTextGeneration())
+		profile, err = ts.Service.GetInstanceProfile(readerCtx, &apipb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.False(t, profile.GetAiFeatures().GetTranscription())
+		require.False(t, profile.GetAiFeatures().GetTagSuggestions())
+
+		// A capability that is sent has to be complete.
+		for name, setting := range map[string]*apipb.InstanceSetting_AISetting{
+			"transcription provider_id is required":   {Transcription: &apipb.InstanceSetting_TranscriptionConfig{}},
+			"transcription model":                     {Transcription: &apipb.InstanceSetting_TranscriptionConfig{ProviderId: "openai-main"}},
+			"text_generation provider_id is required": {TextGeneration: &apipb.InstanceSetting_TextGenerationConfig{Model: "text"}},
+		} {
+			setting.Providers = []*apipb.InstanceSetting_AIProviderConfig{{Id: "openai-main", Title: "OpenAI", Type: apipb.InstanceSetting_OPENAI, Endpoint: endpoint}}
+			_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+				InstanceSetting: &apipb.InstanceSetting{Name: "instance/settings/AI", Value: &apipb.InstanceSetting_AiSetting{AiSetting: setting}},
+			})
+			require.Equal(t, codes.InvalidArgument, status.Code(err), name)
+			require.Contains(t, err.Error(), name)
+		}
 	})
+}
+
+func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	hostUser, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+	update := func(storages []*apipb.InstanceSetting_Storage, defaultID string) error {
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &apipb.InstanceSetting_StorageSetting_{StorageSetting: &apipb.InstanceSetting_StorageSetting{
+					Storages:         storages,
+					DefaultStorageId: defaultID,
+				}},
+			},
+		})
+		return err
+	}
+	local := &apipb.InstanceSetting_Storage{Id: "local", Type: apipb.InstanceSetting_LOCAL}
+	archive := &apipb.InstanceSetting_Storage{
+		Id:   "archive",
+		Type: apipb.InstanceSetting_S3,
+		Config: &apipb.InstanceSetting_Storage_S3Config_{S3Config: &apipb.InstanceSetting_Storage_S3Config{
+			AccessKeyId: "AKID", AccessKeySecret: "secret", Endpoint: "https://s3.example.com", Bucket: "memos",
+		}},
+	}
+
+	// A non-default S3 storage without a region would fail on first use.
+	err = update([]*apipb.InstanceSetting_Storage{local, archive}, "local")
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	require.Contains(t, err.Error(), "storage archive region is required")
+
+	archive.GetS3Config().Region = "us-east-1"
+	require.NoError(t, update([]*apipb.InstanceSetting_Storage{local, archive}, "local"))
+}
+
+func TestConfigurationStateIsNotExposed(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	hostUser, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+	_, err = ts.Store.RunConfigurationTransaction(ctx, func(context.Context, *store.ConfigurationTransaction) (*storepb.InstanceConfigurationState, error) {
+		return &storepb.InstanceConfigurationState{ConfigDigest: "digest"}, nil
+	})
+	require.NoError(t, err)
+
+	const name = "instance/settings/CONFIGURATION_STATE"
+	_, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: name})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	_, err = ts.Service.BatchGetInstanceSettings(adminCtx, &apipb.BatchGetInstanceSettingsRequest{Names: []string{name}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: &apipb.InstanceSetting{Name: name}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	require.Contains(t, err.Error(), "state record and cannot be written")
+
+	state, err := ts.Store.GetConfigurationState(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "digest", state.ConfigDigest, "the API did not overwrite the record")
+}
+
+// newAIModelsServer answers an OpenAI model listing for any key, so a provider
+// pointing at it passes the connection check on save.
+func newAIModelsServer(t *testing.T) string {
+	t.Helper()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{"data":[]}`)
+	}))
+	t.Cleanup(server.Close)
+	return server.URL
 }

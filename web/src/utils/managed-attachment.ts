@@ -1,9 +1,5 @@
-import type { Definition, Html, Image, ImageReference, Root } from "mdast";
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
-import { normalizeIdentifier } from "micromark-util-normalize-identifier";
-import { visit } from "unist-util-visit";
+import { lineTable, sourceRange } from "@usememos/editor";
+import { parseMemoAst, visitWithSource } from "@/lib/memo-ast";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentMotionGroupId, getAttachmentUrl, isImage } from "@/utils/attachment";
 
@@ -34,12 +30,6 @@ type ManagedImageURL = { kind: "unmanaged" } | { kind: "invalid" } | { kind: "ma
 
 const UNMANAGED: ManagedImageURL = { kind: "unmanaged" };
 const INVALID: ManagedImageURL = { kind: "invalid" };
-
-const parseMarkdown = (source: string): Root =>
-  fromMarkdown(source, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
 
 export const extractAttachmentUIDFromName = (name: string): string | undefined => {
   if (!name.startsWith(ATTACHMENT_NAME_PREFIX)) return undefined;
@@ -120,7 +110,7 @@ export const parseManagedAttachmentImageURL = (raw: string): string | undefined 
 const EMPTY_INDEX: ManagedImageIndex = { nodes: [], uids: new Set(), invalidReferences: [] };
 /**
  * Memo bodies are re-scanned on hot paths (every editor keystroke, every card
- * relayout, every render of a memo view), so the mdast parse is cached by source
+ * relayout, every render of a memo view), so the parse is cached by source
  * text. The cache is bounded and also keeps the derived `uids` set referentially
  * stable, which is what lets callers memoize on it.
  */
@@ -128,41 +118,30 @@ const INDEX_CACHE_LIMIT = 128;
 const indexCache = new Map<string, ManagedImageIndex>();
 
 const buildManagedImageIndex = (source: string): ManagedImageIndex => {
-  const tree = parseMarkdown(source);
-  const definitions = new Map<string, string>();
-  visit(tree, "definition", (node: Definition) => {
-    const identifier = normalizeIdentifier(node.identifier);
-    // CommonMark and the API's Goldmark parser resolve duplicate definitions
-    // to the first occurrence, so the client must not overwrite it here.
-    if (!definitions.has(identifier)) definitions.set(identifier, node.url);
-  });
-
+  // Image references are resolved in the tree, to the first of duplicate definitions as
+  // CommonMark and the API's Goldmark parser do, so an image's destination is final.
+  const tree = parseMemoAst(source);
+  const lines = lineTable(source);
   const nodes: ManagedImageNode[] = [];
   const invalidReferences: string[] = [];
-  visit(tree, (node) => {
+
+  visitWithSource(tree, (node, content) => {
     // The API accepts managed URLs only through Markdown image nodes and rejects
     // any raw HTML mentioning the route, rather than running a second HTML parser.
-    if (node.type === "html") {
-      const raw = (node as Html).value;
-      if (raw.includes(MANAGED_ATTACHMENT_PATH_PREFIX)) invalidReferences.push(raw);
+    if (node.type === "html" || node.type === "htmlBlock") {
+      if (node.value.includes(MANAGED_ATTACHMENT_PATH_PREFIX)) invalidReferences.push(node.value);
       return;
     }
+    if (node.type !== "image" || !node.destination) return;
 
-    let destination: string | undefined;
-    if (node.type === "image") {
-      destination = (node as Image).url;
-    } else if (node.type === "imageReference") {
-      destination = definitions.get(normalizeIdentifier((node as ImageReference).identifier));
-    }
-    if (!destination) return;
-
-    const classified = classifyManagedAttachmentImageURL(destination);
+    const classified = classifyManagedAttachmentImageURL(node.destination);
     if (classified.kind === "invalid") {
-      invalidReferences.push(destination);
+      invalidReferences.push(node.destination);
       return;
     }
     if (classified.kind !== "managed") return;
-    nodes.push({ uid: classified.uid, start: node.position?.start.offset, end: node.position?.end.offset });
+    const range = content && node.pos ? sourceRange(lines, content, node.pos) : undefined;
+    nodes.push({ uid: classified.uid, start: range?.from, end: range?.to });
   });
   return { nodes, uids: new Set(nodes.map((node) => node.uid)), invalidReferences };
 };

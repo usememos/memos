@@ -1,18 +1,22 @@
 package markdown
 
 import (
+	"bufio"
 	"bytes"
 	"cmp"
+	"html"
 	"net/url"
 	"regexp"
 	"slices"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/yuin/goldmark"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/parser"
+	ghtml "github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
 
 	"github.com/usememos/memos/internal/identifier"
@@ -193,6 +197,25 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 	return uniquePreserveCase(tags), nil
 }
 
+// textValue returns the plain text a Text node displays: backslash escapes are
+// removed and entity references are decoded, as when the node is rendered.
+// Raw text, such as the content of a code span, is returned as written.
+func textValue(n *gast.Text, source []byte) []byte {
+	value := n.Segment.Value(source)
+	// The writer also replaces NUL bytes, so text holding one takes the same path.
+	if n.IsRaw() || !bytes.ContainsAny(value, "\\&\x00") {
+		return value
+	}
+	// Reuse goldmark's HTML writer so the decoding follows CommonMark exactly
+	// (for example, `\&amp;` stays a literal `&amp;`), then turn the HTML it
+	// writes back into plain text.
+	var rendered bytes.Buffer
+	w := bufio.NewWriterSize(&rendered, len(value))
+	ghtml.DefaultWriter.Write(w, value)
+	_ = w.Flush()
+	return []byte(html.UnescapeString(rendered.String()))
+}
+
 // extractHeadingText extracts plain text content from a heading node.
 func extractHeadingText(n gast.Node, source []byte) string {
 	var buf strings.Builder
@@ -204,20 +227,36 @@ func extractHeadingText(n gast.Node, source []byte) string {
 
 // extractTextFromNode recursively extracts plain text from a node and its children.
 func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
-	if textNode, ok := n.(*gast.Text); ok {
-		buf.Write(textNode.Segment.Value(source))
-		return
-	}
-	if mathNode, ok := n.(*mast.InlineMathNode); ok {
-		buf.Write(mathNode.Source)
-		return
-	}
-	if emailNode, ok := n.(*mast.GFMEmailNode); ok {
-		buf.Write(emailNode.Address)
-		return
-	}
-	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
-		extractTextFromNode(child, source, buf)
+	switch node := n.(type) {
+	case *gast.Text:
+		buf.Write(textValue(node, source))
+		if node.SoftLineBreak() || node.HardLineBreak() {
+			buf.WriteByte(' ')
+		}
+	case *gast.AutoLink:
+		buf.Write(node.Label(source))
+	case *mast.TagNode:
+		if len(node.Source) > 0 {
+			buf.Write(node.Source)
+		} else {
+			buf.WriteByte('#')
+			buf.Write(node.Tag)
+		}
+	case *mast.MentionNode:
+		if len(node.Source) > 0 {
+			buf.Write(node.Source)
+		} else {
+			buf.WriteByte('@')
+			buf.Write(node.Username)
+		}
+	case *mast.InlineMathNode:
+		buf.Write(node.Source)
+	case *mast.GFMEmailNode:
+		buf.Write(node.Address)
+	default:
+		for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+			extractTextFromNode(child, source, buf)
+		}
 	}
 }
 
@@ -294,9 +333,19 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 	}
 
 	var buf strings.Builder
+	var runeCount int
 	var lastNodeWasBlock bool
 	// The first line of a GitHub alert, such as "[!NOTE]", which renders as the callout's title.
 	var alertMarker text.Segment
+
+	writeBytes := func(b []byte) {
+		buf.Write(b)
+		runeCount += utf8.RuneCount(b)
+	}
+	writeByte := func(c byte) {
+		buf.WriteByte(c)
+		runeCount++
+	}
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if entering {
@@ -314,9 +363,9 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 			// Add space before block elements (except first)
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
+			case gast.KindParagraph, gast.KindTextBlock, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				if buf.Len() > 0 && lastNodeWasBlock {
-					buf.WriteByte(' ')
+					writeByte(' ')
 				}
 				lastNodeWasBlock = false
 			default:
@@ -327,7 +376,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		if !entering {
 			// Mark that we just exited a block element
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
+			case gast.KindParagraph, gast.KindTextBlock, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				lastNodeWasBlock = true
 			default:
 				// Not a block element
@@ -345,41 +394,53 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		}()
 
 		// Extract text from various node types
+		skipChildren := false
 		switch node := n.(type) {
 		case *gast.Text:
 			segment := node.Segment
 			if alertMarker.Len() > 0 && segment.Start >= alertMarker.Start && segment.Stop <= alertMarker.Stop {
 				return gast.WalkContinue, nil
 			}
-			buf.Write(segment.Value(content))
-			if node.SoftLineBreak() {
-				buf.WriteByte(' ')
+			writeBytes(textValue(node, content))
+			if node.SoftLineBreak() || node.HardLineBreak() {
+				writeByte(' ')
 			}
 		case *gast.AutoLink:
-			buf.Write(node.URL(content))
-			return gast.WalkSkipChildren, nil
+			writeBytes(node.URL(content))
+			skipChildren = true
 		case *mast.TagNode:
 			if len(node.Source) > 0 {
-				buf.Write(node.Source)
+				writeBytes(node.Source)
 			} else {
-				buf.WriteByte('#')
-				buf.Write(node.Tag)
+				writeByte('#')
+				writeBytes(node.Tag)
+			}
+		case *mast.MentionNode:
+			if len(node.Source) > 0 {
+				writeBytes(node.Source)
+			} else {
+				writeByte('@')
+				writeBytes(node.Username)
 			}
 		case *mast.GFMEmailNode:
-			buf.Write(node.Address)
+			writeBytes(node.Address)
 		case *mast.InlineMathNode:
-			buf.Write(node.Source)
+			writeBytes(node.Source)
 		case *mast.BlockMathNode:
-			buf.Write(node.Source)
-			return gast.WalkSkipChildren, nil
+			writeBytes(node.Source)
+			skipChildren = true
 		default:
 			// Ignore other node types.
 		}
 
 		// Stop walking if we've exceeded double the max length
-		// (we'll truncate precisely later)
-		if buf.Len() > maxLength*2 {
+		// (we'll truncate precisely later). Count runes, not bytes,
+		// like truncateAtWord does, so multi-byte text isn't cut short.
+		if runeCount > maxLength*2 {
 			return gast.WalkStop, nil
+		}
+		if skipChildren {
+			return gast.WalkSkipChildren, nil
 		}
 
 		return gast.WalkContinue, nil

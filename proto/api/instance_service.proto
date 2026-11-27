@@ -21,8 +21,8 @@ service InstanceService {
     option (google.api.http) = {get: "/api/instance/profile"};
   }
 
-  // GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
-  // which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+  // GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE, NOTIFICATION,
+  // USAGE_LIMITS and AI, which are admin only.
   rpc GetInstanceSetting(GetInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {get: "/api/{name=instance/settings/*}"};
     option (google.api.method_signature) = "name";
@@ -37,8 +37,15 @@ service InstanceService {
     };
   }
 
-  // UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-  // updated. Empty write-only credentials keep the stored values.
+  // UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+  // changed. Empty write-only credentials keep the stored values.
+  //
+  // Saving the AI setting lists the models of each provider that is new or whose type, endpoint or key changed. A
+  // rejected key, an unreachable or redirecting endpoint, or no answer in time refuses the save with a
+  // google.rpc.ErrorInfo in the "memos.api" domain: AI_PROVIDER_AUTH_FAILED or AI_PROVIDER_REDIRECTED with
+  // FAILED_PRECONDITION, AI_PROVIDER_UNREACHABLE with UNAVAILABLE, AI_PROVIDER_TIMEOUT with DEADLINE_EXCEEDED.
+  // Metadata "upstream_status" carries the provider's HTTP status when there was one. Other provider answers do not
+  // refuse the save.
   rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {
       patch: "/api/{instance_setting.name=instance/settings/*}"
@@ -58,6 +65,12 @@ service InstanceService {
   // GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
   rpc GetInstanceStats(GetInstanceStatsRequest) returns (InstanceStats) {
     option (google.api.http) = {get: "/api/instance/stats"};
+  }
+
+  // GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+  // Admin only. It carries resource names and field paths, never a configured value.
+  rpc GetConfigurationStatus(GetConfigurationStatusRequest) returns (ConfigurationStatus) {
+    option (google.api.http) = {get: "/api/instance/configuration"};
   }
 }
 
@@ -103,6 +116,10 @@ message InstanceProfile {
   // Absent when none is configured, which is the case on every self-hosted instance.
   Challenge challenge = 8;
 
+  // The AI features that are ready to use, derived from the AI setting.
+  // Only set for signed-in callers.
+  AIFeatures ai_features = 9;
+
   // Challenge describes a proof-of-humanity challenge widget.
   message Challenge {
     // The challenge provider, which selects the widget the web app renders.
@@ -110,6 +127,15 @@ message InstanceProfile {
 
     // The provider's public site key for the widget.
     string site_key = 2;
+  }
+
+  // AIFeatures says which AI features the instance can serve.
+  message AIFeatures {
+    // Whether AIService.Transcribe is available.
+    bool transcription = 1;
+
+    // Whether AIService.SuggestTags is available.
+    bool tag_suggestions = 2;
   }
 }
 
@@ -129,14 +155,15 @@ message InstanceSetting {
   // Format: instance/settings/{setting}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
+  reserved 4;
+  reserved "memo_related_setting";
+
   // The setting value. The set field matches the key in name.
   oneof value {
     // The value of the GENERAL setting.
     GeneralSetting general_setting = 2;
     // The value of the STORAGE setting.
     StorageSetting storage_setting = 3;
-    // The value of the MEMO_RELATED setting.
-    MemoRelatedSetting memo_related_setting = 4;
     // The value of the TAGS setting.
     TagsSetting tags_setting = 5;
     // The value of the NOTIFICATION setting.
@@ -156,8 +183,8 @@ message InstanceSetting {
     GENERAL = 1;
     // Attachment storage settings.
     STORAGE = 2;
-    // Memo-related settings.
-    MEMO_RELATED = 3;
+    reserved 3;
+    reserved "MEMO_RELATED";
     // Tag metadata.
     TAGS = 4;
     // Notification transport settings.
@@ -181,13 +208,26 @@ message InstanceSetting {
     S3 = 3;
   }
 
-  // AIProviderType is the provider implementation type.
+  // AIProviderType is the service an AI provider connects to. AIService.ListAIProviderTypes describes each
+  // type: its default endpoint, whether it needs an API key, and the capabilities it can serve.
   enum AIProviderType {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
-    // OpenAI API. The endpoint defaults to https://api.openai.com/v1.
+    // OpenAI.
     OPENAI = 1;
-    // Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
+    // Google Gemini.
     GEMINI = 2;
+    // Anthropic.
+    ANTHROPIC = 3;
+    // DeepSeek.
+    DEEPSEEK = 4;
+    // OpenRouter.
+    OPENROUTER = 5;
+    // Ollama, usually running next to the server.
+    OLLAMA = 6;
+    // Any service that speaks the OpenAI Chat Completions API. The endpoint is required.
+    OPENAI_COMPATIBLE = 7;
+    // Any service that speaks the Anthropic Messages API. The endpoint is required.
+    ANTHROPIC_COMPATIBLE = 8;
   }
 
   // GeneralSetting is the general instance configuration.
@@ -333,12 +373,6 @@ message InstanceSetting {
     }
   }
 
-  // MemoRelatedSetting is the memo-related instance configuration.
-  message MemoRelatedSetting {
-    // The reactions users can choose from. Defaults to a built-in emoji set when empty.
-    repeated string reactions = 1;
-  }
-
   // TagsSetting is the instance-wide tag metadata configuration.
   // Active tag metadata is stored in per-user tag settings. This message remains for backward compatibility with
   // existing clients and migrations.
@@ -398,57 +432,68 @@ message InstanceSetting {
     }
   }
 
-  // AISetting is the AI provider configuration.
+  // AISetting is the instance's AI configuration: the provider connections, and the provider and model that
+  // serve each capability. Admin only. The setting is read and replaced whole.
   message AISetting {
-    // The AI provider configurations available instance-wide.
+    // The provider connections the capabilities below can use.
     repeated AIProviderConfig providers = 1;
 
-    // The speech-to-text feature configuration.
-    // When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
-    // stored configuration.
+    // The speech-to-text capability, used by AIService.Transcribe. Unset turns it off.
     TranscriptionConfig transcription = 2;
+
+    // The text generation capability, used by AIService.SuggestTags. Unset turns it off.
+    TextGenerationConfig text_generation = 3;
   }
 
-  // AIProviderConfig is one callable AI provider connection.
+  // AIProviderConfig is one connection to an AI provider.
   message AIProviderConfig {
-    // The provider ID. Generated when empty on update.
+    // The provider ID, unique within the setting. Generated when empty.
     string id = 1;
 
-    // The provider display title.
-    string title = 2;
+    // Required. The display title.
+    string title = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider implementation type.
-    AIProviderType type = 3;
+    // Required. The service the provider connects to.
+    AIProviderType type = 3 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider API endpoint. Defaults to the provider's public endpoint when empty.
+    // The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
+    // stored as empty. Required for the *_COMPATIBLE types.
     string endpoint = 4;
 
-    // Input only. The provider API key. Never returned; an empty value keeps the stored key.
+    // Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
+    // stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never
+    // sent to a different service.
     string api_key = 5 [(google.api.field_behavior) = INPUT_ONLY];
 
-    // Output only. Whether an API key is stored for this provider.
+    // Output only. Whether an API key is stored.
     bool api_key_set = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 
     // Output only. A masked hint of the stored API key.
     string api_key_hint = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 
-  // TranscriptionConfig is the speech-to-text feature configuration.
+  // TranscriptionConfig selects the provider and model for speech to text.
   message TranscriptionConfig {
-    // The ID of the provider used for transcription; must reference an entry in AISetting.providers.
-    // Empty means transcription is disabled.
-    string provider_id = 1;
+    // Required. The ID of an entry in AISetting.providers.
+    string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
 
-    // The provider-specific model identifier. Hidden from non-admins.
-    // Empty falls back to the engine default (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
-    string model = 2;
+    // Required. The provider's model identifier.
+    string model = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
-    // Empty lets the provider auto-detect.
+    // The ISO 639-1 language hint sent to the provider. Empty lets the provider detect the language.
     string language = 3;
 
-    // A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
+    // A spelling and vocabulary hint sent to the provider.
     string prompt = 4;
+  }
+
+  // TextGenerationConfig selects the provider and model for text generation.
+  message TextGenerationConfig {
+    // Required. The ID of an entry in AISetting.providers.
+    string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The provider's model identifier.
+    string model = 2 [(google.api.field_behavior) = REQUIRED];
   }
 
   // AccessSetting is the instance access policy.
@@ -562,3 +607,43 @@ message InstanceStats {
 
 // Request message for InstanceService.GetInstanceStats.
 message GetInstanceStatsRequest {}
+
+// Request message for InstanceService.GetConfigurationStatus.
+message GetConfigurationStatusRequest {}
+
+// ConfigurationStatus is what declarative configuration manages on the instance.
+message ConfigurationStatus {
+  // The state record serial; zero before any apply has changed something.
+  int64 serial = 1;
+
+  // Identifies the applied configuration, with sensitive values masked before hashing.
+  string config_digest = 2;
+
+  // The apply path ("cli" or "startup") and the host of the last apply.
+  string applied_by = 3;
+
+  // The Memos version of the last apply.
+  string version = 4;
+
+  // The resources the configuration manages.
+  repeated ManagedResource managed_resources = 5;
+
+  // When the last apply that changed something ran.
+  google.protobuf.Timestamp apply_time = 6;
+
+  // ManagedResource is one resource the configuration manages.
+  message ManagedResource {
+    // The resource name.
+    // Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+    string resource = 1;
+
+    // The configuration file that declares the resource.
+    string source = 2;
+
+    // The field paths, in JSON names, the configuration manages; "*" means the whole resource.
+    repeated string managed_fields = 3;
+
+    // The managed field paths the configuration does not write after creation, so the API accepts edits to them.
+    repeated string ignored_fields = 4;
+  }
+}

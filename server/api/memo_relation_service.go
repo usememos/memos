@@ -59,14 +59,9 @@ func (s *APIService) prepareMemoRelations(ctx context.Context, memo *store.Memo,
 		if relation == nil || relation.RelatedMemo == nil {
 			return nil, status.Errorf(codes.InvalidArgument, "related memo is required")
 		}
-		switch relation.Type {
-		case apipb.MemoRelation_REFERENCE:
-			// REFERENCE is the only client-mutable relation type.
-		case apipb.MemoRelation_COMMENT:
-			// COMMENT context is immutable and may only be created atomically with a
-			// new memo through CreateMemoComment.
-			return nil, status.Errorf(codes.InvalidArgument, "COMMENT relations are output only")
-		default:
+		// REFERENCE is the only relation type. A comment's link to its parent is
+		// set once, by creating the memo with a parent.
+		if relation.Type != apipb.MemoRelation_REFERENCE {
 			return nil, status.Errorf(codes.InvalidArgument, "relation type must be REFERENCE")
 		}
 		// Ignore reflexive relations.
@@ -94,7 +89,7 @@ func (s *APIService) prepareMemoRelations(ctx context.Context, memo *store.Memo,
 		prepared = append(prepared, &store.MemoRelation{
 			MemoID:        memo.ID,
 			RelatedMemoID: relatedMemo.ID,
-			Type:          convertMemoRelationTypeToStore(relation.Type),
+			Type:          store.MemoRelationReference,
 		})
 	}
 	return prepared, nil
@@ -150,24 +145,4 @@ func (s *APIService) ListMemoRelations(ctx context.Context, request *apipb.ListM
 		NextPageToken: nextPageToken,
 	}
 	return response, nil
-}
-
-func convertMemoRelationTypeFromStore(relationType store.MemoRelationType) apipb.MemoRelation_Type {
-	switch relationType {
-	case store.MemoRelationReference:
-		return apipb.MemoRelation_REFERENCE
-	case store.MemoRelationComment:
-		return apipb.MemoRelation_COMMENT
-	default:
-		return apipb.MemoRelation_TYPE_UNSPECIFIED
-	}
-}
-
-func convertMemoRelationTypeToStore(relationType apipb.MemoRelation_Type) store.MemoRelationType {
-	switch relationType {
-	case apipb.MemoRelation_COMMENT:
-		return store.MemoRelationComment
-	default:
-		return store.MemoRelationReference
-	}
 }

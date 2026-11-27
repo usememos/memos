@@ -24,8 +24,17 @@ const (
 // attachmentUploadState is what an attachment upload carries besides its
 // bytes. Only Attachment is an API resource.
 type attachmentUploadState struct {
-	metadata          *apipb.Attachment
-	uid               string
+	metadata *apipb.Attachment
+	uid      string
+	// replace is set when the upload replaces the content of the existing
+	// attachment uid instead of creating it.
+	replace bool
+	// replaceCommitted is set once the replacement's row update committed, so
+	// a retried finish never applies this upload over a newer replacement.
+	replaceCommitted bool
+	// replacedLeftover is the attachment as it was before a committed
+	// replacement whose reload failed: its file still waits to be deleted.
+	replacedLeftover  *store.Attachment
 	finalizeAttempted bool
 }
 
@@ -121,7 +130,20 @@ func (s *APIService) startAttachmentUpload(ctx context.Context, request *apipb.U
 	if int64(len(request.Data)) > spec.TotalSize {
 		return "", nil, status.Errorf(codes.InvalidArgument, "data exceeds total_size")
 	}
-	if err := s.checkUploadQuota(ctx, ownerID, spec.TotalSize); err != nil {
+	var replaced *store.Attachment
+	if spec.ReplaceAttachment != "" {
+		if err := validateReplaceSpec(spec); err != nil {
+			return "", nil, err
+		}
+		target, _, err := s.findReplaceableAttachment(ctx, spec.ReplaceAttachment)
+		if err != nil {
+			return "", nil, err
+		}
+		if err := s.checkReplaceQuota(ctx, target.CreatorID, spec.TotalSize, target.Size); err != nil {
+			return "", nil, err
+		}
+		replaced = target
+	} else if err := s.checkUploadQuota(ctx, ownerID, spec.TotalSize); err != nil {
 		return "", nil, err
 	}
 	// Validate before allocating a temporary file. Keep the original MIME type
@@ -137,10 +159,16 @@ func (s *APIService) startAttachmentUpload(ctx context.Context, request *apipb.U
 		return "", nil, err
 	}
 	state := attachmentUploadState{metadata: metadata, uid: create.UID}
+	if replaced != nil {
+		state.uid, state.replace = replaced.UID, true
+	}
 	return s.attachmentUploads.create(s.Profile.Data, attachmentUploadTempPrefix, ownerID, spec.TotalSize, state)
 }
 
 func (s *APIService) finishAttachmentUpload(ctx context.Context, upload *attachmentUpload) (*apipb.Attachment, error) {
+	if upload.state.replace {
+		return s.finishAttachmentReplace(ctx, upload)
+	}
 	if upload.state.finalizeAttempted {
 		// A database operation may commit before returning an error. Resolve that
 		// outcome before saving another object under the upload's stable UID.

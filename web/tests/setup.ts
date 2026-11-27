@@ -91,3 +91,13 @@ if (typeof globalThis.BroadcastChannel === "undefined") {
   // @ts-expect-error — attach the shim to the global scope for tests.
   globalThis.BroadcastChannel = NoopBroadcastChannel;
 }
+
+// jsdom has no ResizeObserver; @usememos/ui's ToggleGroup measures its sliding key with one.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  class NoopResizeObserver {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  globalThis.ResizeObserver = NoopResizeObserver as unknown as typeof ResizeObserver;
+}

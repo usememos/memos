@@ -18,12 +18,12 @@ export interface SuggestionItem {
 /** Add future suggestion kinds to this discriminated union, with their own payloads. */
 export type MemoSuggestion = {
   id: string;
-  source: SuggestionSource;
+  source: SuggestionSource | "ai";
 } & ({ kind: "tag"; tag: string } | { kind: "checklist" } | { kind: "visibility"; visibility: Visibility });
 
 export const MAX_MEMO_SUGGESTIONS = 3;
 
-const sourcePriority: Record<SuggestionSource, number> = { selection: 0, search: 1, view: 2 };
+const sourcePriority: Record<MemoSuggestion["source"], number> = { ai: -1, selection: 0, search: 1, view: 2 };
 
 /** Merge providers by context priority and retain the strongest source for each id. */
 export function getMemoSuggestions(filters: MemoFilter[], viewFilter?: string): MemoSuggestion[] {

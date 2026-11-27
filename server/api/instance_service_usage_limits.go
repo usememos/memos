@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/core/instancesetting"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -40,23 +41,11 @@ func (s *APIService) convertUsageLimitsSettingFromStore(ctx context.Context, set
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list users")
 	}
-	result := &apipb.InstanceSetting_UsageLimitsSetting{}
-	for _, limit := range setting.GetLimits() {
-		entry := &apipb.InstanceSetting_UsageLimitsSetting_UsageLimit{
-			AllUsers:         limit.GetAllUsers(),
-			MemoCount:        limit.MemoCount,
-			MemoContentBytes: limit.MemoContentBytes,
-			StorageBytes:     limit.StorageBytes,
-			UploadBytes:      limit.UploadBytes,
-		}
-		for _, userID := range limit.GetUserIds() {
-			if username, ok := usernames[userID]; ok {
-				entry.Users = append(entry.Users, BuildUserName(username))
-			}
-		}
-		result.Limits = append(result.Limits, entry)
+	userNames := make(map[int32]string, len(usernames))
+	for userID, username := range usernames {
+		userNames[userID] = BuildUserName(username)
 	}
-	return result, nil
+	return instancesetting.UsageLimitsFromStore(setting, userNames), nil
 }
 
 // convertUsageLimitsSettingToStore converts usage limits from the API for the
@@ -88,23 +77,19 @@ func (s *APIService) convertUsageLimitsSettingToStore(ctx context.Context, setti
 			userIDs[user.Username] = user.ID
 		}
 	}
-	result := &storepb.InstanceUsageLimitsSetting{}
+	userIDOf := make(map[string]int32, len(usernameOf))
 	for _, limit := range setting.GetLimits() {
-		entry := &storepb.InstanceUsageLimitsSetting_UsageLimit{
-			AllUsers:         limit.GetAllUsers(),
-			MemoCount:        limit.MemoCount,
-			MemoContentBytes: limit.MemoContentBytes,
-			StorageBytes:     limit.StorageBytes,
-			UploadBytes:      limit.UploadBytes,
-		}
 		for _, name := range limit.GetUsers() {
 			userID, ok := userIDs[usernameOf[name]]
 			if !ok {
 				return nil, status.Errorf(codes.NotFound, "user %q not found", name)
 			}
-			entry.UserIds = append(entry.UserIds, userID)
+			userIDOf[name] = userID
 		}
-		result.Limits = append(result.Limits, entry)
+	}
+	result, err := instancesetting.UsageLimitsToStore(setting, userIDOf)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	return result, nil
 }

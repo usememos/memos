@@ -25,19 +25,24 @@ function Harness({ initial, onChange = vi.fn() }: { initial?: Space_Icon; onChan
   );
 }
 
+// Base UI treats a change as typing (and highlights the first match) only when it carries an inputType.
+const type = (input: HTMLElement, value: string, inputType = "insertText") => fireEvent.input(input, { target: { value }, inputType });
+
 describe("SpaceIconPicker", () => {
   it("searches and selects a symbol with keyboard navigation and restores trigger focus", async () => {
     const onChange = vi.fn();
     render(<Harness onChange={onChange} />);
     const trigger = screen.getByRole("button", { name: "space.icon.change" });
     fireEvent.click(trigger);
-    const search = await screen.findByRole("textbox", { name: "space.icon.search-icons" });
-    fireEvent.change(search, { target: { value: "book" } });
-    fireEvent.keyDown(search, { key: "ArrowDown" });
-    expect(screen.getByRole("button", { name: "Book" })).toHaveFocus();
-    fireEvent.keyDown(screen.getByRole("button", { name: "Book" }), { key: "ArrowRight" });
-    expect(screen.getByRole("button", { name: "Notebook" })).toHaveFocus();
-    fireEvent.click(screen.getByRole("button", { name: "Notebook" }));
+    const search = await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    await waitFor(() => expect(search).toHaveFocus());
+    type(search, "book");
+    // The search keeps focus; arrow keys move the grid's highlight.
+    await waitFor(() => expect(screen.getByRole("gridcell", { name: "Book" })).toHaveAttribute("data-highlighted"));
+    fireEvent.keyDown(search, { key: "ArrowRight" });
+    await waitFor(() => expect(screen.getByRole("gridcell", { name: "Notebook" })).toHaveAttribute("data-highlighted"));
+    expect(search).toHaveFocus();
+    fireEvent.click(screen.getByRole("gridcell", { name: "Notebook" }));
     expect(onChange).toHaveBeenCalledWith(icon("notebook-pen"));
     await waitFor(() => expect(trigger).toHaveFocus());
   });
@@ -47,26 +52,34 @@ describe("SpaceIconPicker", () => {
     render(<Harness onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
     fireEvent.click(await screen.findByRole("tab", { name: "space.icon.emoji" }));
-    const search = screen.getByRole("textbox", { name: "space.icon.search-emoji" });
-    fireEvent.change(search, { target: { value: "👩🏽‍🌾" } });
+    const search = screen.getByRole("combobox", { name: "space.icon.search-emoji" });
+    search.focus();
+    type(search, "👩🏽‍🌾", "insertFromPaste");
+    await waitFor(() => expect(screen.getByRole("gridcell", { name: "space.icon.use-emoji" })).toHaveAttribute("data-highlighted"));
     fireEvent.keyDown(search, { key: "Enter" });
     expect(onChange).toHaveBeenLastCalledWith(icon("👩🏽‍🌾", "emoji"));
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
     expect(await screen.findByRole("tab", { name: "space.icon.emoji" })).toHaveAttribute("aria-selected", "true");
     fireEvent.click(screen.getByRole("button", { name: "space.icon.reset" }));
     expect(onChange).toHaveBeenLastCalledWith(undefined);
+    await waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "space.icon.change" })).toHaveFocus();
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
   });
 
   it("keeps the selection unchanged when dismissed or when Enter completes IME composition", async () => {
     const onChange = vi.fn();
     render(<Harness initial={icon("leaf")} onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    const search = await screen.findByRole("textbox", { name: "space.icon.search-icons" });
-    expect(screen.getByRole("button", { name: "Leaf" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.keyDown(search, { key: "Enter", isComposing: true });
+    const search = await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.getByRole("gridcell", { name: "Leaf" })).toHaveAttribute("aria-selected", "true");
+    type(search, "book");
+    fireEvent.keyDown(search, { key: "Enter", keyCode: 229, isComposing: true });
     expect(onChange).not.toHaveBeenCalled();
     fireEvent.keyDown(search, { key: "Escape" });
-    await waitFor(() => expect(screen.queryByRole("textbox")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -75,9 +88,10 @@ describe("SpaceIconPicker", () => {
     render(<Harness onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
     fireEvent.click(await screen.findByRole("tab", { name: "space.icon.emoji" }));
-    const search = screen.getByRole("textbox", { name: "space.icon.search-emoji" });
-    fireEvent.change(search, { target: { value: "🌱🌱" } });
+    const search = screen.getByRole("combobox", { name: "space.icon.search-emoji" });
+    type(search, "🌱🌱");
     expect(screen.getByRole("status")).toHaveTextContent("space.icon.no-results");
+    expect(screen.queryByRole("gridcell")).not.toBeInTheDocument();
     fireEvent.keyDown(search, { key: "Enter" });
     expect(onChange).not.toHaveBeenCalled();
   });
@@ -85,6 +99,39 @@ describe("SpaceIconPicker", () => {
   it("disables editing while a form is saving", () => {
     render(<SpaceIconPicker disabled onChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: "space.icon.change" })).toBeDisabled();
+  });
+
+  it("shows the default action only while a custom icon is set, on either tab", async () => {
+    const onChange = vi.fn();
+    const view = render(<SpaceIconPicker onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
+
+    view.rerender(<SpaceIconPicker value={icon("leaf")} onChange={onChange} />);
+    expect(screen.getByRole("button", { name: "space.icon.reset" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("tab", { name: "space.icon.emoji" }));
+    expect(screen.getByRole("button", { name: "space.icon.reset" })).toBeEnabled();
+
+    view.rerender(<SpaceIconPicker onChange={onChange} />);
+    expect(screen.queryByRole("button", { name: "space.icon.reset" })).not.toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("switches named content panels without selecting an icon", async () => {
+    const onChange = vi.fn();
+    render(<Harness onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    const icons = await screen.findByRole("tab", { name: "space.icon.icons" });
+    const emoji = screen.getByRole("tab", { name: "space.icon.emoji" });
+    expect(screen.getByRole("tabpanel", { name: "space.icon.icons" })).toBeInTheDocument();
+    icons.focus();
+    fireEvent.keyDown(icons, { key: "ArrowRight" });
+    await waitFor(() => expect(emoji).toHaveAttribute("aria-selected", "true"));
+    expect(screen.getByRole("tabpanel", { name: "space.icon.emoji" })).toBeInTheDocument();
+    expect(screen.queryByRole("tabpanel", { name: "space.icon.icons" })).not.toBeInTheDocument();
+    expect(emoji).toHaveFocus();
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("offers only emoji accepted by the shared Unicode catalog", () => {
@@ -104,21 +151,21 @@ describe("SpaceIcon", () => {
 
   it("sizes inline emoji independently of surrounding text and keeps them decorative", () => {
     const view = render(<SpaceIcon icon={icon("🌱", "emoji")} />);
-    expect(screen.getByText("🌱")).toHaveClass("size-4", "text-base");
+    expect(screen.getByText("🌱")).toHaveClass("mu-icon", "text-base");
     expect(screen.getByText("🌱")).toHaveAttribute("aria-hidden", "true");
     view.rerender(<SpaceIcon icon={icon("🌱", "emoji")} size={12} />);
-    expect(screen.getByText("🌱")).toHaveClass("size-3", "text-xs");
+    expect(screen.getByText("🌱")).toHaveClass("mu-icon-xs", "text-xs");
   });
 
   it("uses the same compact identity tile for emoji, symbols, and missing icons", () => {
     const view = render(<SpaceMark icon={icon("🌱", "emoji")} size="sm" />);
-    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
-    expect(screen.getByText("🌱")).toHaveClass("size-3", "text-sm");
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-mu-hover");
+    expect(screen.getByText("🌱")).toHaveClass("mu-icon-xs", "text-sm");
     view.rerender(<SpaceMark icon={icon("leaf")} size="sm" />);
-    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
-    expect(view.container.querySelector(".lucide-leaf")).toHaveClass("size-3");
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-mu-hover");
+    expect(view.container.querySelector(".lucide-leaf")).toHaveClass("mu-icon-xs");
     view.rerender(<SpaceMark size="sm" />);
-    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
-    expect(view.container.querySelector(".lucide-astroid")).toHaveClass("size-3");
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-mu-hover");
+    expect(view.container.querySelector(".lucide-astroid")).toHaveClass("mu-icon-xs");
   });
 });

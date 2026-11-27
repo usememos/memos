@@ -1,6 +1,6 @@
+import { buttonClasses } from "@usememos/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { HeadingItem } from "@/components/MemoEditor/view/headings";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { findAnchorTarget, findMemoContentRoot } from "@/utils/markdown-manipulation";
 
@@ -13,10 +13,10 @@ interface MemoOutlineProps {
 const READING_LINE_OFFSET = 100;
 
 /**
- * Each heading is a quiet row: the kit's `quiet` treatment at the sidebar's 28px row height,
+ * Each heading is a quiet row: the package's ghost button at the sidebar's row height,
  * so the section you are reading takes the accent fill through `aria-current`.
  */
-const OUTLINE_ROW_CLASSES = cn(buttonVariants({ variant: "quiet", size: "sm" }), "relative w-full justify-start");
+const OUTLINE_ROW_CLASSES = cn(buttonClasses({ variant: "ghost", size: "sm" }), "relative w-full justify-start");
 
 /** Outline navigation for memo headings (h1–h4) with active-section tracking. */
 const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
@@ -84,7 +84,7 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
             <span
               className={cn(
                 "absolute start-0.5 top-1/2 h-[13px] w-[2px] -translate-y-1/2 rounded-full transition-colors",
-                active ? "bg-primary" : "bg-border",
+                active ? "bg-mu-primary" : "bg-mu-line",
               )}
             />
             <span className="min-w-0 flex-1 truncate">{heading.text}</span>

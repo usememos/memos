@@ -65,22 +65,30 @@ describe("URL-owned Space context", () => {
     expect(screen.getByTestId("space")).toHaveTextContent("all");
     expect(screen.getByTestId("filter")).toHaveTextContent("all");
   });
-  it("filters Home to the signed-in creator, including inside a Space", () => {
-    setup("/spaces/a");
+  it("filters Home to the signed-in creator", () => {
+    setup("/");
     expect(screen.getByTestId("filter")).toHaveTextContent('creator == "users/alice"');
-    expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
   });
-  it("keeps Space Explore across all readable creators", () => {
-    setup("/spaces/a/explore");
+  it.each(["/spaces/a", "/spaces/a?creator=bob"])("shows every member's memos on a Space's timeline: %s", (path) => {
+    setup(path);
     expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
     expect(screen.getByTestId("filter")).not.toHaveTextContent("creator ==");
   });
-  it("combines creator and Space filters from the collection URL", () => {
-    setup("/spaces/a?creator=bob");
+  it("has no Explore page inside a Space", () => {
+    setup("/spaces/a/explore");
+    expect(screen.getByTestId("space")).toHaveTextContent("all");
+  });
+  it("combines creator and Space filters on the other collection views", () => {
+    setup("/spaces/a/calendar/2026/09?creator=bob");
     expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
     expect(screen.getByTestId("filter")).toHaveTextContent('creator == "users/bob"');
     fireEvent.click(screen.getByText("B"));
-    expect(screen.getByTestId("path")).toHaveTextContent("/spaces/b?creator=bob");
+    expect(screen.getByTestId("path")).toHaveTextContent("/spaces/b/calendar/2026/09?creator=bob");
+  });
+  it("returns from a Space's timeline to the personal Home", () => {
+    setup("/spaces/a?filter=tagSearch%3Awork");
+    fireEvent.click(screen.getByText("Memos"));
+    expect(screen.getByTestId("path").textContent).toBe("/?filter=tagSearch%3Awork");
   });
   it("restores Space from a deep link before metadata has loaded", () => {
     state.ready = false;
@@ -105,7 +113,7 @@ describe("URL-owned Space context", () => {
     await act(() => router.navigate(1));
     expect(screen.getByTestId("space")).toHaveTextContent("spaces/b");
   });
-  it.each(["/memos/123", "/archived", "/inbox", "/setting", "/u/alice"])("keeps %s global and switches to Space Home", (path) => {
+  it.each(["/memos/123", "/archived", "/inbox", "/setting", "/u/alice"])("keeps %s global and switches to the Space's timeline", (path) => {
     setup(`${path}?filter=tagSearch%3Awork`);
     expect(screen.getByTestId("space")).toHaveTextContent("all");
     fireEvent.click(screen.getByText("B"));

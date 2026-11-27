@@ -34,13 +34,35 @@ func (f Func) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// WriteError preserves the public JSON error envelope, including bodyless HEAD errors.
+// WriteError answers with the public JSON error envelope, bodyless for HEAD.
+// It drops the representation headers a handler may have prepared for the
+// response it meant to serve (Content-Type, Content-Disposition and
+// Content-Length), so an error is never typed as that body: a media-typed error
+// gets handed to the browser's document viewer instead of being read. Other
+// headers, such as a 416's Content-Range, survive. The body carries only the
+// public message, so a server error's cause is logged here, unless the client
+// has already gone away.
 func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 	code, message := http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)
 	var publicError *Error
 	if errors.As(err, &publicError) {
 		code, message = publicError.Code, publicError.Message
 	}
+	if code >= http.StatusInternalServerError && r.Context().Err() == nil {
+		cause := err
+		if publicError != nil && publicError.Cause != nil {
+			cause = publicError.Cause
+		}
+		slog.Error("HTTP handler error", "method", r.Method, "path", r.URL.Path, "status", code, "message", message, "error", cause)
+	}
+	writeErrorEnvelope(w, r, code, message)
+}
+
+func writeErrorEnvelope(w http.ResponseWriter, r *http.Request, code int, message string) {
+	h := w.Header()
+	h.Del("Content-Type")
+	h.Del("Content-Disposition")
+	h.Del("Content-Length")
 	if r.Method == http.MethodHead {
 		w.WriteHeader(code)
 		return
@@ -151,7 +173,7 @@ func Recover(next http.Handler) http.Handler {
 				}
 				slog.Error("HTTP handler panic", "panic", recovered, "stack", string(debug.Stack()))
 				if !response.committed {
-					WriteError(w, r, errors.New("handler panic"))
+					writeErrorEnvelope(w, r, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 				}
 			}
 		}()

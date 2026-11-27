@@ -90,7 +90,7 @@ func (s *APIService) Transcribe(ctx context.Context, request *apipb.TranscribeRe
 	persisted := aiSetting.GetTranscription()
 
 	providerID := persisted.GetProviderId()
-	if providerID == "" {
+	if providerID == "" || persisted.GetModel() == "" {
 		return nil, status.Errorf(codes.FailedPrecondition, "transcription is not configured")
 	}
 
@@ -99,29 +99,40 @@ func (s *APIService) Transcribe(ctx context.Context, request *apipb.TranscribeRe
 		return nil, err
 	}
 
-	model := persisted.GetModel()
-	if model == "" {
-		defaultModel, err := ai.DefaultTranscriptionModel(provider.Type)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "%v", err)
-		}
-		model = defaultModel
-	}
-
-	var text string
-	switch provider.Type {
-	case ai.ProviderOpenAI:
-		text, err = s.transcribeViaSTT(ctx, provider, persisted, model, content, filename, contentType)
-	case ai.ProviderGemini:
-		text, err = s.transcribeViaAudioLLM(ctx, provider, persisted, model, content, contentType)
-	default:
-		return nil, status.Errorf(codes.FailedPrecondition,
-			"provider type %q is not supported for transcription", provider.Type)
-	}
+	text, err := s.transcribeAudio(ctx, provider, persisted, content, filename, contentType)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to transcribe audio: %v", err)
+		if _, ok := status.FromError(err); ok {
+			return nil, err
+		}
+		if errors.Is(err, audiollm.ErrUnsupportedAudio) {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to transcribe audio: %v", err)
+		}
+		if ctx.Err() != nil {
+			return nil, status.FromContextError(ctx.Err()).Err()
+		}
+		// The caller gets a fixed message and a reason; the provider's own words stay out of the response.
+		failure := ai.ClassifyFailure(err)
+		logAIFailure("transcribe", provider, persisted.GetModel(), failure)
+		return nil, newAIFailureError("failed to transcribe audio: ", provider, failure)
 	}
 	return &apipb.TranscribeResponse{Text: text}, nil
+}
+
+func (s *APIService) transcribeAudio(ctx context.Context, provider ai.ProviderConfig, persisted *storepb.TranscriptionConfig, content []byte, filename, contentType string) (string, error) {
+	model := persisted.GetModel()
+	// An unknown type has an empty spec, which supports nothing.
+	spec, _ := ai.LookupSpec(provider.Type)
+	if !spec.Supports(ai.CapabilityTranscription) {
+		return "", status.Errorf(codes.FailedPrecondition, "provider type %q cannot transcribe", provider.Type)
+	}
+	switch spec.Protocol {
+	case ai.ProtocolOpenAI:
+		return s.transcribeViaSTT(ctx, provider, persisted, model, content, filename, contentType)
+	case ai.ProtocolGemini:
+		return s.transcribeViaAudioLLM(ctx, provider, persisted, model, content, contentType)
+	default:
+		return "", status.Errorf(codes.FailedPrecondition, "provider type %q cannot transcribe", provider.Type)
+	}
 }
 
 func (*APIService) transcribeViaSTT(
@@ -208,30 +219,9 @@ func (*APIService) resolveAIProvider(setting *storepb.InstanceAISetting, provide
 
 	provider, err := ai.FindProvider(providers, providerID)
 	if err != nil {
-		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "transcription provider is not configured")
+		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "AI provider is not configured")
 	}
 	return *provider, nil
-}
-
-func convertAIProviderConfigFromStore(provider *storepb.AIProviderConfig) ai.ProviderConfig {
-	return ai.ProviderConfig{
-		ID:       provider.GetId(),
-		Title:    provider.GetTitle(),
-		Type:     convertAIProviderTypeFromStore(provider.GetType()),
-		Endpoint: provider.GetEndpoint(),
-		APIKey:   provider.GetApiKey(),
-	}
-}
-
-func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.ProviderType {
-	switch providerType {
-	case storepb.AIProviderType_OPENAI:
-		return ai.ProviderOpenAI
-	case storepb.AIProviderType_GEMINI:
-		return ai.ProviderGemini
-	default:
-		return ""
-	}
 }
 
 func isSupportedTranscriptionContentType(contentType string) bool {
@@ -241,4 +231,24 @@ func isSupportedTranscriptionContentType(contentType string) bool {
 	}
 	mediaType = strings.ToLower(mediaType)
 	return supportedTranscriptionContentTypes[mediaType]
+}
+
+// aiFeatures reports which AI features can be served: a capability counts once it names a
+// provider that exists and a model. It is what a signed-in user learns about the AI setting.
+func (s *APIService) aiFeatures(ctx context.Context) (*apipb.InstanceProfile_AIFeatures, error) {
+	setting, err := s.Store.GetInstanceAISetting(ctx)
+	if err != nil {
+		return nil, err
+	}
+	ready := func(providerID, model string) bool {
+		if providerID == "" || model == "" {
+			return false
+		}
+		_, err := s.resolveAIProvider(setting, providerID)
+		return err == nil
+	}
+	return &apipb.InstanceProfile_AIFeatures{
+		Transcription:  ready(setting.GetTranscription().GetProviderId(), setting.GetTranscription().GetModel()),
+		TagSuggestions: ready(setting.GetTextGeneration().GetProviderId(), setting.GetTextGeneration().GetModel()),
+	}, nil
 }

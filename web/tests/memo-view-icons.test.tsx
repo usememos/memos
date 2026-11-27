@@ -57,10 +57,13 @@ describe("memo view icons", () => {
     fireEvent.change(screen.getByLabelText("common.title"), { target: { value: "Garden" } });
     fireEvent.change(screen.getByLabelText("common.filter"), { target: { value: "pinned" } });
     fireEvent.click(screen.getByRole("button", { name: "setting.memo-view.change-icon" }));
-    const search = await screen.findByRole("textbox", { name: "space.icon.search-icons" });
-    fireEvent.change(search, { target: { value: "leaf" } });
+    const search = await screen.findByRole("combobox", { name: "space.icon.search-icons" });
+    await waitFor(() => expect(search).toHaveFocus());
+    // Typed input (with an inputType) highlights the first match, which Enter picks.
+    fireEvent.input(search, { target: { value: "leaf" }, inputType: "insertText" });
+    await waitFor(() => expect(screen.getByRole("gridcell", { name: "Leaf" })).toHaveAttribute("data-highlighted"));
     fireEvent.keyDown(search, { key: "Enter" });
-    fireEvent.click(screen.getByRole("button", { name: "Validate" }));
+    fireEvent.click(screen.getByRole("button", { name: "setting.memo-view.validate" }));
     await waitFor(() =>
       expect(mocks.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -82,7 +85,7 @@ describe("memo view icons", () => {
   it("preserves the icon when editing from the sidebar and applying an example", async () => {
     renderPage(true);
     expect(screen.getByRole("button", { name: "setting.memo-view.change-icon" })).toHaveTextContent("🌱");
-    fireEvent.click(screen.getByRole("button", { name: /Recent notes/ }));
+    fireEvent.click(screen.getByRole("button", { name: /setting.memo-view.examples.recent.title/ }));
     fireEvent.click(screen.getByRole("button", { name: "common.save" }));
     await waitFor(() =>
       expect(mocks.update).toHaveBeenCalledWith(
@@ -119,41 +122,46 @@ describe("memo view icons", () => {
 describe("empty memo views", () => {
   it("opens the first view from the empty state and offers an optional task example", async () => {
     renderPage(false, false);
-    expect(screen.getByText("No views yet")).toBeInTheDocument();
+    expect(screen.getByText("setting.memo-view.empty-title")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "setting.memo-view.create" }));
-    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Open tasks/ }));
-    expect(screen.getByLabelText("common.title")).toHaveValue("Open tasks");
+    expect(screen.queryByText("setting.memo-view.empty-title")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /setting.memo-view.examples.open-tasks.title/ }));
+    expect(screen.getByLabelText("common.title")).toHaveValue("setting.memo-view.examples.open-tasks.title");
     expect(screen.getByLabelText("common.filter")).toHaveValue("has_task_list && has_incomplete_tasks");
     fireEvent.click(screen.getByRole("button", { name: "common.save" }));
     await waitFor(() =>
       expect(mocks.create).toHaveBeenCalledWith({
         parent: "users/steven",
-        memoView: { name: "", title: "Open tasks", filter: "has_task_list && has_incomplete_tasks", icon: undefined },
+        memoView: {
+          name: "",
+          title: "setting.memo-view.examples.open-tasks.title",
+          filter: "has_task_list && has_incomplete_tasks",
+          icon: undefined,
+        },
       }),
     );
   });
 
   it("returns to the empty state when creating the first view is canceled", () => {
     renderPage();
-    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    expect(screen.queryByText("setting.memo-view.empty-title")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
-    expect(screen.getByText("No views yet")).toBeInTheDocument();
+    expect(screen.getByText("setting.memo-view.empty-title")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "setting.memo-view.create" })).toBeInTheDocument();
   });
 
   it("does not report empty views while loading or after a failed request", () => {
     mocks.isPending = true;
     const page = renderPage(false, false);
-    expect(screen.getByText("Loading views…")).toBeInTheDocument();
-    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    expect(screen.getByText("setting.memo-view.loading")).toBeInTheDocument();
+    expect(screen.queryByText("setting.memo-view.empty-title")).not.toBeInTheDocument();
     page.unmount();
     mocks.isPending = false;
     mocks.isError = true;
     renderPage(false, false);
-    expect(screen.getByText("Couldn’t load views.")).toBeInTheDocument();
-    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(screen.getByText("setting.memo-view.load-failed")).toBeInTheDocument();
+    expect(screen.queryByText("setting.memo-view.empty-title")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.retry" }));
     expect(mocks.refetch).toHaveBeenCalledOnce();
   });
 });

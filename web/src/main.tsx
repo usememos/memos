@@ -3,20 +3,20 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React, { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
+import { Toast, Tooltip } from "@usememos/ui";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
+import { toast } from "@/lib/toast";
 import router from "./router";
-import { applyLocaleEarly } from "./utils/i18n";
+import { applyLocaleEarly, useTranslate } from "./utils/i18n";
 import { applyThemeEarly } from "./utils/theme";
 
 // Apply theme and locale early to prevent flash
@@ -26,8 +26,9 @@ applyLocaleEarly();
 // Inner component that initializes contexts
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { isIdentityInitialized, initialize: initAuth, currentUser } = useAuth();
-  const { isProfileInitialized, initialize: initInstance } = useInstance();
+  const { isProfileInitialized, initialize: initInstance, refreshProfile } = useInstance();
   const initStartedRef = useRef(false);
+  const profileIdentity = useRef<string | undefined>(undefined);
 
   // Initialize on mount - run in parallel for better performance
   useEffect(() => {
@@ -39,6 +40,15 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
     };
     init();
   }, [initAuth, initInstance]);
+
+  // The profile names what a signed-in user may see (the admin, the AI features that are ready),
+  // so signing in or out without a page load fetches it again.
+  const identity = currentUser?.name ?? "";
+  useEffect(() => {
+    if (!isIdentityInitialized || !isProfileInitialized) return;
+    if (profileIdentity.current !== undefined && profileIdentity.current !== identity) void refreshProfile();
+    profileIdentity.current = identity;
+  }, [identity, isIdentityInitialized, isProfileInitialized, refreshProfile]);
 
   // Proactively refresh token on window focus to prevent 401 errors
   // Only enabled when user is authenticated
@@ -58,26 +68,26 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/** The one place toasts render, with their close buttons named in the user's language. */
+function ToastViewport() {
+  const t = useTranslate();
+  return <Toast.Viewport closeLabel={t("common.close")} />;
+}
+
 function Main() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <InstanceProvider>
           <AuthProvider>
-            <TooltipProvider>
+            <Tooltip.Provider>
               <AppInitializer>
-                <RouterProvider router={router} />
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    style: {
-                      background: "var(--popover)",
-                      color: "var(--popover-foreground)",
-                    },
-                  }}
-                />
+                <Toast.Provider toastManager={toast}>
+                  <RouterProvider router={router} />
+                  <ToastViewport />
+                </Toast.Provider>
               </AppInitializer>
-            </TooltipProvider>
+            </Tooltip.Provider>
           </AuthProvider>
         </InstanceProvider>
         <ReactQueryDevtools initialIsOpen={false} />

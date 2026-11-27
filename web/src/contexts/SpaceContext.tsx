@@ -6,14 +6,7 @@ import { useSpace, useSpaces } from "@/hooks/useSpaceQueries";
 import { buildCollectionScopeFilter, type CollectionScope, combineCELFilters } from "@/lib/cel-filter";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { getDuplicateSpaceTitles } from "@/lib/space-display";
-import {
-  buildCollectionPath,
-  getCollectionCreator,
-  getCollectionHomePath,
-  ROUTES,
-  resolveCollectionRoute,
-  withCollectionCreator,
-} from "@/router/routes";
+import { buildCollectionPath, getCollectionCreator, getCollectionHomePath, ROUTES, resolveCollectionRoute } from "@/router/routes";
 import type { Space } from "@/types/proto/api/space_service_pb";
 
 interface SpaceContextValue {
@@ -30,7 +23,7 @@ interface SpaceContextValue {
   isSpaceReady: boolean;
   spaceError: ConnectError | null;
   retrySpace: () => void;
-  /** Opens the Space Home after creation or from an invitation. */
+  /** Opens the Space's timeline after creation or from an invitation. */
   selectSpace: (space: Space) => void;
 }
 
@@ -44,6 +37,7 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const route = resolveCollectionRoute(location.pathname);
   const selectedSpaceName = route.spaceName;
+  // Explore and a Space's timeline show every readable creator; only the personal Home defaults to the user.
   const creatorUsername = route.isCollection
     ? route.pathname === ROUTES.EXPLORE
       ? undefined
@@ -65,8 +59,8 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
   );
   const selectSpace = useCallback(
     (space: Space) => {
-      const homePath = getCollectionHomePath(location);
-      navigate(`${buildCollectionPath(homePath, space.name)}${withCollectionCreator("", getCollectionCreator(location.search))}`);
+      // A Space's timeline is never narrowed to one creator, so none is carried into it.
+      navigate(buildCollectionPath(getCollectionHomePath(location), space.name));
     },
     [location, navigate],
   );

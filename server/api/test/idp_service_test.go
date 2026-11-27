@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -610,4 +612,61 @@ func TestIdentityProviderPermissions(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "user not authenticated")
 	})
+}
+
+func TestIdentityProviderValidation(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	hostUser, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+	oauth2 := func(mutate func(*apipb.OAuth2Config)) *apipb.IdentityProvider {
+		config := &apipb.OAuth2Config{
+			ClientId:     "client",
+			ClientSecret: "secret",
+			AuthUrl:      "https://idp.example.com/authorize",
+			TokenUrl:     "https://idp.example.com/token",
+			UserInfoUrl:  "https://idp.example.com/userinfo",
+			FieldMapping: &apipb.FieldMapping{Identifier: "sub"},
+		}
+		if mutate != nil {
+			mutate(config)
+		}
+		return &apipb.IdentityProvider{
+			Title:  "SSO",
+			Type:   apipb.IdentityProvider_OAUTH2,
+			Config: &apipb.IdentityProviderConfig{Config: &apipb.IdentityProviderConfig_Oauth2Config{Oauth2Config: config}},
+		}
+	}
+
+	for name, provider := range map[string]*apipb.IdentityProvider{
+		"missing field mapping": oauth2(func(c *apipb.OAuth2Config) { c.FieldMapping = nil }),
+		"relative token url":    oauth2(func(c *apipb.OAuth2Config) { c.TokenUrl = "/token" }),
+		"missing client id":     oauth2(func(c *apipb.OAuth2Config) { c.ClientId = "" }),
+		"missing config":        {Title: "SSO", Type: apipb.IdentityProvider_OAUTH2},
+	} {
+		_, err := ts.Service.CreateIdentityProvider(adminCtx, &apipb.CreateIdentityProviderRequest{IdentityProvider: provider})
+		require.Equal(t, codes.InvalidArgument, status.Code(err), name)
+	}
+	_, err = ts.Service.CreateIdentityProvider(adminCtx, &apipb.CreateIdentityProviderRequest{})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	created, err := ts.Service.CreateIdentityProvider(adminCtx, &apipb.CreateIdentityProviderRequest{IdentityProvider: oauth2(nil)})
+	require.NoError(t, err)
+
+	// An update is validated as the merged provider, so clearing the title fails
+	// even though the request only names one field.
+	_, err = ts.Service.UpdateIdentityProvider(adminCtx, &apipb.UpdateIdentityProviderRequest{
+		IdentityProvider: &apipb.IdentityProvider{Name: created.Name, Title: " "},
+		UpdateMask:       &fieldmaskpb.FieldMask{Paths: []string{"title"}},
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	_, err = ts.Service.UpdateIdentityProvider(adminCtx, &apipb.UpdateIdentityProviderRequest{
+		IdentityProvider: &apipb.IdentityProvider{Name: created.Name, Title: "Renamed"},
+		UpdateMask:       &fieldmaskpb.FieldMask{Paths: []string{"title"}},
+	})
+	require.NoError(t, err)
 }

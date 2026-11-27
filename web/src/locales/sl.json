@@ -21,29 +21,26 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prijave ni bilo mogoče dokončati",
     "create-your-account": "Ustvari nov račun",
+    "hide-password": "Skrij geslo",
+    "incorrect-credentials": "Napačno uporabniško ime ali geslo.",
     "new-password": "Novo geslo",
     "repeat-new-password": "Ponovi novo geslo",
+    "show-password": "Pokaži geslo",
     "sign-in-tip": "Že imaš račun?",
     "sign-up-tip": "Še nimaš računa?",
     "admin-sign-in": "Prijava skrbnika",
-    "admin-sign-in-tip": "Prijava z geslom ostane na voljo skrbnikom.",
     "back-to-sign-in": "Nazaj na prijavo",
     "continue-with": "Nadaljuj z {{provider}}",
+    "redirecting-to-provider": "Preusmerjanje na {{provider}}…",
+    "signing-in": "Prijavljanje…",
     "create-admin-account": "Ustvari skrbniški račun",
-    "explore-public-memos": "Razišči javne zapiske v tem primerku",
-    "first-run": "Prvi zagon",
     "setup-description": "Ustvari skrbniški račun za ta primerek.",
-    "setup-note": "Ta račun je lastnik nastavitev primerka, članov in ponudnikov identitete.",
     "setup-title": "Nastavi svoj primerek",
     "signin-unavailable-description": "Prijava z geslom je izklopljena in noben ponudnik identitete ni konfiguriran. Prosite skrbnika, da omogoči način prijave.",
     "signin-unavailable-title": "Prijava ni na voljo",
-    "signup-unavailable-description": "Računi z geslom so izklopljeni in noben ponudnik identitete ni konfiguriran. Prosite skrbnika za dostop.",
-    "signup-unavailable-title": "Registracija ni na voljo",
-    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika.",
-    "signups-closed-title": "Prijave so zaprte",
-    "sso-signup-tip": "Prijavite se s spodnjim ponudnikom, da ustvarite svoj račun.",
-    "welcome-back": "Dobrodošli nazaj."
+    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika."
   },
   "common": {
     "about": "O programu",
@@ -55,7 +52,6 @@
     "attachments": "Priloge",
     "avatar": "Avatar",
     "basic": "Osnovni",
-    "browse": "Brskaj",
     "calendar": "Koledar",
     "cancel": "Prekliči",
     "clear": "Počisti",
@@ -93,6 +89,8 @@
     "memo": "Beležka",
     "memos": "Beležke",
     "more": "Več",
+    "move-down": "Move down",
+    "move-up": "Move up",
     "name": "Ime",
     "nickname": "Nadimek",
     "open": "Odpri",
@@ -102,7 +100,6 @@
     "profile": "Profil",
     "referenced-by": "Nanaša se na",
     "referencing": "Nanašanje",
-    "relations": "Relacije",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
@@ -138,12 +135,35 @@
     "resize-panel": "Spremeni velikost plošče",
     "resize-sidebar": "Spremeni velikost stranske vrstice",
     "sign-in-to-memos": "Prijava v Memos",
-    "view-all": "Ogled vseh"
+    "open-navigation": "Odpri navigacijo",
+    "navigation": "Navigacija",
+    "primary-navigation": "Glavna",
+    "download": "Prenesi",
+    "download-name": "Prenesi {{name}}",
+    "open-name": "Odpri {{name}}",
+    "preview-name": "Predogled {{name}}",
+    "no-content": "Ni vsebine",
+    "previous": "Prejšnje",
+    "next": "Naslednje",
+    "retry": "Poskusi znova",
+    "docs": "Dokumentacija",
+    "calendar-for-month": "Koledar za {{month}}",
+    "date-at-time": "{{date}} ob {{time}}",
+    "selected-location": "Izbrana lokacija",
+    "choose-location": "Izberite lokacijo",
+    "unknown-error": "Neznana napaka",
+    "error-occurred": "Prišlo je do napake"
   },
   "locale-picker": {
     "no-language-feedback": "Jezik ni bil najden? Pošlji povratne informacije"
   },
   "editor": {
+    "suggest-tags": "Predlagaj oznake z UI",
+    "no-suggested-tags": "Ni predlaganih oznak",
+    "tag-suggestions-label": "Predlogi oznak",
+    "tag-suggestions-error": "Predlogi oznak niso na voljo",
+    "tag-suggestions-limit": "Dosežena je omejitev predlogov oznak. Poskusite znova pozneje.",
+    "set-visibility": "Nastavi vidnost na {{visibility}}",
     "suggestions": "Predlogi",
     "add-your-comment-here": "Tu dodaj svoj komentar...",
     "any-thoughts": "Kakšne misli...",
@@ -158,12 +178,61 @@
       "image-upload-failed": "Nekaterih slik ni bilo mogoče naložiti. Poskusite znova ali pa naložene datoteke shranite kot priloge.",
       "image-upload-stopped": "Nalaganje slike ustavljeno {{completed}}/{{total}}",
       "insert-image": "Vstavi sliko",
+      "drawing": "Označevanje",
       "keep-as-attachments": "Obdrži kot priloge",
       "uploading-inline-image": "Nalaganje v vsebino",
       "uploading-images": "Nalaganje slik {{completed}}/{{total}}"
     },
+    "drawing": {
+      "edit": "Uredi oznake",
+      "tools": "Orodja",
+      "tool-select": "Izbor",
+      "tool-pen": "Pero",
+      "tool-eraser": "Radirka",
+      "tool-rectangle": "Pravokotnik",
+      "tool-ellipse": "Elipsa",
+      "tool-arrow": "Puščica",
+      "tool-text": "Besedilo",
+      "style": "Barva in debelina",
+      "color": "Barva",
+      "width": "Debelina",
+      "width-thin": "Tanka",
+      "width-medium": "Srednja",
+      "width-thick": "Debela",
+      "color-ink": "Črnilo",
+      "color-gray": "Siva",
+      "color-red": "Rdeča",
+      "color-orange": "Oranžna",
+      "color-green": "Zelena",
+      "color-teal": "Modrozelena",
+      "color-blue": "Modra",
+      "color-violet": "Vijolična",
+      "undo": "Razveljavi",
+      "redo": "Uveljavi",
+      "zoom": "Povečava",
+      "zoom-to-fit": "Prilagodi oknu",
+      "discard-title": "Zavrzi to risbo?",
+      "discard-description": "Beležki še ni bila dodana.",
+      "discard-edit-title": "Zavrzi spremembe?",
+      "discard-edit-description": "Risba ostane takšna, kot je bila pred odprtjem.",
+      "keep-drawing": "Nadaljuj z risanjem",
+      "discard": "Zavrzi",
+      "open-failed": "Risbe ni bilo mogoče odpreti. Poskusite znova.",
+      "export-failed": "Risbe ni bilo mogoče shraniti. Poskusite znova.",
+      "image-failed": "Slike ni bilo mogoče dodati risbi.",
+      "saved-without-drawing": "Beležka je shranjena, risba pa ne. Za ponoven poskus znova shranite.",
+      "annotate": "Označevanje",
+      "save-copy": "Shrani kopijo",
+      "unavailable": "Cilj ni na voljo.",
+      "saved-needs-update": "Risba je shranjena. Poskusite znova posodobiti beležko.",
+      "changed-save-copy": "Izvirnik se je spremenil. Shranite kopijo.",
+      "bind-failed": "Risba je naložena. Poskusite jo znova dodati v beležko."
+    },
     "no-changes-detected": "Ni zaznanih sprememb",
     "save": "Shrani",
+    "saving": "Shranjevanje…",
+    "updating": "Posodabljanje…",
+    "commenting": "Pošiljanje komentarja…",
     "audio-recorder": {
       "attachment-label": "Zvočni posnetek",
       "attachment-label-with-time": "Zvočni posnetek {{time}}",
@@ -199,7 +268,6 @@
     "footnotes": "Opombe",
     "back-to-reference": "Nazaj na sklic",
     "new-memo": "Nov zapisek",
-    "saved": "Shranjeno",
     "validation": {
       "cannot-save": "Shranjevanje ni mogoče",
       "content-required": "Zahtevana je vsebina, priloga ali datoteka",
@@ -256,7 +324,19 @@
       "alt-text-placeholder": "Opiši sliko…",
       "image-unavailable": "Slika ni na voljo",
       "resize-image": "Spremeni velikost slike"
-    }
+    },
+    "attachments": {
+      "edited": "Urejeno",
+      "new": "Novo",
+      "remove": "Odstrani prilogo",
+      "reorder": "Prerazporedi {{name}}",
+      "reorder-hint": "Povlecite ali uporabite smerne tipke"
+    },
+    "remove-relation": "Odstrani povezavo",
+    "remove-location": "Odstrani lokacijo",
+    "recording-unsupported": "Ta brskalnik ne podpira snemanja zvoka.",
+    "microphone-denied": "Dostop do mikrofona je bil zavrnjen.",
+    "recording-failed": "Snemanja zvoka ni bilo mogoče začeti."
   },
   "inbox": {
     "failed-to-load": "Ni bilo mogoče naložiti elementa prejetega",
@@ -265,7 +345,16 @@
     "unread": "Neprebrano",
     "space-invitation": "vas je povabil, da se pridružite prostoru",
     "space-invitation-accepted": "Pridružili ste se temu prostoru.",
-    "space-invitation-open": "Odprt prostor"
+    "space-invitation-open": "Odprt prostor",
+    "commented-on-memo": "je komentiral(a) vašo beležko",
+    "mentioned-in-comment": "vas je omenil(a) v komentarju",
+    "mentioned-in-memo": "vas je omenil(a) v beležki",
+    "original": "Izvirnik:",
+    "memo-label": "Beležka:",
+    "comment-heading": "Komentar",
+    "memo-heading": "Beležka",
+    "empty-memo": "Prazna beležka",
+    "empty-comment": "Prazen komentar"
   },
   "live-update": {
     "connected": "Posodobitve v živo so aktivne",
@@ -273,11 +362,18 @@
     "disconnected": "Posodobitve v živo niso na voljo"
   },
   "memo": {
+    "no-memos-yet": "Še ni zapiskov",
+    "no-matching-memos": "Ni ustreznih zapiskov",
+    "clear-filters": "Počisti filtre",
     "pinned": "Pripeto",
     "click-to-show-sensitive-content": "Kliknite za prikaz NSFW vsebine",
     "comment": {
       "self": "Komentarji",
-      "write-a-comment": "Napiši komentar"
+      "write-a-comment": "Napiši komentar",
+      "view-all-count_one": "Ogled {{count}} komentarja",
+      "view-all-count_two": "Ogled vseh {{count}} komentarjev",
+      "view-all-count_few": "Ogled vseh {{count}} komentarjev",
+      "view-all-count_other": "Ogled vseh {{count}} komentarjev"
     },
     "copy-content": "Kopiraj vsebino",
     "copy-link": "Kopiraj povezavo",
@@ -291,7 +387,8 @@
       "has-image": "ima sliko",
       "has-link": "imaPovezavo",
       "has-location": "imaLokacijo",
-      "has-task-list": "imaSeznamOpravil"
+      "has-task-list": "imaSeznamOpravil",
+      "remove": "Odstrani filter"
     },
     "compact-mode": "Strnjeni način",
     "link-preview": "Predogled povezave",
@@ -326,6 +423,13 @@
     },
     "show-less": "Prikaži manj",
     "show-more": "Prikaži več",
+    "audience": {
+      "heading": "Kdo lahko to vidi?",
+      "private": "Samo jaz",
+      "space": "Člani prostora",
+      "protected": "Prijavljeni uporabniki",
+      "public": "Vsi"
+    },
     "visibility": {
       "private": "Zasebno",
       "protected": "Za uporabnike",
@@ -345,14 +449,13 @@
       "updated": "Naloge posodobljene"
     },
     "new-badge": "Novo",
-    "parent-loading": "Nalaganje izvirnega zapiska ...",
-    "parent-load-error": "Izvirnega zapiska ni bilo mogoče naložiti.",
-    "parent-unavailable": "Izvirni zapisek ni na voljo",
+    "parent-loading": "Nalaganje nadrejenega zapiska ...",
+    "parent-load-error": "Nadrejenega zapiska ni bilo mogoče naložiti.",
+    "parent-unavailable": "Nadrejeni zapisek ni na voljo",
     "parent-unavailable-description": "Morda je bil izbrisan ali pa nimate več dostopa.",
     "moved": "Zapisek premaknjen",
-    "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
-    "grid-compact-hint": "Mrežne postavitve vedno uporabljajo kompaktne kartice.",
+    "grid-compact-hint": "Strni daljše beležke. Vedno omogočeno v mrežnih postavitvah.",
     "layout": "Postavitev",
     "layout-auto": "Samodejno",
     "layout-auto-description": "Toliko stolpcev, kolikor se prilega zaslonu",
@@ -363,11 +466,17 @@
     "on-this-memo": "V tem zapisku",
     "parent-memo": "Nadrejeni zapisek",
     "view-options": "Možnosti pogleda",
-    "sensitive-content": "Sensitive content",
-    "split-view": "Split view",
-    "split-view-description": "Memo list beside the open memo",
-    "split-view-list": "Memo list",
-    "split-view-untitled": "No text"
+    "add-reaction": "Dodajte reakcijo",
+    "remove-reaction": "Odstrani reakcijo",
+    "full-width": "Polna širina",
+    "full-width-hint": "Uporabi celotno širino časovnice beležk.",
+    "include-comments": "Vključi komentarje",
+    "include-comments-hint": "V seznamih prikaži komentarje skupaj z beležkami.",
+    "sensitive-content": "Občutljiva vsebina",
+    "split-view": "Razdeljen pogled",
+    "split-view-description": "Seznam zapiskov ob odprtem zapisku",
+    "split-view-list": "Seznam zapiskov",
+    "split-view-untitled": "Ni besedila"
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",
@@ -382,7 +491,9 @@
     "restored-successfully": "Uspešno obnovljeno",
     "succeed-copy-content": "Vsebina je uspešno skopirana.",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
-    "update-succeed": "Posodobitev je uspešna"
+    "update-succeed": "Posodobitev je uspešna",
+    "not-signed-in": "Niste prijavljeni.",
+    "invalid-datetime": "Neveljaven datum in čas. Uporabite obliko 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Ne najdem beležk",
@@ -452,7 +563,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Shramba za priloge ni na voljo.",
-      "email-in-use": "Ta e-poštni naslov že uporablja drug račun."
+      "email-in-use": "Ta e-poštni naslov že uporablja drug račun.",
+      "avatar-too-large": "Izberite sliko velikosti največ 2 MB.",
+      "avatar-unreadable": "Te slike ni mogoče prebrati. Poskusite z drugo datoteko."
     },
     "instance": {
       "disallow-change-nickname": "Onemogoči spremembo vzdevka",
@@ -490,18 +603,10 @@
       "no-members-found": "Ni članov",
       "active": "Aktiven",
       "archived": "Arhivirano",
-      "member-column": "član",
-      "summary-column": "Povzetek"
-    },
-    "memo": {
-      "label": "Beležka",
-      "reactions": "Odzivi",
-      "reactions-required": "Seznam reakcij ne sme biti prazen",
-      "add-reaction": "Dodajte reakcijo",
-      "configured-reactions": "Konfigurirane reakcije",
-      "reaction-placeholder": "npr. 👍",
-      "reactions-description": "Določite možnosti odziva, ki jih lahko uporabniki uporabijo za beležke.",
-      "remove-reaction": "Odstrani reakcijo"
+      "export-memos": "Izvozi zapiske",
+      "username-password-required": "Uporabniško ime in geslo ne smeta biti prazna",
+      "create-success": "Uporabnik ustvarjen",
+      "update-success": "Uporabnik posodobljen"
     },
     "my-account": {
       "label": "Moj račun"
@@ -525,13 +630,148 @@
       "theme-description": "Izbrano temo takoj uporabi v tej napravi.",
       "theme": "Tema",
       "uploads-privacy-description": "Nadzorujte podatke, ki so občutljivi na zasebnost in so poslani z naloženimi mediji.",
-      "uploads-privacy-title": "Nalaganja in zasebnost"
+      "uploads-privacy-title": "Nalaganja in zasebnost",
+      "theme-system": "Sledi sistemu",
+      "theme-system-short": "Sistemska",
+      "theme-light": "Svetla",
+      "theme-dark": "Temna",
+      "theme-paper": "Papir"
+    },
+    "editor": {
+      "label": "Urejevalnik",
+      "markdown-mode-description": "Pišite in urejajte beležke kot besedilo Markdown namesto oblikovanega besedila."
     },
     "memo-view": {
       "create": "Ustvari pogled",
       "delete-confirm": "Ali ste prepričani, da želite izbrisati pogled \"{{title}}\"?",
       "delete-success": "Pogled \"{{title}}\" je uspešno izbrisan",
-      "change-icon": "Spremeni ikono pogleda"
+      "change-icon": "Spremeni ikono pogleda",
+      "page-description": "Ustvarite poglede za večkratno uporabo s polji, operatorji, časovnimi funkcijami in ujemanjem značk. Začnite s primeri in pred shranjevanjem preverite izraz.",
+      "edit": "Uredi pogled",
+      "form-description": "Poimenujte pogled in določite izraz filtra beležk, ki naj ga uporablja.",
+      "title-placeholder": "Pripeto, Nedavne beležke, Delo",
+      "filter-help": "Izraze združujte z {{and}}, {{or}} in {{not}}. Časovna polja so časovni žigi — uporabite {{now}}, {{duration}}, {{timestamp}} in dostopnike, kot je {{year}}. Značke podpirajo {{sets}}, {{size}} pa meri dolžino.",
+      "validate": "Preveri",
+      "all": "Vsi pogledi",
+      "loading": "Nalaganje pogledov…",
+      "load-failed": "Pogledov ni bilo mogoče naložiti.",
+      "empty-title": "Še ni pogledov",
+      "empty-description": "Shranite filter, da se hitro vrnete k beležkam, ki jih potrebujete.",
+      "examples-title": "Primeri izrazov",
+      "fields-title": "Podprta polja",
+      "title-filter-required": "Naslov in filter ne smeta biti prazna",
+      "filter-valid": "Izraz filtra je videti veljaven",
+      "create-success": "Pogled ustvarjen",
+      "update-success": "Pogled posodobljen",
+      "examples": {
+        "pinned": {
+          "title": "Pripeto",
+          "description": "Samo pripete beležke."
+        },
+        "recent": {
+          "title": "Nedavne beležke",
+          "description": "Beležke, ustvarjene v zadnji uri."
+        },
+        "public": {
+          "title": "Javne beležke",
+          "description": "Samo javne beležke."
+        },
+        "project-tags": {
+          "title": "Projektne značke",
+          "description": "Natančno ujemanje z eno ali več značkami."
+        },
+        "untagged": {
+          "title": "Brez značk",
+          "description": "Beležke brez značk."
+        },
+        "archive-tree": {
+          "title": "Drevo arhiva",
+          "description": "Ujemanje hierarhičnih značk po predponi."
+        },
+        "unassigned": {
+          "title": "Nedodeljeno",
+          "description": "Beležke, ki niso v nobenem prostoru."
+        },
+        "one-space": {
+          "title": "V enem prostoru",
+          "description": "Beležke v prostoru. Uporabite ID prostora iz njegovega URL-ja ali nastavitev."
+        },
+        "open-tasks": {
+          "title": "Odprta opravila",
+          "description": "Beležke z nedokončanimi opravili."
+        },
+        "links-or-code": {
+          "title": "Povezave ali koda",
+          "description": "Beležke s povezavami ali bloki kode."
+        },
+        "no-location": {
+          "title": "Brez lokacije",
+          "description": "Beležke brez pripete lokacije."
+        },
+        "with-attachments": {
+          "title": "S prilogami",
+          "description": "Beležke z vsaj eno priloženo datoteko."
+        },
+        "photos": {
+          "title": "Fotografije",
+          "description": "Beležke, ki prikazujejo sliko v vsebini ali kot priloženo datoteko."
+        },
+        "content-search": {
+          "title": "Iskanje po vsebini",
+          "description": "Iskanje besedila v vsebini beležk."
+        },
+        "starts-with": {
+          "title": "Začne se z",
+          "description": "Beležke, katerih vsebina se začne z besedilom (tudi endsWith)."
+        },
+        "regex": {
+          "title": "Ujemanje z regexom",
+          "description": "Ujemanje vsebine z regularnim izrazom."
+        },
+        "all-tags-complete": {
+          "title": "Vse značke dokončane",
+          "description": "Vsaka značka se konča z -done (samo beležke z značkami)."
+        },
+        "one-project-tag": {
+          "title": "Ena projektna značka",
+          "description": "Predikatu ustreza natanko ena značka."
+        },
+        "any-tags": {
+          "title": "Katera koli od teh značk",
+          "description": "Značke se prekrivajo z danim naborom."
+        },
+        "exact-tags": {
+          "title": "Natanko te značke",
+          "description": "Označene natanko s tem naborom, nič več."
+        },
+        "year-2024": {
+          "title": "Beležke iz leta 2024",
+          "description": "Filtriranje po koledarskem letu."
+        },
+        "weekend": {
+          "title": "Vikend beležke",
+          "description": "Ustvarjene v nedeljo ali soboto (0 = nedelja)."
+        },
+        "long": {
+          "title": "Dolge beležke",
+          "description": "Beležke, daljše od 280 znakov."
+        }
+      }
+    },
+    "configuration": {
+      "label": "Konfiguracija",
+      "description": "Viri, nastavljeni s konfiguracijskimi datotekami. Če jih želite spremeniti, uredite datoteko in jo uveljavite; preostali del primerka ostaja urejljiv tukaj.",
+      "managed-by": "Upravlja konfiguracija",
+      "managed-tooltip": "Nastavljeno v {{source}}. Če želite to spremeniti, uredite datoteko in jo uveljavite.",
+      "resource": "Vir",
+      "source": "Datoteka",
+      "managed-fields": "Upravljana polja",
+      "whole-resource": "Vsa polja",
+      "ignored-fields": "Urejljivo tukaj",
+      "serial": "Zaporedna številka",
+      "last-apply": "Nazadnje uveljavljeno",
+      "applied-by": "Uveljavil",
+      "nothing-managed": "Nobena konfiguracija ni bila uveljavljena. Vse se nastavi tukaj."
     },
     "sso": {
       "authorization-endpoint": "Končna točka avtorizacije",
@@ -560,7 +800,6 @@
       "basic-settings": "Osnovne nastavitve",
       "basic-settings-description": "Nastavite identiteto ponudnika, prikazno ime in pravila izbirnega identifikatorja, preden izpolnite podrobnosti OAuth.",
       "client-secret-optional-description": "Pustite prazno, da obstoječa skrivnost odjemalca ostane nespremenjena.",
-      "configuration": "Konfiguracija",
       "configuration-summary-description": "Prikažite bistvene elemente, ki pomagajo identificirati in revidirati ponudnika, ne da bi pri tem izpostavili celotno konfiguracijo.",
       "create-sso-description": "Ustvarite novega ponudnika identitete za enotno prijavo, ki jo upravlja skrbnik.",
       "endpoints": "Končne točke",
@@ -582,17 +821,20 @@
       "not-linked-description": "Nobena zunanja identiteta še ni povezana. Tega ponudnika lahko povežete, da se pozneje prijavite z njim.",
       "oauth-configuration": "konfiguracija OAuth",
       "oauth-configuration-description": "Izpolnite poverilnice odjemalca OAuth in končne točke ponudnika, uporabljene med prijavo.",
-      "provider": "Ponudnik",
       "provider-id": "ID ponudnika",
       "provider-id-description": "Samo male črke, številke in vezaji. Ta vrednost postane del imena vira ponudnika.",
       "provider-uid": "UID",
       "redirect-url-description": "Registrirajte ta povratni klic URL pri svojem ponudniku identitete, da se lahko tok avtorizacijske kode zaključi.",
-      "scope-count_one": "obseg {{count}}",
-      "scope-count_other": "{{count}} obsegi",
+      "scope-count_one": "{{count}} obseg",
+      "scope-count_two": "{{count}} obsega",
+      "scope-count_few": "{{count}} obsegi",
+      "scope-count_other": "{{count}} obsegov",
       "scopes-description": "Obseg ločite s presledki. Večina ponudnikov potrebuje le majhen nabor, kot je dostop do profila ali e-pošte.",
       "template-description": "Začnite s prednastavitvijo ponudnika, nato prilagodite poverilnice in končne točke za svojega najemnika.",
       "unlink-success": "Nepovezan {{name}}.",
-      "update-sso-description": "Preglejte konfiguracijo ponudnika in shranite polja, ki bi se morala spremeniti."
+      "update-sso-description": "Preglejte konfiguracijo ponudnika in shranite polja, ki bi se morala spremeniti.",
+      "invalid-config": "Konfiguracija ponudnika identitete ni veljavna.",
+      "provider-id-placeholder": "npr. github, okta-corp"
     },
     "storage": {
       "accesskey": "Dostopni ključ",
@@ -640,7 +882,8 @@
       "customize-server": {
         "description": "Opis",
         "icon-url": "URL ikone",
-        "title": "Prilagodi strežnik"
+        "title": "Prilagodi strežnik",
+        "dialog-description": "Prilagodite videz in nastavitve svoje instance."
       },
       "label": "Sistem",
       "server-name": "Ime strežnika",
@@ -670,8 +913,6 @@
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
       "never-applies": "Never applies",
       "never-applies-description": "Every user named here is caught by an earlier entry.",
       "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
@@ -718,7 +959,6 @@
       },
       "no-webhooks-found": "Ne najdem nobenega webhooka.",
       "title": "Webhooks",
-      "url": "URL",
       "label": "Webhooks"
     },
     "tags": {
@@ -739,25 +979,26 @@
       "used-count": "Beležke {{count}}"
     },
     "ai": {
+      "key-reentry": "Po spremembi vrste ali končne točke je treba ključ API vnesti znova.",
+      "provider-type-openai": "Združljivo z OpenAI",
+      "delete-provider-description": "S tem odstranite ponudnika in njegov shranjeni ključ API.",
+      "text-generation-title": "Ustvarjanje besedila",
+      "text-generation-description": "Izberite ponudnika in vnesite ID njegovega besedilnega modela za predloge oznak.",
+      "text-generation-disabled": "Brez — ustvarjanje besedila onemogočeno",
+      "model-help": "Uporabite identifikator modela ponudnika, npr. {{example}}.",
+      "model-required": "Potreben je model.",
       "add-provider": "Dodajte ponudnika",
       "api-key": "Ključ API",
       "api-key-required": "Potreben je ključ API.",
-      "byok-description": "Povežite OpenAI ali Gemini s ključem API iz svojega računa. Memos pokliče ponudnika neposredno s tega strežnika.",
-      "byok-key-note": "Uporabite ključ iz računa vašega ponudnika; Memos ne združuje skupnih poverilnic AI.",
-      "byok-label": "BYOK",
-      "byok-model-note": "Memos izbere podprte modele za funkcije, kot je zvočni prepis.",
+      "byok-description": "Povežite storitev UI s ključem API iz svojega računa ali strežnik modelov, ki ga upravljate sami. Memos jo kliče neposredno s tega strežnika.",
       "byok-storage-note": "Ključi ostanejo na tej instanci in so prikriti, ko se naložijo nastavitve.",
-      "byok-title": "Uporabite svoj račun AI",
-      "configured": "Konfigurirano",
       "current-key": "Trenutni ključ: {{key}}",
-      "default-endpoint": "Privzeta končna točka",
-      "delete-provider": "Izbrisati ponudnika AI `{{title}}`?",
-      "dialog-description": "Dodajte ključ iz svojega računa ponudnika. Memos uporablja vgrajene modele za vsakega ponudnika; med urejanjem pustite ključ API prazen, da obdržite shranjen ključ.",
+      "delete-provider-impact": "Z odstranitvijo tega ponudnika bodo izklopljene naslednje funkcije: {{features}}.",
+      "delete-provider": "Izbrisati ponudnika AI “{{title}}”?",
       "edit-provider": "Uredi ponudnika",
       "endpoint": "Končna točka",
       "endpoint-hint": "Pustite prazno za uporabo uradne končne točke ponudnika.",
-      "integrations-description": "Ključe ponudnika zagotovi lastnik primerka, uporabljajo pa jih funkcije AI na strani strežnika.",
-      "integrations-title": "AI integracije",
+      "integrations-title": "Ponudniki",
       "keep-api-key": "Pustite prazno, da obdržite obstoječi ključ",
       "label": "AI",
       "no-providers": "Konfiguriran ni noben ponudnik AI.",
@@ -765,21 +1006,49 @@
       "provider-title-required": "Zahtevano je ime ponudnika.",
       "provider-type": "Vrsta ponudnika",
       "transcription-description": "Nastavitve pretvorbe govora v besedilo, ki se uporabljajo pri snemanju zvoka v sestavljalniku beležk.",
-      "transcription-empty-providers": "Najprej dodajte integracijo AI, da omogočite prepis.",
       "transcription-language-help": "Kratka oznaka ISO 639-1 (npr. en, de, zh). Pustite prazno za samodejno zaznavanje.",
       "transcription-language-placeholder": "samodejno zaznavanje",
       "transcription-language": "Privzeti jezik",
-      "transcription-model-help": "Prosto besedilo. Uporabite identifikator modela ponudnika — npr. whisper-1, gpt-4o-transcribe, whisper-large-v3-turbo.",
-      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
-      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
       "transcription-model": "Model",
       "transcription-no-provider": "Brez — prepis onemogočen",
-      "transcription-prompt-help": "Izboljša črkovanje lastnih imen in žargona. OpenAI Whisper to obravnava kot mehak namig (omejitev Whisper je približno 224 žetonov). Gemini ga obravnava kot dobesedno navodilo znotraj poziva za generiranje.",
+      "transcription-prompt-help": "Izboljša črkovanje lastnih imen in žargona.",
       "transcription-prompt-placeholder": "Imena: Alice, Bob. Glosar: kubernetes, OAuth.",
       "transcription-prompt": "Hitri namigi",
       "transcription-provider": "Ponudnik",
       "transcription-title": "Transkripcija",
-      "transcription-warning-no-key": "Izbrani ponudnik nima nabora ključev API. Uredite zgornjo integracijo, da jo dodate."
+      "try-it": "Preizkusi",
+      "checking-connection": "Preverjanje povezave…",
+      "try-transcription-title": "Preizkusi prepis",
+      "try-transcription-description": "Posnemite ali naložite zvok in si oglejte njegov prepis. Vsak zagon je resnična zahteva vašemu ponudniku; nič se ne shrani.",
+      "try-tags-title": "Preizkusi predloge oznak",
+      "try-tags-description": "Napišite zapisek in si oglejte, katere oznake bi dobil. Vsak zagon je resnična zahteva vašemu ponudniku; nič se ne shrani.",
+      "try-note": "Zapisek",
+      "suggest-tags": "Predlagaj oznake",
+      "suggested-tags": "Predlagane oznake",
+      "suggested-tags-empty": "Predlagane oznake bodo prikazane tukaj",
+      "no-tags-suggested": "Za ta zapisek ni predlaganih oznak.",
+      "transcript-empty": "Prepis bo prikazan tukaj",
+      "record": "Snemaj",
+      "upload-audio": "Naloži datoteko",
+      "audio-formats": "MP3, M4A, WAV, WebM · do 25 MB",
+      "copy-transcript": "Kopiraj prepis",
+      "try-uses-saved": "Uporablja shranjene nastavitve. Shranite, da preizkusite spremembe.",
+      "provider-type-anthropic-compatible": "Združljivo z Anthropic",
+      "status": "Stanje",
+      "used-by": "Uporablja",
+      "not-used": "Ni v uporabi",
+      "status-connected": "Povezano",
+      "status-invalid-key": "Neveljaven ključ",
+      "status-unreachable": "Nedosegljivo",
+      "status-out-of-credit": "Zmanjkalo dobroimetja",
+      "status-error": "Napaka",
+      "cannot-transcribe": "Ne zna prepisovati",
+      "no-models-listed": "Noben model s seznama se ne ujema. Vneseni ID se uporabi, kot je.",
+      "endpoint-required": "Končna točka je obvezna.",
+      "optional": "Neobvezno",
+      "request-url": "Zahteve gredo na {{url}}",
+      "get-api-key": "Pridobite ključ API",
+      "local-endpoint-hint": "Strežnik memos se poveže na ta naslov, zato localhost pomeni ta strežnik. Če memos teče v Dockerju, uporabite host.docker.internal ali ime storitve Compose."
     },
     "notification": {
       "email-description": "Pošljite kopije po e-pošti za komentarje in omembe beležk. Gmail deluje s smtp.gmail.com, vrati 587, STARTTLS in geslom za aplikacijo.",
@@ -872,7 +1141,9 @@
       "review-existing": "Že v vašem računu",
       "review-exported": "Izvozil/a",
       "review-memos": "Beležke v datoteki",
-      "review-new": "Bo ustvarjeno"
+      "review-new": "Bo ustvarjeno",
+      "export-admin-only": "Zapiske lahko izvozijo samo skrbniki. Za svojo izvozno datoteko prosite skrbnika.",
+      "export-busy": "Drug izvoz je v teku. Poskusite znova čez trenutek."
     },
     "spaces": {
       "general": "Splošno",
@@ -958,7 +1229,8 @@
   },
   "tooltip": {
     "link-memo": "Povezava do beležke",
-    "select-location": "Lokacija"
+    "select-location": "Lokacija",
+    "link-memo-description": "Poiščite in izberite beležko za povezavo"
   },
   "demo": {
     "banner-description": "Spremembe so začasne in jih je mogoče ponastaviti.",
@@ -1061,9 +1333,15 @@
     "loading": "Nalaganje zapiskov…",
     "new-here": "Pišite tukaj",
     "saved-outside-filter": "Shranjeno. Ta zapisek je zunaj trenutnih rezultatov zemljevida.",
-    "open-memo": "Odpri opombo"
+    "open-memo": "Odpri opombo",
+    "open-in-google-maps": "Odpri v Google Maps",
+    "location-description": "Izberite lokacijo na zemljevidu ali ročno vnesite koordinate",
+    "latitude": "Zemljepisna širina",
+    "longitude": "Zemljepisna dolžina",
+    "place-placeholder": "Najprej izberite položaj."
   },
   "calendar": {
+    "more-memos": "še {{count}}",
     "new-memo-on-day": "Nova beležka na ta dan",
     "next-year": "Naslednje leto",
     "no-memos-in-month": "Ni beležk v {{month}}",
@@ -1072,7 +1350,6 @@
     "select-month": "Izberite mesec"
   },
   "space": {
-    "all-spaces": "Vsi prostori",
     "icon": {
       "change": "Spremeni ikono prostora",
       "kind": "Vrsta ikone",
@@ -1082,7 +1359,7 @@
       "search-emoji": "Išči ali prilepi emoji…",
       "no-results": "Ni zadetkov",
       "emoji-help": "Izberite pogost emoji ali prilepite svojega.",
-      "reset": "Ponastavi na privzeto",
+      "reset": "Uporabi privzeto ikono",
       "use-emoji": "Uporabi {{emoji}}"
     },
     "unavailable": "Ta prostor ne obstaja ali pa do njega nimate dostopa.",
@@ -1105,5 +1382,111 @@
     "name-placeholder": "npr. Izdelek",
     "spaces": "Prostori",
     "switch": "Zamenjaj prostor"
+  },
+  "welcome": {
+    "title": "Dobrodošli v Memos",
+    "headline": "Preproste beležke za vsakdanje misli.",
+    "intro-write": "En sam stavek je lahko cela beležka.",
+    "intro-keep": "Vsaka beležka ostane pri dnevu, ko ste jo napisali.",
+    "intro-share": "Sami izberete, kaj ostane zasebno.",
+    "write": "Pisanje",
+    "write-sub": "En sam stavek je lahko cela beležka.",
+    "no-title": "Brez naslova",
+    "no-title-text": "Beležka se začne s samo mislijo. Naslova ni treba izpolniti.",
+    "markdown": "Markdown",
+    "markdown-text": "Markdown da vašim besedam strukturo, kadar jo želite.",
+    "attach": "Priloge",
+    "attach-text": "Slike, datoteke, zvok in kraj dodate prek ＋.",
+    "keep": "Hranjenje",
+    "keep-sub": "Vsaka beležka ostane pri dnevu, ko ste jo napisali.",
+    "calendar-text": "Koledar vodi nazaj do katerega koli dne.",
+    "tags-text": "Beseda za # postane značka, značka pa filtrira časovnico.",
+    "views-text": "Pogled po meri shrani filter.",
+    "map-text": "Beležke s krajem so na zemljevidu.",
+    "share": "Deljenje",
+    "share-sub": "Beležke so sprva zasebne. Sami izberete, kaj delite in kaj objavite.",
+    "visibility-text": "Vsaka beležka ima svojo nastavitev. Nove so sprva zasebne, samo za vas; javna ima povezavo, ki jo lahko odpre vsakdo.",
+    "spaces-text": "V prostoru člani pišejo ob vas, vsak s svojimi beležkami.",
+    "comments": "Komentarji",
+    "comments-text": "Kdor beležko vidi, lahko pod njo odgovori.",
+    "skip": "Preskoči",
+    "next": "Naprej",
+    "done": "Končano",
+    "page-of": "Stran {{current}} od {{total}}",
+    "reopen": "Uvodni vodnik",
+    "reopen-note": "Štirje zasloni, ki jih nov račun vidi najprej.",
+    "sample": {
+      "today": "Danes, 10:42",
+      "today-early": "Danes, 9:18",
+      "yesterday": "Včeraj, 15:20",
+      "comment-age": "2 h",
+      "memo-preview": "Preprostejši prvi zaslon. Eno polje, nato predogled.",
+      "memo-release": "Pred naslednjo izdajo",
+      "task-sketch": "Skicirati prvi zaslon",
+      "task-polish": "Izpiliti predogled",
+      "write-lead": "Prvi korak naj bo majhen.",
+      "write-strong": "Podrobnosti pokažemo",
+      "write-tail": "šele takrat, ko so potrebne.",
+      "write-task": "Napisati kratek dnevnik sprememb",
+      "view": "Nedokončane naloge",
+      "space": "Izdelek",
+      "share-memo": "Poskusimo pokazati rezultat, preden ljudi prosimo za prijavo.",
+      "comment": "Se strinjam. Prepričal je prav predogled.",
+      "tag-design": "oblikovanje",
+      "tag-project": "projekt",
+      "tag-reading": "branje",
+      "tag-ideas": "ideje"
+    }
+  },
+  "error": {
+    "title": "Nekaj je šlo narobe",
+    "description": "Prišlo je do nepričakovane napake. Vzrok je lahko težava z omrežjem ali napaka v aplikaciji.",
+    "description-update": "Prišlo je do nepričakovane napake. Vzrok je lahko težava z omrežjem ali posodobitev aplikacije. Ponovno nalaganje običajno pomaga.",
+    "details": "Podrobnosti napake",
+    "reload": "Znova naloži aplikacijo",
+    "not-found": "Strani, ki jo iščete, ni mogoče najti.",
+    "permission-denied": "Dostop zavrnjen",
+    "too-many-requests": "Preveč zahtev. Poskusite znova čez {{wait}}.",
+    "ai-auth-failed": "Ponudnik je zavrnil ključ API ali zavrnil dostop.",
+    "ai-model-not-found": "Ponudnik ni našel tega modela ali končne točke.",
+    "ai-quota-exhausted": "Račun pri ponudniku nima dobroimetja ali je presegel omejitev porabe.",
+    "ai-rate-limited": "Ponudnik omejuje zahteve za ta ključ. Počakajte in poskusite znova ali preverite kvoto.",
+    "ai-request-rejected": "Ponudnik je zavrnil zahtevo. Preverite model in parametre, ki jih podpira.",
+    "ai-unreachable": "Povezava s končno točko ponudnika ni uspela. Preverite URL in omrežje.",
+    "ai-timeout": "Ponudnik ni odgovoril pravočasno.",
+    "ai-redirected": "Končna točka je preusmerila zahtevo. Vnesite končni URL.",
+    "ai-invalid-response": "Ponudnik ni vrnil uporabnega odgovora. Preverite končno točko in model.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Dokončajte preverjanje in poskusite znova.",
+    "quota-memo-count": "Dosegli ste omejitev {{limit}} beležk. Izbrišite beležke, če želite ustvariti nove.",
+    "quota-storage": "S tem nalaganjem bi presegli omejitev prostora {{limit}}. Porabljate {{usage}}.",
+    "quota-upload": "Ta datoteka presega vašo omejitev {{limit}} na datoteko.",
+    "quota-memo-content": "Ta beležka presega vašo omejitev {{limit}} na beležko. Skrajšajte vsebino, da jo shranite.",
+    "quota-generic": "Dosegli ste omejitev uporabe.",
+    "sign-in-failed": "Prijava ni uspela.",
+    "sign-up-failed": "Registracija ni uspela",
+    "authenticate-failed": "Overjanje ni uspelo.",
+    "update-profile-failed": "Posodobitev profila ni uspela",
+    "unlink-identity-failed": "Odklop ponudnika identitete ni uspel.",
+    "link-identity-failed": "Povezovanja računa ni bilo mogoče začeti. Poskusite znova."
+  },
+  "attachment-preview": {
+    "title": "Predogled priloge",
+    "description": "Okno za predogled prilog. Pritisnite Escape za zapiranje, s puščicama levo in desno preklapljajte med elementi, slike pa povečajte z gumbi, kolescem miške, dvojnim dotikom ali potegom s prsti.",
+    "close": "Zapri predogled",
+    "previous": "Prejšnji element",
+    "next": "Naslednji element",
+    "reset-zoom": "Ponastavi povečavo",
+    "image-alt": "Predogled slike {{index}} od {{count}}",
+    "live-photo-alt": "Predogled slike v živo {{index}} od {{count}}",
+    "play-live-photo": "Premaknite kazalec nad sliko ali pritisnite za predvajanje slike v živo"
+  },
+  "audio-player": {
+    "seek": "Premikanje po {{name}}",
+    "back": "Nazaj za {{seconds}} sekund",
+    "forward": "Naprej za {{seconds}} sekund",
+    "speed": "Hitrost predvajanja {{rate}}x"
   }
 }

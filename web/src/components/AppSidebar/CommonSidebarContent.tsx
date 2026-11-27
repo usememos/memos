@@ -5,7 +5,7 @@ import { MEMOS_API_DOCUMENTATION_URL, MEMOS_DOCUMENTATION_URL, MEMOS_GITHUB_URL 
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
-import { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
+import { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, sidebarRowStateAttributes, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 
 interface ResourceLink {
@@ -25,6 +25,7 @@ const CommonSidebarContent = () => {
   const location = useLocation();
   const { setMobileOpen } = useAppSidebar();
   const aboutActive = Boolean(matchPath(ROUTES.ABOUT, location.pathname));
+  const aboutState = aboutActive ? "current" : "idle";
 
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
@@ -33,7 +34,8 @@ const CommonSidebarContent = () => {
           to={ROUTES.ABOUT}
           aria-current={aboutActive ? "page" : undefined}
           onClick={() => setMobileOpen(false)}
-          className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutActive ? "current" : "idle"))}
+          {...sidebarRowStateAttributes(aboutState)}
+          className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutState))}
         >
           <SidebarRowIconSlot icon={InfoIcon} />
           <span className="min-w-0 flex-1 truncate">{t("common.about")}</span>
@@ -54,8 +56,7 @@ const CommonSidebarContent = () => {
             <span className="min-w-0 flex-1 truncate">{t(resource.labelKey)}</span>
             <ExternalLinkIcon
               aria-hidden="true"
-              className="size-3 shrink-0 text-muted-foreground/50 transition-colors group-hover:text-foreground/70"
-              strokeWidth={1.8}
+              className="mu-icon-xs shrink-0 text-mu-text-secondary/50 transition-colors group-hover:text-mu-text/70"
             />
           </a>
         ))}

@@ -15,7 +15,12 @@
     "loading": "正在加载 Memo…",
     "new-here": "在这里记录",
     "saved-outside-filter": "已保存，这条 Memo 不在当前地图结果中。",
-    "open-memo": "打开 Memo"
+    "open-memo": "打开 Memo",
+    "open-in-google-maps": "在 Google Maps 中打开",
+    "location-description": "在地图上选择位置或手动输入坐标",
+    "latitude": "纬度",
+    "longitude": "经度",
+    "place-placeholder": "请先选择一个位置。"
   },
   "about": {
     "api-docs": "API 文档",
@@ -40,30 +45,28 @@
   },
   "auth": {
     "admin-sign-in": "管理员登录",
-    "admin-sign-in-tip": "管理员始终可以使用密码登录。",
     "back-to-sign-in": "返回登录",
+    "callback-failed-title": "无法完成登录",
     "continue-with": "使用 {{provider}} 继续",
+    "redirecting-to-provider": "正在跳转至 {{provider}}…",
+    "signing-in": "正在登录…",
     "create-admin-account": "创建管理员账号",
     "create-your-account": "创建您的账户",
-    "explore-public-memos": "浏览此实例上的公开 Memo",
-    "first-run": "首次运行",
+    "hide-password": "隐藏密码",
+    "incorrect-credentials": "用户名或密码错误。",
     "new-password": "新密码",
     "repeat-new-password": "重复新密码",
     "setup-description": "为此实例创建管理员账号。",
-    "setup-note": "该账号拥有实例设置、成员与身份提供商的管理权限。",
     "setup-title": "初始化实例",
+    "show-password": "显示密码",
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？",
     "signin-unavailable-description": "密码登录已关闭，且未配置身份提供商。请联系管理员启用登录方式。",
     "signin-unavailable-title": "无法登录",
-    "signup-unavailable-description": "密码账号已关闭，且未配置身份提供商。如需访问，请联系管理员。",
-    "signup-unavailable-title": "无法注册",
-    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。",
-    "signups-closed-title": "注册已关闭",
-    "sso-signup-tip": "使用以下登录方式即可创建账号。",
-    "welcome-back": "欢迎回来。"
+    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。"
   },
   "calendar": {
+    "more-memos": "还有 {{count}} 条",
     "new-memo-on-day": "在这一天新建备忘录",
     "next-year": "下一年",
     "no-memos-in-month": "{{month}} 没有备忘录",
@@ -87,7 +90,6 @@
     "attachments": "附件",
     "avatar": "头像",
     "basic": "基础",
-    "browse": "浏览",
     "calendar": "日历",
     "cancel": "取消",
     "clear": "清除",
@@ -129,6 +131,8 @@
     "memos": "备忘录",
     "month-navigation": "月份导航",
     "more": "更多",
+    "move-down": "下移",
+    "move-up": "上移",
     "name": "名称",
     "next-month": "下个月",
     "nickname": "昵称",
@@ -140,7 +144,6 @@
     "profile": "个人资料",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "关系图",
     "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
@@ -169,12 +172,35 @@
     "views": "视图",
     "yourself": "您自己",
     "resize-sidebar": "调整侧边栏大小",
-    "view-all": "查看全部"
+    "open-navigation": "打开导航",
+    "navigation": "导航",
+    "primary-navigation": "主导航",
+    "download": "下载",
+    "download-name": "下载 {{name}}",
+    "open-name": "打开 {{name}}",
+    "preview-name": "预览 {{name}}",
+    "no-content": "无内容",
+    "previous": "上一个",
+    "next": "下一个",
+    "retry": "重试",
+    "docs": "文档",
+    "calendar-for-month": "{{month}}日历",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "已选位置",
+    "choose-location": "选择位置",
+    "unknown-error": "未知错误",
+    "error-occurred": "发生错误"
   },
   "locale-picker": {
     "no-language-feedback": "未找到语言？ 提交反馈"
   },
   "editor": {
+    "suggest-tags": "使用 AI 建议标签",
+    "no-suggested-tags": "暂无建议标签",
+    "tag-suggestions-label": "标签建议",
+    "tag-suggestions-error": "暂时无法获取标签建议",
+    "tag-suggestions-limit": "标签建议次数已达上限，请稍后再试。",
+    "set-visibility": "设为「{{visibility}}」",
     "suggestions": "建议",
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
@@ -199,6 +225,9 @@
     "new-memo": "新建备忘录",
     "no-changes-detected": "未检测到更改",
     "save": "保存",
+    "saving": "正在保存…",
+    "updating": "正在更新…",
+    "commenting": "正在发送评论…",
     "validation": {
       "cannot-save": "无法保存",
       "content-required": "需要填写正文或添加附件",
@@ -215,11 +244,57 @@
       "image-upload-failed": "部分图片上传失败，请重试或将已上传文件保留为附件。",
       "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
       "insert-image": "插入图片",
+      "drawing": "标注",
       "keep-as-attachments": "保留为附件",
       "link-memo": "链接备忘录",
       "retry-image-upload": "重试",
       "uploading-inline-image": "正在上传到正文",
       "uploading-images": "正在上传图片 {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "edit": "编辑标注",
+      "tools": "工具",
+      "tool-select": "选择",
+      "tool-pen": "画笔",
+      "tool-eraser": "橡皮擦",
+      "tool-rectangle": "矩形",
+      "tool-ellipse": "椭圆",
+      "tool-arrow": "箭头",
+      "tool-text": "文本",
+      "style": "颜色和粗细",
+      "color": "颜色",
+      "width": "粗细",
+      "width-thin": "细",
+      "width-medium": "中",
+      "width-thick": "粗",
+      "color-ink": "墨色",
+      "color-gray": "灰色",
+      "color-red": "红色",
+      "color-orange": "橙色",
+      "color-green": "绿色",
+      "color-teal": "青色",
+      "color-blue": "蓝色",
+      "color-violet": "紫色",
+      "undo": "撤销",
+      "redo": "重做",
+      "zoom": "缩放",
+      "zoom-to-fit": "缩放至适合",
+      "discard-title": "放弃此绘图？",
+      "discard-description": "它尚未添加到备忘录中。",
+      "discard-edit-title": "放弃所做的更改？",
+      "discard-edit-description": "绘图将保持打开前的状态。",
+      "keep-drawing": "继续绘图",
+      "discard": "放弃",
+      "open-failed": "无法打开绘图，请重试。",
+      "export-failed": "无法保存绘图，请重试。",
+      "image-failed": "无法将图片添加到绘图中。",
+      "saved-without-drawing": "备忘录已保存，但绘图未保存。请再次保存以重试。",
+      "annotate": "标注",
+      "save-copy": "保存副本",
+      "unavailable": "保存位置不可用。",
+      "saved-needs-update": "绘图已保存。请重试更新笔记。",
+      "changed-save-copy": "原图已更改。请保存副本以保留绘图。",
+      "bind-failed": "绘图已上传。请重试添加到笔记。"
     },
     "audio-recorder": {
       "attachment-label": "录音",
@@ -240,7 +315,6 @@
     "comment": "评论",
     "footnotes": "脚注",
     "back-to-reference": "返回引用处",
-    "saved": "已保存",
     "blocks": {
       "task": "任务",
       "quote": "引用",
@@ -287,7 +361,19 @@
       "alt-text-placeholder": "描述这张图片…",
       "image-unavailable": "图片无法显示",
       "resize-image": "调整图片大小"
-    }
+    },
+    "attachments": {
+      "edited": "已编辑",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "调整 {{name}} 的顺序",
+      "reorder-hint": "拖动，或使用方向键"
+    },
+    "remove-relation": "移除关联",
+    "remove-location": "移除位置",
+    "recording-unsupported": "此浏览器不支持录音。",
+    "microphone-denied": "麦克风权限被拒绝。",
+    "recording-failed": "无法开始录音。"
   },
   "inbox": {
     "failed-to-load": "加载失败",
@@ -296,15 +382,28 @@
     "unread": "未读",
     "space-invitation": "已邀请您加入空间",
     "space-invitation-accepted": "您已加入此空间。",
-    "space-invitation-open": "打开空间"
+    "space-invitation-open": "打开空间",
+    "commented-on-memo": "评论了您的备忘录",
+    "mentioned-in-comment": "在评论中提到了您",
+    "mentioned-in-memo": "在备忘录中提到了您",
+    "original": "原文：",
+    "memo-label": "备忘录：",
+    "comment-heading": "评论",
+    "memo-heading": "备忘录",
+    "empty-memo": "空备忘录",
+    "empty-comment": "空评论"
   },
   "memo": {
+    "no-memos-yet": "还没有备忘录",
+    "no-matching-memos": "没有符合条件的 Memo",
+    "clear-filters": "清除筛选",
     "pinned": "已置顶",
-    "back-to": "返回{{source}}",
     "click-to-show-sensitive-content": "点击显示敏感内容",
     "comment": {
       "self": "评论",
-      "write-a-comment": "写评论"
+      "write-a-comment": "写评论",
+      "view-all-count_one": "查看全部 {{count}} 条评论",
+      "view-all-count_other": "查看全部 {{count}} 条评论"
     },
     "copy-content": "复制内容",
     "copy-link": "复制链接",
@@ -318,11 +417,12 @@
       "has-image": "有图片",
       "has-link": "有链接",
       "has-location": "有位置",
-      "has-task-list": "有待办"
+      "has-task-list": "有待办",
+      "remove": "移除筛选"
     },
     "compact-mode": "紧凑模式",
     "connections": "关联",
-    "grid-compact-hint": "网格布局始终使用紧凑卡片。",
+    "grid-compact-hint": "收起较长的备忘录。网格布局始终启用此选项。",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
@@ -341,6 +441,13 @@
     "show-less": "显示较少",
     "show-more": "查看更多",
     "view-options": "视图选项",
+    "audience": {
+      "heading": "谁可以看",
+      "private": "仅自己",
+      "space": "空间成员",
+      "protected": "本站登录用户",
+      "public": "所有人"
+    },
     "visibility": {
       "private": "私有",
       "private-description": "仅你可见",
@@ -384,16 +491,22 @@
       "uncheck-all": "全部取消完成",
       "updated": "任务已更新"
     },
-    "parent-loading": "正在加载原始备忘录…",
-    "parent-load-error": "无法加载原始备忘录。",
-    "parent-unavailable": "原始备忘录不可用",
+    "parent-loading": "正在加载父备忘录…",
+    "parent-load-error": "无法加载父备忘录。",
+    "parent-unavailable": "父备忘录不可用",
     "parent-unavailable-description": "它可能已被删除，或者您可能已失去访问权限。",
     "moved": "备忘录已移动",
-    "sensitive-content": "Sensitive content",
-    "split-view": "Split view",
-    "split-view-description": "Memo list beside the open memo",
-    "split-view-list": "Memo list",
-    "split-view-untitled": "No text"
+    "add-reaction": "添加表态",
+    "remove-reaction": "移除表态",
+    "full-width": "全宽显示",
+    "full-width-hint": "使用备忘录时间线的全部宽度。",
+    "include-comments": "包含评论",
+    "include-comments-hint": "在列表中同时显示评论和备忘录。",
+    "sensitive-content": "敏感内容",
+    "split-view": "分栏视图",
+    "split-view-description": "在打开的备忘录旁显示备忘录列表",
+    "split-view-list": "备忘录列表",
+    "split-view-untitled": "无文本"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -408,7 +521,9 @@
     "restored-successfully": "恢复成功",
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "not-signed-in": "您尚未登录。",
+    "invalid-datetime": "日期和时间无效。请使用 2023-12-31 23:59:59 格式。"
   },
   "reference": {
     "no-memos-found": "没有发现备忘录",
@@ -441,28 +556,32 @@
       "user": "普通用户",
       "label": "成员",
       "list-title": "成员列表",
-      "member-column": "成员",
-      "summary-column": "摘要",
-      "no-members-found": "没有找到会员"
+      "no-members-found": "没有找到会员",
+      "export-memos": "导出备忘录",
+      "username-password-required": "用户名和密码不能为空",
+      "create-success": "用户已创建",
+      "update-success": "用户已更新"
     },
     "my-account": {
       "label": "我的账号"
     },
     "ai": {
+      "key-reentry": "更改类型或端点后需要重新填写 API key。",
+      "provider-type-openai": "兼容 OpenAI",
+      "delete-provider-description": "将移除该服务商及其已保存的 API key。",
+      "text-generation-title": "文本生成",
+      "text-generation-description": "选择提供商，填写用于标签建议的文本模型 ID。",
+      "text-generation-disabled": "无 — 文本生成已禁用",
+      "model-help": "填写服务商的模型标识符，例如 {{example}}。",
+      "model-required": "模型不能为空。",
       "add-provider": "添加 provider",
       "api-key": "API 密钥",
       "api-key-required": "API key 不能为空。",
-      "byok-description": "使用你自己的 OpenAI 或 Gemini 账号 API key。Memos 会从本实例服务器直接调用 provider。",
-      "byok-key-note": "使用你在 provider 账号中创建的 key；Memos 不提供共享 AI 凭据。",
-      "byok-label": "自带密钥",
-      "byok-model-note": "Memos 会为音频转写等功能选择内置支持的模型。",
+      "byok-description": "用你自己账号的 API 密钥连接 AI 服务，或连接你自己运行的模型服务器。Memos 直接从这台服务器调用它。",
       "byok-storage-note": "Key 保存在本实例中，加载设置时只返回脱敏提示。",
-      "byok-title": "使用你自己的 AI 账号",
-      "configured": "已配置",
       "current-key": "当前 key：{{key}}",
-      "default-endpoint": "默认端点",
-      "delete-provider": "删除 AI provider `{{title}}`？",
-      "dialog-description": "添加你自己的 provider 账号 key。Memos 会为每个 provider 使用内置模型；编辑时留空 API key 可保留已保存的 key。",
+      "delete-provider-impact": "删除此提供商后，以下功能将停用：{{features}}。",
+      "delete-provider": "删除 AI provider “{{title}}”？",
       "edit-provider": "编辑 provider",
       "endpoint": "端点",
       "endpoint-hint": "留空则使用官方 provider 端点。",
@@ -472,24 +591,51 @@
       "provider-title": "Provider 名称",
       "provider-title-required": "Provider 名称不能为空。",
       "provider-type": "Provider 类型",
-      "integrations-description": "由实例管理员提供的供应商密钥，用于服务端 AI 功能。",
-      "integrations-title": "AI 集成",
+      "integrations-title": "服务商",
       "transcription-description": "在备忘编辑器中录制音频时使用的语音转文字设置。",
-      "transcription-empty-providers": "请先添加 AI 集成以启用语音转写。",
       "transcription-language": "默认语言",
       "transcription-language-help": "ISO 639-1 语言代码（如 en、de、zh）。留空则自动检测。",
       "transcription-language-placeholder": "自动检测",
       "transcription-model": "模型",
-      "transcription-model-help": "自由填写。填入供应商的模型标识符，如 whisper-1、gpt-4o-transcribe、whisper-large-v3-turbo。",
-      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
-      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
       "transcription-no-provider": "无 — 语音转写已禁用",
       "transcription-prompt": "提示词",
-      "transcription-prompt-help": "用于改进专有名词和专业术语的拼写。OpenAI Whisper 将其作为参考提示（约限 224 个词元）；Gemini 将其作为生成提示中的明确指令。",
+      "transcription-prompt-help": "用于改进专有名词和专业术语的拼写。",
       "transcription-prompt-placeholder": "人名：张三、李四。术语：Kubernetes、OAuth。",
       "transcription-provider": "供应商",
       "transcription-title": "语音转写",
-      "transcription-warning-no-key": "所选供应商未设置 API 密钥。请在上方编辑集成信息以添加密钥。"
+      "try-it": "试一试",
+      "checking-connection": "正在检查连接…",
+      "try-transcription-title": "试用转写",
+      "try-transcription-description": "录制或上传音频，查看转写结果。每次运行都会向你的服务商发送真实请求；不会保存任何内容。",
+      "try-tags-title": "试用标签建议",
+      "try-tags-description": "写一条笔记，看看它会得到哪些标签。每次运行都会向你的服务商发送真实请求；不会保存任何内容。",
+      "try-note": "笔记",
+      "suggest-tags": "建议标签",
+      "suggested-tags": "建议的标签",
+      "suggested-tags-empty": "建议的标签将显示在这里",
+      "no-tags-suggested": "没有为这条笔记建议标签。",
+      "transcript-empty": "转写结果将显示在这里",
+      "record": "录音",
+      "upload-audio": "上传文件",
+      "audio-formats": "MP3、M4A、WAV、WebM · 最大 25 MB",
+      "copy-transcript": "复制转写结果",
+      "try-uses-saved": "使用已保存的设置。保存后即可试用你的更改。",
+      "provider-type-anthropic-compatible": "兼容 Anthropic",
+      "status": "状态",
+      "used-by": "用于",
+      "not-used": "未使用",
+      "status-connected": "已连接",
+      "status-invalid-key": "密钥无效",
+      "status-unreachable": "无法连接",
+      "status-out-of-credit": "余额不足",
+      "status-error": "出错",
+      "cannot-transcribe": "不支持转写",
+      "no-models-listed": "列表中没有匹配的模型，将直接使用你输入的 ID。",
+      "endpoint-required": "端点不能为空。",
+      "optional": "可选",
+      "request-url": "请求发送到 {{url}}",
+      "get-api-key": "获取 API 密钥",
+      "local-endpoint-hint": "memos 服务器连接这个地址，所以 localhost 指的是那台服务器。如果 memos 运行在 Docker 中，请使用 host.docker.internal 或 Compose 服务名。"
     },
     "preference": {
       "appearance-description": "选择当前账号使用的界面语言和外观主题。",
@@ -510,13 +656,148 @@
       "theme-description": "立即在当前设备上应用所选主题。",
       "theme": "主题",
       "uploads-privacy-description": "控制上传媒体时提交的隐私敏感信息。",
-      "uploads-privacy-title": "上传与隐私"
+      "uploads-privacy-title": "上传与隐私",
+      "theme-system": "跟随系统",
+      "theme-system-short": "系统",
+      "theme-light": "浅色",
+      "theme-dark": "深色",
+      "theme-paper": "纸张"
+    },
+    "editor": {
+      "label": "编辑器",
+      "markdown-mode-description": "以 Markdown 文本而非格式化文本撰写和编辑备忘录。"
     },
     "memo-view": {
       "create": "创建视图",
       "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",
       "delete-success": "视图 `{{title}}` 删除成功",
-      "change-icon": "更改视图图标"
+      "change-icon": "更改视图图标",
+      "page-description": "使用字段、运算符、时间函数和标签匹配创建可复用的视图。可以从示例开始，保存前先验证。",
+      "edit": "编辑视图",
+      "form-description": "为视图命名，并定义它要应用的备忘录筛选表达式。",
+      "title-placeholder": "置顶、最近笔记、工作",
+      "filter-help": "使用 {{and}}、{{or}} 和 {{not}} 组合表达式。时间字段是时间戳——可使用 {{now}}、{{duration}}、{{timestamp}} 以及 {{year}} 等访问器。标签支持 {{sets}}，{{size}} 用于计算长度。",
+      "validate": "验证",
+      "all": "所有视图",
+      "loading": "正在加载视图…",
+      "load-failed": "无法加载视图。",
+      "empty-title": "暂无视图",
+      "empty-description": "保存筛选条件，以便快速回到需要的备忘录。",
+      "examples-title": "表达式示例",
+      "fields-title": "支持的字段",
+      "title-filter-required": "标题和筛选条件不能为空",
+      "filter-valid": "筛选表达式看起来有效",
+      "create-success": "视图已创建",
+      "update-success": "视图已更新",
+      "examples": {
+        "pinned": {
+          "title": "置顶",
+          "description": "仅置顶的备忘录。"
+        },
+        "recent": {
+          "title": "最近笔记",
+          "description": "过去一小时内创建的备忘录。"
+        },
+        "public": {
+          "title": "公开备忘录",
+          "description": "仅公开的备忘录。"
+        },
+        "project-tags": {
+          "title": "项目标签",
+          "description": "精确匹配一个或多个标签。"
+        },
+        "untagged": {
+          "title": "无标签",
+          "description": "没有任何标签的备忘录。"
+        },
+        "archive-tree": {
+          "title": "归档树",
+          "description": "按前缀匹配层级标签。"
+        },
+        "unassigned": {
+          "title": "未归入空间",
+          "description": "未放入任何空间的备忘录。"
+        },
+        "one-space": {
+          "title": "单个空间内",
+          "description": "放入某个空间的备忘录。请使用该空间 URL 或设置中的空间 ID。"
+        },
+        "open-tasks": {
+          "title": "未完成任务",
+          "description": "包含未完成任务的备忘录。"
+        },
+        "links-or-code": {
+          "title": "链接或代码",
+          "description": "包含链接或代码块的备忘录。"
+        },
+        "no-location": {
+          "title": "无位置",
+          "description": "未附加位置的备忘录。"
+        },
+        "with-attachments": {
+          "title": "含附件",
+          "description": "至少附有一个文件的备忘录。"
+        },
+        "photos": {
+          "title": "照片",
+          "description": "在内容中或以附件形式显示图片的备忘录。"
+        },
+        "content-search": {
+          "title": "内容搜索",
+          "description": "搜索备忘录内容中的文本。"
+        },
+        "starts-with": {
+          "title": "开头匹配",
+          "description": "内容以指定文本开头的备忘录（也可用 endsWith）。"
+        },
+        "regex": {
+          "title": "正则匹配",
+          "description": "用正则表达式匹配内容。"
+        },
+        "all-tags-complete": {
+          "title": "所有标签已完成",
+          "description": "每个标签都以 -done 结尾（仅限有标签的备忘录）。"
+        },
+        "one-project-tag": {
+          "title": "单个项目标签",
+          "description": "恰好有一个标签满足条件。"
+        },
+        "any-tags": {
+          "title": "包含任一标签",
+          "description": "标签与给定集合有交集。"
+        },
+        "exact-tags": {
+          "title": "恰好这些标签",
+          "description": "标签恰好为该集合，不多不少。"
+        },
+        "year-2024": {
+          "title": "2024 年的备忘录",
+          "description": "按日历年筛选。"
+        },
+        "weekend": {
+          "title": "周末笔记",
+          "description": "创建于周日或周六（0 = 周日）。"
+        },
+        "long": {
+          "title": "长笔记",
+          "description": "超过 280 个字符的备忘录。"
+        }
+      }
+    },
+    "configuration": {
+      "label": "配置文件",
+      "description": "由配置文件设置的资源。要修改它们，请编辑文件并应用；实例的其余部分仍可在此编辑。",
+      "managed-by": "由配置文件管理",
+      "managed-tooltip": "在 {{source}} 中设置。要修改此项，请编辑该文件并应用。",
+      "resource": "资源",
+      "source": "文件",
+      "managed-fields": "受管理的字段",
+      "whole-resource": "全部字段",
+      "ignored-fields": "可在此编辑",
+      "serial": "序号",
+      "last-apply": "上次应用",
+      "applied-by": "应用者",
+      "nothing-managed": "尚未应用任何配置。所有设置都在这里完成。"
     },
     "sso": {
       "account": "账户",
@@ -529,7 +810,6 @@
       "client-id": "客户端ID（Client ID）",
       "client-secret": "客户端密钥（Client Secret）",
       "client-secret-optional-description": "留空则保留现有的客户端密钥，不会覆盖。",
-      "configuration": "配置摘要",
       "configuration-summary-description": "这里只展示便于识别和审查 provider 的关键信息，完整配置仍然通过编辑入口查看。",
       "confirm-delete": "您确定要删除“{{name}}”单点登录配置吗？（此操作不可逆）",
       "create-sso": "创建单点登录",
@@ -550,7 +830,6 @@
       "not-linked": "未绑定",
       "oauth-configuration": "OAuth 配置",
       "oauth-configuration-description": "填写 OAuth 客户端凭据，以及登录流程中使用的 provider 端点。",
-      "provider": "提供程序",
       "provider-id": "供应商 ID",
       "provider-id-description": "仅支持小写字母、数字和连字符。该值会成为 provider 资源名的一部分。",
       "provider-uid": "用户 UID",
@@ -572,12 +851,14 @@
       "unlink-success": "已解绑 {{name}}。",
       "label": "单点登录",
       "not-linked-description": "当前还没有绑定外部身份。绑定后即可使用这个提供程序登录。",
-      "scope-count_one": "{{count}} 个 scope",
-      "scope-count_other": "{{count}} 个 scopes",
+      "scope-count_one": "{{count}} 个范围",
+      "scope-count_other": "{{count}} 个范围",
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
       "update-sso-description": "检查当前 provider 配置，只保存你需要变更的字段。",
-      "user-endpoint": "用户端点（User Endpoint）"
+      "user-endpoint": "用户端点（User Endpoint）",
+      "invalid-config": "身份提供商配置无效。",
+      "provider-id-placeholder": "例如 github, okta-corp"
     },
     "storage": {
       "accesskey": "访问密钥（Access key）",
@@ -628,7 +909,8 @@
       "customize-server": {
         "description": "描述",
         "icon-url": "图标链接",
-        "title": "自定义服务器"
+        "title": "自定义服务器",
+        "dialog-description": "自定义实例的外观和设置。"
       },
       "custom-code-description": "应用到前端的实例范围 CSS 和 JavaScript，可选。",
       "custom-code-title": "自定义代码",
@@ -636,47 +918,45 @@
       "label": "系统"
     },
     "usage-limits": {
-      "add-entry": "Add entry",
-      "add-title": "Add entry",
-      "all-users": "All users",
-      "all-users-description": "Everyone not named above. This is the default.",
-      "applies-to": "Applies to",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "default-hint": "Leave a field empty for no limit.",
-      "default-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
-      "edit-title": "Edit entry",
-      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
-      "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
-      "never-applies": "Never applies",
-      "never-applies-description": "Every user named here is caught by an earlier entry.",
-      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "add-entry": "添加条目",
+      "add-title": "添加条目",
+      "all-users": "全部用户",
+      "all-users-description": "上面未列出的所有人。这是默认项。",
+      "applies-to": "适用对象",
+      "content-size": "备忘录内容 (KiB)",
+      "content-size-column": "备忘录内容",
+      "content-size-description": "单条备忘录正文的 UTF-8 大小，包含 Markdown 内容。",
+      "default-hint": "字段留空表示不限制。",
+      "default-title": "全部用户的限制",
+      "description": "通过限制每位用户可存储的内容，让此实例保持快速可靠。每个条目都是针对其所列用户的一套完整限制。",
+      "edit-title": "编辑条目",
+      "entry-hint": "字段留空表示不限制。各字段的初始值取自「全部用户」条目。",
+      "file-size": "最大文件 (MiB)",
+      "file-size-column": "最大文件",
+      "invalid": "请输入整数条备忘录数量，或按所示单位填写大小。",
+      "label": "用量限制",
+      "memos": "备忘录",
+      "memos-description": "包括评论和已归档的备忘录。",
+      "never-applies": "从不生效",
+      "never-applies-description": "此处列出的每位用户都已被更靠前的条目命中。",
+      "order-note": "条目按从上到下的顺序检查。第一个列出某用户的条目即为该用户的限制，后面的条目对该用户不再生效。最后一个条目适用于其余所有人。",
       "position": "#",
-      "remove": "Remove",
-      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
-      "remove-title": "Remove this entry?",
-      "remove-user": "Remove {{name}}",
-      "removed": "Entry removed",
-      "row-actions": "Actions for entry {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Add a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "users": "Users",
-      "users-description": "The entry applies to each of these users.",
-      "users-required": "Name at least one user."
+      "remove": "移除",
+      "remove-description": "其所列用户将改用下一个列出他们的条目，或「全部用户」条目。",
+      "remove-title": "移除此条目？",
+      "remove-user": "移除 {{name}}",
+      "removed": "条目已移除",
+      "row-actions": "条目 {{name}} 的操作",
+      "saved": "用量限制已保存",
+      "select-user": "添加用户",
+      "storage": "存储空间 (MiB)",
+      "storage-column": "存储空间",
+      "storage-description": "上传内容总大小。外部链接不计入。",
+      "title": "用量限制",
+      "unlimited": "不限制",
+      "users": "用户",
+      "users-description": "此条目适用于这些用户中的每一位。",
+      "users-required": "请至少填写一位用户。"
     },
     "access-token": {
       "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
@@ -714,12 +994,12 @@
     },
     "account": {
       "attachment-storage": "附件占用空间",
-      "usage-description": "Limits set by the admin of this instance. Comments and archived memos count as memos.",
-      "usage-file-size": "Largest file",
-      "usage-memos": "Memos",
-      "usage-of": "{{usage}} of {{limit}}",
-      "usage-storage": "Storage",
-      "usage-title": "Usage limits",
+      "usage-description": "由此实例的管理员设置。评论和已归档的备忘录也计入备忘录数量。",
+      "usage-file-size": "最大文件",
+      "usage-memos": "备忘录",
+      "usage-of": "{{usage}} / {{limit}}",
+      "usage-storage": "存储空间",
+      "usage-title": "用量限制",
       "storage-usage-error": "暂时无法获取你的附件占用空间。",
       "change-password": "修改密码",
       "danger-area": "危险操作区",
@@ -731,7 +1011,9 @@
       "title": "账号信息",
       "update-information": "更新个人信息",
       "username-note": "用于登录",
-      "email-in-use": "此邮箱已被其他帐户使用。"
+      "email-in-use": "此邮箱已被其他帐户使用。",
+      "avatar-too-large": "请选择不超过 2 MB 的图片。",
+      "avatar-unreadable": "无法读取此图片，请换一个文件。"
     },
     "instance": {
       "access-description": "控制该实例的公开访问、注册、登录和资料编辑。",
@@ -751,16 +1033,6 @@
       "week-start-day": "周开始日",
       "allow-public-access-description": "允许未登录的访客浏览公开备忘录。即使禁用此功能，共享备忘录的链接仍然可用。",
       "allow-public-access": "允许公开访问"
-    },
-    "memo": {
-      "add-reaction": "添加表态",
-      "configured-reactions": "已配置表态",
-      "reactions": "表态",
-      "reaction-placeholder": "例如 👍",
-      "reactions-description": "定义用户可以添加到备忘录上的表态选项。",
-      "remove-reaction": "移除表态",
-      "label": "备忘录",
-      "reactions-required": "反应列表不能为空"
     },
     "webhook": {
       "create-dialog": {
@@ -787,7 +1059,6 @@
       },
       "no-webhooks-found": "没有 Webhook。",
       "title": "Webhook",
-      "url": "链接",
       "label": "Webhook"
     },
     "tags": {
@@ -898,7 +1169,9 @@
       "review-existing": "您的账户中已存在",
       "review-exported": "导出者",
       "review-memos": "文件中的备忘录",
-      "review-new": "将新建"
+      "review-new": "将新建",
+      "export-admin-only": "只有管理员可以导出备忘录。请向管理员索取你的导出文件。",
+      "export-busy": "另一个导出正在进行。请稍后再试。"
     },
     "spaces": {
       "general": "一般设置",
@@ -984,7 +1257,8 @@
   },
   "tooltip": {
     "link-memo": "链接备忘录",
-    "select-location": "位置"
+    "select-location": "位置",
+    "link-memo-description": "搜索并选择要关联的备忘录"
   },
   "live-update": {
     "connected": "已连接",
@@ -1058,7 +1332,6 @@
     }
   },
   "space": {
-    "all-spaces": "所有空间",
     "icon": {
       "change": "更改空间图标",
       "kind": "图标类型",
@@ -1068,7 +1341,7 @@
       "search-emoji": "搜索或粘贴表情…",
       "no-results": "没有匹配项",
       "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
-      "reset": "恢复默认",
+      "reset": "使用默认图标",
       "use-emoji": "使用 {{emoji}}"
     },
     "unavailable": "空间不存在或你没有访问权限。",
@@ -1105,5 +1378,111 @@
     "mode": "搜索模式",
     "syntax-help": "搜索语法",
     "text": "文本"
+  },
+  "welcome": {
+    "title": "欢迎使用 Memos",
+    "headline": "为日常想法而生的简单笔记。",
+    "intro-write": "一句话就可以是一条完整的备忘录。",
+    "intro-keep": "每条备忘录都留在你写下它的那一天。",
+    "intro-share": "什么保持私有，由你决定。",
+    "write": "写作",
+    "write-sub": "一句话就可以是一条完整的备忘录。",
+    "no-title": "无标题",
+    "no-title-text": "备忘录从想法本身开始，没有需要填写的标题。",
+    "markdown": "Markdown",
+    "markdown-text": "需要时，Markdown 能让文字有结构。",
+    "attach": "附件",
+    "attach-text": "图片、文件、音频和位置都通过 ＋ 添加。",
+    "keep": "保存",
+    "keep-sub": "每条备忘录都留在你写下它的那一天。",
+    "calendar-text": "日历能带你回到任何一天。",
+    "tags-text": "# 后面的词会成为标签，标签可以筛选时间线。",
+    "views-text": "自定义视图会保存一个筛选条件。",
+    "map-text": "带有位置的备忘录会显示在地图上。",
+    "share": "分享",
+    "share-sub": "备忘录默认私有。分享什么、公开什么，由你决定。",
+    "visibility-text": "每条备忘录都有自己的设置。新备忘录默认私有，只有你能看到；公开的备忘录有一个任何人都能打开的链接。",
+    "spaces-text": "在空间里，成员与你一同写作，各自保留自己的备忘录。",
+    "comments": "评论",
+    "comments-text": "能看到备忘录的人都可以在下方回复。",
+    "skip": "跳过",
+    "next": "下一步",
+    "done": "完成",
+    "page-of": "第 {{current}} 页，共 {{total}} 页",
+    "reopen": "欢迎指南",
+    "reopen-note": "新账户最先看到的四个页面。",
+    "sample": {
+      "today": "今天 10:42",
+      "today-early": "今天 9:18",
+      "yesterday": "昨天 15:20",
+      "comment-age": "2 小时",
+      "memo-preview": "更简单的首屏。一个输入框，然后是预览。",
+      "memo-release": "下个版本发布之前",
+      "task-sketch": "画出首屏草图",
+      "task-polish": "打磨预览",
+      "write-lead": "第一步保持小一点。",
+      "write-strong": "细节",
+      "write-tail": "在需要时再展开。",
+      "write-task": "写一份简短的更新日志",
+      "view": "未完成的任务",
+      "space": "产品",
+      "share-memo": "先把结果展示出来，再邀请大家注册。",
+      "comment": "同意。真正打动人的是预览。",
+      "tag-design": "设计",
+      "tag-project": "项目",
+      "tag-reading": "阅读",
+      "tag-ideas": "想法"
+    }
+  },
+  "error": {
+    "title": "出错了",
+    "description": "发生了意外错误，可能是网络问题或应用程序出现故障。",
+    "description-update": "发生了意外错误，可能是网络问题或应用程序已更新。重新加载通常可以解决。",
+    "details": "错误详情",
+    "reload": "重新加载应用",
+    "not-found": "找不到您要访问的页面。",
+    "permission-denied": "权限不足",
+    "too-many-requests": "请求过于频繁，请在 {{wait}} 后重试。",
+    "ai-auth-failed": "服务商拒绝了 API key 或拒绝访问。",
+    "ai-model-not-found": "服务商找不到该模型或端点。",
+    "ai-quota-exhausted": "服务商账户余额不足或已超出消费上限。",
+    "ai-rate-limited": "服务商正在限制此 key 的请求。请稍后重试，或检查其配额。",
+    "ai-request-rejected": "服务商拒绝了请求。请检查模型及其支持的参数。",
+    "ai-unreachable": "无法连接到服务商的端点。请检查 URL 和网络。",
+    "ai-timeout": "服务商未在规定时间内响应。",
+    "ai-redirected": "端点重定向了请求。请填写最终的 URL。",
+    "ai-invalid-response": "服务商未返回可用的响应。请检查端点和模型。",
+    "wait-seconds": "{{count}} 秒",
+    "wait-minutes": "{{count}} 分钟",
+    "wait-hours": "{{count}} 小时",
+    "challenge-required": "请完成验证后重试。",
+    "quota-memo-count": "您已达到 {{limit}} 条备忘录的上限。请删除部分备忘录后再创建。",
+    "quota-storage": "此次上传将超出您 {{limit}} 的存储上限。您已使用 {{usage}}。",
+    "quota-upload": "此文件超出了每个文件 {{limit}} 的上限。",
+    "quota-memo-content": "此备忘录超出了每条备忘录 {{limit}} 的上限。请缩短内容后保存。",
+    "quota-generic": "您已达到使用上限。",
+    "sign-in-failed": "登录失败。",
+    "sign-up-failed": "注册失败",
+    "authenticate-failed": "身份验证失败。",
+    "update-profile-failed": "更新个人资料失败",
+    "unlink-identity-failed": "解除身份提供商关联失败。",
+    "link-identity-failed": "无法开始关联账号，请重试。"
+  },
+  "attachment-preview": {
+    "title": "附件预览",
+    "description": "附件预览对话框。按 Esc 关闭，使用左右方向键切换项目，可通过控件、鼠标滚轮、双击或双指捏合缩放图片。",
+    "close": "关闭预览",
+    "previous": "上一项",
+    "next": "下一项",
+    "reset-zoom": "重置缩放",
+    "image-alt": "预览图片 {{index}}/{{count}}",
+    "live-photo-alt": "预览实况照片 {{index}}/{{count}}",
+    "play-live-photo": "悬停或按下以播放实况照片"
+  },
+  "audio-player": {
+    "seek": "调整 {{name}} 的播放进度",
+    "back": "后退 {{seconds}} 秒",
+    "forward": "前进 {{seconds}} 秒",
+    "speed": "播放速度 {{rate}}x"
   }
 }

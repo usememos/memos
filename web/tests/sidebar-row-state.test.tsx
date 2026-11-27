@@ -25,10 +25,13 @@ const tokens = (classes: string) => classes.split(" ");
  */
 describe("sidebar selected grammar", () => {
   it("fills only a current row", () => {
-    expect(tokens(sidebarRowStateClasses("current"))).toContain("bg-sidebar-accent");
-    expect(tokens(sidebarRowStateClasses("checked"))).not.toContain("bg-sidebar-accent");
-    expect(tokens(sidebarRowStateClasses("checked"))).toContain("before:bg-primary");
-    expect(tokens(sidebarRowStateClasses())).not.toContain("font-medium");
+    expect(tokens(sidebarRowStateClasses("current"))).toContain("bg-mu-hover");
+    expect(tokens(sidebarRowStateClasses("checked"))).not.toContain("bg-mu-hover");
+    expect(tokens(sidebarRowStateClasses("checked"))).toContain("before:bg-mu-primary");
+    // Selection never changes weight, so labels do not shift.
+    for (const state of ["idle", "current", "checked"] as const) {
+      expect(tokens(sidebarRowStateClasses(state))).not.toContain("font-medium");
+    }
   });
 
   it("marks a checked row so its icon and count take the accent", () => {
@@ -37,9 +40,9 @@ describe("sidebar selected grammar", () => {
     const row = screen.getByRole("button", { name: "work4" });
     expect(row).toHaveAttribute("data-checked");
     expect(row).toHaveAttribute("aria-pressed", "true");
-    expect(row).not.toHaveClass("bg-sidebar-accent");
-    expect(row.querySelector("svg")).toHaveClass("group-data-checked:text-primary");
-    expect(screen.getByText("4")).toHaveClass("group-data-checked:text-primary");
+    expect(row).not.toHaveClass("bg-mu-hover");
+    expect(row.querySelector("svg")).toHaveClass("group-data-checked:text-mu-primary");
+    expect(screen.getByText("4")).toHaveClass("group-data-checked:text-mu-primary");
   });
 
   it("checks a tag row instead of filling it", () => {
@@ -55,7 +58,7 @@ describe("sidebar selected grammar", () => {
     expect(row).not.toHaveAttribute("data-checked");
     fireEvent.click(row);
     expect(row).toHaveAttribute("data-checked");
-    expect(row).not.toHaveClass("bg-sidebar-accent");
+    expect(row).not.toHaveClass("bg-mu-hover");
   });
 });
 
@@ -84,7 +87,7 @@ describe("MemoFilters", () => {
     renderChips("/", "abc");
 
     expect(screen.getByText("Last week")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Remove filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "memo.filters.remove" }));
     expect(screen.queryByText("Last week")).not.toBeInTheDocument();
   });
 

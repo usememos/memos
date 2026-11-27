@@ -10,7 +10,7 @@ import {
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/attachment_service_pb";
-import { isMotionAttachment } from "@/utils/attachment";
+import { getAttachmentUrl, isMotionAttachment } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import { type AttachmentVisualItem, buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
 
@@ -123,7 +123,7 @@ const toLibraryListItem = (attachment: Attachment, locale: string): AttachmentLi
     fileTypeLabel,
     fileSizeLabel,
     memoName: attachment.memo,
-    sourceUrl: attachment.externalLink || `${window.location.origin}/file/${attachment.name}/${attachment.filename}`,
+    sourceUrl: getAttachmentUrl(attachment),
   };
 };
 

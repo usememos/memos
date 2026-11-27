@@ -93,10 +93,7 @@ export function buildOAuth2SummaryItems(oauth2Config: OAuth2Config, identifierFi
     {
       key: "scopes",
       label: t("setting.sso.scopes"),
-      value:
-        oauth2Config.scopes.length === 1
-          ? t("setting.sso.scope-count_one", { count: oauth2Config.scopes.length })
-          : t("setting.sso.scope-count_other", { count: oauth2Config.scopes.length }),
+      value: t("setting.sso.scope-count", { count: oauth2Config.scopes.length }),
       tooltip: oauth2Config.scopes.length > 0 ? oauth2Config.scopes.join("\n") : undefined,
     },
     ...(identifierFilter

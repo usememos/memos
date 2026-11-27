@@ -4,14 +4,15 @@ import {
   BarChart3Icon,
   CogIcon,
   DatabaseIcon,
+  FileCogIcon,
   GaugeIcon,
-  HeartHandshakeIcon,
   KeyIcon,
   KeyRoundIcon,
-  LibraryIcon,
   type LucideIcon,
   MailIcon,
   Settings2Icon,
+  SparklesIcon,
+  SquarePenIcon,
   TagsIcon,
   UserIcon,
   UsersIcon,
@@ -20,10 +21,11 @@ import {
 import { type ComponentType } from "react";
 import AccessTokenSection from "@/components/Settings/AccessTokenSection";
 import AISection from "@/components/Settings/AISection";
+import ConfigurationSection from "@/components/Settings/ConfigurationSection";
+import EditorSection from "@/components/Settings/EditorSection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoExportSection from "@/components/Settings/MemoExportSection";
-import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
 import NotificationSection from "@/components/Settings/NotificationSection";
 import PreferencesSection from "@/components/Settings/PreferencesSection";
@@ -42,17 +44,18 @@ export type SettingSectionKey =
   | "spaces"
   | "access-token"
   | "preference"
+  | "editor"
   | "webhook"
   | "member"
   | "system"
-  | "memo"
   | "storage"
   | "usage-limits"
   | "notification"
   | "sso"
   | "tags"
   | "ai"
-  | "resource-stats";
+  | "resource-stats"
+  | "configuration";
 
 type SettingSectionScope = "basic" | "admin";
 
@@ -95,6 +98,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     component: PreferencesSection,
   },
   {
+    key: "editor",
+    scope: "basic",
+    labelKey: "setting.editor.label",
+    icon: SquarePenIcon,
+    component: EditorSection,
+  },
+  {
     key: "webhook",
     scope: "basic",
     labelKey: "setting.webhook.label",
@@ -116,11 +126,12 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     component: InstanceSection,
   },
   {
-    key: "memo",
+    key: "ai",
     scope: "admin",
-    labelKey: "setting.memo.label",
-    icon: LibraryIcon,
-    component: MemoRelatedSettings,
+    labelKey: "setting.ai.label",
+    icon: SparklesIcon,
+    component: AISection,
+    preloadSettingKeys: [InstanceSetting_Key.AI],
   },
   {
     key: "tags",
@@ -167,19 +178,18 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     component: SSOSection,
   },
   {
-    key: "ai",
-    scope: "admin",
-    labelKey: "setting.ai.label",
-    icon: HeartHandshakeIcon,
-    component: AISection,
-    preloadSettingKeys: [InstanceSetting_Key.AI],
-  },
-  {
     key: "resource-stats",
     scope: "admin",
     labelKey: "setting.resource-stats.label",
     icon: BarChart3Icon,
     component: ResourceStatsSection,
+  },
+  {
+    key: "configuration",
+    scope: "admin",
+    labelKey: "setting.configuration.label",
+    icon: FileCogIcon,
+    component: ConfigurationSection,
   },
 ];
 

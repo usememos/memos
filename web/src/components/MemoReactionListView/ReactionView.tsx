@@ -1,76 +1,102 @@
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import useCurrentUser from "@/hooks/useCurrentUser";
+import { Toggle, Tooltip } from "@usememos/ui";
+import { useEffect, useId, useRef, useState } from "react";
+import { emojiName } from "@/lib/emoji";
 import { cn } from "@/lib/utils";
-import { State } from "@/types/proto/api/common_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
-import type { User } from "@/types/proto/api/user_service_pb";
-import { formatReactionTooltip, useReactionActions } from "./hooks";
-
-/**
- * A reaction is a token attached to the memo, not a control, so it takes the pill shape
- * the space and New badges use rather than the rounded box of a button, and like them it
- * has a faint resting surface: a token must read as one even where it cannot be pressed.
- * Everything else is the quiet grammar: 28px, 13px, muted ink that darkens under a light
- * wash, and the accent fill for the one that is on — your own reaction, or the add
- * control while its picker is open.
- */
-export const REACTION_PILL_CLASSES =
-  "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-muted/40 px-2.5 text-ui text-muted-foreground/70";
-const REACTION_PILL_INTERACTIVE_CLASSES = cn(
-  REACTION_PILL_CLASSES,
-  "cursor-pointer transition-colors hover:bg-muted/70 hover:text-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
-);
-/** The strip's add control is a control, not a token: a round quiet face of the pills' height with no resting surface. */
-export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-7 justify-center bg-transparent px-0 hover:bg-muted/60");
+import { useReactionActions } from "./hooks";
 
 interface Props {
   memo: Memo;
   reactionType: string;
-  users: User[];
+  count: number;
+  names: string[];
 }
 
-const ReactionView = (props: Props) => {
-  const { memo, reactionType, users } = props;
-  const currentUser = useCurrentUser();
-  const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
-  const readonly = memo.state === State.ARCHIVED;
-
-  const { handleReactionClick } = useReactionActions({ memo });
-
-  const isClickable = Boolean(currentUser) && !readonly;
+const ReactionView = ({ memo, reactionType, count, names }: Props) => {
+  const { hasReacted, handleReactionClick, isPending, canReact, canWithdraw } = useReactionActions({ memo });
+  const pressed = hasReacted(reactionType);
+  const clickable = canReact || (canWithdraw && pressed);
+  const [open, setOpen] = useState(false);
+  const triggerId = useId();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const longPressed = useRef(false);
+  const clearTimer = () => clearTimeout(timer.current);
+  useEffect(() => clearTimer, []);
   const label = (
-    <>
-      <span className="text-sm leading-none">{reactionType}</span>
-      <span className="text-2xs tabular-nums text-muted-foreground/60">{users.length}</span>
-    </>
+    <span className="inline-flex items-center gap-1">
+      <span className="mu-body">{reactionType}</span>
+      <span className="mu-caption tabular-nums">{count}</span>
+    </span>
   );
+  const accessibleName = `${emojiName(reactionType)}: ${count} · ${names.join(", ")}`;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            isClickable ? (
-              <button
-                type="button"
-                className={REACTION_PILL_INTERACTIVE_CLASSES}
-                aria-pressed={hasReaction}
-                onClick={() => handleReactionClick(reactionType)}
-              />
-            ) : (
-              <span className={REACTION_PILL_CLASSES} />
-            )
+    <Tooltip.Root open={open} onOpenChange={setOpen} triggerId={triggerId}>
+      <Tooltip.Trigger
+        id={triggerId}
+        onPointerDown={(event) => {
+          if (event.pointerType !== "touch") return;
+          longPressed.current = false;
+          clearTimer();
+          timer.current = setTimeout(() => {
+            longPressed.current = true;
+            setOpen(true);
+          }, 500);
+        }}
+        onPointerUp={() => {
+          clearTimer();
+          if (longPressed.current) timer.current = setTimeout(() => setOpen(false), 2000);
+        }}
+        onPointerCancel={() => {
+          clearTimer();
+          longPressed.current = false;
+          setOpen(false);
+        }}
+        onPointerLeave={() => {
+          clearTimer();
+          if (longPressed.current) setOpen(false);
+        }}
+        onContextMenu={(event) => {
+          if (longPressed.current) event.preventDefault();
+        }}
+        onClickCapture={(event) => {
+          if (longPressed.current) {
+            event.preventDefault();
+            event.stopPropagation();
+            longPressed.current = false;
           }
-        >
-          {label}
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{formatReactionTooltip(users, reactionType)}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        }}
+        render={
+          clickable ? (
+            <Toggle
+              variant="soft"
+              shape="pill"
+              size="sm"
+              className="shrink-0"
+              aria-label={accessibleName}
+              aria-disabled={isPending}
+              pressed={pressed}
+              onPressedChange={() => {
+                handleReactionClick(reactionType);
+              }}
+            />
+          ) : (
+            <span
+              aria-label={accessibleName}
+              className={cn(
+                "inline-flex h-6 shrink-0 items-center rounded-mu-full px-2",
+                pressed ? "bg-mu-selected text-mu-text" : "bg-mu-hover text-mu-text-secondary",
+              )}
+            />
+          )
+        }
+      >
+        {label}
+      </Tooltip.Trigger>
+      <Tooltip.Popup className="max-w-64">
+        <p>{names.join(", ")}</p>
+      </Tooltip.Popup>
+    </Tooltip.Root>
   );
 };
 

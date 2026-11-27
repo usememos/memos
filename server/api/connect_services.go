@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -58,6 +57,14 @@ func (s *ConnectServiceHandler) TestInstanceEmailSetting(ctx context.Context, re
 
 func (s *ConnectServiceHandler) GetInstanceStats(ctx context.Context, req *connect.Request[apipb.GetInstanceStatsRequest]) (*connect.Response[apipb.InstanceStats], error) {
 	resp, err := s.APIService.GetInstanceStats(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetConfigurationStatus(ctx context.Context, req *connect.Request[apipb.GetConfigurationStatusRequest]) (*connect.Response[apipb.ConfigurationStatus], error) {
+	resp, err := s.APIService.GetConfigurationStatus(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
@@ -160,14 +167,6 @@ func (s *ConnectServiceHandler) GetUserStats(ctx context.Context, req *connect.R
 
 func (s *ConnectServiceHandler) GetUserUsage(ctx context.Context, req *connect.Request[apipb.GetUserUsageRequest]) (*connect.Response[apipb.UserUsage], error) {
 	resp, err := s.APIService.GetUserUsage(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) ExportMemos(ctx context.Context, req *connect.Request[apipb.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	resp, err := s.APIService.ExportMemos(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
@@ -371,6 +370,15 @@ func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect
 	return connect.NewResponse(resp), nil
 }
 
+// ReorderMemoViews sets the order of the saved memo views owned by a user.
+func (s *ConnectServiceHandler) ReorderMemoViews(ctx context.Context, req *connect.Request[apipb.ReorderMemoViewsRequest]) (*connect.Response[apipb.ReorderMemoViewsResponse], error) {
+	resp, err := s.APIService.ReorderMemoViews(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // MemoService
 
 func (s *ConnectServiceHandler) CreateMemo(ctx context.Context, req *connect.Request[apipb.CreateMemoRequest]) (*connect.Response[apipb.Memo], error) {
@@ -439,22 +447,6 @@ func (s *ConnectServiceHandler) SetMemoRelations(ctx context.Context, req *conne
 
 func (s *ConnectServiceHandler) ListMemoRelations(ctx context.Context, req *connect.Request[apipb.ListMemoRelationsRequest]) (*connect.Response[apipb.ListMemoRelationsResponse], error) {
 	resp, err := s.APIService.ListMemoRelations(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) CreateMemoComment(ctx context.Context, req *connect.Request[apipb.CreateMemoCommentRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.CreateMemoComment(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) ListMemoComments(ctx context.Context, req *connect.Request[apipb.ListMemoCommentsRequest]) (*connect.Response[apipb.ListMemoCommentsResponse], error) {
-	resp, err := s.APIService.ListMemoComments(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
@@ -725,6 +717,30 @@ func (s *ConnectServiceHandler) BatchDeleteAttachments(ctx context.Context, req 
 
 func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Request[apipb.TranscribeRequest]) (*connect.Response[apipb.TranscribeResponse], error) {
 	resp, err := s.APIService.Transcribe(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) SuggestTags(ctx context.Context, req *connect.Request[apipb.SuggestTagsRequest]) (*connect.Response[apipb.SuggestTagsResponse], error) {
+	resp, err := s.APIService.SuggestTags(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListAIProviderTypes(ctx context.Context, req *connect.Request[apipb.ListAIProviderTypesRequest]) (*connect.Response[apipb.ListAIProviderTypesResponse], error) {
+	resp, err := s.APIService.ListAIProviderTypes(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListAIProviderModels(ctx context.Context, req *connect.Request[apipb.ListAIProviderModelsRequest]) (*connect.Response[apipb.ListAIProviderModelsResponse], error) {
+	resp, err := s.APIService.ListAIProviderModels(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

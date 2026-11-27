@@ -1,5 +1,5 @@
+import { Tooltip } from "@usememos/ui";
 import { memo } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { getChipClassName } from "./cellStyles";
 import type { CalendarDayCell } from "./types";
@@ -35,15 +35,7 @@ export const CalendarCell = memo(({ day, maxCount, tooltipText, onClick }: Calen
       aria-disabled={!isInteractive}
       className={cn(CELL_CLASSES, "p-0 focus-visible:outline-none", isInteractive ? "cursor-pointer" : "cursor-default")}
     >
-      <span className={getChipClassName(day, maxCount, isInteractive)}>
-        {day.label}
-        {day.isToday && (
-          <span
-            aria-hidden="true"
-            className="absolute bottom-[3px] left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-current opacity-70"
-          />
-        )}
-      </span>
+      <span className={getChipClassName(day, maxCount, isInteractive)}>{day.label}</span>
     </button>
   );
 
@@ -52,12 +44,12 @@ export const CalendarCell = memo(({ day, maxCount, tooltipText, onClick }: Calen
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger render={button} />
-      <TooltipContent side="top">
+    <Tooltip.Root>
+      <Tooltip.Trigger render={button} />
+      <Tooltip.Popup side="top">
         <p>{tooltipText}</p>
-      </TooltipContent>
-    </Tooltip>
+      </Tooltip.Popup>
+    </Tooltip.Root>
   );
 });
 

@@ -1,6 +1,6 @@
 # API Abuse Controls Design
 
-Status: Implemented
+Status: Implemented in v0.31.0
 
 Date: 2026-09-12
 
@@ -115,7 +115,7 @@ A `ratelimit.Policy` is a table. Each row names a scope, the kind of key it is c
 | `upload_user` | user id | upload start, `CreateAttachment` | every start | 120 per minute |
 | `transcribe_user` | user id | `Transcribe` | every call | 20 per hour |
 | `write_user` | user id | memo, comment, reaction, share, memo-view, and webhook creation | every call | 120 per minute |
-| `archive_user` | user id | `ExportMemos`, `ImportMemos` upload start | every call | 10 per hour |
+| `archive_user` | user id | `GET /file/users/{username}/export` (administrators only), `ImportMemos` upload start | every call | 10 per hour |
 
 The two catch-all scopes are what make the table complete: a procedure nobody thought to list is still bounded. The specific scopes sit on top with tighter numbers. A request can therefore be refused by either its catch-all or its specific scope, and the first refusal wins.
 
@@ -218,3 +218,12 @@ Every refusal logs one info line with the scope and the key. The client address 
 ## Deferred design
 
 Adaptive challenges shown only after failures, per-scope tuning in the admin UI, a shared limiter for more than one node, bans and IP reputation, disposable-domain lists in the open-source binary, content-quality spam detection, enumeration-safe signup, metrics export, byte-based quotas, and limits on file and avatar serving remain deferred. Later work must preserve the single client-address resolver, the two-layer enforcement of catch-all budgets in the authorizer and per-flow limits in handlers, check-before-work ordering, the AIP-193 error shape, and identical behavior for existing and non-existing account names.
+
+## Amendments
+
+### 2026-11-24 (Unreleased) — `SuggestTags` has its own budget
+
+`SuggestTags` has its own `suggest_tags_user` budget of 20 requests per user per hour, charged only for requests that reach the
+provider. Transcription has a separate budget. The AI settings page has no test calls of its own: its playgrounds call
+`Transcribe` and `SuggestTags` and charge those budgets, and the model listing that checks a changed provider on save is
+not charged.

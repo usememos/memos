@@ -26,7 +26,7 @@ vi.mock("@/connect", () => ({
   instanceServiceClient: { getInstanceSetting: mocks.getInstanceSetting, updateInstanceSetting: mocks.updateInstanceSetting },
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 // Render the English copy, so the assertions read like the screen.
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string, params?: Record<string, unknown>) => {
@@ -81,18 +81,11 @@ describe("UsageSection", () => {
   });
 });
 
-// Closed select popups can stay mounted, so pick the option from the list the trigger controls.
-const chooseOption = async (select: string, option: string) => {
-  const trigger = screen.getByRole("combobox", { name: select });
-  fireEvent.click(trigger);
-  const list = await waitFor(() => {
-    const element = document.getElementById(trigger.getAttribute("aria-controls") ?? "");
-    expect(element).not.toBeNull();
-    return element as HTMLElement;
-  });
-  const item = within(list).getByRole("option", { name: option });
-  fireEvent.pointerDown(item, { pointerType: "mouse" });
-  fireEvent.click(item, { pointerType: "mouse" });
+// The user picker is a Combobox: open it from its trigger, type to filter, then pick.
+const chooseUser = async (query: string, option: string) => {
+  fireEvent.click(screen.getByRole("button", { name: "Users" }));
+  fireEvent.change(screen.getByRole("combobox"), { target: { value: query } });
+  fireEvent.click(await screen.findByRole("option", { name: option }));
 };
 
 const openRowMenu = async (name: string, item: string) => {
@@ -243,7 +236,7 @@ describe("UsageLimitDialog", () => {
     expect(screen.getByRole("textbox", { name: "Memos" })).toHaveValue("100");
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
 
-    await chooseOption("Users", "@carol");
+    await chooseUser("carol", "@carol");
     await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeEnabled());
     fireEvent.change(screen.getByRole("textbox", { name: "Largest file (MiB)" }), { target: { value: "10" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Memos" }), { target: { value: "0" } });

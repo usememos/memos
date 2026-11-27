@@ -42,10 +42,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 func insertSQLiteAttachment(ctx context.Context, executor dbExecutor, create *store.Attachment) (*store.Attachment, error) {
 	fields := []string{"`uid`", "`filename`", "`blob`", "`type`", "`size`", "`creator_id`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
 	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?", "?", "?"}
-	storageType := ""
-	if create.StorageType != storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
-		storageType = create.StorageType.String()
-	}
+	storageType := attachmentStorageTypeString(create.StorageType)
 	payloadString := "{}"
 	if create.Payload != nil {
 		bytes, err := protojson.Marshal(create.Payload)
@@ -264,6 +261,10 @@ func applySQLiteAttachmentUpdate(ctx context.Context, executor dbExecutor, updat
 		}
 		set, args = append(set, "`payload` = ?"), append(args, string(bytes))
 	}
+	if c := update.Content; c != nil {
+		set = append(set, "`type` = ?", "`size` = ?", "`storage_type` = ?", "`reference` = ?", "`blob` = ?")
+		args = append(args, c.Type, c.Size, attachmentStorageTypeString(c.StorageType), c.Reference, c.Blob)
+	}
 
 	args = append(args, update.ID)
 	stmt := "UPDATE `attachment` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
@@ -315,4 +316,12 @@ func (d *DB) GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (in
 		return 0, errors.Wrap(err, "failed to sum attachment sizes")
 	}
 	return size, nil
+}
+
+// attachmentStorageTypeString is the storage_type column value: the enum name, or empty for unspecified.
+func attachmentStorageTypeString(storageType storepb.AttachmentStorageType) string {
+	if storageType == storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
+		return ""
+	}
+	return storageType.String()
 }

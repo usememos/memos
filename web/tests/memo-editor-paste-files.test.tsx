@@ -8,11 +8,15 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: {} }),
+  useUsersByUsernames: () => ({ data: undefined }),
+  useUpdateUserEditorSetting: () => ({ mutate: vi.fn() }),
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
-  useInstance: () => ({ aiSetting: { providers: [], transcription: undefined }, fetchSetting: vi.fn().mockResolvedValue(undefined) }),
+  useInstance: () => ({ profile: {} }),
 }));
 vi.mock("@/contexts/NewMemoContext", () => ({ useNewMemo: () => ({ markNewMemo: vi.fn() }) }));
 vi.mock("@/connect", () => ({ attachmentServiceClient: {}, memoServiceClient: {}, userServiceClient: {} }));
@@ -63,8 +67,9 @@ describe("MemoEditor paste", () => {
     const event = paste(content, [pdf, image]);
 
     expect(event.defaultPrevented).toBe(true);
-    await waitFor(() => expect(container.textContent).toContain(image.name));
-    expect(container.textContent).toContain(pdf.name);
+    // The image joins the gallery as a tile; the PDF is a row with its name.
+    await waitFor(() => expect(container.textContent).toContain(pdf.name));
+    expect(container.querySelectorAll("[data-reorder-key] img")).toHaveLength(1);
     // A paste has no placement gesture: the image is attached rather than
     // inlined, so no inline upload starts and the text stays untouched.
     expect(content.textContent).toBe("");

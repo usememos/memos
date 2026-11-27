@@ -5,7 +5,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/store"
 )
 
@@ -24,13 +23,6 @@ func parseUsernameFromName(name string) (string, error) {
 		return "", errors.Errorf("invalid user name %q", name)
 	}
 	return username, nil
-}
-
-func validateWritableUsername(username string) error {
-	if !identifier.IsValidUsername(username) {
-		return errors.Errorf("invalid username %q", username)
-	}
-	return nil
 }
 
 // ResolveUserByName resolves a username-based user resource name to a store user.

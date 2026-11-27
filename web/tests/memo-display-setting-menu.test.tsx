@@ -1,7 +1,6 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import { ViewProvider } from "@/contexts/ViewContext";
 
@@ -13,7 +12,6 @@ vi.mock("@/utils/i18n", () => ({
       "common.last-updated-at": "Last updated",
       "memo.compact-mode": "Compact mode",
       "memo.direction": "Direction",
-      "memo.grid-compact-hint": "Grid layouts always use compact cards.",
       "memo.layout": "Layout",
       "memo.layout-auto": "Auto",
       "memo.layout-auto-description": "As many columns as fit",
@@ -36,7 +34,7 @@ describe("MemoDisplaySettingMenu", () => {
     localStorage.clear();
   });
 
-  it("opens from an accessible trigger and explains the compact grid constraint", () => {
+  it("opens from an accessible trigger and holds only the Timeline's own options", () => {
     render(
       <ViewProvider>
         <MemoDisplaySettingMenu />
@@ -44,21 +42,19 @@ describe("MemoDisplaySettingMenu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Timeline · View options" });
-    expect(trigger).toHaveClass("size-7", "w-auto", "px-1.5", "rounded-s-none");
+    expect(trigger).toHaveClass("mu-button", "mu-button-ghost", "mu-s-md", "w-auto", "px-1.5", "rounded-s-none");
     expect(trigger.querySelector(".lucide-chevron-down")).toBeInTheDocument();
-    expect(trigger.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
+    expect(trigger.querySelector("svg")).toHaveClass("mu-icon-sm");
 
     fireEvent.click(trigger);
 
-    const compactMode = screen.getByRole("switch", { name: "Compact mode" });
-    expect(compactMode).not.toBeChecked();
-    expect(compactMode).toBeEnabled();
-
-    fireEvent.click(screen.getByRole("radio", { name: "2 columns" }));
-
-    expect(compactMode).toBeChecked();
-    expect(compactMode).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByText("Grid layouts always use compact cards.")).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Layout" })).toHaveClass("mu-s-md");
+    // Each option is a horizontal Field: its label names the Select or Switch at the end of the row.
+    expect(screen.getByRole("combobox", { name: "Order by" })).toHaveTextContent("Created");
+    expect(screen.getByRole("combobox", { name: "Direction" })).toHaveTextContent("Newest first");
+    // Choices that apply to every memo list live in Settings, not in the Timeline's options.
+    expect(screen.queryByRole("switch", { name: "Compact mode" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: "memo.include-comments" })).not.toBeInTheDocument();
   });
 
   it("opens only from the arrow, not the adjacent Timeline link", () => {
@@ -73,13 +69,13 @@ describe("MemoDisplaySettingMenu", () => {
     const trigger = screen.getByRole("button", { name: "Timeline · View options" });
     fireEvent.click(screen.getByRole("link", { name: "Timeline" }));
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("radiogroup", { name: "Layout" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Layout" })).not.toBeInTheDocument();
     fireEvent.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("radiogroup", { name: "Layout" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Layout" })).toBeInTheDocument();
   });
 
-  it("moves horizontally in the visual direction for RTL layouts", () => {
+  it("moves focus in the visual direction for RTL layouts", async () => {
     render(
       <DirectionProvider direction="rtl">
         <ViewProvider>
@@ -89,8 +85,10 @@ describe("MemoDisplaySettingMenu", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Timeline · View options" }));
-    fireEvent.keyDown(screen.getByRole("radiogroup", { name: "Layout" }), { key: "ArrowLeft" });
+    const list = screen.getByRole("button", { name: "List" });
+    act(() => list.focus());
+    fireEvent.keyDown(list, { key: "ArrowLeft" });
 
-    expect(screen.getByRole("radio", { name: "2 columns" })).toBeChecked();
+    await waitFor(() => expect(screen.getByRole("button", { name: "2 columns" })).toHaveFocus());
   });
 });

@@ -77,6 +77,56 @@ func TestUserMemoViewRemovalAndEmptyUpdates(t *testing.T) {
 	}
 }
 
+func TestUserMemoViewReorder(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	owner, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	reordered, ok, err := ts.ReorderUserMemoViews(ctx, owner.ID, []string{})
+	require.NoError(t, err)
+	require.True(t, ok, "an empty order matches a user with no views")
+	require.Empty(t, reordered)
+
+	for _, id := range []string{"first", "middle", "last"} {
+		require.NoError(t, ts.AddUserMemoView(ctx, owner.ID, &storepb.MemoViewsUserSetting_MemoView{Id: id, Title: id, Filter: "pinned"}))
+	}
+	storedIDs := func() []string {
+		// Read through the driver to prove the order was persisted.
+		settings, err := ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &owner.ID, Key: storepb.UserSetting_MEMO_VIEWS})
+		require.NoError(t, err)
+		require.Len(t, settings, 1)
+		ids := []string{}
+		for _, memoView := range settings[0].GetMemoViews().GetMemoViews() {
+			require.Equal(t, memoView.GetId(), memoView.GetTitle())
+			require.Equal(t, "pinned", memoView.GetFilter())
+			ids = append(ids, memoView.GetId())
+		}
+		return ids
+	}
+
+	reordered, ok, err = ts.ReorderUserMemoViews(ctx, owner.ID, []string{"last", "first", "middle"})
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.Len(t, reordered, 3)
+	require.Equal(t, "last", reordered[0].GetId())
+	require.Equal(t, []string{"last", "first", "middle"}, storedIDs())
+
+	for name, ids := range map[string][]string{
+		"missing":  {"last", "first"},
+		"repeated": {"last", "last", "first"},
+		"unknown":  {"last", "first", "other"},
+		"extra":    {"last", "first", "middle", "other"},
+	} {
+		reordered, ok, err := ts.ReorderUserMemoViews(ctx, owner.ID, ids)
+		require.NoError(t, err, name)
+		require.False(t, ok, name)
+		require.Nil(t, reordered, name)
+	}
+	require.Equal(t, []string{"last", "first", "middle"}, storedIDs())
+}
+
 func TestUserMemoViewConcurrentAddUpdateRemove(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)

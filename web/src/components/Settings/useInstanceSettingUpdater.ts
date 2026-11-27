@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { toast } from "react-hot-toast";
 import { useInstance } from "@/contexts/InstanceContext";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { InstanceSetting, InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -10,6 +10,8 @@ interface SaveInstanceSettingOptions {
   setting: InstanceSetting;
   errorContext: string;
   showSuccessToast?: boolean;
+  /** Reports a failed save in place instead of in a toast. */
+  onError?: (error: unknown) => void;
 }
 
 export const buildInstanceSettingName = (key: InstanceSetting_Key) => `instance/settings/${InstanceSetting_Key[key]}`;
@@ -19,7 +21,7 @@ const useInstanceSettingUpdater = () => {
   const { updateSetting, fetchSetting } = useInstance();
 
   return useCallback(
-    async ({ key, setting, errorContext, showSuccessToast = true }: SaveInstanceSettingOptions) => {
+    async ({ key, setting, errorContext, showSuccessToast = true, onError }: SaveInstanceSettingOptions) => {
       try {
         await updateSetting(setting);
         // ACCESS is updated in the React Query cache from the mutation response.
@@ -28,11 +30,15 @@ const useInstanceSettingUpdater = () => {
           await fetchSetting(key);
         }
         if (showSuccessToast) {
-          toast.success(t("message.update-succeed"));
+          toast.add({ title: t("message.update-succeed"), type: "success" });
         }
         return true;
       } catch (error: unknown) {
-        await handleError(error, toast.error, { context: errorContext });
+        if (onError) {
+          onError(error);
+          return false;
+        }
+        await handleError(error, showErrorToast, { context: errorContext });
         return false;
       }
     },

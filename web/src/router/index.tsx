@@ -102,6 +102,8 @@ export const routeConfig: RouteObject[] = [
                 children: [{ path: Routes.ABOUT, element: <About /> }],
               },
               { path: Routes.EXPLORE, element: <ExploreRoute /> },
+              { path: "memos/:uid", element: <MemoDetail /> },
+              { path: "memos/shares/:token", element: <MemoDetail /> },
               // Like Timeline, the calendar is public: guests see the memos readable to them.
               { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
               { path: Routes.USER_PROFILE, element: <LegacyProfileRedirect /> },
@@ -117,8 +119,6 @@ export const routeConfig: RouteObject[] = [
               },
             ],
           },
-          { path: "memos/:uid", element: <MemoDetail /> },
-          { path: "memos/shares/:token", element: <MemoDetail /> },
           {
             element: <RequireFullInitializationRoute />,
             children: [{ path: Routes.MAP, element: <MemoMap /> }],
@@ -138,8 +138,8 @@ export const routeConfig: RouteObject[] = [
                           {
                             element: <MainLayout />,
                             children: [
-                              { index: true, element: <HomeRoute /> },
-                              { path: "explore", element: <ExploreRoute /> },
+                              // A Space has one timeline, every member's memos: no personal Home, no Explore page.
+                              { index: true, element: <ExploreRoute /> },
                               { path: "calendar/:year?/:month?/:day?", element: <Calendar /> },
                             ],
                           },

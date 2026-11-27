@@ -6,8 +6,10 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"io/fs"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -24,6 +26,7 @@ import (
 	"github.com/usememos/memos/internal/imagelimit"
 	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/ratelimit"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/provider/storage"
 	"github.com/usememos/memos/server/auth"
@@ -110,17 +113,25 @@ type FileServerService struct {
 	Store         *store.Store
 	authenticator *auth.Authenticator
 
+	// MemoExporter writes memo export archives; nil disables the export route.
+	MemoExporter MemoExporter
+	// RateLimiter bounds export requests; nil disables the limit.
+	RateLimiter ratelimit.Limiter
+
 	// thumbnailSemaphore limits concurrent thumbnail generation.
 	thumbnailSemaphore *semaphore.Weighted
+	// memoExportSemaphore admits one export at a time.
+	memoExportSemaphore *semaphore.Weighted
 }
 
 // NewFileServerService creates a new file server service.
 func NewFileServerService(profile *profile.Profile, store *store.Store, secret string) *FileServerService {
 	return &FileServerService{
-		Profile:            profile,
-		Store:              store,
-		authenticator:      auth.NewAuthenticator(store, secret),
-		thumbnailSemaphore: semaphore.NewWeighted(maxConcurrentThumbnails),
+		Profile:             profile,
+		Store:               store,
+		authenticator:       auth.NewAuthenticator(store, secret),
+		thumbnailSemaphore:  semaphore.NewWeighted(maxConcurrentThumbnails),
+		memoExportSemaphore: semaphore.NewWeighted(1),
 	}
 }
 
@@ -129,6 +140,9 @@ func (s *FileServerService) RegisterRoutes(mux *http.ServeMux, fallback http.Han
 	mux.Handle("/file/attachments/{uid}", httphandler.GET(httphandler.Func(s.serveAttachmentFile), fallback))
 	mux.Handle("/file/attachments/{uid}/{filename}", httphandler.GET(httphandler.Func(s.serveAttachmentFile), fallback))
 	mux.Handle("/file/users/{identifier}/avatar", httphandler.GET(httphandler.Func(s.serveUserAvatar), fallback))
+	// A method pattern so that HEAD is served too: the web client sends a HEAD
+	// preflight before it hands the download to the browser.
+	mux.Handle("GET "+memoExportRoute, httphandler.Func(s.serveMemoExport))
 }
 
 // =============================================================================
@@ -160,6 +174,11 @@ func (s *FileServerService) serveAttachmentFile(w http.ResponseWriter, r *http.R
 	}
 	if readClass == access.MemoReadClassPublic {
 		w.Header().Set("Cache-Control", publicAttachmentCacheControl)
+	}
+	// External attachments carry no blob; their reference is the upstream URL
+	// the content lives at, so they are answered with a redirect.
+	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL {
+		return serveExternalAttachment(w, r, attachment)
 	}
 	if attachment.StorageType != storepb.AttachmentStorageType_LOCAL && attachment.StorageType != storepb.AttachmentStorageType_S3 {
 		attachment, err = s.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
@@ -239,6 +258,21 @@ func (s *FileServerService) serveUserAvatar(w http.ResponseWriter, r *http.Reque
 // File Serving Methods
 // =============================================================================
 
+// serveExternalAttachment redirects the client to an external attachment's
+// recorded URL. External rows carry no blob, so there is nothing to stream or
+// thumbnail locally; only http(s) targets are redirected so a malformed or
+// hostile reference cannot turn the file route into an open redirector for
+// other schemes.
+func serveExternalAttachment(w http.ResponseWriter, r *http.Request, attachment *store.Attachment) error {
+	target, err := url.Parse(attachment.Reference)
+	if err != nil || target.Hostname() == "" || (target.Scheme != "http" && target.Scheme != "https") {
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "attachment has no servable external URL"}
+	}
+	setSecurityHeaders(w)
+	http.Redirect(w, r, attachment.Reference, http.StatusFound)
+	return nil
+}
+
 // serveMediaStream serves video/audio files using streaming to avoid memory exhaustion.
 func (s *FileServerService) serveMediaStream(w http.ResponseWriter, r *http.Request, attachment *store.Attachment, contentType string) error {
 	setSecurityHeaders(w)
@@ -246,8 +280,7 @@ func (s *FileServerService) serveMediaStream(w http.ResponseWriter, r *http.Requ
 
 	switch attachment.StorageType {
 	case storepb.AttachmentStorageType_LOCAL:
-		http.ServeFile(w, r, s.resolveLocalPath(attachment.Reference))
-		return nil
+		return s.serveLocalFile(w, r, attachment)
 
 	case storepb.AttachmentStorageType_S3:
 		return s.streamS3Object(w, r, attachment, contentType)
@@ -285,8 +318,7 @@ func (s *FileServerService) serveStaticFile(w http.ResponseWriter, r *http.Reque
 
 	switch attachment.StorageType {
 	case storepb.AttachmentStorageType_LOCAL:
-		http.ServeFile(w, r, s.resolveLocalPath(attachment.Reference))
-		return nil
+		return s.serveLocalFile(w, r, attachment)
 	case storepb.AttachmentStorageType_S3:
 		return s.streamS3Object(w, r, attachment, contentType)
 	default:
@@ -349,6 +381,30 @@ func (s *FileServerService) resolveLocalPath(reference string) string {
 		filePath = filepath.Join(s.Profile.Data, filePath)
 	}
 	return filePath
+}
+
+// serveLocalFile serves an attachment stored on disk. A file that is gone
+// answers with the JSON error envelope like every other storage failure,
+// instead of the plain-text page net/http would write for it.
+func (s *FileServerService) serveLocalFile(w http.ResponseWriter, r *http.Request, attachment *store.Attachment) error {
+	path := s.resolveLocalPath(attachment.Reference)
+	file, err := os.Open(path)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return &httphandler.Error{Code: http.StatusNotFound, Message: "attachment file not found", Cause: err}
+		}
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to read attachment file", Cause: err}
+	}
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to read attachment file", Cause: err}
+	}
+	if info.IsDir() {
+		return &httphandler.Error{Code: http.StatusNotFound, Message: "attachment file not found"}
+	}
+	http.ServeContent(w, r, attachment.Filename, info.ModTime(), file)
+	return nil
 }
 
 // streamS3Object streams S3 content through the server, forwarding a supported
@@ -736,10 +792,16 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, r *ht
 
 // getCurrentUser retrieves the current authenticated user from the request.
 // Authentication priority: Bearer token (Access Token V2 or PAT) > Refresh token cookie.
+// A stale, revoked or malformed session cookie counts as anonymous, so the caller
+// answers with its normal unauthenticated response instead of a server error.
 func (s *FileServerService) getCurrentUser(ctx context.Context, r *http.Request) (*store.User, error) {
 	authHeader := r.Header.Get("Authorization")
 	cookieHeader := r.Header.Get("Cookie")
-	return s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
+	user, err := s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
+	if errors.Is(err, auth.ErrInvalidRefreshToken) {
+		return nil, nil
+	}
+	return user, err
 }
 
 // =============================================================================

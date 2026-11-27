@@ -41,6 +41,16 @@ describe("code highlighting", () => {
     expect(ranges.map(({ from, to }) => code.slice(from, to))).toEqual(["const ", '"hello"']);
   });
 
+  it("highlights Visual Basic under its common fence names", async () => {
+    const { highlightLoadedCode, loadHighlighter } = await import("@/lib/code-highlight");
+    const code = "Dim total As Integer = 42";
+    for (const language of ["vb", "vbnet"]) {
+      await loadHighlighter(language);
+      const tokens = (highlightLoadedCode(code, language) ?? []).map(({ from, to }) => code.slice(from, to).trim());
+      expect(tokens).toContain("Dim");
+    }
+  });
+
   it("leaves unsupported languages plain", async () => {
     const { highlightLoadedCode, loadHighlighter } = await import("@/lib/code-highlight");
     await loadHighlighter("brainfuck");

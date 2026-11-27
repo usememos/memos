@@ -234,7 +234,7 @@ func TestSetMemoRelationsRejectsNonReferenceTypes(t *testing.T) {
 		relationType apipb.MemoRelation_Type
 	}{
 		{name: "unspecified", relationType: apipb.MemoRelation_TYPE_UNSPECIFIED},
-		{name: "comment", relationType: apipb.MemoRelation_COMMENT},
+		{name: "removed comment type", relationType: apipb.MemoRelation_Type(2)},
 		{name: "unknown", relationType: apipb.MemoRelation_Type(999)},
 	} {
 		t.Run(test.name, func(t *testing.T) {

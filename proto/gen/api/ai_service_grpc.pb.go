@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AIService_Transcribe_FullMethodName = "/memos.api.AIService/Transcribe"
+	AIService_Transcribe_FullMethodName           = "/memos.api.AIService/Transcribe"
+	AIService_SuggestTags_FullMethodName          = "/memos.api.AIService/SuggestTags"
+	AIService_ListAIProviderTypes_FullMethodName  = "/memos.api.AIService/ListAIProviderTypes"
+	AIService_ListAIProviderModels_FullMethodName = "/memos.api.AIService/ListAIProviderModels"
 )
 
 // AIServiceClient is the client API for AIService service.
@@ -31,6 +34,14 @@ type AIServiceClient interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(ctx context.Context, in *TranscribeRequest, opts ...grpc.CallOption) (*TranscribeResponse, error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(ctx context.Context, in *SuggestTagsRequest, opts ...grpc.CallOption) (*SuggestTagsResponse, error)
+	// ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+	// key rules and capabilities. The caller must be an administrator.
+	ListAIProviderTypes(ctx context.Context, in *ListAIProviderTypesRequest, opts ...grpc.CallOption) (*ListAIProviderTypesResponse, error)
+	// ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+	// InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+	ListAIProviderModels(ctx context.Context, in *ListAIProviderModelsRequest, opts ...grpc.CallOption) (*ListAIProviderModelsResponse, error)
 }
 
 type aIServiceClient struct {
@@ -51,6 +62,36 @@ func (c *aIServiceClient) Transcribe(ctx context.Context, in *TranscribeRequest,
 	return out, nil
 }
 
+func (c *aIServiceClient) SuggestTags(ctx context.Context, in *SuggestTagsRequest, opts ...grpc.CallOption) (*SuggestTagsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuggestTagsResponse)
+	err := c.cc.Invoke(ctx, AIService_SuggestTags_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIServiceClient) ListAIProviderTypes(ctx context.Context, in *ListAIProviderTypesRequest, opts ...grpc.CallOption) (*ListAIProviderTypesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListAIProviderTypesResponse)
+	err := c.cc.Invoke(ctx, AIService_ListAIProviderTypes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIServiceClient) ListAIProviderModels(ctx context.Context, in *ListAIProviderModelsRequest, opts ...grpc.CallOption) (*ListAIProviderModelsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListAIProviderModelsResponse)
+	err := c.cc.Invoke(ctx, AIService_ListAIProviderModels_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AIServiceServer is the server API for AIService service.
 // All implementations must embed UnimplementedAIServiceServer
 // for forward compatibility.
@@ -60,6 +101,14 @@ type AIServiceServer interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error)
+	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
+	SuggestTags(context.Context, *SuggestTagsRequest) (*SuggestTagsResponse, error)
+	// ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+	// key rules and capabilities. The caller must be an administrator.
+	ListAIProviderTypes(context.Context, *ListAIProviderTypesRequest) (*ListAIProviderTypesResponse, error)
+	// ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+	// InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+	ListAIProviderModels(context.Context, *ListAIProviderModelsRequest) (*ListAIProviderModelsResponse, error)
 	mustEmbedUnimplementedAIServiceServer()
 }
 
@@ -72,6 +121,15 @@ type UnimplementedAIServiceServer struct{}
 
 func (UnimplementedAIServiceServer) Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Transcribe not implemented")
+}
+func (UnimplementedAIServiceServer) SuggestTags(context.Context, *SuggestTagsRequest) (*SuggestTagsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SuggestTags not implemented")
+}
+func (UnimplementedAIServiceServer) ListAIProviderTypes(context.Context, *ListAIProviderTypesRequest) (*ListAIProviderTypesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAIProviderTypes not implemented")
+}
+func (UnimplementedAIServiceServer) ListAIProviderModels(context.Context, *ListAIProviderModelsRequest) (*ListAIProviderModelsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAIProviderModels not implemented")
 }
 func (UnimplementedAIServiceServer) mustEmbedUnimplementedAIServiceServer() {}
 func (UnimplementedAIServiceServer) testEmbeddedByValue()                   {}
@@ -112,6 +170,60 @@ func _AIService_Transcribe_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AIService_SuggestTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SuggestTagsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).SuggestTags(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_SuggestTags_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).SuggestTags(ctx, req.(*SuggestTagsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIService_ListAIProviderTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAIProviderTypesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).ListAIProviderTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_ListAIProviderTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).ListAIProviderTypes(ctx, req.(*ListAIProviderTypesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIService_ListAIProviderModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAIProviderModelsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).ListAIProviderModels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_ListAIProviderModels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).ListAIProviderModels(ctx, req.(*ListAIProviderModelsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AIService_ServiceDesc is the grpc.ServiceDesc for AIService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -122,6 +234,18 @@ var AIService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Transcribe",
 			Handler:    _AIService_Transcribe_Handler,
+		},
+		{
+			MethodName: "SuggestTags",
+			Handler:    _AIService_SuggestTags_Handler,
+		},
+		{
+			MethodName: "ListAIProviderTypes",
+			Handler:    _AIService_ListAIProviderTypes_Handler,
+		},
+		{
+			MethodName: "ListAIProviderModels",
+			Handler:    _AIService_ListAIProviderModels_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

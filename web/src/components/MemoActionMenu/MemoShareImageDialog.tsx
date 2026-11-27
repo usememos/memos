@@ -1,8 +1,7 @@
-import { DownloadIcon, ImageIcon, Loader2Icon, Share2Icon } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button, Dialog } from "@usememos/ui";
+import { DownloadIcon, Share2Icon } from "lucide-react";
+import { type CSSProperties, useCallback, useMemo, useRef, useState } from "react";
+import { showErrorToast, toast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
 import { useMemoViewContext } from "../MemoView/MemoViewContext";
 import MemoShareImagePreview from "./MemoShareImagePreview";
@@ -48,9 +47,9 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
       anchor.download = buildMemoShareImageFileName(memo.name);
       anchor.click();
       URL.revokeObjectURL(url);
-      toast.success(t("memo.share.image-downloaded"));
+      toast.add({ title: t("memo.share.image-downloaded"), type: "success" });
     } catch {
-      toast.error(t("memo.share.image-download-failed"));
+      showErrorToast(t("memo.share.image-download-failed"));
     } finally {
       setIsRendering(false);
     }
@@ -66,7 +65,7 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
       const blob = await createShareBlob();
       const file = new File([blob], buildMemoShareImageFileName(memo.name), { type: "image/png" });
       if (typeof navigator.canShare === "function" && !navigator.canShare({ files: [file] })) {
-        toast.error(t("memo.share.image-share-failed"));
+        showErrorToast(t("memo.share.image-share-failed"));
         return;
       }
 
@@ -76,7 +75,7 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
       });
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) {
-        toast.error(t("memo.share.image-share-failed"));
+        showErrorToast(t("memo.share.image-share-failed"));
       }
     } finally {
       setIsRendering(false);
@@ -87,40 +86,43 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
     typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        size="full"
-        className="min-h-0 overflow-hidden !gap-0 !p-0 md:w-auto md:max-w-none"
-        style={{ width: `${dialogWidth}px` }}
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup
+        // The panel is as wide as the image it previews, so the width is the dialog's own.
+        style={{ "--mu-dialog-width": `${dialogWidth}px` } as CSSProperties}
+        closeLabel={t("common.close")}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <DialogHeader className="shrink-0 border-b border-border/60 px-4 py-3 sm:px-5">
-            <DialogTitle className="flex items-center gap-2 text-base font-medium">
-              <ImageIcon className="h-4 w-4 text-muted-foreground" />
-              {t("memo.share.image-title")}
-            </DialogTitle>
-            <DialogDescription className="text-xs">{t("memo.share.image-description", { width: previewRenderWidth })}</DialogDescription>
-          </DialogHeader>
+        <Dialog.Title>{t("memo.share.image-title")}</Dialog.Title>
+        <Dialog.Description>{t("memo.share.image-description", { width: previewRenderWidth })}</Dialog.Description>
 
-          <div className="relative flex min-h-0 flex-1 items-start justify-center overflow-auto bg-muted/20 px-4 py-3 sm:px-5 sm:py-4">
-            <MemoShareImagePreview ref={previewRef} width={previewRenderWidth} />
-          </div>
-
-          <DialogFooter className="shrink-0 border-t border-border/60 px-4 py-3 sm:px-5">
-            {supportsNativeShare && (
-              <Button variant="quiet" onClick={handleNativeShare} disabled={isRendering}>
-                {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <Share2Icon className="mr-2 h-4 w-4" />}
-                {t("memo.share.image-share")}
-              </Button>
-            )}
-            <Button variant="outline" onClick={handleDownload} disabled={isRendering}>
-              {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <DownloadIcon className="mr-2 h-4 w-4" />}
-              {t("memo.share.image-download")}
-            </Button>
-          </DialogFooter>
+        <div className="flex justify-center overflow-x-auto">
+          <MemoShareImagePreview ref={previewRef} width={previewRenderWidth} />
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <Dialog.Footer>
+          {supportsNativeShare && (
+            <Button
+              variant="ghost"
+              onClick={handleNativeShare}
+              loading={isRendering}
+              loadingLabel={t("memo.share.image-share")}
+              icon={<Share2Icon />}
+            >
+              {t("memo.share.image-share")}
+            </Button>
+          )}
+          <Button
+            variant="neutral"
+            onClick={handleDownload}
+            loading={isRendering}
+            loadingLabel={t("memo.share.image-download")}
+            icon={<DownloadIcon />}
+          >
+            {t("memo.share.image-download")}
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

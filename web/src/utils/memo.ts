@@ -6,6 +6,7 @@ export interface VisibilityOption {
   /** Proto enum name, as stored in user settings and sent in filter expressions. */
   name: "PRIVATE" | "SPACE" | "PROTECTED" | "PUBLIC";
   labelKey: "memo.visibility.private" | "memo.visibility.space" | "memo.visibility.protected" | "memo.visibility.public";
+  audienceKey: "memo.audience.private" | "memo.audience.space" | "memo.audience.protected" | "memo.audience.public";
   descriptionKey:
     | "memo.visibility.private-description"
     | "memo.visibility.space-description"
@@ -26,6 +27,7 @@ export const VISIBILITY_OPTIONS: readonly VisibilityOption[] = [
     value: Visibility.PRIVATE,
     name: "PRIVATE",
     labelKey: "memo.visibility.private",
+    audienceKey: "memo.audience.private",
     descriptionKey: "memo.visibility.private-description",
     icon: LockIcon,
     requiresSpace: false,
@@ -34,6 +36,7 @@ export const VISIBILITY_OPTIONS: readonly VisibilityOption[] = [
     value: Visibility.SPACE,
     name: "SPACE",
     labelKey: "memo.visibility.space",
+    audienceKey: "memo.audience.space",
     descriptionKey: "memo.visibility.space-description",
     icon: UserLockIcon,
     requiresSpace: true,
@@ -42,6 +45,7 @@ export const VISIBILITY_OPTIONS: readonly VisibilityOption[] = [
     value: Visibility.PROTECTED,
     name: "PROTECTED",
     labelKey: "memo.visibility.protected",
+    audienceKey: "memo.audience.protected",
     descriptionKey: "memo.visibility.protected-description",
     icon: UsersIcon,
     requiresSpace: false,
@@ -50,6 +54,7 @@ export const VISIBILITY_OPTIONS: readonly VisibilityOption[] = [
     value: Visibility.PUBLIC,
     name: "PUBLIC",
     labelKey: "memo.visibility.public",
+    audienceKey: "memo.audience.public",
     descriptionKey: "memo.visibility.public-description",
     icon: Globe2Icon,
     requiresSpace: false,

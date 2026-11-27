@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main class="mx-auto flex max-w-2xl flex-col gap-4 p-4">
+      <section class="rounded-mu-lg border border-mu-line bg-mu-surface p-4">
+        <div id="empty-source"></div>
+      </section>
+      <section class="rounded-mu-lg border border-mu-line bg-mu-surface p-4">
+        <div id="filled-source"></div>
+      </section>
+      <section class="rounded-mu-lg border border-mu-line bg-mu-surface p-4">
+        <div id="rich-code"></div>
+      </section>
+    </main>
+    <script type="module">
+      import { Editor } from "@usememos/editor";
+      import "@usememos/editor/style.css";
+      import "/src/index.css";
+      import { MEMO_EDITOR_THEME } from "/src/lib/memo-markdown.ts";
+
+      for (const [id, mode, content] of [
+        ["empty-source", "source", ""],
+        ["filled-source", "source", "# A thought\n\nSome **Markdown**."],
+        ["rich-code", "rich", "```text\nA code block\n```"],
+      ]) {
+        new Editor({
+          element: document.getElementById(id),
+          mode,
+          content,
+          placeholder: "Any thoughts...",
+          theme: MEMO_EDITOR_THEME,
+        });
+      }
+    </script>
+  </body>
+</html>

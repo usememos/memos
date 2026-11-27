@@ -17,6 +17,7 @@ import (
 	"github.com/moby/moby/api/types/container"
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/modules/mariadb"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/network"
@@ -42,6 +43,7 @@ const (
 
 var (
 	mysqlContainer    atomic.Pointer[mysql.MySQLContainer]
+	mariadbContainer  atomic.Pointer[mariadb.MariaDBContainer]
 	postgresContainer atomic.Pointer[postgres.PostgresContainer]
 	mysqlOnce         sync.Once
 	postgresOnce      sync.Once
@@ -88,8 +90,23 @@ func skipIfContainerProviderUnavailable(t *testing.T) {
 	testcontainers.SkipIfProviderIsNotHealthy(t)
 }
 
-// GetMySQLDSN starts a MySQL container (if not already running) and creates a fresh database for this test.
+func getMySQLVariant() (string, error) {
+	switch variant := os.Getenv("MYSQL_VARIANT"); variant {
+	case "", "mysql":
+		return "mysql", nil
+	case "mariadb":
+		return variant, nil
+	default:
+		return "", errors.Errorf("unsupported MYSQL_VARIANT %q: use mysql or mariadb", variant)
+	}
+}
+
+// GetMySQLDSN starts the selected MySQL-compatible server and creates a fresh database for this test.
 func GetMySQLDSN(t *testing.T) string {
+	variant, err := getMySQLVariant()
+	if err != nil {
+		t.Fatal(err)
+	}
 	skipIfContainerProviderUnavailable(t)
 
 	ctx := context.Background()
@@ -100,34 +117,48 @@ func GetMySQLDSN(t *testing.T) string {
 			t.Fatalf("failed to create test network: %v", err)
 		}
 
-		container, err := mysql.Run(ctx,
-			"mysql:8.4",
-			mysql.WithDatabase("init_db"),
-			mysql.WithUsername("root"),
-			mysql.WithPassword(testPassword),
-			testcontainers.WithEnv(map[string]string{
-				"MYSQL_ROOT_PASSWORD": testPassword,
-			}),
+		opts := []testcontainers.ContainerCustomizer{
 			testcontainers.WithWaitStrategy(
 				wait.ForAll(
 					wait.ForLog("ready for connections").WithOccurrence(2),
 					wait.ForListeningPort("3306/tcp"),
-				).WithDeadline(120*time.Second),
+				).WithDeadline(120 * time.Second),
 			),
 			network.WithNetwork([]string{mysqlNetworkAlias}, nw),
-		)
-		if err != nil {
-			t.Fatalf("failed to start MySQL container: %v", err)
 		}
-		mysqlContainer.Store(container)
-
-		dsn, err := container.ConnectionString(ctx, "multiStatements=true")
+		var dsn string
+		if variant == "mariadb" {
+			t.Log("Starting MariaDB container: mariadb:11.4.13")
+			container, startErr := mariadb.Run(ctx, "mariadb:11.4.13", append(opts,
+				mariadb.WithDatabase("init_db"),
+				mariadb.WithUsername(testUser),
+				mariadb.WithPassword(testPassword),
+				testcontainers.WithCmd("--sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"),
+			)...)
+			mariadbContainer.Store(container)
+			if startErr != nil {
+				t.Fatalf("failed to start MariaDB container: %v", startErr)
+			}
+			dsn, err = container.ConnectionString(ctx, "multiStatements=true")
+		} else {
+			t.Log("Starting MySQL container: mysql:8.4")
+			container, startErr := mysql.Run(ctx, "mysql:8.4", append(opts,
+				mysql.WithDatabase("init_db"),
+				mysql.WithUsername(testUser),
+				mysql.WithPassword(testPassword),
+			)...)
+			mysqlContainer.Store(container)
+			if startErr != nil {
+				t.Fatalf("failed to start MySQL container: %v", startErr)
+			}
+			dsn, err = container.ConnectionString(ctx, "multiStatements=true")
+		}
 		if err != nil {
-			t.Fatalf("failed to get MySQL connection string: %v", err)
+			t.Fatalf("failed to get %s connection string: %v", variant, err)
 		}
 
 		if err := waitForDB("mysql", dsn, 30*time.Second); err != nil {
-			t.Fatalf("MySQL not ready for connections: %v", err)
+			t.Fatalf("%s not ready for connections: %v", variant, err)
 		}
 
 		mysqlBaseDSN.Store(dsn)
@@ -135,7 +166,7 @@ func GetMySQLDSN(t *testing.T) string {
 
 	dsn, ok := mysqlBaseDSN.Load().(string)
 	if !ok || dsn == "" {
-		t.Fatal("MySQL container failed to start in a previous test")
+		t.Fatalf("%s container failed to start in a previous test", variant)
 	}
 
 	// Serialize database creation to avoid "table already exists" race conditions
@@ -262,6 +293,9 @@ func GetPostgresDSN(t *testing.T) string {
 func TerminateContainers() {
 	ctx := context.Background()
 	if container := mysqlContainer.Load(); container != nil {
+		_ = container.Terminate(ctx)
+	}
+	if container := mariadbContainer.Load(); container != nil {
 		_ = container.Terminate(ctx)
 	}
 	if container := postgresContainer.Load(); container != nil {

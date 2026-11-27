@@ -13,7 +13,10 @@ vi.mock("@/connect", () => ({
   attachmentServiceClient: { createAttachment: vi.fn() },
   memoServiceClient: clients,
 }));
-vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+vi.mock("@/utils/i18n", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/utils/i18n")>()),
+  useTranslate: () => (key: string) => key,
+}));
 
 const originalCreate = new Date(2020, 0, 1, 10, 20, 30);
 const originalUpdate = new Date(2020, 0, 2, 11, 22, 33);
@@ -47,6 +50,20 @@ describe("memo editor timestamps", () => {
     clients.updateMemo.mockImplementation(async ({ memo }: { memo: Memo }) => memo);
   });
 
+  it("associates the input label and clears its invalid state after a valid edit", () => {
+    renderEditor();
+    const input = screen.getByRole("textbox", { name: "common.created-at" });
+    expect(screen.getByText("common.created-at")).toHaveAttribute("for", input.id);
+
+    fireEvent.change(input, { target: { value: "invalid" } });
+    fireEvent.blur(input);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+
+    fireEvent.change(input, { target: { value: "2024-02-29 12:34:56" } });
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(editor.getState().timestamps.createTime).toEqual(customTime);
+  });
+
   it.each([
     [0, "createTime", "create_time"],
     [1, "updateTime", "update_time"],
@@ -66,21 +83,19 @@ describe("memo editor timestamps", () => {
     expect(request.memo[field]).toEqual(timestampFromDate(customTime));
   });
 
-  it.each([
-    "2024-02-30 12:34:56",
-    "2024-13-01 12:34:56",
-    "2024-02-29 24:34:56",
-    "invalid",
-  ])("rejects invalid local time %s without changing the saved timestamp", async (value) => {
-    const memo = renderEditor();
-    const input = screen.getAllByRole("textbox")[0];
-    fireEvent.change(input, { target: { value } });
-    fireEvent.blur(input);
-    expect(input).toHaveAttribute("data-invalid", "true");
-    expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
-    await memoService.save(editor.getState(), { memoName: memo.name }, ops);
-    expect(clients.updateMemo).not.toHaveBeenCalled();
-  });
+  it.each(["2024-02-30 12:34:56", "2024-13-01 12:34:56", "2024-02-29 24:34:56", "invalid"])(
+    "rejects invalid local time %s without changing the saved timestamp",
+    async (value) => {
+      const memo = renderEditor();
+      const input = screen.getAllByRole("textbox")[0];
+      fireEvent.change(input, { target: { value } });
+      fireEvent.blur(input);
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
+      await memoService.save(editor.getState(), { memoName: memo.name }, ops);
+      expect(clients.updateMemo).not.toHaveBeenCalled();
+    },
+  );
 
   it("automatically updates the modification time for content edits", async () => {
     const memo = renderEditor();
@@ -101,5 +116,15 @@ describe("memo editor timestamps", () => {
     const request = clients.updateMemo.mock.calls[0][0];
     expect(request.updateMask.paths).toEqual(["content", "update_time"]);
     expect(request.memo.updateTime).toEqual(timestampFromDate(customTime));
+  });
+
+  it("reads Now for a memo being written that has no time yet", () => {
+    render(
+      <EditorProvider initialEditorState={createInitialState()}>
+        <TimestampPopover />
+      </EditorProvider>,
+    );
+    expect(screen.getByText("Now")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

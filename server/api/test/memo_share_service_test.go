@@ -208,20 +208,19 @@ func TestCreateMemoShare_SharesOnlyTheCommentMemo(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comment, err := ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent: parent.Name,
-		Comment: &apipb.Memo{
+	comment, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Parent:     new(parent.Name),
 			Content:    "only this memo is shared",
 			Visibility: apipb.Visibility_PRIVATE,
 		},
 	})
 	require.NoError(t, err)
-	require.NotEmpty(t, comment.Relations)
+	require.Equal(t, parent.Name, comment.GetParent())
 
 	regularMemo, err := ts.Service.GetMemo(userCtx, &apipb.GetMemoRequest{Name: comment.Name})
 	require.NoError(t, err)
 	require.NotEmpty(t, regularMemo.GetParent())
-	require.NotEmpty(t, regularMemo.Relations)
 
 	share, err := ts.Service.CreateMemoShare(userCtx, &apipb.CreateMemoShareRequest{
 		Parent:    comment.Name,
