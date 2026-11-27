@@ -266,6 +266,24 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Saved in C:\\Users\\me",
 		},
 		{
+			name:      "line ending inside a code span",
+			content:   "Run `a\nb` now",
+			maxLength: 100,
+			expected:  "Run a b now",
+		},
+		{
+			name:      "code span over three lines",
+			content:   "Run `a\nb\nc` now",
+			maxLength: 100,
+			expected:  "Run a b c now",
+		},
+		{
+			name:      "CRLF line ending inside a code span",
+			content:   "Run `a\r\nb` now",
+			maxLength: 100,
+			expected:  "Run a b now",
+		},
+		{
 			name:      "code span keeps backslashes and entities",
 			content:   "Run `a\\*b &amp; c` now",
 			maxLength: 100,
@@ -570,6 +588,11 @@ func TestExtractAllTitle(t *testing.T) {
 			name:    "h1 with entity reference",
 			content: "# Fish &amp; chips\n\nBody.",
 			title:   "Fish & chips",
+		},
+		{
+			name:    "setext h1 with a code span over two lines",
+			content: "Use `a\nb` here\n===\n\nBody.",
+			title:   "Use a b here",
 		},
 		{
 			name:    "h1 with code span",

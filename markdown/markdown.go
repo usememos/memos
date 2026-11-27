@@ -199,11 +199,23 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 
 // textValue returns the plain text a Text node displays: backslash escapes are
 // removed and entity references are decoded, as when the node is rendered.
-// Raw text, such as the content of a code span, is returned as written.
+// Raw text, the content of a code span, is returned as written, except that a
+// line ending inside the span becomes a space.
 func textValue(n *gast.Text, source []byte) []byte {
 	value := n.Segment.Value(source)
+	if n.IsRaw() {
+		// A code span shows a line ending inside it as a space (CommonMark).
+		// goldmark ends each raw segment of a span at a line ending; a CRLF
+		// line ending also counts as one.
+		if trimmed, ok := bytes.CutSuffix(value, []byte("\n")); ok {
+			trimmed = bytes.TrimSuffix(trimmed, []byte("\r"))
+			// Cap the slice so append copies instead of writing into source.
+			return append(trimmed[:len(trimmed):len(trimmed)], ' ')
+		}
+		return value
+	}
 	// The writer also replaces NUL bytes, so text holding one takes the same path.
-	if n.IsRaw() || !bytes.ContainsAny(value, "\\&\x00") {
+	if !bytes.ContainsAny(value, "\\&\x00") {
 		return value
 	}
 	// Reuse goldmark's HTML writer so the decoding follows CommonMark exactly
