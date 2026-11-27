@@ -1,0 +1,72 @@
+{
+  "url": "http://127.0.0.1:4189",
+  "displayUrl": "Memos · Local demo",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "initialWait": 500,
+  "tail": 1000,
+  "vertical": {
+    "badge": "Memos",
+    "titleLines": [
+      "Capture ideas",
+      "then find them"
+    ],
+    "subtitle": "A story you can run again",
+    "cta": "Recorded with TabRetake"
+  },
+  "steps": [
+    {
+      "action": "type",
+      "selector": "[contenteditable=\"true\"][role=\"textbox\"]",
+      "value": "Launch checklist: check keyboard navigation. #release",
+      "pause": 400,
+      "zoom": false,
+      "caption": "Capture a release note"
+    },
+    {
+      "action": "click",
+      "role": "button",
+      "name": "Save",
+      "pause": 700,
+      "zoom": false,
+      "caption": "Save it to your timeline"
+    },
+    {
+      "action": "waitFor",
+      "text": "Launch checklist: check keyboard navigation."
+    },
+    {
+      "action": "click",
+      "role": "button",
+      "name": "Search",
+      "pause": 300,
+      "zoom": false
+    },
+    {
+      "action": "type",
+      "selector": "input[placeholder=\"Search Memos\"]",
+      "value": "check keyboard navigation",
+      "pause": 700,
+      "zoom": false,
+      "caption": "Find it again with a few words"
+    },
+    {
+      "action": "press",
+      "key": "Enter",
+      "pause": 700,
+      "zoom": false
+    },
+    {
+      "action": "focus",
+      "text": "Launch checklist: check keyboard navigation.",
+      "pause": 1200,
+      "caption": "Your idea is ready to revisit"
+    },
+    {
+      "action": "screenshot",
+      "file": "result.png"
+    }
+  ]
+}
