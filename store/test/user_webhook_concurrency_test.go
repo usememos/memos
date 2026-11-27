@@ -20,13 +20,16 @@ import (
 type webhookSettingDriver struct {
 	store.Driver
 
-	raw     *store.UserSetting
-	fail    bool
-	block   bool
-	reads   atomic.Int32
-	entered chan struct{}
-	read2   chan struct{}
-	release chan struct{}
+	raw         *store.UserSetting
+	fail        bool
+	block       bool
+	reads       atomic.Int32
+	entered     chan struct{}
+	read2       chan struct{}
+	release     chan struct{}
+	listEntered chan struct{}
+	listRelease chan struct{}
+	firstRaw    *store.UserSetting
 }
 
 func (*webhookSettingDriver) Close() error { return nil }
@@ -45,8 +48,16 @@ func (d *webhookSettingDriver) UpsertUserSetting(_ context.Context, upsert *stor
 }
 
 func (d *webhookSettingDriver) ListUserSettings(_ context.Context, _ *store.FindUserSetting) ([]*store.UserSetting, error) {
-	if d.read2 != nil && d.reads.Add(1) == 2 {
+	read := d.reads.Add(1)
+	if d.read2 != nil && read == 2 {
 		close(d.read2)
+	}
+	if read == 1 && d.listEntered != nil {
+		close(d.listEntered)
+		<-d.listRelease
+		if d.firstRaw != nil {
+			return []*store.UserSetting{d.firstRaw}, nil
+		}
 	}
 	if d.raw == nil {
 		return nil, nil
@@ -137,4 +148,78 @@ func TestUserWebhookConcurrentAddsAreSerialized(t *testing.T) {
 		ids = append(ids, webhook.Id)
 	}
 	require.ElementsMatch(t, []string{"hook-1", "hook-2"}, ids)
+}
+
+func TestUserWebhookStaleCacheFillCannotOverwriteMutation(t *testing.T) {
+	ctx := context.Background()
+	seedDriver := &webhookSettingDriver{}
+	seedStore := newWebhookTestStore(seedDriver)
+	_, err := seedStore.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: 1,
+		Key:    storepb.UserSetting_WEBHOOKS,
+		Value: &storepb.UserSetting_Webhooks{
+			Webhooks: &storepb.WebhooksUserSetting{
+				Webhooks: []*storepb.WebhooksUserSetting_Webhook{{Id: "hook-old"}},
+			},
+		},
+	})
+	require.NoError(t, err)
+	staleRaw := seedDriver.raw
+
+	driver := &webhookSettingDriver{
+		raw:         staleRaw,
+		firstRaw:    staleRaw,
+		listEntered: make(chan struct{}),
+		listRelease: make(chan struct{}),
+	}
+	ts := newWebhookTestStore(driver)
+	userID := int32(1)
+
+	readErr := make(chan error, 1)
+	readDone := make(chan struct{})
+	go func() {
+		defer close(readDone)
+		_, err := ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &userID, Key: storepb.UserSetting_WEBHOOKS})
+		readErr <- err
+	}()
+
+	select {
+	case <-driver.listEntered:
+	case <-time.After(5 * time.Second):
+		t.Fatal("stale read never reached persistence")
+	}
+
+	addDone := make(chan error, 1)
+	go func() {
+		addDone <- ts.AddUserWebhook(ctx, userID, &storepb.WebhooksUserSetting_Webhook{Id: "hook-new"})
+	}()
+
+	addFinished := false
+	select {
+	case err := <-addDone:
+		require.NoError(t, err)
+		addFinished = true
+	case <-time.After(200 * time.Millisecond):
+	}
+
+	close(driver.listRelease)
+	<-readDone
+	require.NoError(t, <-readErr)
+
+	if !addFinished {
+		select {
+		case err := <-addDone:
+			require.NoError(t, err)
+		case <-time.After(5 * time.Second):
+			t.Fatal("webhook add never finished")
+		}
+	}
+
+	webhooks, err := ts.GetUserWebhooks(ctx, userID)
+	require.NoError(t, err)
+	ids := make([]string, 0, len(webhooks))
+	for _, webhook := range webhooks {
+		ids = append(ids, webhook.Id)
+	}
+	require.Contains(t, ids, "hook-new")
 }

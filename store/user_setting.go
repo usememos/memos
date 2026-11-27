@@ -63,6 +63,14 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetti
 }
 
 func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error) {
+	if find.Key == storepb.UserSetting_WEBHOOKS || find.Key == storepb.UserSetting_KEY_UNSPECIFIED {
+		s.webhookMu.Lock()
+		defer s.webhookMu.Unlock()
+	}
+	return s.listUserSettings(ctx, find)
+}
+
+func (s *Store) listUserSettings(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error) {
 	userSettingRawList, err := s.driver.ListUserSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -84,6 +92,14 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 }
 
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
+	if find.Key == storepb.UserSetting_WEBHOOKS || find.Key == storepb.UserSetting_KEY_UNSPECIFIED {
+		s.webhookMu.Lock()
+		defer s.webhookMu.Unlock()
+	}
+	return s.getUserSetting(ctx, find)
+}
+
+func (s *Store) getUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
 	if find.UserID != nil {
 		if cache, ok := s.userSettingCache.Get(ctx, getUserSettingCacheKey(*find.UserID, find.Key.String())); ok {
 			userSetting, ok := cache.(*storepb.UserSetting)
@@ -93,7 +109,7 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*sto
 		}
 	}
 
-	list, err := s.ListUserSettings(ctx, find)
+	list, err := s.listUserSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -385,7 +401,13 @@ func (s *Store) UpdatePATLastUsed(ctx context.Context, userID int32, tokenID str
 
 // GetUserWebhooks returns the webhooks of the user.
 func (s *Store) GetUserWebhooks(ctx context.Context, userID int32) ([]*storepb.WebhooksUserSetting_Webhook, error) {
-	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
+	s.webhookMu.Lock()
+	defer s.webhookMu.Unlock()
+	return s.getUserWebhooks(ctx, userID)
+}
+
+func (s *Store) getUserWebhooks(ctx context.Context, userID int32) ([]*storepb.WebhooksUserSetting_Webhook, error) {
+	userSetting, err := s.getUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
 		Key:    storepb.UserSetting_WEBHOOKS,
 	})
@@ -415,7 +437,7 @@ func (s *Store) AddUserWebhook(ctx context.Context, userID int32, webhook *store
 	s.webhookMu.Lock()
 	defer s.webhookMu.Unlock()
 
-	existingWebhooks, err := s.GetUserWebhooks(ctx, userID)
+	existingWebhooks, err := s.getUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -455,7 +477,7 @@ func (s *Store) RemoveUserWebhook(ctx context.Context, userID int32, webhookID s
 	s.webhookMu.Lock()
 	defer s.webhookMu.Unlock()
 
-	oldWebhooks, err := s.GetUserWebhooks(ctx, userID)
+	oldWebhooks, err := s.getUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -485,7 +507,7 @@ func (s *Store) UpdateUserWebhook(ctx context.Context, userID int32, webhook *st
 	s.webhookMu.Lock()
 	defer s.webhookMu.Unlock()
 
-	webhooks, err := s.GetUserWebhooks(ctx, userID)
+	webhooks, err := s.getUserWebhooks(ctx, userID)
 	if err != nil {
 		return err
 	}
