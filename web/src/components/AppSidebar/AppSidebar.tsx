@@ -39,6 +39,7 @@ import { cn } from "@/lib/utils";
 import { collectionNavigationPath, ROUTES } from "@/router/routes";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { isApplePlatform } from "@/utils/platform";
 import CommonSidebarContent from "./CommonSidebarContent";
 import { getSidebarRouteKind } from "./routes";
 import SidebarAccount from "./SidebarAccount";
@@ -282,6 +283,8 @@ interface NavPillProps {
   active?: boolean;
   expanded?: boolean;
   className?: string;
+  /** Keyboard shortcut shown beside the label in the tooltip. */
+  shortcut?: string;
 }
 
 /**
@@ -295,7 +298,7 @@ interface NavPillProps {
  * label opens whole or not at all, never as a three-letter truncation.
  * Timeline's trailing arrow shares its surface, with a separate click target.
  */
-const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = false, className }: NavPillProps) => {
+const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = false, className, shortcut }: NavPillProps) => {
   const { setMobileOpen } = useAppSidebar();
   const props = {
     onClick: () => {
@@ -334,7 +337,10 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
           </span>
         </span>
       </Tooltip.Trigger>
-      <Tooltip.Popup side="bottom">{label}</Tooltip.Popup>
+      <Tooltip.Popup side="bottom">
+        {label}
+        {shortcut && <kbd className="ms-2 font-sans opacity-70">{shortcut}</kbd>}
+      </Tooltip.Popup>
     </Tooltip.Root>
   );
 };
@@ -382,7 +388,13 @@ const GlobalNavigation = () => {
             expanded={destination.kind === expandedKind}
           />
         ))}
-        <NavPill label={t("common.search")} icon={SearchIcon} onClick={() => setQuickFindOpen(true)} className="ms-auto" />
+        <NavPill
+          label={t("common.search")}
+          icon={SearchIcon}
+          onClick={() => setQuickFindOpen(true)}
+          className="ms-auto"
+          shortcut={isApplePlatform() ? "⌘K" : "Ctrl+K"}
+        />
       </nav>
     </Tooltip.Provider>
   );
