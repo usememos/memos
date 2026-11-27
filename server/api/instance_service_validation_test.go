@@ -19,6 +19,8 @@ func TestMaskAPIKeyHidesAtLeastHalf(t *testing.T) {
 		{name: "fifteen characters", key: "abcdefghijklmno", want: "..."},
 		{name: "sixteen characters", key: "abcdefghijklmnop", want: "abcd...mnop"},
 		{name: "long key", key: "sk-1234567890abcdefghijklmnopqrstuvwxyz", want: "sk-1...wxyz"},
+		{name: "ten runes in sixteen bytes", key: "abcd🔑🔑efgh", want: "..."},
+		{name: "sixteen multi-byte runes", key: "🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑🔑", want: "🔑🔑🔑🔑...🔑🔑🔑🔑"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

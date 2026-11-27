@@ -68,10 +68,11 @@ func maskAPIKey(apiKey string) string {
 	if apiKey == "" {
 		return ""
 	}
-	if len(apiKey) < 16 {
+	runes := []rune(apiKey)
+	if len(runes) < 16 {
 		return "..."
 	}
-	return apiKey[:4] + "..." + apiKey[len(apiKey)-4:]
+	return string(runes[:4]) + "..." + string(runes[len(runes)-4:])
 }
 
 func validateInstanceTagsSetting(setting *apipb.InstanceSetting_TagsSetting) error {
