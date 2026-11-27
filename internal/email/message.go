@@ -42,9 +42,7 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	to := sanitizeEmailHeaderValues(m.To)
 	cc := sanitizeEmailHeaderValues(m.Cc)
 	replyTo := sanitizeEmailHeaderValue(m.ReplyTo)
-	// Header values must be ASCII; RFC 2047 encodes UTF-8 text such as
-	// nicknames and Space titles and leaves ASCII text unchanged.
-	subject := mime.QEncoding.Encode("utf-8", sanitizeEmailHeaderValue(m.Subject))
+	subject := encodeSubject(sanitizeEmailHeaderValue(m.Subject))
 
 	// From header. net/mail quotes an ASCII display name that contains RFC
 	// 5322 specials and RFC 2047 encodes a non-ASCII one, choosing an
@@ -93,6 +91,60 @@ func (m *Message) Format(fromEmail, fromName string) string {
 // is 998 characters, which a long RFC 2047 encoded subject would otherwise
 // exceed.
 const maxHeaderLineLength = 78
+
+// maxHeaderLineHardLimit is the longest header line RFC 5322 allows, not
+// counting the CRLF.
+const maxHeaderLineHardLimit = 998
+
+// encodeSubject prepares a Subject value. Header values must be ASCII, so RFC
+// 2047 encodes UTF-8 text such as nicknames and Space titles. ASCII text is
+// left unchanged unless it has a word too long for one header line, which
+// writeHeader can't fold; that text is split into encoded words instead.
+func encodeSubject(subject string) string {
+	encoded := mime.QEncoding.Encode("utf-8", subject)
+	if encoded != subject {
+		return encoded
+	}
+	for word := range strings.SplitSeq(subject, " ") {
+		if len("Subject: ")+len(word) > maxHeaderLineHardLimit {
+			return qEncodeWords(subject)
+		}
+	}
+	return subject
+}
+
+// maxEncodedWordLength is the longest RFC 2047 encoded word.
+const maxEncodedWordLength = 75
+
+// qEncodeWords Q-encodes ASCII text as encoded words separated by spaces.
+// Receivers drop the space between adjacent encoded words, so the text
+// decodes back unchanged.
+func qEncodeWords(text string) string {
+	const prefix, suffix = "=?utf-8?q?", "?="
+	var sb strings.Builder
+	sb.WriteString(prefix)
+	wordLength := len(prefix)
+	for i := 0; i < len(text); i++ {
+		c := text[i]
+		var encoded string
+		switch {
+		case c == ' ':
+			encoded = "_"
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c >= '0' && c <= '9', strings.IndexByte("!*+-/", c) >= 0:
+			encoded = string(c)
+		default:
+			encoded = fmt.Sprintf("=%02X", c)
+		}
+		if wordLength+len(encoded)+len(suffix) > maxEncodedWordLength {
+			sb.WriteString(suffix + " " + prefix)
+			wordLength = len(prefix)
+		}
+		sb.WriteString(encoded)
+		wordLength += len(encoded)
+	}
+	sb.WriteString(suffix)
+	return sb.String()
+}
 
 // writeHeader writes one header, folding the value at spaces so no line is
 // longer than maxHeaderLineLength unless a single word already is. Receivers
