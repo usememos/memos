@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"github.com/usememos/memos/internal/testutil"
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -223,6 +224,77 @@ func TestReplaceAttachmentRetryKeepsLeftoverWhenDeleteFails(t *testing.T) {
 	retry()
 	require.NoDirExists(t, stuck)
 	require.Nil(t, pendingLeftover())
+}
+
+// A memo orders its attachments by updated_ts. Editing one, as replacing a
+// saved drawing or renaming it does, keeps its place.
+func TestEditAttachmentKeepsPlaceInMemo(t *testing.T) {
+	svc := newIntegrationService(t)
+	t.Cleanup(svc.CloseUploads)
+	ctx := context.Background()
+	user := createSpaceTestUser(ctx, t, svc, "artist", store.RoleUser)
+	userCtx := userCtx(ctx, user.ID)
+
+	for _, tc := range []struct {
+		name string
+		edit func(name string) error
+		want string
+	}{
+		{
+			name: "replace content",
+			edit: func(name string) error {
+				content := testutil.BuildPNG(8, 8)
+				_, err := svc.UploadAttachment(userCtx, &apipb.UploadAttachmentRequest{
+					Upload: &apipb.UploadAttachmentRequest_Spec{Spec: &apipb.UploadAttachmentSpec{
+						Attachment:        &apipb.Attachment{Filename: "drawing.canvas.png", Type: "image/png"},
+						TotalSize:         int64(len(content)),
+						ReplaceAttachment: name,
+					}},
+					Data:        content,
+					FinishWrite: true,
+				})
+				return err
+			},
+			want: "drawing.canvas.png",
+		},
+		{
+			name: "rename",
+			edit: func(name string) error {
+				_, err := svc.UpdateAttachment(userCtx, &apipb.UpdateAttachmentRequest{
+					Attachment: &apipb.Attachment{Name: name, Filename: "sketch.canvas.png"},
+					UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+				})
+				return err
+			},
+			want: "sketch.canvas.png",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var refs []*apipb.Attachment
+			for _, filename := range []string{"photo.png", "drawing.canvas.png"} {
+				attachment, err := svc.CreateAttachment(userCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+					Filename: filename, Type: "image/png", Content: testutil.BuildPNG(4, 4),
+				}})
+				require.NoError(t, err)
+				refs = append(refs, &apipb.Attachment{Name: attachment.Name})
+			}
+			memo, err := svc.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "gallery", Attachments: refs}})
+			require.NoError(t, err)
+			// Save the memo a minute ago, so a fresh updated_ts would move the drawing first.
+			stored, err := svc.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &user.ID})
+			require.NoError(t, err)
+			for _, attachment := range stored {
+				earlier := attachment.UpdatedTs - 60
+				require.NoError(t, svc.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: attachment.ID, UpdatedTs: &earlier}))
+			}
+
+			require.NoError(t, tc.edit(refs[1].Name))
+
+			got, err := svc.GetMemo(userCtx, &apipb.GetMemoRequest{Name: memo.Name})
+			require.NoError(t, err)
+			require.Equal(t, []string{"photo.png", tc.want}, []string{got.Attachments[0].Filename, got.Attachments[1].Filename})
+		})
+	}
 }
 
 func localPath(data, reference string) string {

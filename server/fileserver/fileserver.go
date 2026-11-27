@@ -286,9 +286,8 @@ func (s *FileServerService) serveMediaStream(w http.ResponseWriter, r *http.Requ
 		return s.streamS3Object(w, r, attachment, contentType)
 
 	default:
-		// Database storage fallback.
-		modTime := time.Unix(attachment.UpdatedTs, 0)
-		http.ServeContent(w, r, attachment.Filename, modTime, bytes.NewReader(attachment.Blob))
+		// Database storage fallback. No Last-Modified: updated_ts is the attachment's place in its memo, not a content version.
+		http.ServeContent(w, r, attachment.Filename, time.Time{}, bytes.NewReader(attachment.Blob))
 		return nil
 	}
 }
