@@ -284,6 +284,7 @@ jobs:
           cache-from: type=gha,scope=release-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=release-${{ matrix.platform }}
           outputs: type=image,name=neosmemo/memos,push-by-digest=true,name-canonical=true,push=true
+          sbom: true
 
       - name: Export digest
         run: |
