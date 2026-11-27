@@ -37,6 +37,12 @@ const (
 	AIServiceTranscribeProcedure = "/memos.api.AIService/Transcribe"
 	// AIServiceSuggestTagsProcedure is the fully-qualified name of the AIService's SuggestTags RPC.
 	AIServiceSuggestTagsProcedure = "/memos.api.AIService/SuggestTags"
+	// AIServiceListAIProviderTypesProcedure is the fully-qualified name of the AIService's
+	// ListAIProviderTypes RPC.
+	AIServiceListAIProviderTypesProcedure = "/memos.api.AIService/ListAIProviderTypes"
+	// AIServiceListAIProviderModelsProcedure is the fully-qualified name of the AIService's
+	// ListAIProviderModels RPC.
+	AIServiceListAIProviderModelsProcedure = "/memos.api.AIService/ListAIProviderModels"
 )
 
 // AIServiceClient is a client for the memos.api.AIService service.
@@ -46,6 +52,12 @@ type AIServiceClient interface {
 	Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error)
 	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
 	SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error)
+	// ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+	// key rules and capabilities. The caller must be an administrator.
+	ListAIProviderTypes(context.Context, *connect.Request[api.ListAIProviderTypesRequest]) (*connect.Response[api.ListAIProviderTypesResponse], error)
+	// ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+	// InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+	ListAIProviderModels(context.Context, *connect.Request[api.ListAIProviderModelsRequest]) (*connect.Response[api.ListAIProviderModelsResponse], error)
 }
 
 // NewAIServiceClient constructs a client for the memos.api.AIService service. By default, it uses
@@ -71,13 +83,27 @@ func NewAIServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aIServiceMethods.ByName("SuggestTags")),
 			connect.WithClientOptions(opts...),
 		),
+		listAIProviderTypes: connect.NewClient[api.ListAIProviderTypesRequest, api.ListAIProviderTypesResponse](
+			httpClient,
+			baseURL+AIServiceListAIProviderTypesProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("ListAIProviderTypes")),
+			connect.WithClientOptions(opts...),
+		),
+		listAIProviderModels: connect.NewClient[api.ListAIProviderModelsRequest, api.ListAIProviderModelsResponse](
+			httpClient,
+			baseURL+AIServiceListAIProviderModelsProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("ListAIProviderModels")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // aIServiceClient implements AIServiceClient.
 type aIServiceClient struct {
-	transcribe  *connect.Client[api.TranscribeRequest, api.TranscribeResponse]
-	suggestTags *connect.Client[api.SuggestTagsRequest, api.SuggestTagsResponse]
+	transcribe           *connect.Client[api.TranscribeRequest, api.TranscribeResponse]
+	suggestTags          *connect.Client[api.SuggestTagsRequest, api.SuggestTagsResponse]
+	listAIProviderTypes  *connect.Client[api.ListAIProviderTypesRequest, api.ListAIProviderTypesResponse]
+	listAIProviderModels *connect.Client[api.ListAIProviderModelsRequest, api.ListAIProviderModelsResponse]
 }
 
 // Transcribe calls memos.api.AIService.Transcribe.
@@ -90,6 +116,16 @@ func (c *aIServiceClient) SuggestTags(ctx context.Context, req *connect.Request[
 	return c.suggestTags.CallUnary(ctx, req)
 }
 
+// ListAIProviderTypes calls memos.api.AIService.ListAIProviderTypes.
+func (c *aIServiceClient) ListAIProviderTypes(ctx context.Context, req *connect.Request[api.ListAIProviderTypesRequest]) (*connect.Response[api.ListAIProviderTypesResponse], error) {
+	return c.listAIProviderTypes.CallUnary(ctx, req)
+}
+
+// ListAIProviderModels calls memos.api.AIService.ListAIProviderModels.
+func (c *aIServiceClient) ListAIProviderModels(ctx context.Context, req *connect.Request[api.ListAIProviderModelsRequest]) (*connect.Response[api.ListAIProviderModelsResponse], error) {
+	return c.listAIProviderModels.CallUnary(ctx, req)
+}
+
 // AIServiceHandler is an implementation of the memos.api.AIService service.
 type AIServiceHandler interface {
 	// Transcribe transcribes an audio file with the instance's configured
@@ -97,6 +133,12 @@ type AIServiceHandler interface {
 	Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error)
 	// SuggestTags recommends tags for a Markdown draft, preferring the caller's existing vocabulary.
 	SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error)
+	// ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+	// key rules and capabilities. The caller must be an administrator.
+	ListAIProviderTypes(context.Context, *connect.Request[api.ListAIProviderTypesRequest]) (*connect.Response[api.ListAIProviderTypesResponse], error)
+	// ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+	// InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+	ListAIProviderModels(context.Context, *connect.Request[api.ListAIProviderModelsRequest]) (*connect.Response[api.ListAIProviderModelsResponse], error)
 }
 
 // NewAIServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -118,12 +160,28 @@ func NewAIServiceHandler(svc AIServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aIServiceMethods.ByName("SuggestTags")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aIServiceListAIProviderTypesHandler := connect.NewUnaryHandler(
+		AIServiceListAIProviderTypesProcedure,
+		svc.ListAIProviderTypes,
+		connect.WithSchema(aIServiceMethods.ByName("ListAIProviderTypes")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aIServiceListAIProviderModelsHandler := connect.NewUnaryHandler(
+		AIServiceListAIProviderModelsProcedure,
+		svc.ListAIProviderModels,
+		connect.WithSchema(aIServiceMethods.ByName("ListAIProviderModels")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.AIService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AIServiceTranscribeProcedure:
 			aIServiceTranscribeHandler.ServeHTTP(w, r)
 		case AIServiceSuggestTagsProcedure:
 			aIServiceSuggestTagsHandler.ServeHTTP(w, r)
+		case AIServiceListAIProviderTypesProcedure:
+			aIServiceListAIProviderTypesHandler.ServeHTTP(w, r)
+		case AIServiceListAIProviderModelsProcedure:
+			aIServiceListAIProviderModelsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -139,4 +197,12 @@ func (UnimplementedAIServiceHandler) Transcribe(context.Context, *connect.Reques
 
 func (UnimplementedAIServiceHandler) SuggestTags(context.Context, *connect.Request[api.SuggestTagsRequest]) (*connect.Response[api.SuggestTagsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.SuggestTags is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) ListAIProviderTypes(context.Context, *connect.Request[api.ListAIProviderTypesRequest]) (*connect.Response[api.ListAIProviderTypesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.ListAIProviderTypes is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) ListAIProviderModels(context.Context, *connect.Request[api.ListAIProviderModelsRequest]) (*connect.Response[api.ListAIProviderModelsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.ListAIProviderModels is not implemented"))
 }

@@ -65,7 +65,7 @@ func (s *APIService) SuggestTags(ctx context.Context, req *apipb.SuggestTagsRequ
 		// The caller gets a fixed message and a reason; the cause goes to the log.
 		failure := ai.ClassifyFailure(err)
 		logAIFailure("suggest_tags", provider, cfg.Model, failure)
-		return nil, newAIFailureError("failed to suggest tags: ", failure)
+		return nil, newAIFailureError("failed to suggest tags: ", provider, failure)
 	}
 	tags = slices.DeleteFunc(tags, func(tag string) bool {
 		return !validSuggestionTag(tag) || slices.Contains(existing, tag)

@@ -15,14 +15,23 @@ const (
 	maxTranscriptionPromptLength   = 4096
 )
 
-// Default endpoints applied by NormalizeSetting when a provider has none.
-const (
-	defaultOpenAIEndpoint = "https://api.openai.com/v1"
-	defaultGeminiEndpoint = "https://generativelanguage.googleapis.com/v1beta"
-)
+// TypeFromStore returns the provider type of a stored provider type.
+func TypeFromStore(providerType storepb.AIProviderType) ProviderType {
+	return ProviderType(providerType.String())
+}
 
-// NormalizeSetting trims provider and model configuration fields and fills a
-// provider's default endpoint. It never generates IDs or copies secrets.
+// ResolveEndpoint returns the endpoint a provider's requests go to: its own, or its type's default.
+func ResolveEndpoint(provider *storepb.AIProviderConfig) string {
+	if endpoint := strings.TrimSpace(provider.GetEndpoint()); endpoint != "" {
+		return strings.TrimRight(endpoint, "/")
+	}
+	spec, _ := LookupSpec(TypeFromStore(provider.GetType()))
+	return spec.DefaultEndpoint
+}
+
+// NormalizeSetting trims provider and model configuration fields. An endpoint
+// equal to its type's default is cleared, so a provider follows the default if
+// it ever moves. It never generates IDs or copies secrets.
 func NormalizeSetting(setting *storepb.InstanceAISetting) {
 	if setting == nil {
 		return
@@ -33,15 +42,9 @@ func NormalizeSetting(setting *storepb.InstanceAISetting) {
 		}
 		provider.Id = strings.TrimSpace(provider.Id)
 		provider.Title = strings.TrimSpace(provider.Title)
-		provider.Endpoint = strings.TrimSpace(provider.Endpoint)
-		if provider.Endpoint == "" {
-			switch provider.Type {
-			case storepb.AIProviderType_OPENAI:
-				provider.Endpoint = defaultOpenAIEndpoint
-			case storepb.AIProviderType_GEMINI:
-				provider.Endpoint = defaultGeminiEndpoint
-			default:
-			}
+		provider.Endpoint = strings.TrimRight(strings.TrimSpace(provider.Endpoint), "/")
+		if spec, ok := LookupSpec(TypeFromStore(provider.Type)); ok && provider.Endpoint == spec.DefaultEndpoint {
+			provider.Endpoint = ""
 		}
 	}
 	if cfg := setting.TextGeneration; cfg != nil {
@@ -61,7 +64,7 @@ func ValidateSetting(setting *storepb.InstanceAISetting) error {
 	if setting == nil {
 		return errors.New("AI setting is required")
 	}
-	seenIDs := make(map[string]bool, len(setting.Providers))
+	providerTypes := make(map[string]ProviderSpec, len(setting.Providers))
 	for i, provider := range setting.Providers {
 		if provider == nil {
 			return errors.Errorf("providers[%d] must not be null", i)
@@ -69,31 +72,35 @@ func ValidateSetting(setting *storepb.InstanceAISetting) error {
 		if provider.Id == "" {
 			return errors.Errorf("providers[%d].id is required", i)
 		}
-		if seenIDs[provider.Id] {
+		if _, seen := providerTypes[provider.Id]; seen {
 			return errors.Errorf("duplicate provider ID %q", provider.Id)
 		}
-		seenIDs[provider.Id] = true
 		if provider.Title == "" {
 			return errors.Errorf("provider %q title is required", provider.Id)
 		}
-		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI {
+		spec, ok := LookupSpec(TypeFromStore(provider.Type))
+		if !ok {
 			return errors.Errorf("provider %q has unsupported type", provider.Id)
+		}
+		if spec.DefaultEndpoint == "" && provider.Endpoint == "" {
+			return errors.Errorf("provider %q endpoint is required", provider.Id)
 		}
 		if ValidateEndpoint(provider.Endpoint) != nil {
 			return errors.Errorf("provider %q endpoint must be an http or https URL", provider.Id)
 		}
-		if provider.ApiKey == "" {
+		if spec.APIKeyRequired && provider.ApiKey == "" {
 			return errors.Errorf("provider %q API key is required", provider.Id)
 		}
+		providerTypes[provider.Id] = spec
 	}
 
 	if cfg := setting.TextGeneration; cfg != nil {
-		if err := validateModelSelection("text_generation", cfg.ProviderId, cfg.Model, seenIDs); err != nil {
+		if err := validateModelSelection("text_generation", CapabilityTextGeneration, cfg.ProviderId, cfg.Model, providerTypes); err != nil {
 			return err
 		}
 	}
 	if cfg := setting.Transcription; cfg != nil {
-		if err := validateModelSelection("transcription", cfg.ProviderId, cfg.Model, seenIDs); err != nil {
+		if err := validateModelSelection("transcription", CapabilityTranscription, cfg.ProviderId, cfg.Model, providerTypes); err != nil {
 			return err
 		}
 		if len(cfg.Language) > maxTranscriptionLanguageLength {
@@ -108,15 +115,19 @@ func ValidateSetting(setting *storepb.InstanceAISetting) error {
 
 // validateModelSelection checks a capability's provider and model. A capability that is set is on,
 // so it needs both: leaving the capability unset is how it is turned off.
-func validateModelSelection(capability, providerID, model string, providerIDs map[string]bool) error {
+func validateModelSelection(field string, capability Capability, providerID, model string, providers map[string]ProviderSpec) error {
 	if providerID == "" {
-		return errors.Errorf("%s provider_id is required", capability)
+		return errors.Errorf("%s provider_id is required", field)
 	}
-	if !providerIDs[providerID] {
-		return errors.Errorf("%s provider_id %q does not reference any configured provider", capability, providerID)
+	spec, ok := providers[providerID]
+	if !ok {
+		return errors.Errorf("%s provider_id %q does not reference any configured provider", field, providerID)
+	}
+	if !spec.Supports(capability) {
+		return errors.Errorf("provider %q cannot be used for %s", providerID, field)
 	}
 	if model == "" || len(model) > maxAIModelLength {
-		return errors.Errorf("%s model must be between 1 and %d bytes", capability, maxAIModelLength)
+		return errors.Errorf("%s model must be between 1 and %d bytes", field, maxAIModelLength)
 	}
 	return nil
 }

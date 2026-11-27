@@ -207,16 +207,28 @@ func (InstanceSetting_StorageType) EnumDescriptor() ([]byte, []int) {
 	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 1}
 }
 
-// AIProviderType is the API protocol a provider endpoint speaks.
+// AIProviderType is the service an AI provider connects to. AIService.ListAIProviderTypes describes each
+// type: its default endpoint, whether it needs an API key, and the capabilities it can serve.
 type InstanceSetting_AIProviderType int32
 
 const (
 	InstanceSetting_AI_PROVIDER_TYPE_UNSPECIFIED InstanceSetting_AIProviderType = 0
-	// The OpenAI API, served by OpenAI and by compatible services.
-	// The endpoint defaults to https://api.openai.com/v1.
+	// OpenAI.
 	InstanceSetting_OPENAI InstanceSetting_AIProviderType = 1
-	// The Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
+	// Google Gemini.
 	InstanceSetting_GEMINI InstanceSetting_AIProviderType = 2
+	// Anthropic.
+	InstanceSetting_ANTHROPIC InstanceSetting_AIProviderType = 3
+	// DeepSeek.
+	InstanceSetting_DEEPSEEK InstanceSetting_AIProviderType = 4
+	// OpenRouter.
+	InstanceSetting_OPENROUTER InstanceSetting_AIProviderType = 5
+	// Ollama, usually running next to the server.
+	InstanceSetting_OLLAMA InstanceSetting_AIProviderType = 6
+	// Any service that speaks the OpenAI Chat Completions API. The endpoint is required.
+	InstanceSetting_OPENAI_COMPATIBLE InstanceSetting_AIProviderType = 7
+	// Any service that speaks the Anthropic Messages API. The endpoint is required.
+	InstanceSetting_ANTHROPIC_COMPATIBLE InstanceSetting_AIProviderType = 8
 )
 
 // Enum value maps for InstanceSetting_AIProviderType.
@@ -225,11 +237,23 @@ var (
 		0: "AI_PROVIDER_TYPE_UNSPECIFIED",
 		1: "OPENAI",
 		2: "GEMINI",
+		3: "ANTHROPIC",
+		4: "DEEPSEEK",
+		5: "OPENROUTER",
+		6: "OLLAMA",
+		7: "OPENAI_COMPATIBLE",
+		8: "ANTHROPIC_COMPATIBLE",
 	}
 	InstanceSetting_AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
 		"GEMINI":                       2,
+		"ANTHROPIC":                    3,
+		"DEEPSEEK":                     4,
+		"OPENROUTER":                   5,
+		"OLLAMA":                       6,
+		"OPENAI_COMPATIBLE":            7,
+		"ANTHROPIC_COMPATIBLE":         8,
 	}
 )
 
@@ -1764,12 +1788,14 @@ type InstanceSetting_AIProviderConfig struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Required. The display title.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	// Required. The API protocol the endpoint speaks.
+	// Required. The service the provider connects to.
 	Type InstanceSetting_AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.InstanceSetting_AIProviderType" json:"type,omitempty"`
-	// The base URL of the provider API. Empty selects the default endpoint of the type.
+	// The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
+	// stored as empty. Required for the *_COMPATIBLE types.
 	Endpoint string `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	// Input only. The API key. Never returned. An empty value keeps the stored key while type and endpoint are
-	// unchanged; changing either requires the key again, so that it is never sent to a different service.
+	// Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
+	// stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never
+	// sent to a different service.
 	ApiKey string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	// Output only. Whether an API key is stored.
 	ApiKeySet bool `protobuf:"varint,6,opt,name=api_key_set,json=apiKeySet,proto3" json:"api_key_set,omitempty"`
@@ -2730,7 +2756,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"AIFeatures\x12$\n" +
 	"\rtranscription\x18\x01 \x01(\bR\rtranscription\x12'\n" +
 	"\x0ftag_suggestions\x18\x02 \x01(\bR\x0etagSuggestions\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xca%\n" +
+	"\x19GetInstanceProfileRequest\"\xb5&\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
@@ -2866,13 +2892,21 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\"J\n" +
+	"\x02S3\x10\x03\"\xb4\x01\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x02:^\xeaA[\n" +
+	"\x06GEMINI\x10\x02\x12\r\n" +
+	"\tANTHROPIC\x10\x03\x12\f\n" +
+	"\bDEEPSEEK\x10\x04\x12\x0e\n" +
+	"\n" +
+	"OPENROUTER\x10\x05\x12\n" +
+	"\n" +
+	"\x06OLLAMA\x10\x06\x12\x15\n" +
+	"\x11OPENAI_COMPATIBLE\x10\a\x12\x18\n" +
+	"\x14ANTHROPIC_COMPATIBLE\x10\b:^\xeaA[\n" +
 	"\x19memos.api/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
 	"\x05valueJ\x04\b\x04\x10\x05R\x14memo_related_setting\"R\n" +
 	"\x19GetInstanceSettingRequest\x125\n" +

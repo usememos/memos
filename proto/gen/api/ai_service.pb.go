@@ -22,6 +22,379 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AICapabilityKind is a task the instance can hand to an AI provider.
+type AICapabilityKind int32
+
+const (
+	AICapabilityKind_AI_CAPABILITY_KIND_UNSPECIFIED AICapabilityKind = 0
+	// Text generation, used by AIService.SuggestTags.
+	AICapabilityKind_TEXT_GENERATION AICapabilityKind = 1
+	// Speech to text, used by AIService.Transcribe.
+	AICapabilityKind_TRANSCRIPTION AICapabilityKind = 2
+)
+
+// Enum value maps for AICapabilityKind.
+var (
+	AICapabilityKind_name = map[int32]string{
+		0: "AI_CAPABILITY_KIND_UNSPECIFIED",
+		1: "TEXT_GENERATION",
+		2: "TRANSCRIPTION",
+	}
+	AICapabilityKind_value = map[string]int32{
+		"AI_CAPABILITY_KIND_UNSPECIFIED": 0,
+		"TEXT_GENERATION":                1,
+		"TRANSCRIPTION":                  2,
+	}
+)
+
+func (x AICapabilityKind) Enum() *AICapabilityKind {
+	p := new(AICapabilityKind)
+	*p = x
+	return p
+}
+
+func (x AICapabilityKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AICapabilityKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_ai_service_proto_enumTypes[0].Descriptor()
+}
+
+func (AICapabilityKind) Type() protoreflect.EnumType {
+	return &file_api_ai_service_proto_enumTypes[0]
+}
+
+func (x AICapabilityKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AICapabilityKind.Descriptor instead.
+func (AICapabilityKind) EnumDescriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{0}
+}
+
+// Request message for AIService.ListAIProviderTypes.
+type ListAIProviderTypesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAIProviderTypesRequest) Reset() {
+	*x = ListAIProviderTypesRequest{}
+	mi := &file_api_ai_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAIProviderTypesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAIProviderTypesRequest) ProtoMessage() {}
+
+func (x *ListAIProviderTypesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAIProviderTypesRequest.ProtoReflect.Descriptor instead.
+func (*ListAIProviderTypesRequest) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{0}
+}
+
+// Response message for AIService.ListAIProviderTypes.
+type ListAIProviderTypesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Every supported type, in the order a picker should offer them.
+	ProviderTypes []*AIProviderTypeInfo `protobuf:"bytes,1,rep,name=provider_types,json=providerTypes,proto3" json:"provider_types,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAIProviderTypesResponse) Reset() {
+	*x = ListAIProviderTypesResponse{}
+	mi := &file_api_ai_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAIProviderTypesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAIProviderTypesResponse) ProtoMessage() {}
+
+func (x *ListAIProviderTypesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAIProviderTypesResponse.ProtoReflect.Descriptor instead.
+func (*ListAIProviderTypesResponse) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListAIProviderTypesResponse) GetProviderTypes() []*AIProviderTypeInfo {
+	if x != nil {
+		return x.ProviderTypes
+	}
+	return nil
+}
+
+// AIProviderTypeInfo describes one AI provider type.
+type AIProviderTypeInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type described.
+	Type InstanceSetting_AIProviderType `protobuf:"varint,1,opt,name=type,proto3,enum=memos.api.InstanceSetting_AIProviderType" json:"type,omitempty"`
+	// The endpoint used when a provider leaves its endpoint empty. Empty when the type requires an endpoint.
+	DefaultEndpoint string `protobuf:"bytes,2,opt,name=default_endpoint,json=defaultEndpoint,proto3" json:"default_endpoint,omitempty"`
+	// Whether a provider of this type needs an API key.
+	ApiKeyRequired bool `protobuf:"varint,3,opt,name=api_key_required,json=apiKeyRequired,proto3" json:"api_key_required,omitempty"`
+	// Where to create an API key for this type. Empty when there is no single place.
+	ApiKeyUrl string `protobuf:"bytes,4,opt,name=api_key_url,json=apiKeyUrl,proto3" json:"api_key_url,omitempty"`
+	// Whether the service usually runs on the administrator's own machine or network rather than in the cloud.
+	Local bool `protobuf:"varint,5,opt,name=local,proto3" json:"local,omitempty"`
+	// The capabilities a provider of this type can serve.
+	Capabilities  []*AICapability `protobuf:"bytes,6,rep,name=capabilities,proto3" json:"capabilities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AIProviderTypeInfo) Reset() {
+	*x = AIProviderTypeInfo{}
+	mi := &file_api_ai_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AIProviderTypeInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AIProviderTypeInfo) ProtoMessage() {}
+
+func (x *AIProviderTypeInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AIProviderTypeInfo.ProtoReflect.Descriptor instead.
+func (*AIProviderTypeInfo) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AIProviderTypeInfo) GetType() InstanceSetting_AIProviderType {
+	if x != nil {
+		return x.Type
+	}
+	return InstanceSetting_AI_PROVIDER_TYPE_UNSPECIFIED
+}
+
+func (x *AIProviderTypeInfo) GetDefaultEndpoint() string {
+	if x != nil {
+		return x.DefaultEndpoint
+	}
+	return ""
+}
+
+func (x *AIProviderTypeInfo) GetApiKeyRequired() bool {
+	if x != nil {
+		return x.ApiKeyRequired
+	}
+	return false
+}
+
+func (x *AIProviderTypeInfo) GetApiKeyUrl() string {
+	if x != nil {
+		return x.ApiKeyUrl
+	}
+	return ""
+}
+
+func (x *AIProviderTypeInfo) GetLocal() bool {
+	if x != nil {
+		return x.Local
+	}
+	return false
+}
+
+func (x *AIProviderTypeInfo) GetCapabilities() []*AICapability {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+// AICapability is one capability an AI provider type can serve.
+type AICapability struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The capability.
+	Kind AICapabilityKind `protobuf:"varint,1,opt,name=kind,proto3,enum=memos.api.AICapabilityKind" json:"kind,omitempty"`
+	// A model that serves the capability well. Empty when there is no single good default.
+	SuggestedModel string `protobuf:"bytes,2,opt,name=suggested_model,json=suggestedModel,proto3" json:"suggested_model,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AICapability) Reset() {
+	*x = AICapability{}
+	mi := &file_api_ai_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AICapability) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AICapability) ProtoMessage() {}
+
+func (x *AICapability) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AICapability.ProtoReflect.Descriptor instead.
+func (*AICapability) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AICapability) GetKind() AICapabilityKind {
+	if x != nil {
+		return x.Kind
+	}
+	return AICapabilityKind_AI_CAPABILITY_KIND_UNSPECIFIED
+}
+
+func (x *AICapability) GetSuggestedModel() string {
+	if x != nil {
+		return x.SuggestedModel
+	}
+	return ""
+}
+
+// Request message for AIService.ListAIProviderModels.
+type ListAIProviderModelsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The ID of a provider in the instance's AI setting.
+	ProviderId    string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAIProviderModelsRequest) Reset() {
+	*x = ListAIProviderModelsRequest{}
+	mi := &file_api_ai_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAIProviderModelsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAIProviderModelsRequest) ProtoMessage() {}
+
+func (x *ListAIProviderModelsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAIProviderModelsRequest.ProtoReflect.Descriptor instead.
+func (*ListAIProviderModelsRequest) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListAIProviderModelsRequest) GetProviderId() string {
+	if x != nil {
+		return x.ProviderId
+	}
+	return ""
+}
+
+// Response message for AIService.ListAIProviderModels.
+type ListAIProviderModelsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The model identifiers the provider reports, sorted. Empty when the provider does not list its models.
+	Models        []string `protobuf:"bytes,1,rep,name=models,proto3" json:"models,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAIProviderModelsResponse) Reset() {
+	*x = ListAIProviderModelsResponse{}
+	mi := &file_api_ai_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAIProviderModelsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAIProviderModelsResponse) ProtoMessage() {}
+
+func (x *ListAIProviderModelsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_ai_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAIProviderModelsResponse.ProtoReflect.Descriptor instead.
+func (*ListAIProviderModelsResponse) Descriptor() ([]byte, []int) {
+	return file_api_ai_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListAIProviderModelsResponse) GetModels() []string {
+	if x != nil {
+		return x.Models
+	}
+	return nil
+}
+
 // Request message for AIService.SuggestTags.
 type SuggestTagsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -36,7 +409,7 @@ type SuggestTagsRequest struct {
 
 func (x *SuggestTagsRequest) Reset() {
 	*x = SuggestTagsRequest{}
-	mi := &file_api_ai_service_proto_msgTypes[0]
+	mi := &file_api_ai_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +421,7 @@ func (x *SuggestTagsRequest) String() string {
 func (*SuggestTagsRequest) ProtoMessage() {}
 
 func (x *SuggestTagsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[0]
+	mi := &file_api_ai_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61,7 +434,7 @@ func (x *SuggestTagsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuggestTagsRequest.ProtoReflect.Descriptor instead.
 func (*SuggestTagsRequest) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{0}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SuggestTagsRequest) GetContent() string {
@@ -90,7 +463,7 @@ type SuggestTagsResponse struct {
 
 func (x *SuggestTagsResponse) Reset() {
 	*x = SuggestTagsResponse{}
-	mi := &file_api_ai_service_proto_msgTypes[1]
+	mi := &file_api_ai_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -102,7 +475,7 @@ func (x *SuggestTagsResponse) String() string {
 func (*SuggestTagsResponse) ProtoMessage() {}
 
 func (x *SuggestTagsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[1]
+	mi := &file_api_ai_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -115,7 +488,7 @@ func (x *SuggestTagsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuggestTagsResponse.ProtoReflect.Descriptor instead.
 func (*SuggestTagsResponse) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{1}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SuggestTagsResponse) GetTags() []string {
@@ -136,7 +509,7 @@ type TranscribeRequest struct {
 
 func (x *TranscribeRequest) Reset() {
 	*x = TranscribeRequest{}
-	mi := &file_api_ai_service_proto_msgTypes[2]
+	mi := &file_api_ai_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +521,7 @@ func (x *TranscribeRequest) String() string {
 func (*TranscribeRequest) ProtoMessage() {}
 
 func (x *TranscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[2]
+	mi := &file_api_ai_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,7 +534,7 @@ func (x *TranscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscribeRequest.ProtoReflect.Descriptor instead.
 func (*TranscribeRequest) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{2}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *TranscribeRequest) GetAudio() *TranscriptionAudio {
@@ -182,7 +555,7 @@ type TranscribeResponse struct {
 
 func (x *TranscribeResponse) Reset() {
 	*x = TranscribeResponse{}
-	mi := &file_api_ai_service_proto_msgTypes[3]
+	mi := &file_api_ai_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -194,7 +567,7 @@ func (x *TranscribeResponse) String() string {
 func (*TranscribeResponse) ProtoMessage() {}
 
 func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[3]
+	mi := &file_api_ai_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,7 +580,7 @@ func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscribeResponse.ProtoReflect.Descriptor instead.
 func (*TranscribeResponse) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{3}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *TranscribeResponse) GetText() string {
@@ -237,7 +610,7 @@ type TranscriptionAudio struct {
 
 func (x *TranscriptionAudio) Reset() {
 	*x = TranscriptionAudio{}
-	mi := &file_api_ai_service_proto_msgTypes[4]
+	mi := &file_api_ai_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -249,7 +622,7 @@ func (x *TranscriptionAudio) String() string {
 func (*TranscriptionAudio) ProtoMessage() {}
 
 func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
-	mi := &file_api_ai_service_proto_msgTypes[4]
+	mi := &file_api_ai_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -262,7 +635,7 @@ func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscriptionAudio.ProtoReflect.Descriptor instead.
 func (*TranscriptionAudio) Descriptor() ([]byte, []int) {
-	return file_api_ai_service_proto_rawDescGZIP(), []int{4}
+	return file_api_ai_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TranscriptionAudio) GetSource() isTranscriptionAudio_Source {
@@ -326,7 +699,25 @@ var File_api_ai_service_proto protoreflect.FileDescriptor
 
 const file_api_ai_service_proto_rawDesc = "" +
 	"\n" +
-	"\x14api/ai_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"_\n" +
+	"\x14api/ai_service.proto\x12\tmemos.api\x1a\x1aapi/instance_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x1c\n" +
+	"\x1aListAIProviderTypesRequest\"c\n" +
+	"\x1bListAIProviderTypesResponse\x12D\n" +
+	"\x0eprovider_types\x18\x01 \x03(\v2\x1d.memos.api.AIProviderTypeInfoR\rproviderTypes\"\x9b\x02\n" +
+	"\x12AIProviderTypeInfo\x12=\n" +
+	"\x04type\x18\x01 \x01(\x0e2).memos.api.InstanceSetting.AIProviderTypeR\x04type\x12)\n" +
+	"\x10default_endpoint\x18\x02 \x01(\tR\x0fdefaultEndpoint\x12(\n" +
+	"\x10api_key_required\x18\x03 \x01(\bR\x0eapiKeyRequired\x12\x1e\n" +
+	"\vapi_key_url\x18\x04 \x01(\tR\tapiKeyUrl\x12\x14\n" +
+	"\x05local\x18\x05 \x01(\bR\x05local\x12;\n" +
+	"\fcapabilities\x18\x06 \x03(\v2\x17.memos.api.AICapabilityR\fcapabilities\"h\n" +
+	"\fAICapability\x12/\n" +
+	"\x04kind\x18\x01 \x01(\x0e2\x1b.memos.api.AICapabilityKindR\x04kind\x12'\n" +
+	"\x0fsuggested_model\x18\x02 \x01(\tR\x0esuggestedModel\"C\n" +
+	"\x1bListAIProviderModelsRequest\x12$\n" +
+	"\vprovider_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"providerId\"6\n" +
+	"\x1cListAIProviderModelsResponse\x12\x16\n" +
+	"\x06models\x18\x01 \x03(\tR\x06models\"_\n" +
 	"\x12SuggestTagsRequest\x12\x1d\n" +
 	"\acontent\x18\x01 \x01(\tB\x03\xe0A\x02R\acontent\x12*\n" +
 	"\x0ecandidate_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\rcandidateTags\")\n" +
@@ -341,11 +732,17 @@ const file_api_ai_service_proto_rawDesc = "" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x1f\n" +
 	"\bfilename\x18\x03 \x01(\tB\x03\xe0A\x01R\bfilename\x12&\n" +
 	"\fcontent_type\x18\x04 \x01(\tB\x03\xe0A\x01R\vcontentTypeB\b\n" +
-	"\x06source2\x8f\x02\n" +
+	"\x06source*^\n" +
+	"\x10AICapabilityKind\x12\"\n" +
+	"\x1eAI_CAPABILITY_KIND_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fTEXT_GENERATION\x10\x01\x12\x11\n" +
+	"\rTRANSCRIPTION\x10\x022\xbd\x04\n" +
 	"\tAIService\x12p\n" +
 	"\n" +
 	"Transcribe\x12\x1c.memos.api.TranscribeRequest\x1a\x1d.memos.api.TranscribeResponse\"%\xdaA\x05audio\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/ai:transcribe\x12\x8f\x01\n" +
-	"\vSuggestTags\x12\x1d.memos.api.SuggestTagsRequest\x1a\x1e.memos.api.SuggestTagsResponse\"A\xdaA\x16content,candidate_tags\xdaA\acontent\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/ai:suggestTagsB\x8d\x01\n" +
+	"\vSuggestTags\x12\x1d.memos.api.SuggestTagsRequest\x1a\x1e.memos.api.SuggestTagsResponse\"A\xdaA\x16content,candidate_tags\xdaA\acontent\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/ai:suggestTags\x12\x83\x01\n" +
+	"\x13ListAIProviderTypes\x12%.memos.api.ListAIProviderTypesRequest\x1a&.memos.api.ListAIProviderTypesResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/ai/providerTypes\x12\xa5\x01\n" +
+	"\x14ListAIProviderModels\x12&.memos.api.ListAIProviderModelsRequest\x1a'.memos.api.ListAIProviderModelsResponse\"<\xdaA\vprovider_id\x82\xd3\xe4\x93\x02(\x12&/api/ai/providers/{provider_id}/modelsB\x8d\x01\n" +
 	"\rcom.memos.apiB\x0eAiServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
 	"Memos::Apib\x06proto3"
 
@@ -361,25 +758,42 @@ func file_api_ai_service_proto_rawDescGZIP() []byte {
 	return file_api_ai_service_proto_rawDescData
 }
 
-var file_api_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_api_ai_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_api_ai_service_proto_goTypes = []any{
-	(*SuggestTagsRequest)(nil),  // 0: memos.api.SuggestTagsRequest
-	(*SuggestTagsResponse)(nil), // 1: memos.api.SuggestTagsResponse
-	(*TranscribeRequest)(nil),   // 2: memos.api.TranscribeRequest
-	(*TranscribeResponse)(nil),  // 3: memos.api.TranscribeResponse
-	(*TranscriptionAudio)(nil),  // 4: memos.api.TranscriptionAudio
+	(AICapabilityKind)(0),                // 0: memos.api.AICapabilityKind
+	(*ListAIProviderTypesRequest)(nil),   // 1: memos.api.ListAIProviderTypesRequest
+	(*ListAIProviderTypesResponse)(nil),  // 2: memos.api.ListAIProviderTypesResponse
+	(*AIProviderTypeInfo)(nil),           // 3: memos.api.AIProviderTypeInfo
+	(*AICapability)(nil),                 // 4: memos.api.AICapability
+	(*ListAIProviderModelsRequest)(nil),  // 5: memos.api.ListAIProviderModelsRequest
+	(*ListAIProviderModelsResponse)(nil), // 6: memos.api.ListAIProviderModelsResponse
+	(*SuggestTagsRequest)(nil),           // 7: memos.api.SuggestTagsRequest
+	(*SuggestTagsResponse)(nil),          // 8: memos.api.SuggestTagsResponse
+	(*TranscribeRequest)(nil),            // 9: memos.api.TranscribeRequest
+	(*TranscribeResponse)(nil),           // 10: memos.api.TranscribeResponse
+	(*TranscriptionAudio)(nil),           // 11: memos.api.TranscriptionAudio
+	(InstanceSetting_AIProviderType)(0),  // 12: memos.api.InstanceSetting.AIProviderType
 }
 var file_api_ai_service_proto_depIdxs = []int32{
-	4, // 0: memos.api.TranscribeRequest.audio:type_name -> memos.api.TranscriptionAudio
-	2, // 1: memos.api.AIService.Transcribe:input_type -> memos.api.TranscribeRequest
-	0, // 2: memos.api.AIService.SuggestTags:input_type -> memos.api.SuggestTagsRequest
-	3, // 3: memos.api.AIService.Transcribe:output_type -> memos.api.TranscribeResponse
-	1, // 4: memos.api.AIService.SuggestTags:output_type -> memos.api.SuggestTagsResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3,  // 0: memos.api.ListAIProviderTypesResponse.provider_types:type_name -> memos.api.AIProviderTypeInfo
+	12, // 1: memos.api.AIProviderTypeInfo.type:type_name -> memos.api.InstanceSetting.AIProviderType
+	4,  // 2: memos.api.AIProviderTypeInfo.capabilities:type_name -> memos.api.AICapability
+	0,  // 3: memos.api.AICapability.kind:type_name -> memos.api.AICapabilityKind
+	11, // 4: memos.api.TranscribeRequest.audio:type_name -> memos.api.TranscriptionAudio
+	9,  // 5: memos.api.AIService.Transcribe:input_type -> memos.api.TranscribeRequest
+	7,  // 6: memos.api.AIService.SuggestTags:input_type -> memos.api.SuggestTagsRequest
+	1,  // 7: memos.api.AIService.ListAIProviderTypes:input_type -> memos.api.ListAIProviderTypesRequest
+	5,  // 8: memos.api.AIService.ListAIProviderModels:input_type -> memos.api.ListAIProviderModelsRequest
+	10, // 9: memos.api.AIService.Transcribe:output_type -> memos.api.TranscribeResponse
+	8,  // 10: memos.api.AIService.SuggestTags:output_type -> memos.api.SuggestTagsResponse
+	2,  // 11: memos.api.AIService.ListAIProviderTypes:output_type -> memos.api.ListAIProviderTypesResponse
+	6,  // 12: memos.api.AIService.ListAIProviderModels:output_type -> memos.api.ListAIProviderModelsResponse
+	9,  // [9:13] is the sub-list for method output_type
+	5,  // [5:9] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_api_ai_service_proto_init() }
@@ -387,7 +801,8 @@ func file_api_ai_service_proto_init() {
 	if File_api_ai_service_proto != nil {
 		return
 	}
-	file_api_ai_service_proto_msgTypes[4].OneofWrappers = []any{
+	file_api_instance_service_proto_init()
+	file_api_ai_service_proto_msgTypes[10].OneofWrappers = []any{
 		(*TranscriptionAudio_Content)(nil),
 		(*TranscriptionAudio_Uri)(nil),
 	}
@@ -396,13 +811,14 @@ func file_api_ai_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_ai_service_proto_rawDesc), len(file_api_ai_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   5,
+			NumEnums:      1,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_api_ai_service_proto_goTypes,
 		DependencyIndexes: file_api_ai_service_proto_depIdxs,
+		EnumInfos:         file_api_ai_service_proto_enumTypes,
 		MessageInfos:      file_api_ai_service_proto_msgTypes,
 	}.Build()
 	File_api_ai_service_proto = out.File

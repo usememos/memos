@@ -60,6 +60,9 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.InstanceService/UpdateInstanceSetting",
 		"/memos.api.InstanceService/TestInstanceEmailSetting",
 		"/memos.api.InstanceService/GetConfigurationStatus",
+		// AI Service - provider descriptions and listings are for administrators
+		"/memos.api.AIService/ListAIProviderTypes",
+		"/memos.api.AIService/ListAIProviderModels",
 		// User Service - modification operations
 		"/memos.api.UserService/ListUsers",
 		"/memos.api.UserService/UpdateUser",

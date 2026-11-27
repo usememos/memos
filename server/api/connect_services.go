@@ -731,6 +731,22 @@ func (s *ConnectServiceHandler) SuggestTags(ctx context.Context, req *connect.Re
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) ListAIProviderTypes(ctx context.Context, req *connect.Request[apipb.ListAIProviderTypesRequest]) (*connect.Response[apipb.ListAIProviderTypesResponse], error) {
+	resp, err := s.APIService.ListAIProviderTypes(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListAIProviderModels(ctx context.Context, req *connect.Request[apipb.ListAIProviderModelsRequest]) (*connect.Response[apipb.ListAIProviderModelsResponse], error) {
+	resp, err := s.APIService.ListAIProviderModels(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // IdentityProviderService
 
 func (s *ConnectServiceHandler) ListIdentityProviders(ctx context.Context, req *connect.Request[apipb.ListIdentityProvidersRequest]) (*connect.Response[apipb.ListIdentityProvidersResponse], error) {

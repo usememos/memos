@@ -113,21 +113,25 @@ func (s *APIService) Transcribe(ctx context.Context, request *apipb.TranscribeRe
 		// The caller gets a fixed message and a reason; the provider's own words stay out of the response.
 		failure := ai.ClassifyFailure(err)
 		logAIFailure("transcribe", provider, persisted.GetModel(), failure)
-		return nil, newAIFailureError("failed to transcribe audio: ", failure)
+		return nil, newAIFailureError("failed to transcribe audio: ", provider, failure)
 	}
 	return &apipb.TranscribeResponse{Text: text}, nil
 }
 
 func (s *APIService) transcribeAudio(ctx context.Context, provider ai.ProviderConfig, persisted *storepb.TranscriptionConfig, content []byte, filename, contentType string) (string, error) {
 	model := persisted.GetModel()
-	switch provider.Type {
-	case ai.ProviderOpenAI:
+	// An unknown type has an empty spec, which supports nothing.
+	spec, _ := ai.LookupSpec(provider.Type)
+	if !spec.Supports(ai.CapabilityTranscription) {
+		return "", status.Errorf(codes.FailedPrecondition, "provider type %q cannot transcribe", provider.Type)
+	}
+	switch spec.Protocol {
+	case ai.ProtocolOpenAI:
 		return s.transcribeViaSTT(ctx, provider, persisted, model, content, filename, contentType)
-	case ai.ProviderGemini:
+	case ai.ProtocolGemini:
 		return s.transcribeViaAudioLLM(ctx, provider, persisted, model, content, contentType)
 	default:
-		return "", status.Errorf(codes.FailedPrecondition,
-			"provider type %q is not supported for transcription", provider.Type)
+		return "", status.Errorf(codes.FailedPrecondition, "provider type %q cannot transcribe", provider.Type)
 	}
 }
 
@@ -218,27 +222,6 @@ func (*APIService) resolveAIProvider(setting *storepb.InstanceAISetting, provide
 		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "AI provider is not configured")
 	}
 	return *provider, nil
-}
-
-func convertAIProviderConfigFromStore(provider *storepb.AIProviderConfig) ai.ProviderConfig {
-	return ai.ProviderConfig{
-		ID:       provider.GetId(),
-		Title:    provider.GetTitle(),
-		Type:     convertAIProviderTypeFromStore(provider.GetType()),
-		Endpoint: provider.GetEndpoint(),
-		APIKey:   provider.GetApiKey(),
-	}
-}
-
-func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.ProviderType {
-	switch providerType {
-	case storepb.AIProviderType_OPENAI:
-		return ai.ProviderOpenAI
-	case storepb.AIProviderType_GEMINI:
-		return ai.ProviderGemini
-	default:
-		return ""
-	}
 }
 
 func isSupportedTranscriptionContentType(contentType string) bool {

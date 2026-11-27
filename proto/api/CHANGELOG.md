@@ -42,6 +42,15 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 - `UpdateInstanceSetting` lists the models of each AI provider that is new or whose type, endpoint or key changed,
   and refuses the save when the key is rejected, the endpoint cannot be reached or redirects, or the provider does not
   answer in time. The error carries an `AI_*` `google.rpc.ErrorInfo` reason.
+- `InstanceSetting.AIProviderType` names the service a provider connects to instead of the protocol its endpoint
+  speaks. `OPENAI` is OpenAI itself; other services that speak the OpenAI API use their own type (`DEEPSEEK`,
+  `OPENROUTER`, `OLLAMA`) or `OPENAI_COMPATIBLE`. An `OPENAI` provider with another endpoint keeps working, as OpenAI
+  behind a proxy, but is offered only what OpenAI serves: change its type to describe the real service.
+  `AIService.ListAIProviderTypes` describes every type.
+- An AI provider endpoint equal to its type's default is stored, and returned, as empty. The `*_COMPATIBLE` types
+  require an endpoint; `OLLAMA` and the `*_COMPATIBLE` types accept an empty API key.
+- `UpdateInstanceSetting` refuses a capability whose provider type cannot serve it, such as an `ANTHROPIC` provider
+  for transcription.
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.
   Reactions now use the full Unicode emoji picker. Configuration files declaring `instance/settings/MEMO_RELATED` or
   `memoRelatedSetting` are rejected; remove that setting from configuration files. Stored reactions are preserved.

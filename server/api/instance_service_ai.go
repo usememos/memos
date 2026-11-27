@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
@@ -50,7 +49,7 @@ func checkAIProviderConnection(ctx context.Context, provider ai.ProviderConfig) 
 	ctx, cancel := context.WithTimeout(ctx, aiConnectionCheckTimeout)
 	defer cancel()
 	// The save reports the first answer: no SDK retries.
-	err := ai.TestConnection(ai.WithSingleAttempt(ctx), provider)
+	_, err := ai.ListModels(ai.WithSingleAttempt(ctx), provider)
 	if err == nil {
 		return nil
 	}
@@ -61,18 +60,12 @@ func checkAIProviderConnection(ctx context.Context, provider ai.ProviderConfig) 
 	logAIFailure("check_provider", provider, "", failure)
 	switch failure.Kind {
 	case ai.FailureAuth:
-		if modelListUnavailable(provider, failure) {
+		if ai.ModelListUnavailable(provider, failure) {
 			return nil
 		}
 	case ai.FailureUnreachable, ai.FailureRedirected, ai.FailureTimeout:
 	default:
 		return nil
 	}
-	return newAIFailureError("provider \""+provider.Title+"\": ", failure)
-}
-
-// modelListUnavailable reports whether a failed listing says nothing about the
-// key: an OpenAI key can be allowed to call models but not to list them.
-func modelListUnavailable(provider ai.ProviderConfig, failure ai.Failure) bool {
-	return failure.Status == http.StatusForbidden && provider.Type == ai.ProviderOpenAI
+	return newAIFailureError("provider \""+provider.Title+"\": ", provider, failure)
 }

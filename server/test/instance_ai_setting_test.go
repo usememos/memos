@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -115,4 +116,86 @@ func TestInstanceAISettingConnectionCheck(t *testing.T) {
 		require.Equal(t, http.StatusOK, code, body)
 	}
 	require.EqualValues(t, 1, rateLimited.Load(), "the check asks once and takes the first answer")
+}
+
+func TestAIProviderTypesAndModels(t *testing.T) {
+	const settingsRoute = "/api/instance/settings/AI"
+	inst := bootInstance(t.Context(), t, instanceOptions{instanceURL: "http://127.0.0.1"})
+	inst.createAdmin(t)
+	token := inst.signIn(t)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.URL.Path == "/v1/models" && r.Header.Get("x-api-key") == "claude-key":
+			_, _ = io.WriteString(w, `{"data":[{"id":"claude-b","type":"model"},{"id":"claude-a","type":"model"}],"has_more":false}`)
+		case r.URL.Path == "/v1/models":
+			w.WriteHeader(http.StatusUnauthorized)
+			_, _ = io.WriteString(w, `{"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}`)
+		case r.URL.Path == "/models":
+			_, _ = io.WriteString(w, `{"data":[{"id":"llama"}]}`)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer upstream.Close()
+
+	// The catalog is for administrators.
+	code, _ := inst.do(t, http.MethodGet, "/api/ai/providerTypes", "", nil)
+	require.Equal(t, http.StatusUnauthorized, code)
+	code, body := inst.do(t, http.MethodGet, "/api/ai/providerTypes", token, nil)
+	require.Equal(t, http.StatusOK, code, string(body))
+	var catalog struct {
+		ProviderTypes []struct {
+			Type            string `json:"type"`
+			DefaultEndpoint string `json:"defaultEndpoint"`
+			APIKeyRequired  bool   `json:"apiKeyRequired"`
+			Capabilities    []struct {
+				Kind string `json:"kind"`
+			} `json:"capabilities"`
+		} `json:"providerTypes"`
+	}
+	require.NoError(t, json.Unmarshal(body, &catalog))
+	require.Equal(t, "OPENAI", catalog.ProviderTypes[0].Type)
+	require.Len(t, catalog.ProviderTypes, 8)
+
+	save := func(providers []any, transcription map[string]string) (int, string) {
+		t.Helper()
+		setting := map[string]any{"providers": providers}
+		if transcription != nil {
+			setting["transcription"] = transcription
+		}
+		code, body := inst.do(t, http.MethodPatch, settingsRoute, token, map[string]any{"aiSetting": setting})
+		return code, string(body)
+	}
+	claude := map[string]string{"id": "claude", "title": "Claude", "type": "ANTHROPIC", "endpoint": upstream.URL, "apiKey": "claude-key"}
+	local := map[string]string{"id": "local", "title": "Local", "type": "OPENAI_COMPATIBLE", "endpoint": upstream.URL + "/"}
+	code, msg := save([]any{claude, local}, nil)
+	require.Equal(t, http.StatusOK, code, msg)
+
+	// A type that cannot transcribe is refused for transcription.
+	code, msg = save([]any{claude, local}, map[string]string{"providerId": "claude", "model": "claude-a"})
+	require.Equal(t, http.StatusBadRequest, code, msg)
+	require.Contains(t, msg, "cannot be used for transcription")
+	code, msg = save([]any{claude, local}, map[string]string{"providerId": "local", "model": "whisper"})
+	require.Equal(t, http.StatusOK, code, msg)
+
+	listModels := func(providerID string) (int, string) {
+		t.Helper()
+		code, body := inst.do(t, http.MethodGet, "/api/ai/providers/"+providerID+"/models", token, nil)
+		return code, string(body)
+	}
+	code, msg = listModels("claude")
+	require.Equal(t, http.StatusOK, code, msg)
+	require.JSONEq(t, `{"models":["claude-a","claude-b"]}`, msg)
+	code, msg = listModels("local")
+	require.Equal(t, http.StatusOK, code, msg)
+	require.JSONEq(t, `{"models":["llama"]}`, msg)
+	code, _ = listModels("missing")
+	require.Equal(t, http.StatusNotFound, code)
+
+	// An unreachable loopback endpoint explains that localhost is the memos server.
+	code, msg = save([]any{map[string]string{"id": "o", "title": "Ollama", "type": "OLLAMA", "endpoint": "http://127.0.0.1:1/v1"}}, nil)
+	require.Equal(t, http.StatusServiceUnavailable, code, msg)
+	require.Contains(t, msg, "AI_PROVIDER_UNREACHABLE")
+	require.Contains(t, msg, "host.docker.internal")
 }

@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/anthropics/anthropic-sdk-go/v2"
 	"github.com/openai/openai-go/v3"
 	"github.com/pkg/errors"
 	"google.golang.org/genai"
@@ -78,6 +79,10 @@ func ClassifyFailure(err error) Failure {
 		}
 		return failure
 	}
+	if e, ok := stderrors.AsType[*anthropic.Error](err); ok {
+		code := token(string(e.Type()))
+		return Failure{Kind: anthropicFailureKind(e.StatusCode, code), Status: e.StatusCode, Code: code, RequestID: token(e.RequestID)}
+	}
 	if e, ok := stderrors.AsType[genai.APIError](err); ok {
 		reason := geminiErrorReason(e)
 		failure := Failure{Kind: geminiFailureKind(e, reason), Status: e.Code, Code: reason}
@@ -143,6 +148,24 @@ func openAIFailureKind(e *openai.Error) FailureKind {
 		return FailureNotFound
 	}
 	return statusFailureKind(e.StatusCode)
+}
+
+// anthropicFailureKind maps an Anthropic error type. Overloaded (529) is the
+// provider's state, as is a 5xx.
+func anthropicFailureKind(status int, errorType string) FailureKind {
+	switch errorType {
+	case "authentication_error", "permission_error":
+		return FailureAuth
+	case "billing_error":
+		return FailureQuota
+	case "rate_limit_error":
+		return FailureRateLimited
+	case "not_found_error":
+		return FailureNotFound
+	case "overloaded_error", "api_error":
+		return FailureServer
+	}
+	return statusFailureKind(status)
 }
 
 func geminiFailureKind(e genai.APIError, reason string) FailureKind {

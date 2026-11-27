@@ -16,7 +16,7 @@ import (
 )
 
 // prepareInstanceAISettingForUpdate applies the API's update conveniences to an
-// AI setting before it is validated: trimming and default endpoints, generated
+// AI setting before it is validated: trimming and clearing default endpoints, generated
 // IDs for new providers, and an empty API key meaning "keep the stored key".
 // The setting is otherwise taken as sent: an unset capability is off.
 func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, setting *storepb.InstanceAISetting) error {
@@ -54,14 +54,14 @@ func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, sett
 	return nil
 }
 
-// Compare normalized copies so older settings with an implicit endpoint keep their key.
+// sameAIConnection reports whether a draft provider still talks to the stored
+// provider's service: same ID, type and resolved endpoint. Only then does an
+// empty key mean "keep the stored key".
 func sameAIConnection(draft, stored *storepb.AIProviderConfig) bool {
 	if stored == nil || stored.Type != draft.Type || stored.Id != draft.Id {
 		return false
 	}
-	previous := &storepb.AIProviderConfig{Type: stored.Type, Endpoint: stored.Endpoint}
-	ai.NormalizeSetting(&storepb.InstanceAISetting{Providers: []*storepb.AIProviderConfig{previous}})
-	return strings.TrimRight(previous.Endpoint, "/") == strings.TrimRight(draft.Endpoint, "/")
+	return ai.ResolveEndpoint(stored) == ai.ResolveEndpoint(draft)
 }
 
 func maskAPIKey(apiKey string) string {

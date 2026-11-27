@@ -2,8 +2,10 @@
 // @generated from file api/ai_service.proto (package memos.api, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { InstanceSetting_AIProviderType } from "./instance_service_pb";
+import { file_api_instance_service } from "./instance_service_pb";
 import { file_google_api_annotations } from "../google/api/annotations_pb";
 import { file_google_api_client } from "../google/api/client_pb";
 import { file_google_api_field_behavior } from "../google/api/field_behavior_pb";
@@ -13,7 +15,169 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/ai_service.proto.
  */
 export const file_api_ai_service: GenFile = /*@__PURE__*/
-  fileDesc("ChRhcGkvYWlfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIkcKElN1Z2dlc3RUYWdzUmVxdWVzdBIUCgdjb250ZW50GAEgASgJQgPgQQISGwoOY2FuZGlkYXRlX3RhZ3MYAiADKAlCA+BBASIjChNTdWdnZXN0VGFnc1Jlc3BvbnNlEgwKBHRhZ3MYASADKAkiRgoRVHJhbnNjcmliZVJlcXVlc3QSMQoFYXVkaW8YASABKAsyHS5tZW1vcy5hcGkuVHJhbnNjcmlwdGlvbkF1ZGlvQgPgQQIiIgoSVHJhbnNjcmliZVJlc3BvbnNlEgwKBHRleHQYASABKAkidwoSVHJhbnNjcmlwdGlvbkF1ZGlvEhYKB2NvbnRlbnQYASABKAxCA+BBBEgAEg0KA3VyaRgCIAEoCUgAEhUKCGZpbGVuYW1lGAMgASgJQgPgQQESGQoMY29udGVudF90eXBlGAQgASgJQgPgQQFCCAoGc291cmNlMo8CCglBSVNlcnZpY2UScAoKVHJhbnNjcmliZRIcLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVxdWVzdBodLm1lbW9zLmFwaS5UcmFuc2NyaWJlUmVzcG9uc2UiJdpBBWF1ZGlvgtPkkwIXOgEqIhIvYXBpL2FpOnRyYW5zY3JpYmUSjwEKC1N1Z2dlc3RUYWdzEh0ubWVtb3MuYXBpLlN1Z2dlc3RUYWdzUmVxdWVzdBoeLm1lbW9zLmFwaS5TdWdnZXN0VGFnc1Jlc3BvbnNlIkHaQRZjb250ZW50LGNhbmRpZGF0ZV90YWdz2kEHY29udGVudILT5JMCGDoBKiITL2FwaS9haTpzdWdnZXN0VGFnc0KNAQoNY29tLm1lbW9zLmFwaUIOQWlTZXJ2aWNlUHJvdG9QAVonZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpogIDTUFYqgIJTWVtb3MuQXBpygIJTWVtb3NcQXBp4gIVTWVtb3NcQXBpXEdQQk1ldGFkYXRh6gIKTWVtb3M6OkFwaWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+  fileDesc("ChRhcGkvYWlfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIhwKGkxpc3RBSVByb3ZpZGVyVHlwZXNSZXF1ZXN0IlQKG0xpc3RBSVByb3ZpZGVyVHlwZXNSZXNwb25zZRI1Cg5wcm92aWRlcl90eXBlcxgBIAMoCzIdLm1lbW9zLmFwaS5BSVByb3ZpZGVyVHlwZUluZm8i1AEKEkFJUHJvdmlkZXJUeXBlSW5mbxI3CgR0eXBlGAEgASgOMikubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5BSVByb3ZpZGVyVHlwZRIYChBkZWZhdWx0X2VuZHBvaW50GAIgASgJEhgKEGFwaV9rZXlfcmVxdWlyZWQYAyABKAgSEwoLYXBpX2tleV91cmwYBCABKAkSDQoFbG9jYWwYBSABKAgSLQoMY2FwYWJpbGl0aWVzGAYgAygLMhcubWVtb3MuYXBpLkFJQ2FwYWJpbGl0eSJSCgxBSUNhcGFiaWxpdHkSKQoEa2luZBgBIAEoDjIbLm1lbW9zLmFwaS5BSUNhcGFiaWxpdHlLaW5kEhcKD3N1Z2dlc3RlZF9tb2RlbBgCIAEoCSI3ChtMaXN0QUlQcm92aWRlck1vZGVsc1JlcXVlc3QSGAoLcHJvdmlkZXJfaWQYASABKAlCA+BBAiIuChxMaXN0QUlQcm92aWRlck1vZGVsc1Jlc3BvbnNlEg4KBm1vZGVscxgBIAMoCSJHChJTdWdnZXN0VGFnc1JlcXVlc3QSFAoHY29udGVudBgBIAEoCUID4EECEhsKDmNhbmRpZGF0ZV90YWdzGAIgAygJQgPgQQEiIwoTU3VnZ2VzdFRhZ3NSZXNwb25zZRIMCgR0YWdzGAEgAygJIkYKEVRyYW5zY3JpYmVSZXF1ZXN0EjEKBWF1ZGlvGAEgASgLMh0ubWVtb3MuYXBpLlRyYW5zY3JpcHRpb25BdWRpb0ID4EECIiIKElRyYW5zY3JpYmVSZXNwb25zZRIMCgR0ZXh0GAEgASgJIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSpeChBBSUNhcGFiaWxpdHlLaW5kEiIKHkFJX0NBUEFCSUxJVFlfS0lORF9VTlNQRUNJRklFRBAAEhMKD1RFWFRfR0VORVJBVElPThABEhEKDVRSQU5TQ1JJUFRJT04QAjK9BAoJQUlTZXJ2aWNlEnAKClRyYW5zY3JpYmUSHC5tZW1vcy5hcGkuVHJhbnNjcmliZVJlcXVlc3QaHS5tZW1vcy5hcGkuVHJhbnNjcmliZVJlc3BvbnNlIiXaQQVhdWRpb4LT5JMCFzoBKiISL2FwaS9haTp0cmFuc2NyaWJlEo8BCgtTdWdnZXN0VGFncxIdLm1lbW9zLmFwaS5TdWdnZXN0VGFnc1JlcXVlc3QaHi5tZW1vcy5hcGkuU3VnZ2VzdFRhZ3NSZXNwb25zZSJB2kEWY29udGVudCxjYW5kaWRhdGVfdGFnc9pBB2NvbnRlbnSC0+STAhg6ASoiEy9hcGkvYWk6c3VnZ2VzdFRhZ3MSgwEKE0xpc3RBSVByb3ZpZGVyVHlwZXMSJS5tZW1vcy5hcGkuTGlzdEFJUHJvdmlkZXJUeXBlc1JlcXVlc3QaJi5tZW1vcy5hcGkuTGlzdEFJUHJvdmlkZXJUeXBlc1Jlc3BvbnNlIh2C0+STAhcSFS9hcGkvYWkvcHJvdmlkZXJUeXBlcxKlAQoUTGlzdEFJUHJvdmlkZXJNb2RlbHMSJi5tZW1vcy5hcGkuTGlzdEFJUHJvdmlkZXJNb2RlbHNSZXF1ZXN0GicubWVtb3MuYXBpLkxpc3RBSVByb3ZpZGVyTW9kZWxzUmVzcG9uc2UiPNpBC3Byb3ZpZGVyX2lkgtPkkwIoEiYvYXBpL2FpL3Byb3ZpZGVycy97cHJvdmlkZXJfaWR9L21vZGVsc0KNAQoNY29tLm1lbW9zLmFwaUIOQWlTZXJ2aWNlUHJvdG9QAVonZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpogIDTUFYqgIJTWVtb3MuQXBpygIJTWVtb3NcQXBp4gIVTWVtb3NcQXBpXEdQQk1ldGFkYXRh6gIKTWVtb3M6OkFwaWIGcHJvdG8z", [file_api_instance_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+
+/**
+ * Request message for AIService.ListAIProviderTypes.
+ *
+ * @generated from message memos.api.ListAIProviderTypesRequest
+ */
+export type ListAIProviderTypesRequest = Message<"memos.api.ListAIProviderTypesRequest"> & {
+};
+
+/**
+ * Describes the message memos.api.ListAIProviderTypesRequest.
+ * Use `create(ListAIProviderTypesRequestSchema)` to create a new message.
+ */
+export const ListAIProviderTypesRequestSchema: GenMessage<ListAIProviderTypesRequest> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 0);
+
+/**
+ * Response message for AIService.ListAIProviderTypes.
+ *
+ * @generated from message memos.api.ListAIProviderTypesResponse
+ */
+export type ListAIProviderTypesResponse = Message<"memos.api.ListAIProviderTypesResponse"> & {
+  /**
+   * Every supported type, in the order a picker should offer them.
+   *
+   * @generated from field: repeated memos.api.AIProviderTypeInfo provider_types = 1;
+   */
+  providerTypes: AIProviderTypeInfo[];
+};
+
+/**
+ * Describes the message memos.api.ListAIProviderTypesResponse.
+ * Use `create(ListAIProviderTypesResponseSchema)` to create a new message.
+ */
+export const ListAIProviderTypesResponseSchema: GenMessage<ListAIProviderTypesResponse> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 1);
+
+/**
+ * AIProviderTypeInfo describes one AI provider type.
+ *
+ * @generated from message memos.api.AIProviderTypeInfo
+ */
+export type AIProviderTypeInfo = Message<"memos.api.AIProviderTypeInfo"> & {
+  /**
+   * The type described.
+   *
+   * @generated from field: memos.api.InstanceSetting.AIProviderType type = 1;
+   */
+  type: InstanceSetting_AIProviderType;
+
+  /**
+   * The endpoint used when a provider leaves its endpoint empty. Empty when the type requires an endpoint.
+   *
+   * @generated from field: string default_endpoint = 2;
+   */
+  defaultEndpoint: string;
+
+  /**
+   * Whether a provider of this type needs an API key.
+   *
+   * @generated from field: bool api_key_required = 3;
+   */
+  apiKeyRequired: boolean;
+
+  /**
+   * Where to create an API key for this type. Empty when there is no single place.
+   *
+   * @generated from field: string api_key_url = 4;
+   */
+  apiKeyUrl: string;
+
+  /**
+   * Whether the service usually runs on the administrator's own machine or network rather than in the cloud.
+   *
+   * @generated from field: bool local = 5;
+   */
+  local: boolean;
+
+  /**
+   * The capabilities a provider of this type can serve.
+   *
+   * @generated from field: repeated memos.api.AICapability capabilities = 6;
+   */
+  capabilities: AICapability[];
+};
+
+/**
+ * Describes the message memos.api.AIProviderTypeInfo.
+ * Use `create(AIProviderTypeInfoSchema)` to create a new message.
+ */
+export const AIProviderTypeInfoSchema: GenMessage<AIProviderTypeInfo> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 2);
+
+/**
+ * AICapability is one capability an AI provider type can serve.
+ *
+ * @generated from message memos.api.AICapability
+ */
+export type AICapability = Message<"memos.api.AICapability"> & {
+  /**
+   * The capability.
+   *
+   * @generated from field: memos.api.AICapabilityKind kind = 1;
+   */
+  kind: AICapabilityKind;
+
+  /**
+   * A model that serves the capability well. Empty when there is no single good default.
+   *
+   * @generated from field: string suggested_model = 2;
+   */
+  suggestedModel: string;
+};
+
+/**
+ * Describes the message memos.api.AICapability.
+ * Use `create(AICapabilitySchema)` to create a new message.
+ */
+export const AICapabilitySchema: GenMessage<AICapability> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 3);
+
+/**
+ * Request message for AIService.ListAIProviderModels.
+ *
+ * @generated from message memos.api.ListAIProviderModelsRequest
+ */
+export type ListAIProviderModelsRequest = Message<"memos.api.ListAIProviderModelsRequest"> & {
+  /**
+   * Required. The ID of a provider in the instance's AI setting.
+   *
+   * @generated from field: string provider_id = 1;
+   */
+  providerId: string;
+};
+
+/**
+ * Describes the message memos.api.ListAIProviderModelsRequest.
+ * Use `create(ListAIProviderModelsRequestSchema)` to create a new message.
+ */
+export const ListAIProviderModelsRequestSchema: GenMessage<ListAIProviderModelsRequest> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 4);
+
+/**
+ * Response message for AIService.ListAIProviderModels.
+ *
+ * @generated from message memos.api.ListAIProviderModelsResponse
+ */
+export type ListAIProviderModelsResponse = Message<"memos.api.ListAIProviderModelsResponse"> & {
+  /**
+   * The model identifiers the provider reports, sorted. Empty when the provider does not list its models.
+   *
+   * @generated from field: repeated string models = 1;
+   */
+  models: string[];
+};
+
+/**
+ * Describes the message memos.api.ListAIProviderModelsResponse.
+ * Use `create(ListAIProviderModelsResponseSchema)` to create a new message.
+ */
+export const ListAIProviderModelsResponseSchema: GenMessage<ListAIProviderModelsResponse> = /*@__PURE__*/
+  messageDesc(file_api_ai_service, 5);
 
 /**
  * Request message for AIService.SuggestTags.
@@ -42,7 +206,7 @@ export type SuggestTagsRequest = Message<"memos.api.SuggestTagsRequest"> & {
  * Use `create(SuggestTagsRequestSchema)` to create a new message.
  */
 export const SuggestTagsRequestSchema: GenMessage<SuggestTagsRequest> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 0);
+  messageDesc(file_api_ai_service, 6);
 
 /**
  * Response message for AIService.SuggestTags.
@@ -64,7 +228,7 @@ export type SuggestTagsResponse = Message<"memos.api.SuggestTagsResponse"> & {
  * Use `create(SuggestTagsResponseSchema)` to create a new message.
  */
 export const SuggestTagsResponseSchema: GenMessage<SuggestTagsResponse> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 1);
+  messageDesc(file_api_ai_service, 7);
 
 /**
  * Request message for AIService.Transcribe.
@@ -85,7 +249,7 @@ export type TranscribeRequest = Message<"memos.api.TranscribeRequest"> & {
  * Use `create(TranscribeRequestSchema)` to create a new message.
  */
 export const TranscribeRequestSchema: GenMessage<TranscribeRequest> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 2);
+  messageDesc(file_api_ai_service, 8);
 
 /**
  * Response message for AIService.Transcribe.
@@ -106,7 +270,7 @@ export type TranscribeResponse = Message<"memos.api.TranscribeResponse"> & {
  * Use `create(TranscribeResponseSchema)` to create a new message.
  */
 export const TranscribeResponseSchema: GenMessage<TranscribeResponse> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 3);
+  messageDesc(file_api_ai_service, 9);
 
 /**
  * TranscriptionAudio is the audio input for a transcription.
@@ -157,7 +321,39 @@ export type TranscriptionAudio = Message<"memos.api.TranscriptionAudio"> & {
  * Use `create(TranscriptionAudioSchema)` to create a new message.
  */
 export const TranscriptionAudioSchema: GenMessage<TranscriptionAudio> = /*@__PURE__*/
-  messageDesc(file_api_ai_service, 4);
+  messageDesc(file_api_ai_service, 10);
+
+/**
+ * AICapabilityKind is a task the instance can hand to an AI provider.
+ *
+ * @generated from enum memos.api.AICapabilityKind
+ */
+export enum AICapabilityKind {
+  /**
+   * @generated from enum value: AI_CAPABILITY_KIND_UNSPECIFIED = 0;
+   */
+  AI_CAPABILITY_KIND_UNSPECIFIED = 0,
+
+  /**
+   * Text generation, used by AIService.SuggestTags.
+   *
+   * @generated from enum value: TEXT_GENERATION = 1;
+   */
+  TEXT_GENERATION = 1,
+
+  /**
+   * Speech to text, used by AIService.Transcribe.
+   *
+   * @generated from enum value: TRANSCRIPTION = 2;
+   */
+  TRANSCRIPTION = 2,
+}
+
+/**
+ * Describes the enum memos.api.AICapabilityKind.
+ */
+export const AICapabilityKindSchema: GenEnum<AICapabilityKind> = /*@__PURE__*/
+  enumDesc(file_api_ai_service, 0);
 
 /**
  * AIService runs AI tasks through the AI providers configured on the instance.
@@ -185,6 +381,28 @@ export const AIService: GenService<{
     methodKind: "unary";
     input: typeof SuggestTagsRequestSchema;
     output: typeof SuggestTagsResponseSchema;
+  },
+  /**
+   * ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+   * key rules and capabilities. The caller must be an administrator.
+   *
+   * @generated from rpc memos.api.AIService.ListAIProviderTypes
+   */
+  listAIProviderTypes: {
+    methodKind: "unary";
+    input: typeof ListAIProviderTypesRequestSchema;
+    output: typeof ListAIProviderTypesResponseSchema;
+  },
+  /**
+   * ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+   * InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+   *
+   * @generated from rpc memos.api.AIService.ListAIProviderModels
+   */
+  listAIProviderModels: {
+    methodKind: "unary";
+    input: typeof ListAIProviderModelsRequestSchema;
+    output: typeof ListAIProviderModelsResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_ai_service, 0);
