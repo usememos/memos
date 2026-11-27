@@ -37,6 +37,8 @@ type Driver interface {
 	DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error)
 	// CountUserMemos counts the memos a user created, comments included, in every row status and Space.
 	CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
+	// ListMemoIDs lists the ID of every memo, comments included, in every row status and Space, in ascending order.
+	ListMemoIDs(ctx context.Context) ([]int32, error)
 
 	// Space model related methods.
 	CreateSpace(ctx context.Context, create *Space, creatorID int32) (*Space, error)

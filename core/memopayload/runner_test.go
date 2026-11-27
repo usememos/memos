@@ -102,7 +102,7 @@ func TestRunOnceRebuildsEveryMemoWhenOneIsDeletedDuringThePass(t *testing.T) {
 	user, err := st.CreateUser(ctx, &store.User{Username: "payload-delete-during-pass", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
 
-	// More memos than one batch (batchSize is 100), each with a stale payload.
+	// Enough memos for more than one rebuild batch, each with a stale payload.
 	const count = 150
 	for i := range count {
 		_, err := st.CreateMemo(ctx, &store.Memo{
@@ -123,23 +123,21 @@ func TestRunOnceRebuildsEveryMemoWhenOneIsDeletedDuringThePass(t *testing.T) {
 	}
 }
 
-// deleteAfterListingDriver deletes the first memo right after the first list
-// of memo IDs is read, as a request could while the rebuild runs.
+// deleteAfterListingDriver deletes the first memo right after the memo IDs
+// are read, as a request could while the rebuild runs.
 type deleteAfterListingDriver struct {
 	store.Driver
-	deleted bool
 }
 
-func (d *deleteAfterListingDriver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
-	memos, err := d.Driver.ListMemos(ctx, find)
-	if err != nil || !find.ExcludeContent || d.deleted || len(memos) == 0 {
-		return memos, err
+func (d *deleteAfterListingDriver) ListMemoIDs(ctx context.Context) ([]int32, error) {
+	ids, err := d.Driver.ListMemoIDs(ctx)
+	if err != nil || len(ids) == 0 {
+		return ids, err
 	}
-	d.deleted = true
-	if err := d.DeleteMemo(ctx, &store.DeleteMemo{ID: memos[0].ID}); err != nil {
+	if err := d.DeleteMemo(ctx, &store.DeleteMemo{ID: ids[0]}); err != nil {
 		return nil, err
 	}
-	return memos, nil
+	return ids, nil
 }
 
 // newMarkdownService matches the extensions the server uses.

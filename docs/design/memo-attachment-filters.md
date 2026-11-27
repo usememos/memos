@@ -283,5 +283,7 @@ shift a page boundary. The ID collection itself read pages with `LIMIT` and
 `OFFSET`, so a memo deleted during that read moved the rows after it onto a page
 already read, and one memo was never rebuilt although the version was recorded.
 A memo whose created time moved earlier could be missed the same way. The runner
-now reads every memo ID in one query, then rebuilds in batches of 100 as before.
-The list holds each memo without its content until the IDs are copied out.
+now reads every memo ID in one query, `store.ListMemoIDs`, which selects only
+the `id` column in ID order, then rebuilds in batches of 100 by ID list as
+before. Listing memos without a limit would hold every memo's payload in memory
+for the length of that read.

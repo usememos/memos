@@ -77,15 +77,15 @@ func (r *Runner) Backfill(ctx context.Context) error {
 	return nil
 }
 
-// RunOnce rebuilds the content-derived payload of every memo. It collects the
-// memo IDs first, in one query, so memos deleted or re-dated during the pass
-// cannot make it skip a memo. Content that fails to parse is logged and
-// skipped, since a retry cannot fix it; a failed write fails the pass after
-// every memo has been tried.
+// RunOnce rebuilds the content-derived payload of every memo. It reads every
+// memo ID first, in one query, so memos deleted or re-dated during the pass
+// cannot make it skip a memo, as reading pages by offset could. Content that
+// fails to parse is logged and skipped, since a retry cannot fix it; a failed
+// write fails the pass after every memo has been tried.
 func (r *Runner) RunOnce(ctx context.Context) error {
-	ids, err := r.listMemoIDs(ctx)
+	ids, err := r.Store.ListMemoIDs(ctx)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to list memo IDs")
 	}
 
 	refreshed, skipped, failed := 0, 0, 0
@@ -128,22 +128,6 @@ func (r *Runner) RunOnce(ctx context.Context) error {
 		return errors.Errorf("failed to rebuild %d memo payloads", failed)
 	}
 	return nil
-}
-
-// listMemoIDs reads the IDs of every memo in one query. Reading them page by
-// page with an offset could skip a memo: a memo deleted during the pass moves
-// the rows after it onto pages already read, and a memo whose created time
-// moves earlier lands on one.
-func (r *Runner) listMemoIDs(ctx context.Context) ([]int32, error) {
-	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{ExcludeContent: true, OrderByTimeAsc: true})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo IDs")
-	}
-	ids := make([]int32, 0, len(memos))
-	for _, memo := range memos {
-		ids = append(ids, memo.ID)
-	}
-	return ids, nil
 }
 
 // RebuildMemoPayload sets the memo's tags and property from its content.
