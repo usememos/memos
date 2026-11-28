@@ -499,7 +499,7 @@
     "add-reaction": "Tepki ekle",
     "remove-reaction": "Reaksiyonu kaldır",
     "full-width": "Tam genişlik",
-    "full-width-hint": "Not zaman tünelinin tüm genişliğini kullan.",
+    "full-width-auto-hint": "Otomatik düzen her zaman tüm genişliği kullanır.",
     "include-comments": "Yorumları dahil et",
     "include-comments-hint": "Listelerde yorumları notlarla birlikte göster."
   },

@@ -462,7 +462,7 @@
     "add-reaction": "Thêm biểu tượng cảm xúc",
     "remove-reaction": "Xóa phản ứng",
     "full-width": "Toàn bộ chiều rộng",
-    "full-width-hint": "Sử dụng toàn bộ chiều rộng của dòng thời gian ghi chú.",
+    "full-width-auto-hint": "Bố cục tự động luôn sử dụng toàn bộ chiều rộng.",
     "include-comments": "Bao gồm bình luận",
     "include-comments-hint": "Hiển thị bình luận cùng với ghi chú trong danh sách."
   },

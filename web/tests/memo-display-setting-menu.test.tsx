@@ -57,6 +57,30 @@ describe("MemoDisplaySettingMenu", () => {
     expect(screen.queryByRole("switch", { name: "memo.include-comments" })).not.toBeInTheDocument();
   });
 
+  it("keeps Full width with the layout and explains why Auto locks it", () => {
+    render(
+      <ViewProvider>
+        <MemoDisplaySettingMenu />
+      </ViewProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Timeline · View options" }));
+
+    const layout = screen.getByRole("group", { name: "Layout" });
+    const fullWidth = screen.getByRole("switch", { name: "memo.full-width" });
+    const orderBy = screen.getByRole("combobox", { name: "Order by" });
+    // Layout, then Full width, then the sort options.
+    expect(layout.compareDocumentPosition(fullWidth) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(fullWidth.compareDocumentPosition(orderBy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(fullWidth).toHaveAttribute("aria-checked", "false");
+    expect(screen.queryByText("memo.full-width-auto-hint")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Auto" }));
+
+    expect(fullWidth).toHaveAttribute("aria-checked", "true");
+    expect(fullWidth).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText("memo.full-width-auto-hint")).toBeInTheDocument();
+  });
+
   it("opens only from the arrow, not the adjacent Timeline link", () => {
     render(
       <ViewProvider>

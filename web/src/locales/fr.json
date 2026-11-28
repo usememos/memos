@@ -468,7 +468,7 @@
     "add-reaction": "Ajouter une réaction",
     "remove-reaction": "Supprimer la réaction",
     "full-width": "Pleine largeur",
-    "full-width-hint": "Utiliser toute la largeur de la chronologie des mémos.",
+    "full-width-auto-hint": "La mise en page automatique utilise toujours toute la largeur.",
     "include-comments": "Inclure les commentaires",
     "include-comments-hint": "Afficher les commentaires avec les mémos dans les listes."
   },

@@ -468,7 +468,7 @@
     "add-reaction": "Afegeix reacció",
     "remove-reaction": "Elimina la reacció",
     "full-width": "Amplada completa",
-    "full-width-hint": "Utilitza tota l'amplada de la cronologia dels memos.",
+    "full-width-auto-hint": "El disseny automàtic sempre utilitza tota l'amplada.",
     "include-comments": "Inclou els comentaris",
     "include-comments-hint": "Mostra els comentaris juntament amb els memos a les llistes."
   },

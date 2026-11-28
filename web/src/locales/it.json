@@ -468,7 +468,7 @@
     "add-reaction": "Aggiungi reazione",
     "remove-reaction": "Rimuovi la reazione",
     "full-width": "Larghezza intera",
-    "full-width-hint": "Usa tutta la larghezza della cronologia dei memo.",
+    "full-width-auto-hint": "Il layout automatico usa sempre tutta la larghezza.",
     "include-comments": "Includi commenti",
     "include-comments-hint": "Mostra i commenti insieme ai memo negli elenchi."
   },

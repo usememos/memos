@@ -56,6 +56,16 @@ function MemoDisplaySettingsContent() {
         })}
       </ToggleGroup>
 
+      {/* Full width belongs to the layout above it. The Auto layout fills the width itself, so the
+          locked switch says why; the label alone names the option otherwise. */}
+      <Field.Root orientation="horizontal" size="md">
+        <Field.Label>{t("memo.full-width")}</Field.Label>
+        {fullWidthLocked && <Field.Description className="w-0 min-w-full text-pretty">{t("memo.full-width-auto-hint")}</Field.Description>}
+        <Switch checked={fullWidthLocked || fullWidth} onCheckedChange={setFullWidth} disabled={fullWidthLocked} />
+      </Field.Root>
+
+      <Separator />
+
       {/* Selects, not segmented rows: the two labels of a pair don't fit side by side in every language. */}
       <Field.Root orientation="horizontal" size="md">
         <Field.Label>{t("memo.order-by")}</Field.Label>
@@ -88,14 +98,6 @@ function MemoDisplaySettingsContent() {
             <Select.Item value="asc">{sortOrderOptions.asc}</Select.Item>
           </Select.Popup>
         </Select.Root>
-      </Field.Root>
-
-      <Separator />
-
-      <Field.Root orientation="horizontal" size="md">
-        <Field.Label>{t("memo.full-width")}</Field.Label>
-        <Field.Description className="w-0 min-w-full">{t("memo.full-width-hint")}</Field.Description>
-        <Switch checked={fullWidthLocked || fullWidth} onCheckedChange={setFullWidth} disabled={fullWidthLocked} />
       </Field.Root>
     </div>
   );

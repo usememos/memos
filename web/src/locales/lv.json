@@ -506,7 +506,7 @@
     "add-reaction": "Pievienojiet reakciju",
     "remove-reaction": "Noņemiet reakciju",
     "full-width": "Pilns platums",
-    "full-width-hint": "Izmantot visu piezīmju laika skalas platumu.",
+    "full-width-auto-hint": "Automātiskais izkārtojums vienmēr izmanto visu platumu.",
     "include-comments": "Iekļaut komentārus",
     "include-comments-hint": "Sarakstos rādīt komentārus kopā ar piezīmēm."
   },

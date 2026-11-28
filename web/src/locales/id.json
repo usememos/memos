@@ -462,7 +462,7 @@
     "add-reaction": "Tambahkan reaksi",
     "remove-reaction": "Hapus reaksi",
     "full-width": "Lebar penuh",
-    "full-width-hint": "Gunakan seluruh lebar linimasa memo.",
+    "full-width-auto-hint": "Tata letak otomatis selalu menggunakan seluruh lebar.",
     "include-comments": "Sertakan komentar",
     "include-comments-hint": "Tampilkan komentar bersama memo dalam daftar."
   },

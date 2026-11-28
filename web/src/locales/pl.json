@@ -469,7 +469,7 @@
     "add-reaction": "Dodaj reakcję",
     "remove-reaction": "Usuń reakcję",
     "full-width": "Pełna szerokość",
-    "full-width-hint": "Używaj całej szerokości osi czasu notatek.",
+    "full-width-auto-hint": "Układ automatyczny zawsze używa całej szerokości.",
     "include-comments": "Uwzględnij komentarze",
     "include-comments-hint": "Pokazuj komentarze razem z notatkami na listach."
   },

@@ -467,7 +467,7 @@
     "add-reaction": "Lägg till reaktion",
     "remove-reaction": "Ta bort reaktionen",
     "full-width": "Full bredd",
-    "full-width-hint": "Använd hela bredden på anteckningarnas tidslinje.",
+    "full-width-auto-hint": "Automatisk layout använder alltid hela bredden.",
     "include-comments": "Inkludera kommentarer",
     "include-comments-hint": "Visa kommentarer tillsammans med anteckningar i listor."
   },

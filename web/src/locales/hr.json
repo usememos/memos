@@ -468,7 +468,7 @@
     "add-reaction": "Dodajte reakciju",
     "remove-reaction": "Ukloni reakciju",
     "full-width": "Puna širina",
-    "full-width-hint": "Koristi cijelu širinu vremenske crte memoa.",
+    "full-width-auto-hint": "Automatski raspored uvijek koristi cijelu širinu.",
     "include-comments": "Uključi komentare",
     "include-comments-hint": "Prikaži komentare uz memoe na popisima."
   },

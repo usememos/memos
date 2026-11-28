@@ -505,7 +505,7 @@
     "add-reaction": "Lisa reaktsioon",
     "remove-reaction": "Eemaldage reaktsioon",
     "full-width": "Täislaius",
-    "full-width-hint": "Kasuta memode ajajoone kogu laiust.",
+    "full-width-auto-hint": "Automaatne paigutus kasutab alati kogu laiust.",
     "include-comments": "Kaasa kommentaarid",
     "include-comments-hint": "Näita loendites kommentaare koos memodega."
   },

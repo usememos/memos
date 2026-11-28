@@ -547,7 +547,7 @@
     "add-reaction": "新增表情回應",
     "remove-reaction": "移除表情回應",
     "full-width": "全寬顯示",
-    "full-width-hint": "使用備忘錄時間軸的完整寬度。",
+    "full-width-auto-hint": "自動版面配置一律使用完整寬度。",
     "include-comments": "包含評論",
     "include-comments-hint": "在列表中同時顯示評論與備忘錄。"
   },

@@ -463,7 +463,7 @@
     "add-reaction": "Adicionar reação",
     "remove-reaction": "Remover reação",
     "full-width": "Largura total",
-    "full-width-hint": "Usar toda a largura da linha do tempo dos memos.",
+    "full-width-auto-hint": "O layout automático sempre usa toda a largura.",
     "include-comments": "Incluir comentários",
     "include-comments-hint": "Mostrar comentários junto com os memos nas listas."
   },

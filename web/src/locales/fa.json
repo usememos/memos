@@ -462,7 +462,7 @@
     "add-reaction": "افزودن واکنش",
     "remove-reaction": "حذف واکنش",
     "full-width": "تمام عرض",
-    "full-width-hint": "از تمام عرض خط زمانی یادداشت‌ها استفاده کنید.",
+    "full-width-auto-hint": "طرح‌بندی خودکار همیشه از تمام عرض استفاده می‌کند.",
     "include-comments": "شامل نظرات",
     "include-comments-hint": "نمایش نظرات در کنار یادداشت‌ها در فهرست‌ها."
   },

@@ -467,7 +467,7 @@
     "add-reaction": "リアクションを追加",
     "remove-reaction": "反応を取り除く",
     "full-width": "全幅表示",
-    "full-width-hint": "メモのタイムラインを幅いっぱいに表示します。",
+    "full-width-auto-hint": "自動レイアウトでは常に幅いっぱいに表示します。",
     "include-comments": "コメントを含める",
     "include-comments-hint": "一覧にメモと一緒にコメントを表示します。"
   },

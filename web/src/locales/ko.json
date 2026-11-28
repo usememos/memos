@@ -462,7 +462,7 @@
     "add-reaction": "반응 추가",
     "remove-reaction": "반응 제거",
     "full-width": "전체 너비",
-    "full-width-hint": "메모 타임라인의 전체 너비를 사용합니다.",
+    "full-width-auto-hint": "자동 레이아웃은 항상 전체 너비를 사용합니다.",
     "include-comments": "댓글 포함",
     "include-comments-hint": "목록에 메모와 함께 댓글을 표시합니다."
   },

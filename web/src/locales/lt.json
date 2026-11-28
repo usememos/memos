@@ -507,7 +507,7 @@
     "add-reaction": "Pridėti reakciją",
     "remove-reaction": "Pašalinti reakciją",
     "full-width": "Visas plotis",
-    "full-width-hint": "Naudoti visą atmintinių laiko juostos plotį.",
+    "full-width-auto-hint": "Automatinis išdėstymas visada naudoja visą plotį.",
     "include-comments": "Įtraukti komentarus",
     "include-comments-hint": "Sąrašuose rodyti komentarus kartu su atmintinėmis."
   },

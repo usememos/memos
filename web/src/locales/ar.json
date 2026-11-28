@@ -466,7 +466,7 @@
     "add-reaction": "إضافة رد فعل",
     "remove-reaction": "إزالة التفاعل",
     "full-width": "العرض الكامل",
-    "full-width-hint": "استخدام العرض الكامل للخط الزمني للمذكرات.",
+    "full-width-auto-hint": "التخطيط التلقائي يستخدم العرض الكامل دائمًا.",
     "include-comments": "تضمين التعليقات",
     "include-comments-hint": "عرض التعليقات مع المذكرات في القوائم."
   },

@@ -467,7 +467,7 @@
     "add-reaction": "Adja hozzá a reakciót",
     "remove-reaction": "Távolítsa el a reakciót",
     "full-width": "Teljes szélesség",
-    "full-width-hint": "A jegyzetek idővonalának teljes szélességét használja.",
+    "full-width-auto-hint": "Az automatikus elrendezés mindig a teljes szélességet használja.",
     "include-comments": "Hozzászólások belefoglalása",
     "include-comments-hint": "A listákban a hozzászólások a jegyzetekkel együtt jelennek meg."
   },

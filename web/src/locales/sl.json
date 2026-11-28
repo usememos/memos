@@ -469,7 +469,7 @@
     "add-reaction": "Dodajte reakcijo",
     "remove-reaction": "Odstrani reakcijo",
     "full-width": "Polna širina",
-    "full-width-hint": "Uporabi celotno širino časovnice beležk.",
+    "full-width-auto-hint": "Samodejna postavitev vedno uporabi celotno širino.",
     "include-comments": "Vključi komentarje",
     "include-comments-hint": "V seznamih prikaži komentarje skupaj z beležkami."
   },

@@ -467,7 +467,7 @@
     "add-reaction": "Reactie toevoegen",
     "remove-reaction": "Reactie verwijderen",
     "full-width": "Volledige breedte",
-    "full-width-hint": "Gebruik de volledige breedte van de memotijdlijn.",
+    "full-width-auto-hint": "De automatische indeling gebruikt altijd de volledige breedte.",
     "include-comments": "Opmerkingen opnemen",
     "include-comments-hint": "Toon opmerkingen samen met memo's in lijsten."
   },

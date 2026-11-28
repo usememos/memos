@@ -501,7 +501,7 @@
     "full-width": "Full width",
     "connections": "Connections",
     "grid-compact-hint": "Collapse longer memos. Always enabled for grid layouts.",
-    "full-width-hint": "Use entire width of the memo timeline.",
+    "full-width-auto-hint": "The Auto layout always uses the full width.",
     "include-comments": "Include comments",
     "include-comments-hint": "Show comments alongside memos in lists.",
     "layout": "Layout",

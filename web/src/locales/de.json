@@ -467,7 +467,7 @@
     "add-reaction": "Reaktion hinzufügen",
     "remove-reaction": "Reaktion entfernen",
     "full-width": "Volle Breite",
-    "full-width-hint": "Die gesamte Breite der Notiz-Zeitleiste nutzen.",
+    "full-width-auto-hint": "Das automatische Layout nutzt immer die gesamte Breite.",
     "include-comments": "Kommentare einbeziehen",
     "include-comments-hint": "Kommentare in Listen zusammen mit Notizen anzeigen."
   },

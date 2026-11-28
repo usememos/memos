@@ -467,7 +467,7 @@
     "add-reaction": "Engadir reacción",
     "remove-reaction": "Eliminar a reacción",
     "full-width": "Largura completa",
-    "full-width-hint": "Usar toda a largura da cronoloxía dos memos.",
+    "full-width-auto-hint": "O deseño automático sempre usa toda a largura.",
     "include-comments": "Incluír comentarios",
     "include-comments-hint": "Mostrar os comentarios xunto aos memos nas listas."
   },

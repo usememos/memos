@@ -570,7 +570,7 @@
     "add-reaction": "Reaksiya əlavə et",
     "remove-reaction": "Reaksiyanı çıxar",
     "full-width": "Tam en",
-    "full-width-hint": "Qeydlərin zaman xəttinin bütün enindən istifadə et.",
+    "full-width-auto-hint": "Avtomatik düzülüş həmişə tam endən istifadə edir.",
     "include-comments": "Şərhləri daxil et",
     "include-comments-hint": "Siyahılarda şərhləri qeydlərlə birlikdə göstər."
   },

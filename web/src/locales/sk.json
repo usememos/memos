@@ -507,7 +507,7 @@
     "add-reaction": "Pridajte reakciu",
     "remove-reaction": "Odstráňte reakciu",
     "full-width": "Plná šírka",
-    "full-width-hint": "Využiť celú šírku časovej osi poznámok.",
+    "full-width-auto-hint": "Automatické rozloženie vždy využíva celú šírku.",
     "include-comments": "Zahrnúť komentáre",
     "include-comments-hint": "Zobraziť komentáre v zoznamoch spolu s poznámkami."
   },

@@ -505,7 +505,7 @@
     "add-reaction": "Lisää reaktio",
     "remove-reaction": "Poista reaktio",
     "full-width": "Täysi leveys",
-    "full-width-hint": "Käytä muistioiden aikajanan koko leveyttä.",
+    "full-width-auto-hint": "Automaattinen asettelu käyttää aina koko leveyttä.",
     "include-comments": "Sisällytä kommentit",
     "include-comments-hint": "Näytä kommentit muistioiden rinnalla luetteloissa."
   },

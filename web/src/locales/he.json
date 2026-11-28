@@ -539,7 +539,7 @@
     "add-reaction": "הוסף תגובה",
     "remove-reaction": "הסר תגובה",
     "full-width": "רוחב מלא",
-    "full-width-hint": "שימוש בכל הרוחב של ציר הזמן של הפתקים.",
+    "full-width-auto-hint": "הפריסה האוטומטית משתמשת תמיד בכל הרוחב.",
     "include-comments": "הכללת תגובות",
     "include-comments-hint": "הצגת תגובות לצד פתקים ברשימות."
   },

@@ -505,7 +505,7 @@
     "add-reaction": "Tilføj reaktion",
     "remove-reaction": "Fjern reaktion",
     "full-width": "Fuld bredde",
-    "full-width-hint": "Brug hele bredden af memoernes tidslinje.",
+    "full-width-auto-hint": "Automatisk layout bruger altid hele bredden.",
     "include-comments": "Medtag kommentarer",
     "include-comments-hint": "Vis kommentarer sammen med memoer i lister."
   },

@@ -499,7 +499,7 @@
     "add-reaction": "添加表态",
     "remove-reaction": "移除表态",
     "full-width": "全宽显示",
-    "full-width-hint": "使用备忘录时间线的全部宽度。",
+    "full-width-auto-hint": "自动布局始终使用全部宽度。",
     "include-comments": "包含评论",
     "include-comments-hint": "在列表中同时显示评论和备忘录。"
   },

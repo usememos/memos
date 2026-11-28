@@ -467,7 +467,7 @@
     "add-reaction": "Add reaction",
     "remove-reaction": "Remove reaction",
     "full-width": "Full width",
-    "full-width-hint": "Use entire width of the memo timeline.",
+    "full-width-auto-hint": "The Auto layout always uses the full width.",
     "include-comments": "Include comments",
     "include-comments-hint": "Show comments alongside memos in lists."
   },

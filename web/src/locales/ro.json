@@ -506,7 +506,7 @@
     "add-reaction": "Adăugați reacția",
     "remove-reaction": "Îndepărtați reacția",
     "full-width": "Lățime completă",
-    "full-width-hint": "Folosește întreaga lățime a cronologiei notelor.",
+    "full-width-auto-hint": "Aspectul automat folosește întotdeauna întreaga lățime.",
     "include-comments": "Include comentariile",
     "include-comments-hint": "Afișează comentariile împreună cu notele în liste."
   },

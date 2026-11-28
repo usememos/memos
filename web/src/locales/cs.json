@@ -469,7 +469,7 @@
     "add-reaction": "Přidejte reakci",
     "remove-reaction": "Odstraňte reakci",
     "full-width": "Plná šířka",
-    "full-width-hint": "Využít celou šířku časové osy poznámek.",
+    "full-width-auto-hint": "Automatické rozvržení vždy využívá celou šířku.",
     "include-comments": "Zahrnout komentáře",
     "include-comments-hint": "Zobrazit komentáře v seznamech spolu s poznámkami."
   },
