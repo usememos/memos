@@ -89,9 +89,35 @@ const canServe = (types: AIProviderTypeInfo[], provider: LocalAIProvider, kind: 
   return !!findSpec(types, provider.type)?.capabilities.some((capability) => capability.kind === kind);
 };
 
+const speaksAnthropic = (type: InstanceSetting_AIProviderType) =>
+  type === InstanceSetting_AIProviderType.ANTHROPIC || type === InstanceSetting_AIProviderType.ANTHROPIC_COMPATIBLE;
+
+const urlPath = (url: string) => (URL.canParse(url) ? new URL(url).pathname.replace(/\/+$/, "") : "");
+
+/**
+ * The base URL the server makes of a typed endpoint, as `normalizeEndpoint` in provider/ai does: an address without a
+ * path takes the path of its type's default, and the Messages API adds /v1 itself, so a trailing /v1 is dropped there.
+ */
+const completedEndpoint = (types: AIProviderTypeInfo[], provider: Pick<LocalAIProvider, "type" | "endpoint">) => {
+  let base = provider.endpoint.trim().replace(/\/+$/, "");
+  if (!URL.canParse(base) || /[?#]/.test(base)) return base;
+  if (speaksAnthropic(provider.type) && urlPath(base).endsWith("/v1")) base = base.slice(0, -"/v1".length).replace(/\/+$/, "");
+  return urlPath(base) ? base : base + urlPath(findSpec(types, provider.type)?.defaultEndpoint ?? "");
+};
+
 /** The endpoint requests go to: the provider's own, or its type's default. */
 const resolvedEndpoint = (types: AIProviderTypeInfo[], provider: Pick<LocalAIProvider, "type" | "endpoint">) =>
-  (provider.endpoint.trim() || findSpec(types, provider.type)?.defaultEndpoint || "").replace(/\/+$/, "");
+  completedEndpoint(types, provider) || findSpec(types, provider.type)?.defaultEndpoint || "";
+
+/**
+ * Where a typed endpoint sends a request: the OpenAI SDK appends /chat/completions, Anthropic's /v1/messages. Gemini's
+ * route carries the model, so it has no single URL to show.
+ */
+const requestURL = (types: AIProviderTypeInfo[], provider: Pick<LocalAIProvider, "type" | "endpoint">) => {
+  const base = completedEndpoint(types, provider);
+  if (!base || provider.type === InstanceSetting_AIProviderType.GEMINI) return "";
+  return speaksAnthropic(provider.type) ? `${base}/v1/messages` : `${base}/chat/completions`;
+};
 
 /** A masked key such as "sk-a…wxyz" identifies the key. A short key masks to dots only, which says nothing. */
 const hasKeyHint = (provider: LocalAIProvider) => /[\p{L}\p{N}]/u.test(provider.apiKeyHint);
@@ -879,6 +905,7 @@ const AIProviderDialog = ({ provider, saving, error, onOpenChange, onChange, onS
   const typeOptions = providerTypes.map((info) => ({ value: String(info.type), label: providerTypeLabel(info.type) }));
   const spec = findSpec(providerTypes, draft.type);
   const endpointRequired = !!spec && !spec.defaultEndpoint;
+  const endpointRequestURL = requestURL(providerTypes, draft);
   const keyRequired = spec?.apiKeyRequired ?? true;
 
   // A newly opened provider starts clean: its draft and no errors from the last one.
@@ -957,16 +984,12 @@ const AIProviderDialog = ({ provider, saving, error, onOpenChange, onChange, onS
       />
       {fieldErrors.errors.endpoint ? (
         <Field.Error match>{fieldErrors.errors.endpoint}</Field.Error>
-      ) : endpointRequired ? (
-        draft.endpoint.trim() && (
-          // Whether to include /v1 is the usual question; the resolved request URL answers it.
-          <Field.Description className="wrap-anywhere">
-            {t("setting.ai.request-url", { url: requestURL(draft.type, draft.endpoint) })}
-          </Field.Description>
-        )
+      ) : endpointRequestURL ? (
+        // Whether to include /v1 is the usual question; the resolved request URL answers it.
+        <Field.Description className="wrap-anywhere">{t("setting.ai.request-url", { url: endpointRequestURL })}</Field.Description>
       ) : (
         // A local server's address is explained below the form; "official endpoint" is a cloud notion.
-        !spec?.local && <Field.Description>{t("setting.ai.endpoint-hint")}</Field.Description>
+        !endpointRequired && !spec?.local && <Field.Description>{t("setting.ai.endpoint-hint")}</Field.Description>
       )}
     </Field.Root>
   );
@@ -1116,12 +1139,6 @@ const AIProviderDialog = ({ provider, saving, error, onOpenChange, onChange, onS
       </Dialog.Popup>
     </Dialog.Root>
   );
-};
-
-/** Where a compatible type's requests go: the OpenAI SDK appends /chat/completions, Anthropic's /v1/messages. */
-const requestURL = (type: InstanceSetting_AIProviderType, endpoint: string) => {
-  const base = endpoint.trim().replace(/\/+$/, "");
-  return type === InstanceSetting_AIProviderType.ANTHROPIC_COMPATIBLE ? `${base}/v1/messages` : `${base}/chat/completions`;
 };
 
 export default AISection;

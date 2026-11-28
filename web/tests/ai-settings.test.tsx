@@ -379,3 +379,35 @@ it("requires the address of a compatible API and shows where requests go", async
   fireEvent.change(dialog.getByLabelText("Endpoint"), { target: { value: "http://gpu-box:8000/v1/" } });
   expect(dialog.getByText("Requests go to http://gpu-box:8000/v1/chat/completions")).toBeVisible();
 });
+
+it("shows the request URL the server makes of a service's address", async () => {
+  render(<AISection />);
+  fireEvent.click(screen.getByRole("button", { name: "Add provider" }));
+  const dialog = within(await screen.findByRole("dialog"));
+  const chooseType = async (name: string) => {
+    fireEvent.click(dialog.getByRole("combobox", { name: "Provider type" }));
+    const option = await screen.findByRole("option", { name });
+    fireEvent.pointerDown(option, { pointerType: "mouse" });
+    fireEvent.click(option);
+  };
+  const typeEndpoint = (value: string) => fireEvent.change(dialog.getByLabelText("Endpoint"), { target: { value } });
+
+  // An address without a path is the service at that address: it takes the path of the type's API.
+  await chooseType("Ollama");
+  expect(dialog.queryByText(/Requests go to/)).toBeNull();
+  typeEndpoint("http://192.168.1.10:11434");
+  expect(dialog.getByText("Requests go to http://192.168.1.10:11434/v1/chat/completions")).toBeVisible();
+  typeEndpoint("https://example.com/ollama/");
+  expect(dialog.getByText("Requests go to https://example.com/ollama/chat/completions")).toBeVisible();
+
+  // The Messages API adds /v1 itself.
+  await chooseType("Anthropic");
+  typeEndpoint("https://proxy.example.com/v1");
+  expect(dialog.getByText("Requests go to https://proxy.example.com/v1/messages")).toBeVisible();
+
+  await chooseType("OpenAI");
+  typeEndpoint("https://proxy.example.com");
+  expect(dialog.getByText("Requests go to https://proxy.example.com/v1/chat/completions")).toBeVisible();
+  typeEndpoint("");
+  expect(dialog.getByText("Leave empty to use the official provider endpoint.")).toBeVisible();
+});

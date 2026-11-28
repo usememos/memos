@@ -866,6 +866,9 @@ export type InstanceSetting_AIProviderConfig = Message<"memos.api.InstanceSettin
    * The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
    * stored as empty. Required for the *_COMPATIBLE types.
    *
+   * An address without a path takes the path of the type's default endpoint, so http://host:11434 is stored as
+   * http://host:11434/v1 for OLLAMA. A trailing /v1 is dropped for the Anthropic types, whose API adds it.
+   *
    * @generated from field: string endpoint = 4;
    */
   endpoint: string;

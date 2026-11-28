@@ -42,7 +42,7 @@ func TestTranscribe(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			require.Equal(t, "/audio/transcriptions", r.URL.Path)
+			require.Equal(t, "/v1/audio/transcriptions", r.URL.Path)
 			require.Equal(t, "Bearer sk-test", r.Header.Get("Authorization"))
 			require.NoError(t, r.ParseMultipartForm(10<<20))
 			require.Equal(t, "whisper-1", r.FormValue("model"))

@@ -108,7 +108,7 @@ func TestNormalizeSetting(t *testing.T) {
 	setting := &storepb.InstanceAISetting{
 		Providers: []*storepb.AIProviderConfig{
 			{Id: " a ", Title: " OpenAI ", Type: storepb.AIProviderType_OPENAI, Endpoint: "https://api.openai.com/v1/"},
-			{Id: "b", Type: storepb.AIProviderType_GEMINI, Endpoint: " https://proxy.example.com/ "},
+			{Id: "b", Type: storepb.AIProviderType_GEMINI, Endpoint: " https://proxy.example.com/gemini/ "},
 			nil,
 		},
 		Transcription:  &storepb.TranscriptionConfig{ProviderId: " a ", Model: " whisper-1 "},
@@ -122,7 +122,51 @@ func TestNormalizeSetting(t *testing.T) {
 	// The default is stored as empty, so the provider follows it.
 	require.Empty(t, setting.Providers[0].Endpoint)
 	require.Equal(t, "https://api.openai.com/v1", ResolveEndpoint(setting.Providers[0]))
-	require.Equal(t, "https://proxy.example.com", setting.Providers[1].Endpoint)
+	require.Equal(t, "https://proxy.example.com/gemini", setting.Providers[1].Endpoint)
 	require.Equal(t, "a", setting.Transcription.ProviderId)
 	require.Equal(t, "whisper-1", setting.Transcription.Model)
+}
+
+// An address without a path is the service at that address, so it is stored
+// and called with the path of its type's API.
+func TestNormalizeSettingCompletesEndpoint(t *testing.T) {
+	for _, test := range []struct {
+		name         string
+		providerType storepb.AIProviderType
+		endpoint     string
+		stored       string
+		resolved     string
+	}{
+		{"ollama host", storepb.AIProviderType_OLLAMA, "http://192.168.1.10:11434", "http://192.168.1.10:11434/v1", "http://192.168.1.10:11434/v1"},
+		{"ollama host with slash", storepb.AIProviderType_OLLAMA, " http://ollama:11434/ ", "http://ollama:11434/v1", "http://ollama:11434/v1"},
+		{"ollama with its path", storepb.AIProviderType_OLLAMA, "http://ollama:11434/v1", "http://ollama:11434/v1", "http://ollama:11434/v1"},
+		{"ollama behind a prefix", storepb.AIProviderType_OLLAMA, "https://example.com/ollama", "https://example.com/ollama", "https://example.com/ollama"},
+		{"ollama default host", storepb.AIProviderType_OLLAMA, "http://localhost:11434", "", "http://localhost:11434/v1"},
+		{"openai proxy host", storepb.AIProviderType_OPENAI, "https://proxy.example.com", "https://proxy.example.com/v1", "https://proxy.example.com/v1"},
+		{"openai official host", storepb.AIProviderType_OPENAI, "https://api.openai.com", "", "https://api.openai.com/v1"},
+		{"openai gateway path", storepb.AIProviderType_OPENAI, "https://gateway.example.com/acct/openai", "https://gateway.example.com/acct/openai", "https://gateway.example.com/acct/openai"},
+		{"openrouter host", storepb.AIProviderType_OPENROUTER, "https://proxy.example.com", "https://proxy.example.com/api/v1", "https://proxy.example.com/api/v1"},
+		{"gemini host", storepb.AIProviderType_GEMINI, "https://proxy.example.com", "https://proxy.example.com/v1beta", "https://proxy.example.com/v1beta"},
+		{"gemini version", storepb.AIProviderType_GEMINI, "https://proxy.example.com/v1", "https://proxy.example.com/v1", "https://proxy.example.com/v1"},
+		{"deepseek host", storepb.AIProviderType_DEEPSEEK, "https://proxy.example.com", "https://proxy.example.com", "https://proxy.example.com"},
+		{"anthropic host", storepb.AIProviderType_ANTHROPIC, "https://proxy.example.com", "https://proxy.example.com", "https://proxy.example.com"},
+		{"anthropic with v1", storepb.AIProviderType_ANTHROPIC, "https://proxy.example.com/v1/", "https://proxy.example.com", "https://proxy.example.com"},
+		{"anthropic official with v1", storepb.AIProviderType_ANTHROPIC, "https://api.anthropic.com/v1", "", "https://api.anthropic.com"},
+		{"anthropic compatible with v1", storepb.AIProviderType_ANTHROPIC_COMPATIBLE, "http://ollama:11434/v1", "http://ollama:11434", "http://ollama:11434"},
+		{"anthropic compatible prefix", storepb.AIProviderType_ANTHROPIC_COMPATIBLE, "https://example.com/anthropic/v1", "https://example.com/anthropic", "https://example.com/anthropic"},
+		{"anthropic host named v1", storepb.AIProviderType_ANTHROPIC_COMPATIBLE, "https://v1", "https://v1", "https://v1"},
+		// A compatible service has no known path: the address is used as written.
+		{"openai compatible host", storepb.AIProviderType_OPENAI_COMPATIBLE, "http://localhost:8080", "http://localhost:8080", "http://localhost:8080"},
+		{"openai compatible path", storepb.AIProviderType_OPENAI_COMPATIBLE, "http://localhost:8080/v1", "http://localhost:8080/v1", "http://localhost:8080/v1"},
+		// What is not a plain base URL is left for validation to judge.
+		{"query", storepb.AIProviderType_OLLAMA, "http://ollama:11434?x=1", "http://ollama:11434?x=1", "http://ollama:11434?x=1"},
+		{"no scheme", storepb.AIProviderType_OLLAMA, "ollama:11434", "ollama:11434", "ollama:11434"},
+	} {
+		provider := &storepb.AIProviderConfig{Id: "a", Type: test.providerType, Endpoint: test.endpoint}
+		// A setting stored before the rule is still called at the completed address.
+		require.Equal(t, test.resolved, ResolveEndpoint(provider), test.name)
+		NormalizeSetting(&storepb.InstanceAISetting{Providers: []*storepb.AIProviderConfig{provider}})
+		require.Equal(t, test.stored, provider.Endpoint, test.name)
+		require.Equal(t, test.resolved, ResolveEndpoint(provider), test.name)
+	}
 }
