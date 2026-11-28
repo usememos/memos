@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"sync"
-	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -181,10 +180,9 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 		payload = &storepb.AttachmentPayload{}
 	}
 
-	nowSec := time.Now().Unix()
 	if err := s.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 		ID:        replaced.ID,
-		UpdatedTs: &nowSec,
+		UpdatedTs: editedUpdatedTs(replaced),
 		Filename:  &content.Filename,
 		Payload:   payload,
 		Content: &store.AttachmentContent{

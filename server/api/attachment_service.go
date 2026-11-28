@@ -397,10 +397,9 @@ func (s *APIService) UpdateAttachment(ctx context.Context, request *apipb.Update
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	currentTsSec := time.Now().Unix()
 	update := &store.UpdateAttachment{
 		ID:        attachment.ID,
-		UpdatedTs: &currentTsSec,
+		UpdatedTs: editedUpdatedTs(attachment),
 		Policy:    memoWritePolicy(user.ID, false),
 	}
 	for _, field := range request.UpdateMask.Paths {
@@ -430,6 +429,17 @@ func (s *APIService) UpdateAttachment(ctx context.Context, request *apipb.Update
 		s.SSEHub.publishMemoChanged()
 	}
 	return convertAttachmentFromStore(updatedAttachment), nil
+}
+
+// editedUpdatedTs is the updated_ts an edit gives the attachment. A memo orders
+// its attachments by updated_ts, so a bound one keeps its own and its place; an
+// unbound one is stamped, as ListAttachments returns the latest updated first.
+func editedUpdatedTs(attachment *store.Attachment) *int64 {
+	if attachment.MemoID != nil {
+		return nil
+	}
+	now := time.Now().Unix()
+	return &now
 }
 
 func (s *APIService) DeleteAttachment(ctx context.Context, request *apipb.DeleteAttachmentRequest) (*emptypb.Empty, error) {

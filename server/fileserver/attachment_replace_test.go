@@ -133,6 +133,63 @@ func TestReplaceAttachmentContent(t *testing.T) {
 	}
 }
 
+// Database-stored audio and video is revalidated against a hash of its
+// content, so a client holding the previous file gets the replacement, not a 304.
+func TestReplaceAttachmentContentChangesMediaETag(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+	configureDatabaseStorage(ctx, t, stores)
+
+	owner, err := stores.CreateUser(ctx, &store.User{Username: "podcaster", Role: store.RoleUser, Email: "podcaster@example.com"})
+	require.NoError(t, err)
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+	attachment, err := svc.CreateAttachment(ownerCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "episode.mp3", Type: "audio/mpeg", Content: []byte("ID3-first-take"),
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content: "an episode", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	mux := http.NewServeMux()
+	fs.RegisterRoutes(mux, http.HandlerFunc(httphandler.NotFound))
+	get := func(ifNoneMatch string) *httptest.ResponseRecorder {
+		request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/episode.mp3", attachment.Name), nil)
+		if ifNoneMatch != "" {
+			request.Header.Set("If-None-Match", ifNoneMatch)
+		}
+		recorder := httptest.NewRecorder()
+		mux.ServeHTTP(recorder, request)
+		return recorder
+	}
+
+	first := get("")
+	require.Equal(t, http.StatusOK, first.Code)
+	etag := first.Header().Get("ETag")
+	require.NotEmpty(t, etag)
+	require.Empty(t, first.Header().Get("Last-Modified"))
+	require.Equal(t, http.StatusNotModified, get(etag).Code)
+
+	edited := []byte("ID3-second-take")
+	_, err = svc.UploadAttachment(ownerCtx, &apipb.UploadAttachmentRequest{
+		Upload: &apipb.UploadAttachmentRequest_Spec{Spec: &apipb.UploadAttachmentSpec{
+			Attachment:        &apipb.Attachment{Filename: "episode.mp3", Type: "audio/mpeg"},
+			TotalSize:         int64(len(edited)),
+			ReplaceAttachment: attachment.Name,
+		}},
+		Data:        edited,
+		FinishWrite: true,
+	})
+	require.NoError(t, err)
+
+	second := get(etag)
+	require.Equal(t, http.StatusOK, second.Code)
+	require.Equal(t, edited, second.Body.Bytes())
+	require.NotEqual(t, etag, second.Header().Get("ETag"))
+}
+
 func TestReplaceAttachmentContentRefusals(t *testing.T) {
 	ctx := context.Background()
 	svc, _, stores, cleanup := newShareAttachmentTestServices(ctx, t)
