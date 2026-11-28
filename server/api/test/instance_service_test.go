@@ -954,7 +954,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		provider := resp.GetAiSetting().GetProviders()[0]
 		require.Empty(t, provider.GetApiKey(), "AI provider API key must never be returned in responses")
 		require.True(t, provider.GetApiKeySet())
-		require.Equal(t, "sk-o...inal", provider.GetApiKeyHint())
+		require.Equal(t, "...", provider.GetApiKeyHint())
 		require.Equal(t, endpoint, provider.GetEndpoint())
 
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
