@@ -39,8 +39,8 @@ importers:
         specifier: 26.11.3
         version: 26.11.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@usememos/editor':
-        specifier: 26.11.6
-        version: 26.11.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 26.11.7
+        version: 26.11.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@usememos/ui':
         specifier: 26.11.26
         version: 26.11.26(@base-ui/react@1.9.0(@types/react@19.3.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(lucide-react@1.80.0(@types/react@19.3.2)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1048,8 +1048,8 @@ packages:
       react-dom:
         optional: true
 
-  '@usememos/editor@26.11.6':
-    resolution: {integrity: sha512-EzXBEVWCakTlkqmIrlS4zqGiplVGQ5N2aD2Y5zHb9YMQmM3dG2Fqzyw8a27uYM3hkZKNVDbTn+mQAGynUhhEhA==}
+  '@usememos/editor@26.11.7':
+    resolution: {integrity: sha512-xTThCFx8rY6ONGY6uTGS2RBsTj00IIyJk+YTL4BZNGNoEUesne90eZsP+Dq1g1/PQjXY2tgP0TNdbLwFKw9M4w==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -2630,7 +2630,7 @@ snapshots:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@usememos/editor@26.11.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@usememos/editor@26.11.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     optionalDependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
