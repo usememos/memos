@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -385,7 +386,8 @@ func TestListMemos(t *testing.T) {
 	// Create memoOne with two attachments by userOne
 	memoOne, err := ts.Service.CreateMemo(userOneCtx, &apipb.CreateMemoRequest{
 		Memo: &apipb.Memo{
-			Content:    "Hellooo, any words after this sentence won't be in the snippet. This is the next sentence. And I also have two attachments.",
+			Content: "Hellooo, the snippet carries the start of this memo. It runs on for a while, long enough to fill one wide row, " +
+				"and is cut at a word with an ellipsis. Any words after that won't be in the snippet. And I also have two attachments.",
 			Visibility: apipb.Visibility_PROTECTED,
 			Attachments: []*apipb.Attachment{
 				&apipb.Attachment{
@@ -471,7 +473,11 @@ func TestListMemos(t *testing.T) {
 	require.Equal(t, fmt.Sprintf("users/%s", userOne.Username), memoOneRes.GetCreator())
 	require.Equal(t, apipb.Visibility_PROTECTED, memoOneRes.GetVisibility())
 	require.Equal(t, memoOne.Content, memoOneRes.GetContent())
-	require.Equal(t, memoOne.Content[:64]+"...", memoOneRes.GetSnippet(), "memoOne's content is snipped past the 64 char limit")
+	snippetText, cut := strings.CutSuffix(memoOneRes.GetSnippet(), "…")
+	require.True(t, cut, "memoOne's content is snipped past the snippet limit")
+	require.True(t, strings.HasPrefix(memoOne.Content, snippetText+" "), "the snippet is cut at a word")
+	require.Greater(t, len(snippetText), 64)
+	require.LessOrEqual(t, len(snippetText), 160)
 	require.Len(t, memoOneRes.Attachments, 2)
 	require.Len(t, memoOneRes.Relations, 1)
 	require.Empty(t, memoOneRes.Reactions)

@@ -77,7 +77,7 @@ func TestGenerateSnippet(t *testing.T) {
 			name:      "truncate long text",
 			content:   "This is a very long piece of text that should be truncated at a word boundary.",
 			maxLength: 30,
-			expected:  "This is a very long piece of ...",
+			expected:  "This is a very long piece of…",
 		},
 		{
 			name:      "heading and paragraph",
@@ -137,7 +137,7 @@ func TestGenerateSnippet(t *testing.T) {
 			name:      "truncate multi-byte text across paragraphs",
 			content:   strings.Repeat("日", 50) + "\n\n" + strings.Repeat("本", 20),
 			maxLength: 64,
-			expected:  strings.Repeat("日", 50) + " ...",
+			expected:  strings.Repeat("日", 50) + "…",
 		},
 		{
 			name:      "inline code preserved",
@@ -1290,25 +1290,25 @@ func TestTruncateAtWord(t *testing.T) {
 			name:      "truncate at word",
 			input:     "this is a long sentence",
 			maxLength: 10,
-			expected:  "this is a ...",
+			expected:  "this is a…",
 		},
 		{
 			name:      "truncate very long word",
 			input:     "supercalifragilisticexpialidocious",
 			maxLength: 10,
-			expected:  "supercalif ...",
+			expected:  "supercalif…",
 		},
 		{
 			name:      "CJK characters without spaces",
 			input:     "这是一个很长的中文句子没有空格的情况下也要正确处理",
 			maxLength: 15,
-			expected:  "这是一个很长的中文句子没有空格 ...",
+			expected:  "这是一个很长的中文句子没有空格…",
 		},
 		{
 			name:      "mixed CJK and Latin",
 			input:     "这是中文mixed with English文字",
 			maxLength: 10,
-			expected:  "这是中文mixed ...",
+			expected:  "这是中文mixed…",
 		},
 	}
 

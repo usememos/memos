@@ -129,9 +129,14 @@ func newMemoWebhookRequest(hook *storepb.WebhooksUserSetting_Webhook, activityTy
 	}
 }
 
+// memoSnippetLength is how much of a memo its snippet carries. A snippet is drawn on one line that
+// the client cuts to its own width, so it is long enough to fill a wide row rather than sized for
+// a narrow one.
+const memoSnippetLength = 160
+
 func (s *APIService) getMemoContentSnippet(content string) (string, error) {
 	// Use goldmark service for snippet generation
-	snippet, err := s.MarkdownService.GenerateSnippet([]byte(content), 64)
+	snippet, err := s.MarkdownService.GenerateSnippet([]byte(content), memoSnippetLength)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to generate snippet")
 	}

@@ -56,7 +56,7 @@ type Service interface {
 	// RenderMarkdown renders goldmark AST back to markdown text
 	RenderMarkdown(content []byte) (string, error)
 
-	// GenerateSnippet creates plain text summary
+	// GenerateSnippet creates a plain text summary of at most maxLength characters, ending in "…" when cut.
 	GenerateSnippet(content []byte, maxLength int) (string, error)
 
 	// ValidateContent checks for syntax errors
@@ -739,8 +739,9 @@ func uniquePreserveCase(strs []string) []string {
 	return result
 }
 
-// truncateAtWord truncates a string at the last word boundary before maxLength.
-// maxLength is treated as a rune (character) count to properly handle UTF-8 multi-byte characters.
+// truncateAtWord truncates a string at the last word boundary before maxLength and marks the cut
+// with an ellipsis. maxLength is treated as a rune (character) count to properly handle UTF-8
+// multi-byte characters; the ellipsis is not counted.
 func truncateAtWord(s string, maxLength int) string {
 	// Convert to runes to properly handle multi-byte UTF-8 characters
 	runes := []rune(s)
@@ -757,5 +758,5 @@ func truncateAtWord(s string, maxLength int) string {
 		truncated = truncated[:lastSpace]
 	}
 
-	return truncated + " ..."
+	return strings.TrimRight(truncated, " \t\n\r") + "…"
 }
