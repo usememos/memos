@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -22,16 +23,44 @@ func TypeFromStore(providerType storepb.AIProviderType) ProviderType {
 
 // ResolveEndpoint returns the endpoint a provider's requests go to: its own, or its type's default.
 func ResolveEndpoint(provider *storepb.AIProviderConfig) string {
-	if endpoint := strings.TrimSpace(provider.GetEndpoint()); endpoint != "" {
-		return strings.TrimRight(endpoint, "/")
-	}
 	spec, _ := LookupSpec(TypeFromStore(provider.GetType()))
+	if endpoint := normalizeEndpoint(spec, provider.GetEndpoint()); endpoint != "" {
+		return endpoint
+	}
 	return spec.DefaultEndpoint
 }
 
-// NormalizeSetting trims provider and model configuration fields. An endpoint
-// equal to its type's default is cleared, so a provider follows the default if
-// it ever moves. It never generates IDs or copies secrets.
+// normalizeEndpoint returns the base URL a configured endpoint stands for.
+//
+// An address without a path names where the service runs, not where its API
+// starts, so it takes the path of the type's default: http://host:11434 is
+// Ollama at http://host:11434/v1. The Anthropic Messages API adds /v1 itself,
+// so a trailing /v1 is dropped there. Anything else is the administrator's
+// choice and is kept.
+func normalizeEndpoint(spec ProviderSpec, endpoint string) string {
+	endpoint = strings.TrimRight(strings.TrimSpace(endpoint), "/")
+	// A query or fragment, even an empty one, would end up holding the path.
+	parsed, err := url.Parse(endpoint)
+	if err != nil || parsed.Host == "" || strings.ContainsAny(endpoint, "?#") {
+		return endpoint
+	}
+	if spec.Protocol == ProtocolAnthropic && strings.HasSuffix(parsed.Path, "/v1") {
+		endpoint = strings.TrimRight(strings.TrimSuffix(endpoint, "/v1"), "/")
+		parsed.Path = strings.TrimRight(strings.TrimSuffix(parsed.Path, "/v1"), "/")
+	}
+	if parsed.Path != "" {
+		return endpoint
+	}
+	if defaultURL, err := url.Parse(spec.DefaultEndpoint); err == nil {
+		endpoint += defaultURL.Path
+	}
+	return endpoint
+}
+
+// NormalizeSetting trims provider and model configuration fields and stores
+// each endpoint as the base URL its requests use. An endpoint equal to its
+// type's default is cleared, so a provider follows the default if it ever
+// moves. It never generates IDs or copies secrets.
 func NormalizeSetting(setting *storepb.InstanceAISetting) {
 	if setting == nil {
 		return
@@ -42,8 +71,10 @@ func NormalizeSetting(setting *storepb.InstanceAISetting) {
 		}
 		provider.Id = strings.TrimSpace(provider.Id)
 		provider.Title = strings.TrimSpace(provider.Title)
-		provider.Endpoint = strings.TrimRight(strings.TrimSpace(provider.Endpoint), "/")
-		if spec, ok := LookupSpec(TypeFromStore(provider.Type)); ok && provider.Endpoint == spec.DefaultEndpoint {
+		// An unknown type has no default, so its endpoint is only trimmed.
+		spec, _ := LookupSpec(TypeFromStore(provider.Type))
+		provider.Endpoint = normalizeEndpoint(spec, provider.Endpoint)
+		if provider.Endpoint == spec.DefaultEndpoint {
 			provider.Endpoint = ""
 		}
 	}
@@ -86,7 +117,7 @@ func ValidateSetting(setting *storepb.InstanceAISetting) error {
 			return errors.Errorf("provider %q endpoint is required", provider.Id)
 		}
 		if ValidateEndpoint(provider.Endpoint) != nil {
-			return errors.Errorf("provider %q endpoint must be an http or https URL", provider.Id)
+			return errors.Errorf("provider %q endpoint must be an http or https URL without a query or fragment", provider.Id)
 		}
 		if spec.APIKeyRequired && provider.ApiKey == "" {
 			return errors.Errorf("provider %q API key is required", provider.Id)

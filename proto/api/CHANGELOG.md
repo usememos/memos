@@ -51,6 +51,13 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
   `AIService.ListAIProviderTypes` describes every type.
 - An AI provider endpoint equal to its type's default is stored, and returned, as empty. The `*_COMPATIBLE` types
   require an endpoint; `OLLAMA` and the `*_COMPATIBLE` types accept an empty API key.
+- An AI provider endpoint without a path takes the path of its type's default endpoint, when saved and when a stored
+  setting is used: `/v1` for `OPENAI` and `OLLAMA`, `/api/v1` for `OPENROUTER`, `/v1beta` for `GEMINI`. An `OPENAI`
+  provider whose server answers at the root of its address is called under `/v1` from this release; change its type to
+  `OPENAI_COMPATIBLE`, whose endpoint is used as written. `ANTHROPIC` and `ANTHROPIC_COMPATIBLE` endpoints drop a
+  trailing `/v1`, which the Messages API adds.
+- `UpdateInstanceSetting` refuses an AI provider endpoint with a query or fragment; neither was ever sent to the
+  provider. Configuration files that set one are rejected from this release.
 - `UpdateInstanceSetting` refuses a capability whose provider type cannot serve it, such as an `ANTHROPIC` provider
   for transcription.
 - Removed `InstanceSetting.MemoRelatedSetting`, `memo_related_setting`, and the `MEMO_RELATED` key.

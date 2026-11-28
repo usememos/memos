@@ -61,14 +61,22 @@ func anthropicRequestOptions(ctx context.Context) []anthropicoption.RequestOptio
 	return nil
 }
 
-// ValidateEndpoint reports whether a provider endpoint is a usable http(s) URL.
-// An empty endpoint is valid: it selects the type's default.
+// ValidateEndpoint reports whether a provider endpoint is a usable http(s) base
+// URL. An empty endpoint is valid: it selects the type's default.
+//
+// A query or fragment is refused. Each request's URL is resolved against the
+// base, which drops both, so neither would reach the provider.
 func ValidateEndpoint(endpoint string) error {
 	if strings.TrimSpace(endpoint) == "" {
 		return nil
 	}
-	_, err := providerEndpoint(endpoint)
-	return err
+	if _, err := providerEndpoint(endpoint); err != nil {
+		return err
+	}
+	if strings.ContainsAny(endpoint, "?#") {
+		return errors.New("invalid provider endpoint: remove the query and fragment")
+	}
+	return nil
 }
 
 func providerEndpoint(endpoint string) (string, error) {

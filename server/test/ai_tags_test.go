@@ -34,11 +34,11 @@ func TestSuggestTags(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
-		case "/models":
+		case "/v1/models":
 			_, _ = io.WriteString(w, `{"data":[]}`)
 		case "/v1beta/models":
 			_, _ = io.WriteString(w, `{"models":[{"name":"models/text-model"}]}`)
-		case "/chat/completions":
+		case "/v1/chat/completions":
 			var request struct {
 				Model    string
 				Messages []struct{ Role, Content string }

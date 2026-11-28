@@ -20,7 +20,7 @@ func TestInstanceAISettingConnectionCheck(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
-		case "/models":
+		case "/v1/models":
 			listings.Add(1)
 			switch r.Header.Get("Authorization") {
 			case "Bearer test-key":
@@ -91,6 +91,7 @@ func TestInstanceAISettingConnectionCheck(t *testing.T) {
 		{"redirect", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/moved", "apiKey": "test-key"}, http.StatusBadRequest, "AI_PROVIDER_REDIRECTED", "redirected"},
 		{"nothing listening", map[string]string{"type": "OPENAI", "endpoint": "http://127.0.0.1:1", "apiKey": "test-key"}, http.StatusServiceUnavailable, "AI_PROVIDER_UNREACHABLE", "could not connect"},
 		{"not a URL", map[string]string{"type": "OPENAI", "endpoint": "ftp://example.com", "apiKey": "test-key"}, http.StatusBadRequest, "", "http or https"},
+		{"query", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/v1?api-version=1", "apiKey": "test-key"}, http.StatusBadRequest, "", "without a query or fragment"},
 		{"key not resent for a new endpoint", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/changed"}, http.StatusBadRequest, "", "API key is required"},
 		{"key not resent for a new type", map[string]string{"type": "DEEPSEEK", "endpoint": upstream.URL}, http.StatusBadRequest, "", "API key is required"},
 	} {
@@ -193,6 +194,37 @@ func TestAIProviderTypesAndModels(t *testing.T) {
 	require.JSONEq(t, `{"models":["llama"]}`, msg)
 	code, _ = listModels("missing")
 	require.Equal(t, http.StatusNotFound, code)
+
+	// An address without a path is completed with the path of the type's API, and the Messages API's own /v1 is not doubled.
+	ollama := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/v1/models" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{"data":[{"id":"qwen3"}]}`)
+	}))
+	defer ollama.Close()
+	code, msg = save([]any{
+		map[string]string{"id": "ollama", "title": "Ollama", "type": "OLLAMA", "endpoint": ollama.URL},
+		map[string]string{"id": "claude", "title": "Claude", "type": "ANTHROPIC_COMPATIBLE", "endpoint": upstream.URL + "/v1", "apiKey": "claude-key"},
+	}, nil)
+	require.Equal(t, http.StatusOK, code, msg)
+	var saved struct {
+		AISetting struct {
+			Providers []struct{ Endpoint string }
+		} `json:"aiSetting"`
+	}
+	require.NoError(t, json.Unmarshal([]byte(msg), &saved))
+	require.Len(t, saved.AISetting.Providers, 2)
+	require.Equal(t, ollama.URL+"/v1", saved.AISetting.Providers[0].Endpoint)
+	require.Equal(t, upstream.URL, saved.AISetting.Providers[1].Endpoint)
+	code, msg = listModels("ollama")
+	require.Equal(t, http.StatusOK, code, msg)
+	require.JSONEq(t, `{"models":["qwen3"]}`, msg)
+	code, msg = listModels("claude")
+	require.Equal(t, http.StatusOK, code, msg)
+	require.JSONEq(t, `{"models":["claude-a","claude-b"]}`, msg)
 
 	// An unreachable loopback endpoint explains that localhost is the memos server.
 	code, msg = save([]any{map[string]string{"id": "o", "title": "Ollama", "type": "OLLAMA", "endpoint": "http://127.0.0.1:1/v1"}}, nil)
