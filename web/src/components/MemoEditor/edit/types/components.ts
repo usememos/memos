@@ -4,7 +4,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { EditorFileOrigin } from "../extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
-import type { DrawingSource, LocalFile } from "./attachment";
+import type { DrawingSource, ExcalidrawSource, LocalFile } from "./attachment";
 
 /** What MemoEditor hands an editing session: its subject, the host's defaults, and where the draft lives. */
 export interface EditSessionProps {
@@ -97,6 +97,8 @@ export interface EditorToolbarProps {
   onInsertImages: (files: File[]) => void;
   /** Opens the drawing sheet for a new drawing. */
   onDrawingClick?: () => void;
+  /** Opens the Excalidraw editor for a new drawing. */
+  onExcalidrawClick?: () => void;
 }
 
 export interface EditorMetadataProps {
@@ -111,6 +113,10 @@ export interface EditorMetadataProps {
   onEditDrawing?: (source: DrawingSource) => void;
   /** The attachment row whose drawing is being opened. */
   openingDrawing?: string;
+  /** Opens an `.excalidraw` attachment in the Excalidraw editor. */
+  onEditExcalidraw?: (source: ExcalidrawSource) => void;
+  /** The attachment row whose Excalidraw drawing is being opened. */
+  openingExcalidraw?: string;
 }
 
 export interface AudioRecorderPanelProps {
@@ -146,6 +152,7 @@ export interface InsertMenuProps {
   sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
   onDrawingClick?: () => void;
+  onExcalidrawClick?: () => void;
 }
 
 export interface AudienceMenuProps {

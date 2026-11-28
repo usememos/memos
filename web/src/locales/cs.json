@@ -181,7 +181,8 @@
       "drawing": "Anotace",
       "keep-as-attachments": "Ponechat jako přílohy",
       "uploading-inline-image": "Nahrávání do obsahu",
-      "uploading-images": "Nahrávání obrázků {{completed}}/{{total}}"
+      "uploading-images": "Nahrávání obrázků {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Upravit anotaci",
@@ -336,7 +337,19 @@
     "remove-location": "Odebrat místo",
     "recording-unsupported": "Tento prohlížeč nepodporuje nahrávání zvuku.",
     "microphone-denied": "Přístup k mikrofonu byl odepřen.",
-    "recording-failed": "Nahrávání zvuku se nepodařilo spustit."
+    "recording-failed": "Nahrávání zvuku se nepodařilo spustit.",
+    "excalidraw": {
+      "new": "Nová kresba Excalidraw",
+      "edit": "Upravit kresbu",
+      "edit-name": "Upravit {{name}}",
+      "open-file": "Otevřít soubor",
+      "open-failed": "Kresbu se nepodařilo otevřít. Zkuste to znovu.",
+      "invalid-file": "Toto není soubor Excalidraw.",
+      "save-failed": "Kresbu se nepodařilo uložit. Zkuste to znovu.",
+      "preview-failed": "Kresba je uložena, ale její náhled ne. Uložte znovu a zkuste to tak znovu.",
+      "bind-failed": "Kresba se nahrála, ale nebyla přidána k poznámce. Uložte znovu a zkuste to tak znovu.",
+      "unavailable": "Poznámka nebo kresba už není k dispozici."
+    }
   },
   "inbox": {
     "failed-to-load": "Nepodařilo se načíst položku doručené pošty",

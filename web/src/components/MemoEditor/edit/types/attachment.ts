@@ -215,3 +215,6 @@ export function separateMediaAndDocs(items: AttachmentItem[]): { media: Attachme
 
 /** A drawing "Edit drawing" opens: a file still in the draft, or a saved attachment. */
 export type DrawingSource = { kind: "local"; localFile: LocalFile } | { kind: "attachment"; attachment: Attachment };
+
+/** An `.excalidraw` source "Edit drawing" opens: a file still in the draft, or a saved attachment. */
+export type ExcalidrawSource = DrawingSource;

@@ -186,7 +186,8 @@
       "keep-as-attachments": "Giữ nguyên dưới dạng tệp đính kèm",
       "retry-image-upload": "Thử lại",
       "uploading-inline-image": "Đang tải nội dung lên",
-      "uploading-images": "Đang tải ảnh {{completed}}/{{total}}"
+      "uploading-images": "Đang tải ảnh {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Sửa chú thích",
@@ -336,7 +337,19 @@
     "remove-location": "Xóa vị trí",
     "recording-unsupported": "Trình duyệt này không hỗ trợ ghi âm.",
     "microphone-denied": "Quyền truy cập micrô đã bị từ chối.",
-    "recording-failed": "Không thể bắt đầu ghi âm."
+    "recording-failed": "Không thể bắt đầu ghi âm.",
+    "excalidraw": {
+      "new": "Bản vẽ Excalidraw mới",
+      "edit": "Sửa bản vẽ",
+      "edit-name": "Sửa {{name}}",
+      "open-file": "Mở tệp",
+      "open-failed": "Không thể mở bản vẽ. Hãy thử lại.",
+      "invalid-file": "Đây không phải tệp Excalidraw.",
+      "save-failed": "Không thể lưu bản vẽ. Hãy thử lại.",
+      "preview-failed": "Bản vẽ đã được lưu, nhưng bản xem trước thì chưa. Lưu lại để thử lại.",
+      "bind-failed": "Bản vẽ đã tải lên nhưng chưa được thêm vào ghi chú. Lưu lại để thử lại.",
+      "unavailable": "Ghi chú hoặc bản vẽ không còn khả dụng."
+    }
   },
   "inbox": {
     "failed-to-load": "Không thể tải mục hộp thư",

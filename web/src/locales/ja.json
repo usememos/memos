@@ -186,7 +186,8 @@
       "drawing": "マークアップ",
       "keep-as-attachments": "添付ファイルとして保存",
       "uploading-inline-image": "コンテンツにアップロード中",
-      "uploading-images": "画像 {{completed}}/{{total}} をアップロード中"
+      "uploading-images": "画像 {{completed}}/{{total}} をアップロード中",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "マークアップを編集",
@@ -336,7 +337,19 @@
     "remove-location": "場所を削除",
     "recording-unsupported": "このブラウザーは音声録音に対応していません。",
     "microphone-denied": "マイクへのアクセスが拒否されました。",
-    "recording-failed": "音声録音を開始できませんでした。"
+    "recording-failed": "音声録音を開始できませんでした。",
+    "excalidraw": {
+      "new": "新しい Excalidraw 図",
+      "edit": "図を編集",
+      "edit-name": "{{name}} を編集",
+      "open-file": "ファイルを開く",
+      "open-failed": "図を開けませんでした。もう一度お試しください。",
+      "invalid-file": "Excalidraw ファイルではありません。",
+      "save-failed": "図を保存できませんでした。もう一度お試しください。",
+      "preview-failed": "図は保存されましたが、プレビューは保存されていません。もう一度保存して再試行してください。",
+      "bind-failed": "図はアップロードされましたが、メモに追加されませんでした。もう一度保存して再試行してください。",
+      "unavailable": "メモまたは図は利用できなくなりました。"
+    }
   },
   "inbox": {
     "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",

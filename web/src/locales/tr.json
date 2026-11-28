@@ -231,7 +231,8 @@
       "link-memo": "Not bağla",
       "retry-image-upload": "Tekrar dene",
       "uploading-inline-image": "İçeriğe yükleniyor",
-      "uploading-images": "Görseller yükleniyor ({{completed}}/{{total}})"
+      "uploading-images": "Görseller yükleniyor ({{completed}}/{{total}})",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "İşaretlemeyi düzenle",
@@ -368,7 +369,19 @@
     "remove-location": "Konumu kaldır",
     "recording-unsupported": "Bu tarayıcı ses kaydını desteklemiyor.",
     "microphone-denied": "Mikrofon izni verilmedi.",
-    "recording-failed": "Ses kaydı başlatılamadı."
+    "recording-failed": "Ses kaydı başlatılamadı.",
+    "excalidraw": {
+      "new": "Yeni Excalidraw çizimi",
+      "edit": "Çizimi düzenle",
+      "edit-name": "{{name}} düzenle",
+      "open-file": "Dosya aç",
+      "open-failed": "Çizim açılamadı. Tekrar deneyin.",
+      "invalid-file": "Bu bir Excalidraw dosyası değil.",
+      "save-failed": "Çizim kaydedilemedi. Tekrar deneyin.",
+      "preview-failed": "Çizim kaydedildi ancak önizlemesi kaydedilmedi. Yeniden denemek için tekrar kaydedin.",
+      "bind-failed": "Çizim yüklendi ancak nota eklenmedi. Yeniden denemek için tekrar kaydedin.",
+      "unavailable": "Not veya çizim artık kullanılamıyor."
+    }
   },
   "inbox": {
     "failed-to-load": "Bildirim yüklenemedi",

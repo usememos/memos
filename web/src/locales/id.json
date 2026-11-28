@@ -186,7 +186,8 @@
       "keep-as-attachments": "Simpan sebagai lampiran",
       "retry-image-upload": "Coba lagi",
       "uploading-inline-image": "Mengunggah ke konten",
-      "uploading-images": "Mengunggah gambar {{completed}}/{{total}}"
+      "uploading-images": "Mengunggah gambar {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Edit anotasi",
@@ -336,7 +337,19 @@
     "remove-location": "Hapus lokasi",
     "recording-unsupported": "Perekaman audio tidak didukung di browser ini.",
     "microphone-denied": "Izin mikrofon ditolak.",
-    "recording-failed": "Gagal memulai perekaman audio."
+    "recording-failed": "Gagal memulai perekaman audio.",
+    "excalidraw": {
+      "new": "Gambar Excalidraw baru",
+      "edit": "Edit gambar",
+      "edit-name": "Edit {{name}}",
+      "open-file": "Buka file",
+      "open-failed": "Tidak dapat membuka gambar. Coba lagi.",
+      "invalid-file": "Ini bukan file Excalidraw.",
+      "save-failed": "Tidak dapat menyimpan gambar. Coba lagi.",
+      "preview-failed": "Gambar tersimpan, tetapi pratinjaunya tidak. Simpan lagi untuk mencoba ulang.",
+      "bind-failed": "Gambar terunggah tetapi tidak ditambahkan ke memo. Simpan lagi untuk mencoba ulang.",
+      "unavailable": "Memo atau gambar tidak tersedia lagi."
+    }
   },
   "inbox": {
     "failed-to-load": "Gagal memuat item kotak masuk",

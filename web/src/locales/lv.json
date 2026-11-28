@@ -219,7 +219,8 @@
       "drawing": "Anotācija",
       "keep-as-attachments": "Saglabāt kā pielikumus",
       "uploading-inline-image": "Augšupielādē saturu",
-      "uploading-images": "Attēlu augšupielāde {{completed}}/{{total}}"
+      "uploading-images": "Attēlu augšupielāde {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Rediģēt anotāciju",
@@ -374,7 +375,19 @@
     "remove-location": "Noņemt atrašanās vietu",
     "recording-unsupported": "Šī pārlūkprogramma neatbalsta audio ierakstīšanu.",
     "microphone-denied": "Piekļuve mikrofonam tika liegta.",
-    "recording-failed": "Neizdevās sākt audio ierakstīšanu."
+    "recording-failed": "Neizdevās sākt audio ierakstīšanu.",
+    "excalidraw": {
+      "new": "Jauns Excalidraw zīmējums",
+      "edit": "Rediģēt zīmējumu",
+      "edit-name": "Rediģēt {{name}}",
+      "open-file": "Atvērt failu",
+      "open-failed": "Neizdevās atvērt zīmējumu. Mēģiniet vēlreiz.",
+      "invalid-file": "Šis nav Excalidraw fails.",
+      "save-failed": "Neizdevās saglabāt zīmējumu. Mēģiniet vēlreiz.",
+      "preview-failed": "Zīmējums ir saglabāts, bet tā priekšskatījums nav. Saglabājiet vēlreiz, lai mēģinātu atkārtoti.",
+      "bind-failed": "Zīmējums augšupielādēts, bet nav pievienots piezīmei. Saglabājiet vēlreiz, lai mēģinātu atkārtoti.",
+      "unavailable": "Piezīme vai zīmējums vairs nav pieejams."
+    }
   },
   "inbox": {
     "failed-to-load": "Neizdevās ielādēt iesūtnes vienumu",

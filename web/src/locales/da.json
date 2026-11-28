@@ -219,7 +219,8 @@
       "drawing": "Markering",
       "keep-as-attachments": "Behold som vedhæftede filer",
       "uploading-inline-image": "Uploader til indhold",
-      "uploading-images": "Uploader billeder {{completed}}/{{total}}"
+      "uploading-images": "Uploader billeder {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Rediger markering",
@@ -374,7 +375,19 @@
     "remove-location": "Fjern placering",
     "recording-unsupported": "Lydoptagelse understøttes ikke i denne browser.",
     "microphone-denied": "Adgang til mikrofonen blev nægtet.",
-    "recording-failed": "Kunne ikke starte lydoptagelsen."
+    "recording-failed": "Kunne ikke starte lydoptagelsen.",
+    "excalidraw": {
+      "new": "Ny Excalidraw-tegning",
+      "edit": "Rediger tegning",
+      "edit-name": "Rediger {{name}}",
+      "open-file": "Åbn fil",
+      "open-failed": "Tegningen kunne ikke åbnes. Prøv igen.",
+      "invalid-file": "Dette er ikke en Excalidraw-fil.",
+      "save-failed": "Tegningen kunne ikke gemmes. Prøv igen.",
+      "preview-failed": "Tegningen er gemt, men dens forhåndsvisning er ikke. Gem igen for at prøve igen.",
+      "bind-failed": "Tegningen blev uploadet, men blev ikke føjet til notatet. Gem igen for at prøve igen.",
+      "unavailable": "Notatet eller tegningen er ikke længere tilgængelig."
+    }
   },
   "inbox": {
     "failed-to-load": "Indbakkeelementet kunne ikke indlæses",

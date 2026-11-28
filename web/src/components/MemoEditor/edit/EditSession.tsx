@@ -1,5 +1,6 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { DrawingSheet } from "@/components/DrawingSheet";
+import { ExcalidrawSheet } from "@/components/Excalidraw";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -21,6 +22,7 @@ import {
   useAutoSave,
   useBlobUrls,
   useDrawing,
+  useExcalidraw,
   useFocusMode,
   useInlineImageUpload,
   useMemoInit,
@@ -89,6 +91,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
     [createBlobUrl, saveMediaMetadata],
   );
   const drawing = useDrawing(toDrawingFile);
+  const excalidraw = useExcalidraw(toDrawingFile);
 
   const memoName = memo?.name;
   const showTimestamp = Boolean(memoName || (!memo && hasTimestamp));
@@ -398,6 +401,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
             onEditDrawing={drawing.openExisting}
             openingDrawing={drawing.opening}
+            onEditExcalidraw={excalidraw.openExisting}
+            openingExcalidraw={excalidraw.opening}
           />
           {!memo && !parentMemoName && isInitialized && (suggestions.length > 0 || canSuggestTags) && (
             <EditorSuggestions onRetry={suggestTags} suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
@@ -415,6 +420,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
             sourceMode={sourceMode}
             onInsertImages={handleInsertImages}
             onDrawingClick={drawing.openNew}
+            onExcalidrawClick={excalidraw.openNew}
           />
         </div>
       </div>
@@ -428,6 +434,19 @@ export const EditSession: React.FC<EditSessionProps> = ({
             background={drawing.session.background}
             onDone={drawing.done}
             onClose={drawing.close}
+          />
+        </Suspense>
+      )}
+
+      {excalidraw.session && (
+        <Suspense fallback={null}>
+          <ExcalidrawSheet
+            key={excalidraw.session.id}
+            mode={excalidraw.session.mode}
+            filename={excalidraw.session.filename}
+            initialScene={excalidraw.session.scene}
+            onSave={excalidraw.done}
+            onClose={excalidraw.close}
           />
         </Suspense>
       )}

@@ -181,7 +181,8 @@
       "drawing": "Annotation",
       "keep-as-attachments": "Conserver en pièces jointes",
       "uploading-inline-image": "Chargement du contenu",
-      "uploading-images": "Chargement des images {{completed}}/{{total}}"
+      "uploading-images": "Chargement des images {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Modifier l’annotation",
@@ -336,7 +337,19 @@
     "remove-location": "Retirer l'emplacement",
     "recording-unsupported": "L'enregistrement audio n'est pas pris en charge par ce navigateur.",
     "microphone-denied": "L'accès au microphone a été refusé.",
-    "recording-failed": "Impossible de démarrer l'enregistrement audio."
+    "recording-failed": "Impossible de démarrer l'enregistrement audio.",
+    "excalidraw": {
+      "new": "Nouveau dessin Excalidraw",
+      "edit": "Modifier le dessin",
+      "edit-name": "Modifier {{name}}",
+      "open-file": "Ouvrir un fichier",
+      "open-failed": "Impossible d'ouvrir le dessin. Réessayez.",
+      "invalid-file": "Ce n'est pas un fichier Excalidraw.",
+      "save-failed": "Impossible d'enregistrer le dessin. Réessayez.",
+      "preview-failed": "Le dessin est enregistré, mais pas son aperçu. Enregistrez à nouveau pour réessayer.",
+      "bind-failed": "Le dessin a été envoyé mais n'a pas été ajouté au mémo. Enregistrez à nouveau pour réessayer.",
+      "unavailable": "Le mémo ou le dessin n'est plus disponible."
+    }
   },
   "inbox": {
     "failed-to-load": "Échec du chargement de l'élément",

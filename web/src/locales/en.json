@@ -302,7 +302,8 @@
       "link-memo": "Link memo",
       "retry-image-upload": "Retry",
       "uploading-inline-image": "Uploading to content",
-      "uploading-images": "Uploading images {{completed}}/{{total}}"
+      "uploading-images": "Uploading images {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Edit markup",
@@ -439,7 +440,19 @@
     "remove-location": "Remove location",
     "recording-unsupported": "Audio recording is not supported in this browser.",
     "microphone-denied": "Microphone permission was denied.",
-    "recording-failed": "Failed to start audio recording."
+    "recording-failed": "Failed to start audio recording.",
+    "excalidraw": {
+      "new": "New Excalidraw drawing",
+      "edit": "Edit drawing",
+      "edit-name": "Edit {{name}}",
+      "open-file": "Open file",
+      "open-failed": "Couldn't open the drawing. Try again.",
+      "invalid-file": "This isn't an Excalidraw file.",
+      "save-failed": "Couldn't save the drawing. Try again.",
+      "preview-failed": "The drawing is saved, but its preview isn't. Save again to retry.",
+      "bind-failed": "The drawing uploaded but wasn't added to the memo. Save again to retry.",
+      "unavailable": "The memo or drawing is no longer available."
+    }
   },
   "inbox": {
     "failed-to-load": "Failed to load inbox item",

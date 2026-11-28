@@ -181,7 +181,8 @@
       "drawing": "Označavanje",
       "keep-as-attachments": "Zadrži kao privitke",
       "uploading-inline-image": "Prijenos u sadržaj",
-      "uploading-images": "Prijenos slika {{completed}}/{{total}}"
+      "uploading-images": "Prijenos slika {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Uredi oznake",
@@ -336,7 +337,19 @@
     "remove-location": "Ukloni lokaciju",
     "recording-unsupported": "Ovaj preglednik ne podržava snimanje zvuka.",
     "microphone-denied": "Dopuštenje za mikrofon je odbijeno.",
-    "recording-failed": "Pokretanje snimanja zvuka nije uspjelo."
+    "recording-failed": "Pokretanje snimanja zvuka nije uspjelo.",
+    "excalidraw": {
+      "new": "Novi Excalidraw crtež",
+      "edit": "Uredi crtež",
+      "edit-name": "Uredi {{name}}",
+      "open-file": "Otvori datoteku",
+      "open-failed": "Crtež se nije mogao otvoriti. Pokušajte ponovno.",
+      "invalid-file": "Ovo nije Excalidraw datoteka.",
+      "save-failed": "Crtež se nije mogao spremiti. Pokušajte ponovno.",
+      "preview-failed": "Crtež je spremljen, ali njegov pregled nije. Spremite ponovno da pokušate opet.",
+      "bind-failed": "Crtež je prenesen, ali nije dodan podsjetniku. Spremite ponovno da pokušate opet.",
+      "unavailable": "Podsjetnik ili crtež više nisu dostupni."
+    }
   },
   "inbox": {
     "failed-to-load": "Neuspjelo učitavanje stavke pristigle pošte",

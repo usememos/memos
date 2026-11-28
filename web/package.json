@@ -21,6 +21,7 @@
     "@base-ui/react": "1.9.0",
     "@connectrpc/connect": "^2.3.0",
     "@connectrpc/connect-web": "^2.3.0",
+    "@excalidraw/excalidraw": "0.18.1",
     "@github/relative-time-element": "^5.5.0",
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
     "@pierre/highlights": "0.6.0",

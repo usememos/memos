@@ -219,7 +219,8 @@
       "drawing": "Märgistus",
       "keep-as-attachments": "Säilita manusena",
       "uploading-inline-image": "Üleslaadimine sisusse",
-      "uploading-images": "Piltide üleslaadimine {{completed}}/{{total}}"
+      "uploading-images": "Piltide üleslaadimine {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "Muuda märgistust",
@@ -374,7 +375,19 @@
     "remove-location": "Eemalda asukoht",
     "recording-unsupported": "See brauser ei toeta helisalvestust.",
     "microphone-denied": "Mikrofoni luba keelati.",
-    "recording-failed": "Helisalvestuse alustamine ebaõnnestus."
+    "recording-failed": "Helisalvestuse alustamine ebaõnnestus.",
+    "excalidraw": {
+      "new": "Uus Excalidraw' joonis",
+      "edit": "Muuda joonist",
+      "edit-name": "Muuda {{name}}",
+      "open-file": "Ava fail",
+      "open-failed": "Joonist ei saanud avada. Proovi uuesti.",
+      "invalid-file": "See pole Excalidraw' fail.",
+      "save-failed": "Joonist ei saanud salvestada. Proovi uuesti.",
+      "preview-failed": "Joonis on salvestatud, kuid selle eelvaade mitte. Salvesta uuesti, et uuesti proovida.",
+      "bind-failed": "Joonis laaditi üles, kuid seda ei lisatud memole. Salvesta uuesti, et uuesti proovida.",
+      "unavailable": "Memo või joonis pole enam saadaval."
+    }
   },
   "inbox": {
     "failed-to-load": "Postkasti üksuse laadimine ebaõnnestus",

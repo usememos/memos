@@ -186,7 +186,8 @@
       "keep-as-attachments": "첨부 파일로 유지",
       "retry-image-upload": "다시 시도",
       "uploading-inline-image": "콘텐츠에 업로드 중",
-      "uploading-images": "이미지 업로드 중 {{completed}}/{{total}}"
+      "uploading-images": "이미지 업로드 중 {{completed}}/{{total}}",
+      "excalidraw": "Excalidraw"
     },
     "drawing": {
       "edit": "마크업 편집",
@@ -336,7 +337,19 @@
     "remove-location": "위치 제거",
     "recording-unsupported": "이 브라우저에서는 오디오 녹음을 지원하지 않습니다.",
     "microphone-denied": "마이크 권한이 거부되었습니다.",
-    "recording-failed": "오디오 녹음을 시작하지 못했습니다."
+    "recording-failed": "오디오 녹음을 시작하지 못했습니다.",
+    "excalidraw": {
+      "new": "새 Excalidraw 그림",
+      "edit": "그림 편집",
+      "edit-name": "{{name}} 편집",
+      "open-file": "파일 열기",
+      "open-failed": "그림을 열 수 없습니다. 다시 시도하세요.",
+      "invalid-file": "Excalidraw 파일이 아닙니다.",
+      "save-failed": "그림을 저장할 수 없습니다. 다시 시도하세요.",
+      "preview-failed": "그림은 저장되었지만 미리보기는 저장되지 않았습니다. 다시 저장하여 재시도하세요.",
+      "bind-failed": "그림이 업로드되었지만 메모에 추가되지 않았습니다. 다시 저장하여 재시도하세요.",
+      "unavailable": "메모 또는 그림을 더 이상 사용할 수 없습니다."
+    }
   },
   "inbox": {
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
