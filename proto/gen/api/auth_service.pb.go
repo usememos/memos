@@ -456,6 +456,7 @@ type SignInRequest_SsoCredentials struct {
 	// Required. The authorization code returned by the identity provider.
 	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
 	// Required. The redirect URI used in the authorization request.
+	// When the instance URL is configured, it must be that URL's `/auth/callback`.
 	RedirectUri string `protobuf:"bytes,3,opt,name=redirect_uri,json=redirectUri,proto3" json:"redirect_uri,omitempty"`
 	// Optional. The PKCE code verifier (RFC 7636). Set it when the authorization request used a code challenge.
 	CodeVerifier  string `protobuf:"bytes,4,opt,name=code_verifier,json=codeVerifier,proto3" json:"code_verifier,omitempty"`

@@ -29,6 +29,8 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 
 ### Breaking
 
+- `AuthService.SignIn` with `sso_credentials` and `UserService.CreateLinkedIdentity` reject a `redirect_uri` that is not
+  `/auth/callback` on the configured instance URL. Instances without an instance URL accept any redirect URI, as before.
 - When changing an AI provider's type or endpoint through `UpdateInstanceSetting`, supply its API key again.
   Updates to the same connection still accept an empty key to keep the stored credential.
 - The `AI` instance setting is admin only. `GetInstanceSetting` no longer returns it, with hidden fields, to other

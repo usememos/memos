@@ -2211,6 +2211,7 @@ export type CreateLinkedIdentityRequest = Message<"memos.api.CreateLinkedIdentit
 
   /**
    * Required. The redirect URI used in the OAuth flow.
+   * When the instance URL is configured, it must be that URL's `/auth/callback`.
    *
    * @generated from field: string redirect_uri = 4;
    */

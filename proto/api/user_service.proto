@@ -1229,6 +1229,7 @@ message CreateLinkedIdentityRequest {
   string code = 3 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The redirect URI used in the OAuth flow.
+  // When the instance URL is configured, it must be that URL's `/auth/callback`.
   string redirect_uri = 4 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. The PKCE code verifier used in the OAuth flow.

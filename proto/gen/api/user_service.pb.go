@@ -3312,6 +3312,7 @@ type CreateLinkedIdentityRequest struct {
 	// Required. The authorization code from the identity provider.
 	Code string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
 	// Required. The redirect URI used in the OAuth flow.
+	// When the instance URL is configured, it must be that URL's `/auth/callback`.
 	RedirectUri string `protobuf:"bytes,4,opt,name=redirect_uri,json=redirectUri,proto3" json:"redirect_uri,omitempty"`
 	// Optional. The PKCE code verifier used in the OAuth flow.
 	CodeVerifier  string `protobuf:"bytes,5,opt,name=code_verifier,json=codeVerifier,proto3" json:"code_verifier,omitempty"`

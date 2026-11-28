@@ -83,6 +83,7 @@ message SignInRequest {
     string code = 2 [(google.api.field_behavior) = REQUIRED];
 
     // Required. The redirect URI used in the authorization request.
+    // When the instance URL is configured, it must be that URL's `/auth/callback`.
     string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
 
     // Optional. The PKCE code verifier (RFC 7636). Set it when the authorization request used a code challenge.

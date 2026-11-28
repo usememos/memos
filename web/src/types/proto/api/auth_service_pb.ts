@@ -109,6 +109,7 @@ export type SignInRequest_SsoCredentials = Message<"memos.api.SignInRequest.SsoC
 
   /**
    * Required. The redirect URI used in the authorization request.
+   * When the instance URL is configured, it must be that URL's `/auth/callback`.
    *
    * @generated from field: string redirect_uri = 3;
    */

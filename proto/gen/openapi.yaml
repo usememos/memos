@@ -3652,7 +3652,9 @@ components:
                     description: Required. The authorization code from the identity provider.
                 redirectUri:
                     type: string
-                    description: Required. The redirect URI used in the OAuth flow.
+                    description: |-
+                        Required. The redirect URI used in the OAuth flow.
+                         When the instance URL is configured, it must be that URL's `/auth/callback`.
                 codeVerifier:
                     type: string
                     description: Optional. The PKCE code verifier used in the OAuth flow.
@@ -5223,7 +5225,9 @@ components:
                     description: Required. The authorization code returned by the identity provider.
                 redirectUri:
                     type: string
-                    description: Required. The redirect URI used in the authorization request.
+                    description: |-
+                        Required. The redirect URI used in the authorization request.
+                         When the instance URL is configured, it must be that URL's `/auth/callback`.
                 codeVerifier:
                     type: string
                     description: Optional. The PKCE code verifier (RFC 7636). Set it when the authorization request used a code challenge.

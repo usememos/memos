@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"log/slog"
+	"net/url"
 	"regexp"
 
 	"github.com/pkg/errors"
@@ -200,6 +201,10 @@ func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, redi
 		return nil, nil, status.Errorf(codes.InvalidArgument, "identity provider not found")
 	}
 
+	if err := s.validateSSORedirectURI(redirectURI); err != nil {
+		return nil, nil, err
+	}
+
 	var userInfo *idp.IdentityProviderUserInfo
 	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
 		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
@@ -229,6 +234,33 @@ func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, redi
 	}
 
 	return identityProvider, userInfo, nil
+}
+
+// ssoCallbackPath is the route an identity provider sends the browser back to.
+const ssoCallbackPath = "/auth/callback"
+
+// validateSSORedirectURI rejects a redirect URI that is not this instance's own
+// OAuth callback. The identity provider compares the URI named in the token
+// exchange with the one the code was issued for, so forwarding a caller-chosen
+// value would let the holder of a code issued for another site redeem it here.
+// Without a configured instance URL there is no origin to compare against and
+// the URI is passed through unchanged.
+func (s *APIService) validateSSORedirectURI(redirectURI string) error {
+	if s.Profile == nil || s.Profile.InstanceURL == "" {
+		return nil
+	}
+	instanceURL, err := url.Parse(s.Profile.InstanceURL)
+	if err != nil || !instanceURL.IsAbs() || instanceURL.Host == "" {
+		return status.Errorf(codes.Internal, "invalid configured instance URL")
+	}
+	callback, err := url.Parse(redirectURI)
+	if err != nil ||
+		!sameURLOrigin(callback, instanceURL) ||
+		callback.EscapedPath() != ssoCallbackPath ||
+		callback.User != nil || callback.RawQuery != "" || callback.Fragment != "" {
+		return status.Errorf(codes.InvalidArgument, "redirect_uri must be %s://%s%s", instanceURL.Scheme, instanceURL.Host, ssoCallbackPath)
+	}
+	return nil
 }
 
 func (s *APIService) getLinkedSSOUser(ctx context.Context, provider, externUID string) (*store.User, error) {
