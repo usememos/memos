@@ -111,13 +111,15 @@ const resolvedEndpoint = (types: AIProviderTypeInfo[], provider: Pick<LocalAIPro
   completedEndpoint(types, provider) || findSpec(types, provider.type)?.defaultEndpoint || "";
 
 /**
- * Where a typed endpoint sends a request: the OpenAI SDK appends /chat/completions, Anthropic's /v1/messages. Gemini's
- * route carries the model, so it has no single URL to show, and the server refuses an endpoint with a query or fragment.
+ * Where a typed endpoint sends a request: the OpenAI SDK resolves chat/completions against the base, Anthropic's
+ * v1/messages. Gemini's route carries the model, so it has no single URL to show, and the server refuses an endpoint
+ * that is not an http(s) URL or has a query or fragment.
  */
 const requestURL = (types: AIProviderTypeInfo[], provider: Pick<LocalAIProvider, "type" | "endpoint">) => {
   const base = completedEndpoint(types, provider);
-  if (!base || /[?#]/.test(base) || provider.type === InstanceSetting_AIProviderType.GEMINI) return "";
-  return speaksAnthropic(provider.type) ? `${base}/v1/messages` : `${base}/chat/completions`;
+  if (!/^https?:\/\//i.test(base) || /[?#]/.test(base) || provider.type === InstanceSetting_AIProviderType.GEMINI) return "";
+  const route = speaksAnthropic(provider.type) ? "v1/messages" : "chat/completions";
+  return URL.canParse(route, `${base}/`) ? new URL(route, `${base}/`).href : "";
 };
 
 /** A masked key such as "sk-a…wxyz" identifies the key. A short key masks to dots only, which says nothing. */
