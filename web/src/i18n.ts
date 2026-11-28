@@ -7,6 +7,7 @@ export const locales = orderBy([
   "ar",
   "az",
   "bg",
+  "bn",
   "ca",
   "cs",
   "da",
