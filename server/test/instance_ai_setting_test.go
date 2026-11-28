@@ -92,6 +92,7 @@ func TestInstanceAISettingConnectionCheck(t *testing.T) {
 		{"nothing listening", map[string]string{"type": "OPENAI", "endpoint": "http://127.0.0.1:1", "apiKey": "test-key"}, http.StatusServiceUnavailable, "AI_PROVIDER_UNREACHABLE", "could not connect"},
 		{"not a URL", map[string]string{"type": "OPENAI", "endpoint": "ftp://example.com", "apiKey": "test-key"}, http.StatusBadRequest, "", "http or https"},
 		{"key not resent for a new endpoint", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/changed"}, http.StatusBadRequest, "", "API key is required"},
+		{"key not resent for a new type", map[string]string{"type": "DEEPSEEK", "endpoint": upstream.URL}, http.StatusBadRequest, "", "API key is required"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			code, msg := save(tc.provider)

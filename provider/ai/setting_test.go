@@ -72,10 +72,12 @@ func TestValidateAIAgainstCatalog(t *testing.T) {
 	// Local and compatible services may run without a key.
 	require.NoError(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_OLLAMA}, false))
 	require.NoError(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_OPENAI_COMPATIBLE, Endpoint: "http://gpu:8000/v1"}, true))
+	require.NoError(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_ANTHROPIC_COMPATIBLE, Endpoint: "http://gpu:8000"}, false))
 	require.ErrorContains(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_DEEPSEEK}, false), "API key is required")
 
 	// A compatible type has no default endpoint.
 	require.ErrorContains(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_ANTHROPIC_COMPATIBLE}, false), "endpoint is required")
+	require.ErrorContains(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_OPENAI_COMPATIBLE}, false), "endpoint is required")
 
 	// A slot accepts only types that serve it.
 	require.NoError(t, validate(&storepb.AIProviderConfig{Type: storepb.AIProviderType_ANTHROPIC, ApiKey: "k"}, false))

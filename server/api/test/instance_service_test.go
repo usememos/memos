@@ -7,8 +7,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -397,6 +399,26 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, resp.InstanceSettings, 2)
 		require.NotNil(t, resp.InstanceSettings[1].GetNotificationSetting())
+	})
+
+	t.Run("BatchGetInstanceSettings - AI setting requires admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		regularUser, err := ts.CreateRegularUser(ctx, "batch-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+		request := &apipb.BatchGetInstanceSettingsRequest{Names: []string{"instance/settings/GENERAL", "instance/settings/AI"}}
+
+		_, err = ts.Service.BatchGetInstanceSettings(userCtx, request)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+
+		admin, err := ts.CreateHostUser(ctx, "batch-admin")
+		require.NoError(t, err)
+		resp, err := ts.Service.BatchGetInstanceSettings(ts.CreateUserContext(ctx, admin.ID), request)
+		require.NoError(t, err)
+		require.Len(t, resp.InstanceSettings, 2)
+		require.NotNil(t, resp.InstanceSettings[1].GetAiSetting())
 	})
 
 	t.Run("BatchGetInstanceSettings - invalid setting name", func(t *testing.T) {
@@ -1162,6 +1184,97 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			require.Equal(t, codes.InvalidArgument, status.Code(err), name)
 			require.Contains(t, err.Error(), name)
 		}
+	})
+
+	t.Run("UpdateInstanceSetting - AI provider endpoint equal to its type's default is stored and returned as empty", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		catalog, err := ts.Service.ListAIProviderTypes(adminCtx, &apipb.ListAIProviderTypesRequest{})
+		require.NoError(t, err)
+		var defaultEndpoint string
+		for _, providerType := range catalog.GetProviderTypes() {
+			if providerType.GetType() == apipb.InstanceSetting_OPENAI {
+				defaultEndpoint = providerType.GetDefaultEndpoint()
+			}
+		}
+		require.NotEmpty(t, defaultEndpoint)
+
+		// The stored provider already follows the default, so spelling the default out is the same
+		// connection: the key is kept and the provider is not contacted.
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_AI,
+			Value: &storepb.InstanceSetting_AiSetting{AiSetting: &storepb.InstanceAISetting{
+				Providers: []*storepb.AIProviderConfig{{Id: "openai-main", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, ApiKey: "sk-stored"}},
+			}},
+		})
+		require.NoError(t, err)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &apipb.InstanceSetting_AiSetting{AiSetting: &apipb.InstanceSetting_AISetting{
+					Providers: []*apipb.InstanceSetting_AIProviderConfig{
+						{Id: "openai-main", Title: "OpenAI", Type: apipb.InstanceSetting_OPENAI, Endpoint: defaultEndpoint + "/"},
+					},
+				}},
+			},
+		})
+		require.NoError(t, err)
+		require.Empty(t, resp.GetAiSetting().GetProviders()[0].GetEndpoint())
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.Empty(t, stored.GetProviders()[0].GetEndpoint())
+		require.Equal(t, "sk-stored", stored.GetProviders()[0].GetApiKey())
+
+		read, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/AI"})
+		require.NoError(t, err)
+		require.Empty(t, read.GetAiSetting().GetProviders()[0].GetEndpoint())
+	})
+
+	t.Run("UpdateInstanceSetting - AI provider that does not answer in time is refused", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		// The request's own deadline stands in for the check's, which is too long to wait out here.
+		adminCtx, cancel := context.WithTimeout(ts.CreateUserContext(ctx, hostUser.ID), time.Second)
+		defer cancel()
+
+		silent := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+			<-r.Context().Done()
+		}))
+		defer silent.Close()
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &apipb.InstanceSetting_AiSetting{AiSetting: &apipb.InstanceSetting_AISetting{
+					Providers: []*apipb.InstanceSetting_AIProviderConfig{
+						{Id: "openai-main", Title: "OpenAI", Type: apipb.InstanceSetting_OPENAI, Endpoint: silent.URL, ApiKey: "sk-test"},
+					},
+				}},
+			},
+		})
+		st := status.Convert(err)
+		require.Equal(t, codes.DeadlineExceeded, st.Code(), "got %v", err)
+		var reasons []string
+		for _, detail := range st.Details() {
+			if info, ok := detail.(*errdetails.ErrorInfo); ok {
+				reasons = append(reasons, info.Reason)
+			}
+		}
+		require.Equal(t, []string{"AI_PROVIDER_TIMEOUT"}, reasons)
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.Empty(t, stored.GetProviders())
 	})
 }
 

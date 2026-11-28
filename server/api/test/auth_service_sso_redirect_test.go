@@ -64,6 +64,7 @@ func TestSSOSignInExchangesWithInstanceCallback(t *testing.T) {
 		{name: "exact", instanceURL: "http://localhost:8080", redirectURI: "http://localhost:8080/auth/callback"},
 		{name: "host case", instanceURL: "http://localhost:8080", redirectURI: "http://LOCALHOST:8080/auth/callback"},
 		{name: "default port", instanceURL: "https://memos.example", redirectURI: "https://memos.example:443/auth/callback"},
+		{name: "instance URL with a trailing slash", instanceURL: "http://localhost:8080/", redirectURI: "http://localhost:8080/auth/callback"},
 	}
 
 	for _, test := range tests {
@@ -98,6 +99,27 @@ func TestSSOSignInPassesRedirectURIThroughWithoutInstanceURL(t *testing.T) {
 	_, err := signInWithTestingSSORedirect(ctx, ts, idpName, "http://192.168.1.10:5230/auth/callback")
 	require.NoError(t, err)
 	require.Equal(t, []string{"http://192.168.1.10:5230/auth/callback"}, mockIDP.exchangedRedirectURIs())
+}
+
+// An instance URL that names no origin cannot pin the callback, so sign-in is
+// refused rather than passed through as if no instance URL were configured.
+func TestSSOSignInFailsClosedOnInstanceURLWithoutOrigin(t *testing.T) {
+	for _, instanceURL := range []string{"localhost:8080", "memos.example", "/memos", "https://"} {
+		t.Run(instanceURL, func(t *testing.T) {
+			ts := NewTestService(t)
+			defer ts.Cleanup()
+			ts.Profile.InstanceURL = instanceURL
+
+			ctx := context.Background()
+			mockIDP := newRecordingOAuthServer(t, "redirect-sub")
+			defer mockIDP.Close()
+			idpName := createTestingOAuthIdentityProvider(ctx, t, ts, mockIDP.URL, "redirect-no-origin")
+
+			_, err := signInWithTestingSSORedirect(ctx, ts, idpName, "http://localhost:8080/auth/callback")
+			require.Equal(t, codes.Internal, status.Code(err))
+			require.Empty(t, mockIDP.exchangedRedirectURIs())
+		})
+	}
 }
 
 func TestCreateLinkedIdentityRejectsRedirectURIOutsideInstanceCallback(t *testing.T) {

@@ -336,3 +336,35 @@ func TestTranscribe(t *testing.T) {
 		require.Contains(t, err.Error(), "transcription is not configured")
 	})
 }
+
+// The provider catalog and a provider's model list describe the instance's AI
+// connections, so they are the administrator's alone.
+func TestAIProviderCatalogRequiresAdmin(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "alice")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	// A stored provider, so a refusal is about the caller and not a missing provider.
+	_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_AI,
+		Value: &storepb.InstanceSetting_AiSetting{AiSetting: &storepb.InstanceAISetting{
+			Providers: []*storepb.AIProviderConfig{{Id: "openai-main", Title: "OpenAI", Type: storepb.AIProviderType_OPENAI, ApiKey: "sk-test"}},
+		}},
+	})
+	require.NoError(t, err)
+
+	for name, callerCtx := range map[string]context.Context{"anonymous": ctx, "regular user": userCtx} {
+		want := codes.PermissionDenied
+		if callerCtx == ctx {
+			want = codes.Unauthenticated
+		}
+		_, err = ts.Service.ListAIProviderTypes(callerCtx, &apipb.ListAIProviderTypesRequest{})
+		require.Equal(t, want, status.Code(err), name)
+		_, err = ts.Service.ListAIProviderModels(callerCtx, &apipb.ListAIProviderModelsRequest{ProviderId: "openai-main"})
+		require.Equal(t, want, status.Code(err), name)
+	}
+}
