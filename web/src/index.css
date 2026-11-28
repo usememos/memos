@@ -83,6 +83,8 @@
     --pele-accent: var(--mu-primary);
     --pele-critical: var(--mu-danger);
     --pele-radius: var(--mu-radius-md);
+    /* Pele drops a font list it cannot write into the SVG (a family with parentheses), so the font the text was measured in is set here. */
+    --pele-font: var(--mu-font-sans);
   }
 
   @media (prefers-reduced-motion: no-preference) {

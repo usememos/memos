@@ -92,21 +92,22 @@ const codeHighlight = (): Extension => ({
  * Mermaid diagrams for ```mermaid code blocks, drawn by Pele: the diagram types load on
  * first use, the SVG takes its colors from the `.pele` variables in index.css, so a new
  * color scheme needs no redraw, and the layout adapts to the memo's width. The code
- * shows until the diagram is drawn, and stays if it fails.
+ * shows until the diagram is drawn, and stays if it fails. The view's element is not
+ * in the page while it is drawn, so the font and the width are the editor root's.
  */
-const renderDiagram: SyntaxView = (source, element) => {
+const renderDiagram: SyntaxView = (source, element, _kind, { editor }) => {
   const pre = document.createElement("pre");
   pre.textContent = source;
   element.appendChild(pre);
   return (async () => {
     const { PeleError, renderAsync } = await import("pele/lazy");
     await document.fonts?.ready;
-    const style = getComputedStyle(element);
+    const style = getComputedStyle(editor.root);
     try {
       const { svg } = await renderAsync(source, {
         fontFamily: style.fontFamily || "sans-serif",
         fontFamilyMono: style.getPropertyValue("--font-mono").trim() || "monospace",
-        maxWidth: element.clientWidth || undefined,
+        maxWidth: editor.root.clientWidth || undefined,
         // A memo column is narrow; the diagram shrinks to fit, but keeps the direction its author wrote.
         autoDirection: false,
         idPrefix: `diagram-${Math.random().toString(36).slice(2)}`,

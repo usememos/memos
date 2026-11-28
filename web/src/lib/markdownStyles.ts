@@ -22,7 +22,8 @@ export const headingClasses: Readonly<Partial<Record<HeadingLevel, string>>> = {
 export const markdownStyles = {
   // Relative size so code inside headings scales with the heading.
   inlineCode: "font-mono text-[0.875em] bg-mu-well px-1 py-0.5 rounded-mu-md",
-  codeBlock: "rich:bg-mu-well!",
+  // A code block drawn as a view (a Mermaid diagram) has no panel: its own shapes are filled with the well.
+  codeBlock: "rich:not-[.mbe-view-block]:bg-mu-well!",
   // Keep the editor's white checkmark readable when Dark uses a pale accent.
   taskList:
     "[--mbe-border:var(--mu-control-edge)] [--mbe-accent:light-dark(var(--mu-accent),color-mix(in_oklab,var(--mu-accent)_55%,var(--mu-surface)))]",
