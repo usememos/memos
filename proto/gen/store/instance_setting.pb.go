@@ -159,15 +159,22 @@ func (StorageType) EnumDescriptor() ([]byte, []int) {
 	return file_store_instance_setting_proto_rawDescGZIP(), []int{1}
 }
 
-// AIProviderType is the API protocol a provider endpoint speaks.
+// AIProviderType is the service a provider connects to. The numbers match the
+// API's InstanceSetting.AIProviderType.
 type AIProviderType int32
 
 const (
 	AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED AIProviderType = 0
-	// The OpenAI API, served by OpenAI and by compatible services.
-	AIProviderType_OPENAI AIProviderType = 1
-	// The Google Gemini API.
-	AIProviderType_GEMINI AIProviderType = 2
+	AIProviderType_OPENAI                       AIProviderType = 1
+	AIProviderType_GEMINI                       AIProviderType = 2
+	AIProviderType_ANTHROPIC                    AIProviderType = 3
+	AIProviderType_DEEPSEEK                     AIProviderType = 4
+	AIProviderType_OPENROUTER                   AIProviderType = 5
+	AIProviderType_OLLAMA                       AIProviderType = 6
+	// Any service that speaks the OpenAI Chat Completions API.
+	AIProviderType_OPENAI_COMPATIBLE AIProviderType = 7
+	// Any service that speaks the Anthropic Messages API.
+	AIProviderType_ANTHROPIC_COMPATIBLE AIProviderType = 8
 )
 
 // Enum value maps for AIProviderType.
@@ -176,11 +183,23 @@ var (
 		0: "AI_PROVIDER_TYPE_UNSPECIFIED",
 		1: "OPENAI",
 		2: "GEMINI",
+		3: "ANTHROPIC",
+		4: "DEEPSEEK",
+		5: "OPENROUTER",
+		6: "OLLAMA",
+		7: "OPENAI_COMPATIBLE",
+		8: "ANTHROPIC_COMPATIBLE",
 	}
 	AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
 		"GEMINI":                       2,
+		"ANTHROPIC":                    3,
+		"DEEPSEEK":                     4,
+		"OPENROUTER":                   5,
+		"OLLAMA":                       6,
+		"OPENAI_COMPATIBLE":            7,
+		"ANTHROPIC_COMPATIBLE":         8,
 	}
 )
 
@@ -1277,12 +1296,15 @@ func (x *TextGenerationConfig) GetModel() string {
 
 // AIProviderConfig is one connection to an AI provider.
 type AIProviderConfig struct {
-	state    protoimpl.MessageState `protogen:"open.v1"`
-	Id       string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title    string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Type     AIProviderType         `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.AIProviderType" json:"type,omitempty"`
-	Endpoint string                 `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	// Write-only at the API layer.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The service this provider connects to. Its protocol, default endpoint, key
+	// rules and capabilities come from the catalog in provider/ai.
+	Type AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.AIProviderType" json:"type,omitempty"`
+	// Empty uses the type's default endpoint. Required for the *_COMPATIBLE types.
+	Endpoint string `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	// Write-only at the API layer. Optional where the catalog says so.
 	ApiKey        string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2116,13 +2138,21 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15STORAGE_TYPE_DATABASE\x10\x01\x12\x16\n" +
 	"\x12STORAGE_TYPE_LOCAL\x10\x02\x12\x13\n" +
-	"\x0fSTORAGE_TYPE_S3\x10\x03*J\n" +
+	"\x0fSTORAGE_TYPE_S3\x10\x03*\xb4\x01\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x02*}\n" +
+	"\x06GEMINI\x10\x02\x12\r\n" +
+	"\tANTHROPIC\x10\x03\x12\f\n" +
+	"\bDEEPSEEK\x10\x04\x12\x0e\n" +
+	"\n" +
+	"OPENROUTER\x10\x05\x12\n" +
+	"\n" +
+	"\x06OLLAMA\x10\x06\x12\x15\n" +
+	"\x11OPENAI_COMPATIBLE\x10\a\x12\x18\n" +
+	"\x14ANTHROPIC_COMPATIBLE\x10\b*}\n" +
 	"\x12InstanceAccessMode\x12$\n" +
 	" INSTANCE_ACCESS_MODE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cINSTANCE_ACCESS_MODE_PRIVATE\x10\x01\x12\x1f\n" +

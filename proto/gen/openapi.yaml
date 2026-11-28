@@ -6,6 +6,55 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/ai/providerTypes:
+        get:
+            tags:
+                - AIService
+            description: |-
+                ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+                 key rules and capabilities. The caller must be an administrator.
+            operationId: AIService_ListAIProviderTypes
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAIProviderTypesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/ai/providers/{providerId}/models:
+        get:
+            tags:
+                - AIService
+            description: |-
+                ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+                 InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+            operationId: AIService_ListAIProviderModels
+            parameters:
+                - name: providerId
+                  in: path
+                  description: Required. The ID of a provider in the instance's AI setting.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAIProviderModelsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/ai:suggestTags:
         post:
             tags:
@@ -3181,6 +3230,56 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AICapability:
+            type: object
+            properties:
+                kind:
+                    enum:
+                        - AI_CAPABILITY_KIND_UNSPECIFIED
+                        - TEXT_GENERATION
+                        - TRANSCRIPTION
+                    type: string
+                    description: The capability.
+                    format: enum
+                suggestedModel:
+                    type: string
+                    description: A model that serves the capability well. Empty when there is no single good default.
+            description: AICapability is one capability an AI provider type can serve.
+        AIProviderTypeInfo:
+            type: object
+            properties:
+                type:
+                    enum:
+                        - AI_PROVIDER_TYPE_UNSPECIFIED
+                        - OPENAI
+                        - GEMINI
+                        - ANTHROPIC
+                        - DEEPSEEK
+                        - OPENROUTER
+                        - OLLAMA
+                        - OPENAI_COMPATIBLE
+                        - ANTHROPIC_COMPATIBLE
+                    type: string
+                    description: The type described.
+                    format: enum
+                defaultEndpoint:
+                    type: string
+                    description: The endpoint used when a provider leaves its endpoint empty. Empty when the type requires an endpoint.
+                apiKeyRequired:
+                    type: boolean
+                    description: Whether a provider of this type needs an API key.
+                apiKeyUrl:
+                    type: string
+                    description: Where to create an API key for this type. Empty when there is no single place.
+                local:
+                    type: boolean
+                    description: Whether the service usually runs on the administrator's own machine or network rather than in the cloud.
+                capabilities:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AICapability'
+                    description: The capabilities a provider of this type can serve.
+            description: AIProviderTypeInfo describes one AI provider type.
         AcceptSpaceInvitationRequest:
             required:
                 - name
@@ -3980,18 +4079,27 @@ components:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - GEMINI
+                        - ANTHROPIC
+                        - DEEPSEEK
+                        - OPENROUTER
+                        - OLLAMA
+                        - OPENAI_COMPATIBLE
+                        - ANTHROPIC_COMPATIBLE
                     type: string
-                    description: Required. The API protocol the endpoint speaks.
+                    description: Required. The service the provider connects to.
                     format: enum
                 endpoint:
                     type: string
-                    description: The base URL of the provider API. Empty selects the default endpoint of the type.
+                    description: |-
+                        The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
+                         stored as empty. Required for the *_COMPATIBLE types.
                 apiKey:
                     writeOnly: true
                     type: string
                     description: |-
-                        Input only. The API key. Never returned. An empty value keeps the stored key while type and endpoint are
-                         unchanged; changing either requires the key again, so that it is never sent to a different service.
+                        Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
+                         stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never
+                         sent to a different service.
                 apiKeySet:
                     readOnly: true
                     type: boolean
@@ -4262,6 +4370,24 @@ components:
                          signs in as this user. Set by signing in through the provider, or declared
                          in a configuration file for a declared user.
             description: LinkedIdentity is an SSO identity linked to a user account.
+        ListAIProviderModelsResponse:
+            type: object
+            properties:
+                models:
+                    type: array
+                    items:
+                        type: string
+                    description: The model identifiers the provider reports, sorted. Empty when the provider does not list its models.
+            description: Response message for AIService.ListAIProviderModels.
+        ListAIProviderTypesResponse:
+            type: object
+            properties:
+                providerTypes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AIProviderTypeInfo'
+                    description: Every supported type, in the order a picker should offer them.
+            description: Response message for AIService.ListAIProviderTypes.
         ListAttachmentsResponse:
             type: object
             properties:

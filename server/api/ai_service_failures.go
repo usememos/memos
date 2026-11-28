@@ -2,6 +2,7 @@ package api
 
 import (
 	"log/slog"
+	"net"
 	"net/url"
 	"strconv"
 
@@ -53,14 +54,33 @@ var aiFailureResponses = map[ai.FailureKind]aiFailureResponse{
 	ai.FailureTimeout:     {codes.DeadlineExceeded, reasonAITimeout, "the provider did not respond in time"},
 }
 
-// newAIFailureError reports a provider failure with a fixed message and an
-// ErrorInfo reason. Nothing the provider wrote reaches the caller.
-func newAIFailureError(prefix string, failure ai.Failure) error {
+// newAIFailureError reports a failed call to a provider with a fixed message
+// and an ErrorInfo reason. Nothing the provider wrote reaches the caller. An
+// unreachable loopback endpoint gets the likely cause: the address is resolved
+// on this server, which in a container is not the host.
+func newAIFailureError(prefix string, provider ai.ProviderConfig, failure ai.Failure) error {
 	response, ok := aiFailureResponses[failure.Kind]
 	if !ok {
 		response = aiFailureResponses[ai.FailureResponse]
 	}
-	return newAIReasonError(response.code, response.reason, prefix+response.message, failure.Status)
+	message := prefix + response.message
+	if failure.Kind == ai.FailureUnreachable && isLoopbackEndpoint(provider.Endpoint) {
+		message += "; the address is resolved on the memos server, so if memos runs in a container, use host.docker.internal or the service name instead of localhost"
+	}
+	return newAIReasonError(response.code, response.reason, message, failure.Status)
+}
+
+func isLoopbackEndpoint(endpoint string) bool {
+	parsed, err := url.Parse(endpoint)
+	if err != nil {
+		return false
+	}
+	host := parsed.Hostname()
+	if host == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 func newAIReasonError(code codes.Code, reason, message string, upstreamStatus int) error {

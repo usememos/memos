@@ -208,14 +208,26 @@ message InstanceSetting {
     S3 = 3;
   }
 
-  // AIProviderType is the API protocol a provider endpoint speaks.
+  // AIProviderType is the service an AI provider connects to. AIService.ListAIProviderTypes describes each
+  // type: its default endpoint, whether it needs an API key, and the capabilities it can serve.
   enum AIProviderType {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
-    // The OpenAI API, served by OpenAI and by compatible services.
-    // The endpoint defaults to https://api.openai.com/v1.
+    // OpenAI.
     OPENAI = 1;
-    // The Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
+    // Google Gemini.
     GEMINI = 2;
+    // Anthropic.
+    ANTHROPIC = 3;
+    // DeepSeek.
+    DEEPSEEK = 4;
+    // OpenRouter.
+    OPENROUTER = 5;
+    // Ollama, usually running next to the server.
+    OLLAMA = 6;
+    // Any service that speaks the OpenAI Chat Completions API. The endpoint is required.
+    OPENAI_COMPATIBLE = 7;
+    // Any service that speaks the Anthropic Messages API. The endpoint is required.
+    ANTHROPIC_COMPATIBLE = 8;
   }
 
   // GeneralSetting is the general instance configuration.
@@ -441,14 +453,16 @@ message InstanceSetting {
     // Required. The display title.
     string title = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // Required. The API protocol the endpoint speaks.
+    // Required. The service the provider connects to.
     AIProviderType type = 3 [(google.api.field_behavior) = REQUIRED];
 
-    // The base URL of the provider API. Empty selects the default endpoint of the type.
+    // The base URL of the provider API. Empty selects the type's default endpoint; a value equal to the default is
+    // stored as empty. Required for the *_COMPATIBLE types.
     string endpoint = 4;
 
-    // Input only. The API key. Never returned. An empty value keeps the stored key while type and endpoint are
-    // unchanged; changing either requires the key again, so that it is never sent to a different service.
+    // Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
+    // stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never
+    // sent to a different service.
     string api_key = 5 [(google.api.field_behavior) = INPUT_ONLY];
 
     // Output only. Whether an API key is stored.

@@ -199,7 +199,7 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 
 // textValue returns the plain text a Text node displays: backslash escapes are
 // removed and entity references are decoded, as when the node is rendered.
-// Raw text, such as the content of a code span, is returned as written.
+// Raw text is returned as written; a code span's text comes from codeSpanText.
 func textValue(n *gast.Text, source []byte) []byte {
 	value := n.Segment.Value(source)
 	// The writer also replaces NUL bytes, so text holding one takes the same path.
@@ -214,6 +214,52 @@ func textValue(n *gast.Text, source []byte) []byte {
 	ghtml.DefaultWriter.Write(w, value)
 	_ = w.Flush()
 	return []byte(html.UnescapeString(rendered.String()))
+}
+
+// codeSpanText returns the plain text a code span displays (CommonMark): its
+// content as written, with each line ending shown as a space, and then without
+// one space at each end when both ends have one and the content is not all
+// spaces.
+//
+// goldmark does both steps for LF line endings only: it takes the CR of a CRLF
+// for content. So the content is read as written and both steps are done here,
+// where a CRLF is one line ending.
+func codeSpanText(n *gast.CodeSpan, source []byte) []byte {
+	first, ok := n.FirstChild().(*gast.Text)
+	if !ok {
+		return nil
+	}
+	// The content starts right after the opening backticks, unless goldmark has
+	// already cut one byte from each end.
+	cut := first.Segment.Start > 0 && source[first.Segment.Start-1] != '`'
+
+	var buf []byte
+	for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+		t, ok := c.(*gast.Text)
+		if !ok {
+			continue
+		}
+		segment := t.Segment
+		if cut && t == first {
+			segment = segment.WithStart(segment.Start - 1)
+		}
+		if cut && c.NextSibling() == nil {
+			segment = segment.WithStop(segment.Stop + 1)
+		}
+		// goldmark ends each segment of a span at a line ending.
+		value := segment.Value(source)
+		if line, ok := bytes.CutSuffix(value, []byte("\n")); ok {
+			buf = append(buf, bytes.TrimSuffix(line, []byte("\r"))...)
+			buf = append(buf, ' ')
+		} else {
+			buf = append(buf, value...)
+		}
+	}
+
+	if end := len(buf) - 1; end > 0 && buf[0] == ' ' && buf[end] == ' ' && len(bytes.TrimLeft(buf, " ")) > 0 {
+		buf = buf[1:end]
+	}
+	return buf
 }
 
 // extractHeadingText extracts plain text content from a heading node.
@@ -233,6 +279,8 @@ func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
 		if node.SoftLineBreak() || node.HardLineBreak() {
 			buf.WriteByte(' ')
 		}
+	case *gast.CodeSpan:
+		buf.Write(codeSpanText(node, source))
 	case *gast.AutoLink:
 		buf.Write(node.Label(source))
 	case *mast.TagNode:
@@ -405,6 +453,9 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			if node.SoftLineBreak() || node.HardLineBreak() {
 				writeByte(' ')
 			}
+		case *gast.CodeSpan:
+			writeBytes(codeSpanText(node, content))
+			skipChildren = true
 		case *gast.AutoLink:
 			writeBytes(node.URL(content))
 			skipChildren = true

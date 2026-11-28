@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package memos.api;
 
+import "api/instance_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -28,6 +29,77 @@ service AIService {
     option (google.api.method_signature) = "content,candidate_tags";
     option (google.api.method_signature) = "content";
   }
+  // ListAIProviderTypes describes the AI provider types this server supports: each type's default endpoint,
+  // key rules and capabilities. The caller must be an administrator.
+  rpc ListAIProviderTypes(ListAIProviderTypesRequest) returns (ListAIProviderTypesResponse) {
+    option (google.api.http) = {get: "/api/ai/providerTypes"};
+  }
+  // ListAIProviderModels lists the models a configured provider reports. Errors carry the AI failure reasons of
+  // InstanceService.UpdateInstanceSetting. The caller must be an administrator.
+  rpc ListAIProviderModels(ListAIProviderModelsRequest) returns (ListAIProviderModelsResponse) {
+    option (google.api.http) = {get: "/api/ai/providers/{provider_id}/models"};
+    option (google.api.method_signature) = "provider_id";
+  }
+}
+
+// Request message for AIService.ListAIProviderTypes.
+message ListAIProviderTypesRequest {}
+
+// Response message for AIService.ListAIProviderTypes.
+message ListAIProviderTypesResponse {
+  // Every supported type, in the order a picker should offer them.
+  repeated AIProviderTypeInfo provider_types = 1;
+}
+
+// AIProviderTypeInfo describes one AI provider type.
+message AIProviderTypeInfo {
+  // The type described.
+  InstanceSetting.AIProviderType type = 1;
+
+  // The endpoint used when a provider leaves its endpoint empty. Empty when the type requires an endpoint.
+  string default_endpoint = 2;
+
+  // Whether a provider of this type needs an API key.
+  bool api_key_required = 3;
+
+  // Where to create an API key for this type. Empty when there is no single place.
+  string api_key_url = 4;
+
+  // Whether the service usually runs on the administrator's own machine or network rather than in the cloud.
+  bool local = 5;
+
+  // The capabilities a provider of this type can serve.
+  repeated AICapability capabilities = 6;
+}
+
+// AICapability is one capability an AI provider type can serve.
+message AICapability {
+  // The capability.
+  AICapabilityKind kind = 1;
+
+  // A model that serves the capability well. Empty when there is no single good default.
+  string suggested_model = 2;
+}
+
+// AICapabilityKind is a task the instance can hand to an AI provider.
+enum AICapabilityKind {
+  AI_CAPABILITY_KIND_UNSPECIFIED = 0;
+  // Text generation, used by AIService.SuggestTags.
+  TEXT_GENERATION = 1;
+  // Speech to text, used by AIService.Transcribe.
+  TRANSCRIPTION = 2;
+}
+
+// Request message for AIService.ListAIProviderModels.
+message ListAIProviderModelsRequest {
+  // Required. The ID of a provider in the instance's AI setting.
+  string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for AIService.ListAIProviderModels.
+message ListAIProviderModelsResponse {
+  // The model identifiers the provider reports, sorted. Empty when the provider does not list its models.
+  repeated string models = 1;
 }
 
 // Request message for AIService.SuggestTags.

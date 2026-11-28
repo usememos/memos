@@ -4,9 +4,12 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/anthropics/anthropic-sdk-go/v2"
+	anthropicoption "github.com/anthropics/anthropic-sdk-go/v2/option"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 	"github.com/pkg/errors"
@@ -38,28 +41,40 @@ func WithSingleAttempt(ctx context.Context) context.Context {
 	return context.WithValue(ctx, singleAttemptKey{}, true)
 }
 
+func singleAttempt(ctx context.Context) bool {
+	single, ok := ctx.Value(singleAttemptKey{}).(bool)
+	return ok && single
+}
+
 // RequestOptions returns the per-request OpenAI SDK options that ctx asks for.
 func RequestOptions(ctx context.Context) []option.RequestOption {
-	if single, ok := ctx.Value(singleAttemptKey{}).(bool); ok && single {
+	if singleAttempt(ctx) {
 		return []option.RequestOption{option.WithMaxRetries(0)}
 	}
 	return nil
 }
 
+func anthropicRequestOptions(ctx context.Context) []anthropicoption.RequestOption {
+	if singleAttempt(ctx) {
+		return []anthropicoption.RequestOption{anthropicoption.WithMaxRetries(0)}
+	}
+	return nil
+}
+
 // ValidateEndpoint reports whether a provider endpoint is a usable http(s) URL.
-// An empty endpoint is valid: it selects the provider's public API.
+// An empty endpoint is valid: it selects the type's default.
 func ValidateEndpoint(endpoint string) error {
 	if strings.TrimSpace(endpoint) == "" {
 		return nil
 	}
-	_, err := providerEndpoint(endpoint, "")
+	_, err := providerEndpoint(endpoint)
 	return err
 }
 
-func providerEndpoint(endpoint, fallback string) (string, error) {
+func providerEndpoint(endpoint string) (string, error) {
 	endpoint = strings.TrimSpace(endpoint)
 	if endpoint == "" {
-		endpoint = fallback
+		return "", errors.New("provider endpoint is required")
 	}
 	parsed, err := url.ParseRequestURI(endpoint)
 	if err != nil {
@@ -71,21 +86,71 @@ func providerEndpoint(endpoint, fallback string) (string, error) {
 	return strings.TrimRight(endpoint, "/"), nil
 }
 
-// NewOpenAIClient connects to an OpenAI-compatible endpoint using the configured key.
+// NewOpenAIClient connects to an OpenAI-compatible endpoint with the configured key.
+//
+// The SDK applies OPENAI_* variables from the server's environment to every
+// client. Those belong to whatever else runs on the host, not to the endpoint an
+// administrator configured here, so the key and organization are set explicitly
+// and environment headers are stripped from each request.
 func NewOpenAIClient(cfg ProviderConfig, client *http.Client) (openai.Client, error) {
-	endpoint, err := providerEndpoint(cfg.Endpoint, defaultOpenAIEndpoint)
+	endpoint, err := providerEndpoint(cfg.Endpoint)
 	if err != nil {
 		return openai.Client{}, err
 	}
-	if cfg.APIKey == "" {
-		return openai.Client{}, errors.New("OpenAI API key is required")
+	return openai.NewClient(
+		option.WithBaseURL(endpoint),
+		option.WithHTTPClient(client),
+		option.WithAPIKey(cfg.APIKey),
+		option.WithAdminAPIKey(""),
+		option.WithMiddleware(stripEnvironmentHeaders(cfg.APIKey == "")),
+	), nil
+}
+
+// stripEnvironmentHeaders removes the headers the OpenAI SDK adds from
+// OPENAI_ORG_ID, OPENAI_PROJECT_ID and OPENAI_CUSTOM_HEADERS. Without a
+// configured key, no Authorization header is sent at all.
+func stripEnvironmentHeaders(keyless bool) option.Middleware {
+	names := []string{"OpenAI-Organization", "OpenAI-Project"}
+	if keyless {
+		names = append(names, "Authorization")
 	}
-	return openai.NewClient(option.WithAPIKey(cfg.APIKey), option.WithBaseURL(endpoint), option.WithHTTPClient(client)), nil
+	for line := range strings.SplitSeq(os.Getenv("OPENAI_CUSTOM_HEADERS"), "\n") {
+		// A configured key is the Authorization header; the SDK sets it after the environment's.
+		if name, _, ok := strings.Cut(line, ":"); ok && strings.TrimSpace(name) != "" && !strings.EqualFold(strings.TrimSpace(name), "Authorization") {
+			names = append(names, strings.TrimSpace(name))
+		}
+	}
+	return func(req *http.Request, next option.MiddlewareNext) (*http.Response, error) {
+		for _, name := range names {
+			req.Header.Del(name)
+		}
+		return next(req)
+	}
+}
+
+// NewAnthropicClient connects to an Anthropic Messages endpoint with the
+// configured key, ignoring the ANTHROPIC_* environment and stored CLI profiles.
+func NewAnthropicClient(cfg ProviderConfig, client *http.Client) (anthropic.Client, error) {
+	endpoint, err := providerEndpoint(cfg.Endpoint)
+	if err != nil {
+		return anthropic.Client{}, err
+	}
+	opts := []anthropicoption.RequestOption{
+		anthropicoption.WithoutEnvironmentDefaults(),
+		anthropicoption.WithBaseURL(endpoint),
+		anthropicoption.WithHTTPClient(client),
+	}
+	if cfg.APIKey != "" {
+		// Anthropic accepts the key as a bearer token; services that copy the
+		// Messages API often read only x-api-key, so send both.
+		opts = append(opts, anthropicoption.WithAPIKey(cfg.APIKey), anthropicoption.WithHeader("x-api-key", cfg.APIKey))
+	}
+	return anthropic.NewClient(opts...), nil
 }
 
 // NewGeminiClient connects to Gemini using the API version from the configured endpoint.
 func NewGeminiClient(ctx context.Context, cfg ProviderConfig, client *http.Client) (*genai.Client, error) {
-	endpoint, err := providerEndpoint(cfg.Endpoint, defaultGeminiEndpoint)
+	endpoint, err := providerEndpoint(cfg.Endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -115,36 +180,4 @@ func NewGeminiClient(ctx context.Context, cfg ProviderConfig, client *http.Clien
 		HTTPClient:  client,
 		HTTPOptions: options,
 	})
-}
-
-// TestConnection reads the first page of models with the supplied credentials.
-//
-// It proves the endpoint answers and, on providers that authenticate the
-// listing, that the key is accepted. It does not prove a model can be called.
-func TestConnection(ctx context.Context, cfg ProviderConfig) error {
-	client := NewHTTPClient(0)
-	switch cfg.Type {
-	case ProviderOpenAI:
-		sdk, err := NewOpenAIClient(cfg, client)
-		if err != nil {
-			return err
-		}
-		page, err := sdk.Models.List(ctx, RequestOptions(ctx)...)
-		if err == nil && (page == nil || page.Data == nil) {
-			return errors.Wrap(ErrUnusableResponse, "missing model list")
-		}
-		return err
-	case ProviderGemini:
-		sdk, err := NewGeminiClient(ctx, cfg, client)
-		if err != nil {
-			return err
-		}
-		page, err := sdk.Models.List(ctx, &genai.ListModelsConfig{PageSize: 1})
-		if err == nil && page.Items == nil {
-			return errors.Wrap(ErrUnusableResponse, "missing model list")
-		}
-		return err
-	default:
-		return ErrCapabilityUnsupported
-	}
 }

@@ -275,3 +275,15 @@ versions handle restarts after a completed upgrade. Recovery after a partially
 committed MySQL migration remains an execution-wide concern, with no special
 recovery SQL in this script. Tests verify fresh installs, ordinary upgrades,
 data preservation, and restarts after successful upgrades.
+
+### 2026-11-27 (Unreleased) — Memo IDs read in one query
+
+The Coverage paragraph said memos created or deleted during the pass cannot
+shift a page boundary. The ID collection itself read pages with `LIMIT` and
+`OFFSET`, so a memo deleted during that read moved the rows after it onto a page
+already read, and one memo was never rebuilt although the version was recorded.
+A memo whose created time moved earlier could be missed the same way. The runner
+now reads every memo ID in one query, `store.ListMemoIDs`, which selects only
+the `id` column in ID order, then rebuilds in batches of 100 by ID list as
+before. Listing memos without a limit would hold every memo's payload in memory
+for the length of that read.

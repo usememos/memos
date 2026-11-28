@@ -1,10 +1,21 @@
 import { create } from "@bufbuild/protobuf";
+import { BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import AISection from "@/components/Settings/AISection";
 import { aiServiceClient } from "@/connect";
-import { SuggestTagsResponseSchema, TranscribeResponseSchema } from "@/types/proto/api/ai_service_pb";
-import { type InstanceSetting, InstanceSetting_AISettingSchema } from "@/types/proto/api/instance_service_pb";
+import {
+  AICapabilityKind,
+  AIProviderTypeInfoSchema,
+  SuggestTagsResponseSchema,
+  TranscribeResponseSchema,
+} from "@/types/proto/api/ai_service_pb";
+import {
+  type InstanceSetting,
+  InstanceSetting_AISettingSchema,
+  InstanceSetting_AIProviderType as ProviderType,
+} from "@/types/proto/api/instance_service_pb";
 
 const updateSetting = vi.fn<(setting: InstanceSetting) => Promise<void>>();
 const fetchSetting = vi.fn<() => Promise<void>>();
@@ -14,8 +25,37 @@ vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ aiSetting, 
 vi.mock("@/hooks/useConfigurationQueries", () => ({ useManagedResource: () => undefined, isFieldManaged: () => false }));
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: { garden: 3, travel: 1 } }) }));
 
+// The server's catalog, trimmed to the types these tests use.
+const text = (suggestedModel = "") => ({ kind: AICapabilityKind.TEXT_GENERATION, suggestedModel });
+const speech = (suggestedModel = "") => ({ kind: AICapabilityKind.TRANSCRIPTION, suggestedModel });
+const catalog = [
+  create(AIProviderTypeInfoSchema, {
+    type: ProviderType.OPENAI,
+    defaultEndpoint: "https://api.openai.com/v1",
+    apiKeyRequired: true,
+    apiKeyUrl: "https://platform.openai.com/api-keys",
+    capabilities: [text("gpt-5-mini"), speech("gpt-transcribe")],
+  }),
+  create(AIProviderTypeInfoSchema, {
+    type: ProviderType.ANTHROPIC,
+    defaultEndpoint: "https://api.anthropic.com",
+    apiKeyRequired: true,
+    capabilities: [text("claude")],
+  }),
+  create(AIProviderTypeInfoSchema, {
+    type: ProviderType.OLLAMA,
+    defaultEndpoint: "http://localhost:11434/v1",
+    local: true,
+    capabilities: [text()],
+  }),
+  create(AIProviderTypeInfoSchema, { type: ProviderType.OPENAI_COMPATIBLE, capabilities: [text(), speech()] }),
+];
+let modelListing: { isPending: boolean; error: unknown; data?: string[] } = { isPending: false, error: null, data: [] };
+vi.mock("@/hooks/useAIQueries", () => ({ useAIProviderTypes: () => catalog, useAIProviderModels: () => modelListing }));
+
 beforeEach(() => {
   aiSetting = create(InstanceSetting_AISettingSchema);
+  modelListing = { isPending: false, error: null, data: [] };
 });
 
 const form = (name: string) => within(screen.getByRole("form", { name }));
@@ -54,16 +94,17 @@ it("uses the saved provider and its masked key when selecting it for transcripti
   // The instance context can publish the update response before the save callback completes.
   rerender(<AISection />);
   await act(async () => pending.resolve());
-  expect(screen.getByText("test...-key")).toBeInTheDocument();
+  // The saved provider shows its live status in the table.
+  expect(screen.getByText("Connected")).toBeInTheDocument();
 
   await chooseProvider("Transcription", "Voice");
   // A capability that is on names a model: saving without one is refused at the field.
   const saves = updateSetting.mock.calls.length;
   fireEvent.click(form("Transcription").getByRole("button", { name: "Save" }));
   expect(form("Transcription").getByText("Model is required.")).toBeVisible();
-  expect(form("Transcription").getByLabelText("Model")).toHaveFocus();
+  expect(form("Transcription").getByRole("combobox", { name: "Model" })).toHaveFocus();
   expect(updateSetting.mock.calls).toHaveLength(saves);
-  fireEvent.change(form("Transcription").getByLabelText("Model"), { target: { value: "speech" } });
+  fireEvent.change(form("Transcription").getByRole("combobox", { name: "Model" }), { target: { value: "speech" } });
   fireEvent.click(form("Transcription").getByRole("button", { name: "Save" }));
   const saved = lastSavedAISetting();
   expect(saved).toMatchObject({
@@ -77,28 +118,28 @@ it("uses the saved provider and its masked key when selecting it for transcripti
 it("saves text generation with an existing key, keeps the transcription draft separate, and can disable the feature", async () => {
   const pending = Promise.withResolvers<void>();
   updateSetting.mockReturnValueOnce(pending.promise);
-  const provider = { id: "existing", title: "OpenAI", apiKeySet: true };
+  const provider = { id: "existing", title: "OpenAI", type: ProviderType.OPENAI, apiKeySet: true };
   aiSetting = create(InstanceSetting_AISettingSchema, {
     providers: [provider],
     transcription: { providerId: provider.id, model: "speech" },
   });
   const { rerender } = render(<AISection />);
-  fireEvent.change(form("Transcription").getByLabelText("Model"), { target: { value: "speech draft" } });
+  fireEvent.change(form("Transcription").getByRole("combobox", { name: "Model" }), { target: { value: "speech draft" } });
   const text = () => form("Text generation");
   // A feature's options appear with its provider.
-  expect(text().queryByLabelText("Model")).toBeNull();
+  expect(text().queryByRole("combobox", { name: "Model" })).toBeNull();
   await chooseProvider("Text generation", provider.title);
   fireEvent.click(text().getByRole("button", { name: "Save" }));
   expect(text().getByText("Model is required.")).toBeVisible();
-  expect(text().getByLabelText("Model")).toHaveFocus();
+  expect(text().getByRole("combobox", { name: "Model" })).toHaveFocus();
   expect(updateSetting).not.toHaveBeenCalled();
-  fireEvent.change(text().getByLabelText("Model"), { target: { value: " text-model " } });
+  fireEvent.change(text().getByRole("combobox", { name: "Model" }), { target: { value: " text-model " } });
   fireEvent.click(text().getByRole("button", { name: "Save" }));
-  expect(text().getByLabelText("Model")).toHaveAttribute("readonly");
-  expect(text().getByLabelText("Model")).toBeEnabled();
-  expect(text().getByRole("combobox")).toBeDisabled();
+  expect(text().getByRole("combobox", { name: "Model" })).toHaveAttribute("readonly");
+  expect(text().getByRole("combobox", { name: "Model" })).toBeEnabled();
+  expect(text().getByRole("combobox", { name: "Provider" })).toBeDisabled();
   expect(text().getByRole("button", { name: "Save" })).toHaveAttribute("aria-busy", "true");
-  expect(form("Transcription").getByLabelText("Model")).toBeEnabled();
+  expect(form("Transcription").getByRole("combobox", { name: "Model" })).toBeEnabled();
   await act(async () => pending.resolve());
   await waitFor(() => expect(fetchSetting).toHaveBeenCalled());
   const request = updateSetting.mock.calls[0][0].value;
@@ -108,13 +149,13 @@ it("saves text generation with an existing key, keeps the transcription draft se
   // The whole setting is sent: transcription as saved, not the draft being typed beside it.
   expect(request.value.transcription).toMatchObject({ providerId: provider.id, model: "speech" });
 
-  const modelField = text().getByLabelText("Model");
+  const modelField = text().getByRole("combobox", { name: "Model" });
   aiSetting = create(InstanceSetting_AISettingSchema, { ...aiSetting, textGeneration: request.value.textGeneration });
   rerender(<AISection />);
   // The saved config is adopted in place: a remount would drop keyboard focus.
-  expect(text().getByLabelText("Model")).toBe(modelField);
-  expect(form("Transcription").getByLabelText("Model")).toHaveValue("speech draft");
-  expect(text().getByLabelText("Model")).toHaveValue("text-model");
+  expect(text().getByRole("combobox", { name: "Model" })).toBe(modelField);
+  expect(form("Transcription").getByRole("combobox", { name: "Model" })).toHaveValue("speech draft");
+  expect(text().getByRole("combobox", { name: "Model" })).toHaveValue("text-model");
   expect(text().getByRole("button", { name: "Save" })).toBeDisabled();
   await chooseProvider("Text generation", "None — text generation disabled");
   fireEvent.click(text().getByRole("button", { name: "Save" }));
@@ -126,7 +167,7 @@ it("saves text generation with an existing key, keeps the transcription draft se
 
 it("clears both saved feature bindings when their shared provider is deleted", async () => {
   aiSetting = create(InstanceSetting_AISettingSchema, {
-    providers: [{ id: "p", title: "Shared", apiKeySet: true }],
+    providers: [{ id: "p", title: "Shared", type: ProviderType.OPENAI, apiKeySet: true }],
     transcription: { providerId: "p", model: "speech" },
     textGeneration: { providerId: "p", model: "text" },
   });
@@ -167,14 +208,14 @@ it("tries the saved settings in each feature's playground", async () => {
   const suggest = vi.spyOn(aiServiceClient, "suggestTags");
   const transcribe = vi.spyOn(aiServiceClient, "transcribe");
   aiSetting = create(InstanceSetting_AISettingSchema, {
-    providers: [{ id: "p", title: "Voice", apiKeySet: true }],
+    providers: [{ id: "p", title: "Voice", type: ProviderType.OPENAI, apiKeySet: true }],
     transcription: { providerId: "p", model: "speech" },
     textGeneration: { providerId: "p", model: "saved" },
   });
   render(<AISection />);
 
   const text = form("Text generation");
-  fireEvent.change(text.getByLabelText("Model"), { target: { value: "draft" } });
+  fireEvent.change(text.getByRole("combobox", { name: "Model" }), { target: { value: "draft" } });
   fireEvent.click(text.getByRole("button", { name: "Try it" }));
   const tags = within(await screen.findByRole("dialog", { name: "Try tag suggestions" }));
   expect(tags.getByText("Voice · saved")).toBeVisible();
@@ -207,14 +248,25 @@ it("tries the saved settings in each feature's playground", async () => {
 });
 
 it("offers a playground only for a saved capability", () => {
-  aiSetting = create(InstanceSetting_AISettingSchema, { providers: [{ id: "p", title: "Voice", apiKeySet: true }] });
+  aiSetting = create(InstanceSetting_AISettingSchema, {
+    providers: [{ id: "p", title: "Voice", type: ProviderType.OPENAI, apiKeySet: true }],
+  });
   render(<AISection />);
   expect(screen.queryByRole("button", { name: "Try it" })).toBeNull();
 });
 
 it("says why a stored key no longer applies, and saves the provider dialog with Enter", async () => {
   aiSetting = create(InstanceSetting_AISettingSchema, {
-    providers: [{ id: "p", title: "Voice", endpoint: "https://proxy.example.com/v1", apiKeySet: true, apiKeyHint: "sk-a...wxyz" }],
+    providers: [
+      {
+        id: "p",
+        title: "Voice",
+        type: ProviderType.OPENAI,
+        endpoint: "https://proxy.example.com/v1",
+        apiKeySet: true,
+        apiKeyHint: "sk-a...wxyz",
+      },
+    ],
   });
   render(<AISection />);
   expect(screen.queryByText("p")).toBeNull();
@@ -241,4 +293,89 @@ it("says why a stored key no longer applies, and saves the provider dialog with 
       providers: [{ id: "p", endpoint: "https://other.example.com/v1", apiKey: "new-key" }],
     }),
   );
+});
+
+it("offers each feature only the providers that can serve it", async () => {
+  aiSetting = create(InstanceSetting_AISettingSchema, {
+    providers: [
+      { id: "o", title: "OpenAI", type: ProviderType.OPENAI, apiKeySet: true },
+      { id: "c", title: "Claude", type: ProviderType.ANTHROPIC, apiKeySet: true },
+    ],
+  });
+  modelListing = { isPending: false, error: null, data: ["gpt-4o-transcribe", "gpt-transcribe"] };
+  render(<AISection />);
+
+  fireEvent.click(form("Transcription").getByRole("combobox", { name: "Provider" }));
+  expect(await screen.findByRole("option", { name: "OpenAI" })).not.toHaveAttribute("aria-disabled", "true");
+  // Anthropic has no speech-to-text: it is listed, but cannot be picked.
+  expect(screen.getByText("Can't transcribe")).toBeVisible();
+  expect(screen.getByRole("option", { name: "Claude" })).toHaveAttribute("aria-disabled", "true");
+  const option = screen.getByRole("option", { name: "OpenAI" });
+  fireEvent.pointerDown(option, { pointerType: "mouse" });
+  fireEvent.click(option);
+
+  // The model field suggests the type's model and offers what the provider lists.
+  const model = form("Transcription").getByRole("combobox", { name: "Model" });
+  expect(model).toHaveAttribute("placeholder", "gpt-transcribe");
+  // Any ID can be typed, listed or not.
+  fireEvent.change(model, { target: { value: "my-whisper" } });
+  fireEvent.click(form("Transcription").getByRole("button", { name: "Save" }));
+  await waitFor(() => expect(lastSavedAISetting().transcription).toMatchObject({ providerId: "o", model: "my-whisper" }));
+});
+
+/** A failed AI call as the server sends it: a fixed message and an ErrorInfo reason. */
+const aiFailure = (reason: string, message: string) => {
+  const error = new ConnectError(message, Code.FailedPrecondition);
+  error.details.push({ type: "google.rpc.ErrorInfo", value: new BinaryWriter().tag(1, 2).string(reason).finish() });
+  return error;
+};
+
+it("names what is wrong with a saved provider", () => {
+  aiSetting = create(InstanceSetting_AISettingSchema, { providers: [{ id: "o", title: "Local", type: ProviderType.OLLAMA }] });
+  modelListing = { isPending: false, error: new ConnectError("could not connect"), data: undefined };
+  const { unmount } = render(<AISection />);
+  expect(screen.getByText("Error")).toBeVisible();
+  unmount();
+
+  // Exhausted credit is the account's state, not a broken connection.
+  modelListing = { isPending: false, error: aiFailure("AI_PROVIDER_QUOTA_EXHAUSTED", "out of credit"), data: undefined };
+  render(<AISection />);
+  expect(screen.getByText("Out of credit")).toBeVisible();
+});
+
+it("asks a local server for its address first and needs no key", async () => {
+  render(<AISection />);
+  fireEvent.click(screen.getByRole("button", { name: "Add provider" }));
+  const dialog = within(await screen.findByRole("dialog"));
+  // A cloud service links to where its key is made.
+  expect(dialog.getByRole("link", { name: "Get an API key" })).toHaveAttribute("href", "https://platform.openai.com/api-keys");
+
+  fireEvent.click(dialog.getByRole("combobox", { name: "Provider type" }));
+  const ollama = await screen.findByRole("option", { name: "Ollama" });
+  fireEvent.pointerDown(ollama, { pointerType: "mouse" });
+  fireEvent.click(ollama);
+  // The name follows the service until it is edited, and localhost is explained.
+  expect(dialog.getByLabelText("Provider name")).toHaveValue("Ollama");
+  expect(dialog.getByText(/localhost means that server/)).toBeVisible();
+  const fields = dialog.getAllByRole("textbox").map((field) => field.getAttribute("type") ?? "text");
+  expect(fields.indexOf("url")).toBeLessThan(fields.length);
+  fireEvent.click(dialog.getByRole("button", { name: "Save" }));
+  await waitFor(() => expect(lastSavedAISetting().providers[0]).toMatchObject({ type: ProviderType.OLLAMA, title: "Ollama", apiKey: "" }));
+});
+
+it("requires the address of a compatible API and shows where requests go", async () => {
+  render(<AISection />);
+  fireEvent.click(screen.getByRole("button", { name: "Add provider" }));
+  const dialog = within(await screen.findByRole("dialog"));
+  fireEvent.click(dialog.getByRole("combobox", { name: "Provider type" }));
+  const compatible = await screen.findByRole("option", { name: "OpenAI-compatible" });
+  fireEvent.pointerDown(compatible, { pointerType: "mouse" });
+  fireEvent.click(compatible);
+  const saves = updateSetting.mock.calls.length;
+  fireEvent.click(dialog.getByRole("button", { name: "Save" }));
+  expect(dialog.getByText("Endpoint is required.")).toBeVisible();
+  expect(dialog.getByLabelText("Endpoint")).toHaveFocus();
+  expect(updateSetting.mock.calls).toHaveLength(saves);
+  fireEvent.change(dialog.getByLabelText("Endpoint"), { target: { value: "http://gpu-box:8000/v1/" } });
+  expect(dialog.getByText("Requests go to http://gpu-box:8000/v1/chat/completions")).toBeVisible();
 });

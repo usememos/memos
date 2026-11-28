@@ -119,6 +119,41 @@ func TestDeleteMemoStore(t *testing.T) {
 	ts.Close()
 }
 
+func TestListMemoIDs(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	ids, err := ts.ListMemoIDs(ctx)
+	require.NoError(t, err)
+	require.Empty(t, ids)
+
+	// Later memos get earlier created times, so ID order is not creation order.
+	created := []int32{}
+	for i := range 3 {
+		memo, err := ts.CreateMemo(ctx, &store.Memo{
+			UID: fmt.Sprintf("list-memo-ids-%d", i), CreatorID: user.ID, Content: "content", Visibility: store.Private,
+			CreatedTs: int64(1700000000 - i),
+		})
+		require.NoError(t, err)
+		created = append(created, memo.ID)
+	}
+	archived := store.Archived
+	require.NoError(t, ts.UpdateMemo(ctx, &store.UpdateMemo{ID: created[1], RowStatus: &archived}))
+
+	ids, err = ts.ListMemoIDs(ctx)
+	require.NoError(t, err)
+	require.Equal(t, created, ids, "every row status, in ascending ID order")
+
+	require.NoError(t, ts.DeleteMemo(ctx, &store.DeleteMemo{ID: created[0]}))
+	ids, err = ts.ListMemoIDs(ctx)
+	require.NoError(t, err)
+	require.Equal(t, created[1:], ids)
+}
+
 func TestMemoGetByID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

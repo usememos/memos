@@ -206,19 +206,29 @@ message TextGenerationConfig {
 message AIProviderConfig {
   string id = 1;
   string title = 2;
+  // The service this provider connects to. Its protocol, default endpoint, key
+  // rules and capabilities come from the catalog in provider/ai.
   AIProviderType type = 3;
+  // Empty uses the type's default endpoint. Required for the *_COMPATIBLE types.
   string endpoint = 4;
-  // Write-only at the API layer.
+  // Write-only at the API layer. Optional where the catalog says so.
   string api_key = 5;
 }
 
-// AIProviderType is the API protocol a provider endpoint speaks.
+// AIProviderType is the service a provider connects to. The numbers match the
+// API's InstanceSetting.AIProviderType.
 enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
-  // The OpenAI API, served by OpenAI and by compatible services.
   OPENAI = 1;
-  // The Google Gemini API.
   GEMINI = 2;
+  ANTHROPIC = 3;
+  DEEPSEEK = 4;
+  OPENROUTER = 5;
+  OLLAMA = 6;
+  // Any service that speaks the OpenAI Chat Completions API.
+  OPENAI_COMPATIBLE = 7;
+  // Any service that speaks the Anthropic Messages API.
+  ANTHROPIC_COMPATIBLE = 8;
 }
 
 // TranscriptionConfig selects the provider and model for speech to text. Both are set whenever it is.

@@ -8,6 +8,18 @@ import (
 	"github.com/pkg/errors"
 )
 
+// tagSuggestionSchema is the reply SuggestTags asks for, for providers that
+// constrain output to a schema.
+var tagSuggestionSchema = map[string]any{
+	"type": "object",
+	"properties": map[string]any{
+		"tags":   map[string]any{"type": "array", "items": map[string]any{"type": "string"}},
+		"newTag": map[string]any{"type": "string"},
+	},
+	"required":             []string{"tags"},
+	"additionalProperties": false,
+}
+
 // SuggestTags recommends up to three matching candidates, or one new tag if none fit.
 func SuggestTags(ctx context.Context, provider ProviderConfig, model, draft string, candidates []string) ([]string, error) {
 	input, err := json.Marshal(struct {
@@ -21,7 +33,7 @@ func SuggestTags(ctx context.Context, provider ProviderConfig, model, draft stri
 Return a JSON object with a "tags" array. Select up to three relevant candidates using their exact spelling, most relevant first.
 If no candidate fits (including when the list is empty) and the draft has a clear topic, return {"tags":[],"newTag":"topic"}.
 Choose one short tag in the language of the draft, without a leading # or spaces. If no tag is useful, return {"tags":[]}.`
-	raw, err := generateJSON(ctx, provider, model, instruction, string(input))
+	raw, err := generateJSON(ctx, provider, model, instruction, string(input), tagSuggestionSchema)
 	if err != nil {
 		return nil, err
 	}

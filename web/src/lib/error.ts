@@ -29,6 +29,9 @@ const AI_FAILURE_MESSAGES = {
   AI_INVALID_RESPONSE: "error.ai-invalid-response",
 } as const;
 
+/** A reason the server gives for a failed AI provider call. */
+export type AIFailureReason = keyof typeof AI_FAILURE_MESSAGES;
+
 const ERROR_INFO_TYPE = "google.rpc.ErrorInfo";
 
 // The api protos never reference google.rpc, so its TypeScript schema is not

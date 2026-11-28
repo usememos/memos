@@ -3,7 +3,9 @@ package fileserver
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/fs"
@@ -286,9 +288,12 @@ func (s *FileServerService) serveMediaStream(w http.ResponseWriter, r *http.Requ
 		return s.streamS3Object(w, r, attachment, contentType)
 
 	default:
-		// Database storage fallback.
-		modTime := time.Unix(attachment.UpdatedTs, 0)
-		http.ServeContent(w, r, attachment.Filename, modTime, bytes.NewReader(attachment.Blob))
+		// Database storage fallback. Clients revalidate against a hash of the
+		// content: updated_ts is the attachment's place in its memo, not a
+		// content version, so it is not sent as Last-Modified.
+		sum := sha256.Sum256(attachment.Blob)
+		w.Header().Set("ETag", `"`+hex.EncodeToString(sum[:])+`"`)
+		http.ServeContent(w, r, attachment.Filename, time.Time{}, bytes.NewReader(attachment.Blob))
 		return nil
 	}
 }

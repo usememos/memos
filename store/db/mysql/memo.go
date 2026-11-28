@@ -316,6 +316,29 @@ func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
 	return count, nil
 }
 
+// ListMemoIDs lists the ID of every memo, comments included, in every row
+// status and Space, in ascending order.
+func (d *DB) ListMemoIDs(ctx context.Context) ([]int32, error) {
+	rows, err := d.db.QueryContext(ctx, "SELECT `id` FROM `memo` ORDER BY `id`")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo IDs")
+	}
+	defer rows.Close()
+
+	ids := []int32{}
+	for rows.Next() {
+		var id int32
+		if err := rows.Scan(&id); err != nil {
+			return nil, errors.Wrap(err, "failed to scan memo ID")
+		}
+		ids = append(ids, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "failed to list memo IDs")
+	}
+	return ids, nil
+}
+
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if update.Policy == nil {
 		return applyMemoUpdate(ctx, d.db, update)
