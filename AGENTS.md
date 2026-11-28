@@ -184,4 +184,4 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
   `store`, `server`, `internal`, `other` (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.
-- Docker: `scripts/Dockerfile`, Alpine 3.21 runtime, non-root user, port 5230, multi-arch amd64/arm64/arm/v7.
+- Docker: `scripts/Dockerfile`, Alpine 3.24 runtime, non-root user, port 5230, multi-arch amd64/arm64/arm/v7.
