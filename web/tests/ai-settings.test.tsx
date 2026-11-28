@@ -404,10 +404,18 @@ it("shows the request URL the server makes of a service's address", async () => 
   await chooseType("Anthropic");
   typeEndpoint("https://proxy.example.com/v1");
   expect(dialog.getByText("Requests go to https://proxy.example.com/v1/messages")).toBeVisible();
+  // The path is read as written, as the server reads it.
+  typeEndpoint("https://proxy.example.com/v1/.");
+  expect(dialog.getByText("Requests go to https://proxy.example.com/v1/./v1/messages")).toBeVisible();
+  typeEndpoint("https://v1");
+  expect(dialog.getByText("Requests go to https://v1/v1/messages")).toBeVisible();
 
   await chooseType("OpenAI");
   typeEndpoint("https://proxy.example.com");
   expect(dialog.getByText("Requests go to https://proxy.example.com/v1/chat/completions")).toBeVisible();
+  // A base URL with a query is refused on save, so it has no request URL to show.
+  typeEndpoint("https://proxy.example.com/v1?api-version=1");
+  expect(dialog.queryByText(/Requests go to/)).toBeNull();
   typeEndpoint("");
   expect(dialog.getByText("Leave empty to use the official provider endpoint.")).toBeVisible();
 });

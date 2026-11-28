@@ -1795,6 +1795,7 @@ type InstanceSetting_AIProviderConfig struct {
 	//
 	// An address without a path takes the path of the type's default endpoint, so http://host:11434 is stored as
 	// http://host:11434/v1 for OLLAMA. A trailing /v1 is dropped for the Anthropic types, whose API adds it.
+	// An endpoint with a query or fragment is refused.
 	Endpoint string `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// Input only. The API key. Never returned. Required unless the type marks it optional. An empty value keeps the
 	// stored key while type and endpoint are unchanged; changing either requires the key again, so that it is never

@@ -92,7 +92,8 @@ const canServe = (types: AIProviderTypeInfo[], provider: LocalAIProvider, kind: 
 const speaksAnthropic = (type: InstanceSetting_AIProviderType) =>
   type === InstanceSetting_AIProviderType.ANTHROPIC || type === InstanceSetting_AIProviderType.ANTHROPIC_COMPATIBLE;
 
-const urlPath = (url: string) => (URL.canParse(url) ? new URL(url).pathname.replace(/\/+$/, "") : "");
+/** The path of a base URL as written, which is what the server reads: `URL` would resolve its dot segments. */
+const urlPath = (url: string) => /^[^:/?#]+:\/\/[^/?#]*([^?#]*)/.exec(url)?.[1].replace(/\/+$/, "") ?? "";
 
 /**
  * The base URL the server makes of a typed endpoint, as `normalizeEndpoint` in provider/ai does: an address without a
@@ -111,11 +112,11 @@ const resolvedEndpoint = (types: AIProviderTypeInfo[], provider: Pick<LocalAIPro
 
 /**
  * Where a typed endpoint sends a request: the OpenAI SDK appends /chat/completions, Anthropic's /v1/messages. Gemini's
- * route carries the model, so it has no single URL to show.
+ * route carries the model, so it has no single URL to show, and the server refuses an endpoint with a query or fragment.
  */
 const requestURL = (types: AIProviderTypeInfo[], provider: Pick<LocalAIProvider, "type" | "endpoint">) => {
   const base = completedEndpoint(types, provider);
-  if (!base || provider.type === InstanceSetting_AIProviderType.GEMINI) return "";
+  if (!base || /[?#]/.test(base) || provider.type === InstanceSetting_AIProviderType.GEMINI) return "";
   return speaksAnthropic(provider.type) ? `${base}/v1/messages` : `${base}/chat/completions`;
 };
 

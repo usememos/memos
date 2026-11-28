@@ -29,6 +29,13 @@ func TestValidateAI(t *testing.T) {
 	badType.Type = storepb.AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED
 	require.ErrorContains(t, ValidateSetting(settingWith(badType)), "unsupported type")
 
+	// A base URL cannot carry a query or fragment to the provider.
+	for _, endpoint := range []string{"ftp://example.com", "https://example.com/v1?api-version=1", "https://example.com?", "https://example.com/v1#a"} {
+		badEndpoint := provider("a")
+		badEndpoint.Endpoint = endpoint
+		require.ErrorContains(t, ValidateSetting(settingWith(badEndpoint)), "without a query or fragment", endpoint)
+	}
+
 	setting := settingWith(provider("a"))
 	setting.TextGeneration = &storepb.TextGenerationConfig{ProviderId: "missing", Model: "text"}
 	require.ErrorContains(t, ValidateSetting(setting), "does not reference")
@@ -160,6 +167,8 @@ func TestNormalizeSettingCompletesEndpoint(t *testing.T) {
 		{"openai compatible path", storepb.AIProviderType_OPENAI_COMPATIBLE, "http://localhost:8080/v1", "http://localhost:8080/v1", "http://localhost:8080/v1"},
 		// What is not a plain base URL is left for validation to judge.
 		{"query", storepb.AIProviderType_OLLAMA, "http://ollama:11434?x=1", "http://ollama:11434?x=1", "http://ollama:11434?x=1"},
+		{"empty query", storepb.AIProviderType_OLLAMA, "http://ollama:11434?", "http://ollama:11434?", "http://ollama:11434?"},
+		{"empty fragment", storepb.AIProviderType_OLLAMA, "http://ollama:11434#", "http://ollama:11434#", "http://ollama:11434#"},
 		{"no scheme", storepb.AIProviderType_OLLAMA, "ollama:11434", "ollama:11434", "ollama:11434"},
 	} {
 		provider := &storepb.AIProviderConfig{Id: "a", Type: test.providerType, Endpoint: test.endpoint}

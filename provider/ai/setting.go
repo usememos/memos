@@ -39,8 +39,9 @@ func ResolveEndpoint(provider *storepb.AIProviderConfig) string {
 // choice and is kept.
 func normalizeEndpoint(spec ProviderSpec, endpoint string) string {
 	endpoint = strings.TrimRight(strings.TrimSpace(endpoint), "/")
+	// A query or fragment, even an empty one, would end up holding the path.
 	parsed, err := url.Parse(endpoint)
-	if err != nil || parsed.Host == "" || parsed.RawQuery != "" || parsed.Fragment != "" {
+	if err != nil || parsed.Host == "" || strings.ContainsAny(endpoint, "?#") {
 		return endpoint
 	}
 	if spec.Protocol == ProtocolAnthropic && strings.HasSuffix(parsed.Path, "/v1") {
@@ -116,7 +117,7 @@ func ValidateSetting(setting *storepb.InstanceAISetting) error {
 			return errors.Errorf("provider %q endpoint is required", provider.Id)
 		}
 		if ValidateEndpoint(provider.Endpoint) != nil {
-			return errors.Errorf("provider %q endpoint must be an http or https URL", provider.Id)
+			return errors.Errorf("provider %q endpoint must be an http or https URL without a query or fragment", provider.Id)
 		}
 		if spec.APIKeyRequired && provider.ApiKey == "" {
 			return errors.Errorf("provider %q API key is required", provider.Id)

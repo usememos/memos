@@ -91,6 +91,7 @@ func TestInstanceAISettingConnectionCheck(t *testing.T) {
 		{"redirect", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/moved", "apiKey": "test-key"}, http.StatusBadRequest, "AI_PROVIDER_REDIRECTED", "redirected"},
 		{"nothing listening", map[string]string{"type": "OPENAI", "endpoint": "http://127.0.0.1:1", "apiKey": "test-key"}, http.StatusServiceUnavailable, "AI_PROVIDER_UNREACHABLE", "could not connect"},
 		{"not a URL", map[string]string{"type": "OPENAI", "endpoint": "ftp://example.com", "apiKey": "test-key"}, http.StatusBadRequest, "", "http or https"},
+		{"query", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/v1?api-version=1", "apiKey": "test-key"}, http.StatusBadRequest, "", "without a query or fragment"},
 		{"key not resent for a new endpoint", map[string]string{"type": "OPENAI", "endpoint": upstream.URL + "/changed"}, http.StatusBadRequest, "", "API key is required"},
 		{"key not resent for a new type", map[string]string{"type": "DEEPSEEK", "endpoint": upstream.URL}, http.StatusBadRequest, "", "API key is required"},
 	} {
