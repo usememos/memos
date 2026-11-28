@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/internal/requesthost"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	"github.com/usememos/memos/server/api"
 )
@@ -88,6 +89,18 @@ func signInWithSSORequest(ctx context.Context, ts *TestService, idpName, code, r
 			},
 		},
 	})
+}
+
+// ctxWithRequestHost returns a context carrying the given host as the request
+// host, the same way requesthost.Middleware populates it for real traffic.
+func ctxWithRequestHost(t *testing.T, host string) context.Context {
+	t.Helper()
+	req := httptest.NewRequest(http.MethodGet, "http://"+host+"/", nil)
+	var ctx context.Context
+	requesthost.Middleware(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+		ctx = r.Context()
+	})).ServeHTTP(httptest.NewRecorder(), req)
+	return ctx
 }
 
 func TestSSOSignInWithoutStateNeverReachesTheProvider(t *testing.T) {
@@ -248,6 +261,71 @@ func TestCreateLinkedIdentityRequiresState(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, "link-sub", linked.ExternalUid)
+	require.Equal(t, testingSSOCallbackURI, recorded.redirectURI)
+}
+
+func TestSSORedemptionRejectsCallbackPinnedToSpoofedHost(t *testing.T) {
+	t.Parallel()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	// No instance URL: issuance falls back to trusting the request's host.
+	ts.Profile.InstanceURL = ""
+
+	ctx := context.Background()
+	mockIDP, recorded := newRecordingMockOAuthServer(t, "spoofed-token", map[string]any{
+		"sub":  "spoofed-sub",
+		"name": "Spoofed User",
+	})
+	defer mockIDP.Close()
+
+	idpName := createTestingOAuthIdentityProvider(ctx, t, ts, mockIDP.URL, "spoofed-idp")
+
+	// A direct client picks its own Host header and pins the flow's callback
+	// to an origin it controls.
+	attackerCtx := ctxWithRequestHost(t, "attacker.example")
+	resp, err := ts.Service.CreateSSOAuthorizationState(attackerCtx, &apipb.CreateSSOAuthorizationStateRequest{
+		IdentityProvider: idpName,
+		RedirectUri:      "http://attacker.example/auth/callback",
+	})
+	require.NoError(t, err)
+
+	// Redeeming that code through the instance's real host must fail before
+	// the provider is contacted: the recorded callback belongs to the foreign
+	// origin, not the one this redemption request was sent to.
+	_, err = signInWithSSORequest(ctxWithRequestHost(t, "localhost:8080"), ts, idpName, "phished-code", "http://attacker.example/auth/callback", "", resp.GetState())
+	require.Error(t, err)
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	require.Empty(t, recorded.code, "a flow pinned to a foreign host must not reach the provider")
+}
+
+func TestSSORequestHostFallbackFlowRedeemsOnTheIssuingHost(t *testing.T) {
+	t.Parallel()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ts.Profile.InstanceURL = ""
+
+	ctx := context.Background()
+	mockIDP, recorded := newRecordingMockOAuthServer(t, "fallback-token", map[string]any{
+		"sub":  "fallback-sub",
+		"name": "Fallback User",
+	})
+	defer mockIDP.Close()
+
+	idpName := createTestingOAuthIdentityProvider(ctx, t, ts, mockIDP.URL, "fallback-idp")
+
+	// A browser-driven flow reaches issuance and redemption on the same host,
+	// so the request-host fallback keeps working with no instance URL set.
+	hostCtx := ctxWithRequestHost(t, "localhost:8080")
+	resp, err := ts.Service.CreateSSOAuthorizationState(hostCtx, &apipb.CreateSSOAuthorizationStateRequest{
+		IdentityProvider: idpName,
+		RedirectUri:      testingSSOCallbackURI,
+	})
+	require.NoError(t, err)
+
+	_, err = signInWithSSORequest(hostCtx, ts, idpName, "fallback-code", testingSSOCallbackURI, "", resp.GetState())
+	require.NoError(t, err)
 	require.Equal(t, testingSSOCallbackURI, recorded.redirectURI)
 }
 

@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	coreuser "github.com/usememos/memos/core/user"
+	"github.com/usememos/memos/internal/requesthost"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/provider/idp"
 	"github.com/usememos/memos/provider/idp/oauth2"
@@ -209,6 +210,16 @@ func (s *APIService) resolveSSOIdentity(ctx context.Context, idpName, code, stat
 	}
 	if flow.pkceRequired && codeVerifier == "" {
 		return nil, nil, status.Errorf(codes.InvalidArgument, "SSO flow used PKCE; code_verifier is required")
+	}
+
+	// Issuance vets the callback against the configured instance URL when one
+	// is set, and otherwise against the host the issuance request carried —
+	// but that fallback host is client-chosen. Re-vet the recorded callback
+	// against the host of this redemption request: a state minted through a
+	// spoofed Host pins the callback to an origin the caller controls, and the
+	// flow may only complete when the code comes back through that same host.
+	if err := validateSSORedirectURI(s.Profile, requesthost.FromContext(ctx), flow.redirectURI); err != nil {
+		return nil, nil, err
 	}
 
 	var userInfo *idp.IdentityProviderUserInfo
