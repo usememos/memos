@@ -245,9 +245,15 @@ func TestMessageFormatEncodesLongASCIISubject(t *testing.T) {
 
 		formatted := msg.Format("sender@example.com", "Sender")
 		headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
+		inSubject := false
 		for line := range strings.SplitSeq(headers, "\r\n") {
 			if len(line) > 998 {
 				t.Errorf("header line of %d characters exceeds the 998 character limit:\n%s", len(line), line)
+			}
+			// RFC 2047 limits a line holding an encoded word to 76 characters.
+			inSubject = strings.HasPrefix(line, "Subject: ") || (inSubject && strings.HasPrefix(line, " "))
+			if inSubject && len(line) > 76 {
+				t.Errorf("Subject line of %d characters exceeds the 76 character limit:\n%s", len(line), line)
 			}
 		}
 

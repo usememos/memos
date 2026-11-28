@@ -107,7 +107,7 @@ func encodeSubject(subject string) string {
 	}
 	for word := range strings.SplitSeq(subject, " ") {
 		if len("Subject: ")+len(word) > maxHeaderLineHardLimit {
-			return qEncodeWords(subject)
+			return qEncodeWords(subject, maxEncodedLineLength-len("Subject: "))
 		}
 	}
 	return subject
@@ -116,14 +116,21 @@ func encodeSubject(subject string) string {
 // maxEncodedWordLength is the longest RFC 2047 encoded word.
 const maxEncodedWordLength = 75
 
+// maxEncodedLineLength is the longest header line RFC 2047 allows when the
+// line holds an encoded word.
+const maxEncodedLineLength = 76
+
 // qEncodeWords Q-encodes ASCII text as encoded words separated by spaces.
+// The first word is at most firstWordLength characters, so it fits on the
+// line after the header name; later words go on folded lines of their own.
 // Receivers drop the space between adjacent encoded words, so the text
 // decodes back unchanged.
-func qEncodeWords(text string) string {
+func qEncodeWords(text string, firstWordLength int) string {
 	const prefix, suffix = "=?utf-8?q?", "?="
 	var sb strings.Builder
 	sb.WriteString(prefix)
 	wordLength := len(prefix)
+	wordLimit := min(firstWordLength, maxEncodedWordLength)
 	for i := 0; i < len(text); i++ {
 		c := text[i]
 		var encoded string
@@ -135,9 +142,10 @@ func qEncodeWords(text string) string {
 		default:
 			encoded = fmt.Sprintf("=%02X", c)
 		}
-		if wordLength+len(encoded)+len(suffix) > maxEncodedWordLength {
+		if wordLength+len(encoded)+len(suffix) > wordLimit {
 			sb.WriteString(suffix + " " + prefix)
 			wordLength = len(prefix)
+			wordLimit = maxEncodedWordLength
 		}
 		sb.WriteString(encoded)
 		wordLength += len(encoded)
