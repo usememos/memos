@@ -234,6 +234,40 @@ func TestMessageFormatFoldsLongHeaders(t *testing.T) {
 	}
 }
 
+func TestMessageFormatEncodesLongASCIISubject(t *testing.T) {
+	// Space titles have no length limit, so a subject can hold a run of
+	// ASCII text with no space to fold at.
+	for _, subject := range []string{
+		strings.Repeat("a", 1000),
+		"[Memos] Zoe invited you to join \"" + strings.Repeat("x=?_", 300) + "\"",
+	} {
+		msg := Message{To: []string{"user@example.com"}, Subject: subject, Body: "Test Body"}
+
+		formatted := msg.Format("sender@example.com", "Sender")
+		headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
+		inSubject := false
+		for line := range strings.SplitSeq(headers, "\r\n") {
+			if len(line) > 998 {
+				t.Errorf("header line of %d characters exceeds the 998 character limit:\n%s", len(line), line)
+			}
+			// RFC 2047 limits a line holding an encoded word to 76 characters.
+			inSubject = strings.HasPrefix(line, "Subject: ") || (inSubject && strings.HasPrefix(line, " "))
+			if inSubject && len(line) > 76 {
+				t.Errorf("Subject line of %d characters exceeds the 76 character limit:\n%s", len(line), line)
+			}
+		}
+
+		parsed, err := mail.ReadMessage(strings.NewReader(formatted))
+		if err != nil {
+			t.Fatalf("formatted message does not parse: %v", err)
+		}
+		decoded, err := new(mime.WordDecoder).DecodeHeader(parsed.Header.Get("Subject"))
+		if err != nil || decoded != subject {
+			t.Errorf("subject decodes to %q, err %v", decoded, err)
+		}
+	}
+}
+
 func TestMessageFormatEncodesNonASCIIFromNameWithSpecials(t *testing.T) {
 	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
 	for _, name := range []string{"Zoë <ops>", "Zoë, Team", "Zoë (Memos)"} {
