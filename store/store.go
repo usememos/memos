@@ -19,6 +19,7 @@ type Store struct {
 	refreshTokenMu sync.Mutex
 	patMu          sync.Mutex
 	memoViewMu     sync.Mutex
+	webhookMu      sync.Mutex
 
 	// Cache settings
 	cacheConfig cache.Config
