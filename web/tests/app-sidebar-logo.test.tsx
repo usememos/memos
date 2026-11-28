@@ -242,7 +242,7 @@ describe("App sidebar logo", () => {
     expect(switcher).toHaveTextContent("common.explore");
     expect(within(switcher).queryByText("Memos logo")).not.toBeInTheDocument();
     expect(switcher.querySelector(".lucide-compass")).toHaveClass("size-5");
-    expect(switcher).toHaveClass("min-w-0", "h-9", "gap-2", "px-2");
+    expect(switcher).toHaveClass("min-w-0", "h-7", "gap-1", "px-[7px]");
     expect(switcher).not.toHaveClass("px-1");
     expect(switcher.firstElementChild).not.toHaveClass("flex-1");
     expect(switcher.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
@@ -295,7 +295,7 @@ describe("App sidebar logo", () => {
       );
 
       const brand = screen.getByRole("button", { name: "space.switch: common.memos" });
-      expect(brand).toHaveClass("h-9", "gap-2", "px-2");
+      expect(brand).toHaveClass("h-7", "gap-1", "px-[7px]");
       expect(within(brand).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
     },
   );

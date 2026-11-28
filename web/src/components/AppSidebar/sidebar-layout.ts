@@ -24,10 +24,12 @@ export const SIDEBAR_NAV_LEADING_SLOT_CLASSES = "flex size-4 shrink-0 items-cent
 
 /**
  * Brand controls hug their content and ordinary rows fill the inset rail.
- * The header brand is the sidebar's title, not a row: a larger serif label, so it reads as a
- * different kind of object from the 16px nav pills below. It keeps the rows' x-geometry all the
- * same: its mark starts on the artwork rail and its name on the label rail (a 20px mark and a
- * 4px gap, or the 16px-wide bird and an 8px gap).
+ * The header brand is the sidebar's title, not a row: a semibold 14px name (the serif wordmark
+ * for the product's own name), so it leads the 13px labels below by weight. It is as tall as the
+ * compose control beside it, with a 40px hit area. It keeps the rows' x-geometry: 7px of padding
+ * beside the 1px focus border puts its mark on the artwork rail and its name on the label rail
+ * (a 20px mark and a 4px gap, or the 16px-wide bird and an 8px gap). The chevron follows the
+ * name by the same 4px.
  * Heights stay fixed so data cannot change a surface's padding or vertical position.
  */
 export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
@@ -35,7 +37,7 @@ export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
     role: {
       row: "mu-s-md flex h-(--mu-row-height) w-full gap-1 rounded-(--mu-row-radius) px-2 mu-label-sm",
       navPill: "mu-s-md relative flex h-(--mu-row-height) shrink-0 rounded-(--mu-row-radius) px-[5px]",
-      headerBrand: "flex h-9 max-w-full gap-2 rounded-mu-md px-2",
+      headerBrand: "relative flex h-7 max-w-full gap-1 rounded-mu-md px-[7px] before:absolute before:inset-x-0 before:-inset-y-1.5",
       mobileBrand: "flex h-9 max-w-full gap-1.5 rounded-mu-md px-1",
     },
   },

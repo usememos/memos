@@ -21,10 +21,12 @@ const filesUsing = (pattern: RegExp) =>
     .sort();
 
 describe("type roles", () => {
-  it("keeps the title style on dialog, panel and empty-state titles", () => {
+  it("keeps the title style on dialog, panel, sidebar and empty-state titles", () => {
     // A new use is fine when it is one of those roles: add it here. Page titles use `mu-heading`,
     // section titles `mu-label`, body text `mu-body`.
     expect(filesUsing(/\bmu-title\b/)).toEqual([
+      // The sidebar title: a place, Space, person or custom instance name.
+      "components/IdentityLabel.tsx",
       "components/MemoActionMenu/MemoShareImagePreview.tsx",
       "components/MemoPanel/MemoPanel.tsx",
       "components/WelcomeGuide/WelcomeGuideDialog.tsx",

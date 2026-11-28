@@ -163,6 +163,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               // In the sidebar the mark is a row's 20px slot and the name follows 4px on, so the title
               // starts on the label rail of the rows below it.
               className={cn(size === "header" && "gap-1")}
+              size={size === "header" ? "sm" : "md"}
               label={placeLabel ?? (creatorUsername && selectedSpaceName ? spaceLabel : contextLabel)}
               mark={
                 placeLabel ? (

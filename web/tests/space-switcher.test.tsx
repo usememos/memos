@@ -216,7 +216,7 @@ describe("SpaceSwitcher", () => {
     expect(trigger).toHaveAttribute("title", "Alice / Product");
     expect(within(trigger).queryByText("Alice")).not.toBeInTheDocument();
     expect(within(trigger).getByText("Product")).toHaveClass("truncate");
-    expect(trigger).toHaveClass("h-9", "gap-2", "px-2");
+    expect(trigger).toHaveClass("h-7", "gap-1", "px-[7px]");
     // The mark fills a row's 20px slot and the name follows 4px on, so the title starts on the rows' label rail.
     expect(within(trigger).getByText("Product").parentElement).toHaveClass("gap-1");
     expect(trigger.querySelector(".rounded-full")).toHaveClass("size-[18px]");
