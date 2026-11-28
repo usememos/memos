@@ -52,7 +52,7 @@ const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelation
               parentPage={parentPage}
               variant="label"
               icon={LinkIcon}
-              trailing={<MetadataRowDetail parts={[dates[memo.name]]} />}
+              trailing={<MetadataRowDetail parts={[dates[memo.name]]} yields={Boolean(onRelationsChange)} />}
             />
             {onRelationsChange && (
               <MetadataRowRemoveControl label={t("editor.remove-relation")} onClick={() => handleDeleteRelation(memo.name)} />

@@ -314,7 +314,7 @@ const AttachmentRow: FC<{
         {titleLabel}
       </span>
 
-      <MetadataRowDetail parts={detailParts} />
+      <MetadataRowDetail parts={detailParts} yields />
 
       <div className={METADATA_ROW_CONTROLS_CLASSES}>
         {actions.transcription && (

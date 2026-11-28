@@ -64,15 +64,21 @@ export const METADATA_ROW_CONTROLS_CLASSES = cn(
   "flex shrink-0 items-center gap-0.5 transition-opacity md:absolute md:inset-y-0 md:end-1 md:opacity-0",
   "md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100",
 );
-/** A glyph hinting at what engaging the row does (download, open), overlaid where the detail rail was. */
+/**
+ * A glyph hinting at what engaging the row does, overlaid where the detail rail was. Only for a
+ * row whose leading slot is itself a control (audio's play button); every other row passes its
+ * hint to `MetadataRowIconSlot`, which keeps the detail rail readable.
+ */
 export const METADATA_ROW_HINT_CLASSES = cn(
   "mu-icon-sm absolute end-2 opacity-0 transition-opacity",
   "md:group-hover/row:opacity-75 md:group-focus-within/row:opacity-75",
 );
-/** The detail rail gives way to whatever overlays it. */
-export const METADATA_ROW_DETAIL_YIELD_CLASSES = cn(
-  "transition-opacity",
-  "md:group-hover/row:opacity-0 md:group-focus-within/row:opacity-0",
+/** Fades with the row's engagement, for whatever a control or hint takes the place of. */
+const METADATA_ROW_YIELD_CLASSES = cn("transition-opacity", "md:group-hover/row:opacity-0 md:group-focus-within/row:opacity-0");
+/** The hint that takes the leading glyph's place: same box, same edge, shown once the row is engaged. */
+const METADATA_ROW_SLOT_HINT_CLASSES = cn(
+  "mu-icon-sm absolute inset-y-0 start-0 my-auto opacity-0 transition-opacity",
+  "md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100",
 );
 
 /**
@@ -81,21 +87,35 @@ export const METADATA_ROW_DETAIL_YIELD_CLASSES = cn(
  */
 export const METADATA_ROW_LIST_CLASSES = "-mx-2 flex w-[calc(100%+1rem)] flex-col gap-0.5";
 
-/** The standard glyph-in-slot pairing, so every row draws its glyph identically. */
-export const MetadataRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
-  <span className={METADATA_ROW_SLOT_CLASSES} aria-hidden="true">
-    <Icon className={METADATA_ROW_ICON_CLASSES} />
+/**
+ * The standard glyph-in-slot pairing, so every row draws its glyph identically. A `hint` says
+ * what engaging the row does (download, open elsewhere) and swaps in for the glyph while the
+ * row is engaged, so the hint costs the row nothing it was showing.
+ */
+export const MetadataRowIconSlot = ({ icon: Icon, hint: Hint }: { icon: LucideIcon; hint?: LucideIcon }) => (
+  <span className={cn(METADATA_ROW_SLOT_CLASSES, Hint && "relative")} aria-hidden="true">
+    <Icon className={cn(METADATA_ROW_ICON_CLASSES, Hint && METADATA_ROW_YIELD_CLASSES)} />
+    {Hint && <Hint className={METADATA_ROW_SLOT_HINT_CLASSES} />}
   </span>
 );
 
-const DETAIL_RAIL_CLASSES = cn(METADATA_ROW_DETAIL_CLASSES, METADATA_ROW_DETAIL_YIELD_CLASSES, "hidden items-center gap-1 sm:flex");
+const DETAIL_RAIL_CLASSES = cn(METADATA_ROW_DETAIL_CLASSES, "hidden items-center gap-1 sm:flex");
 
-/** The detail rail: short facts separated by quiet dots, hidden on narrow screens where the label needs the room. */
-export const MetadataRowDetail = ({ parts }: { parts: Array<string | undefined> }) => {
+interface MetadataRowDetailProps {
+  parts: Array<string | undefined>;
+  /** Set when a control or hint overlays the rail once the row is engaged; the rail then fades to make room. */
+  yields?: boolean;
+}
+
+/**
+ * The detail rail: short facts separated by quiet dots, hidden on narrow screens where the label
+ * needs the room. It stays put while the row is engaged unless something takes its place.
+ */
+export const MetadataRowDetail = ({ parts, yields = false }: MetadataRowDetailProps) => {
   const shown = parts.filter((part): part is string => Boolean(part));
   if (shown.length === 0) return null;
   return (
-    <span className={DETAIL_RAIL_CLASSES}>
+    <span className={cn(DETAIL_RAIL_CLASSES, yields && METADATA_ROW_YIELD_CLASSES)}>
       {shown.map((part, index) => (
         <span key={part} className="flex items-center gap-1">
           {index > 0 && <span className="text-mu-text-secondary/40">·</span>}

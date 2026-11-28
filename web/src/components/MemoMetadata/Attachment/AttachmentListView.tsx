@@ -1,5 +1,5 @@
 import { buttonClasses } from "@usememos/ui";
-import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
+import { DownloadIcon, ExternalLinkIcon, FileIcon, type LucideIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
 import { Suspense, useMemo, useState } from "react";
 import { DRAWING_PAPER, DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
@@ -17,7 +17,6 @@ import {
   METADATA_ROW_CLASSES,
   METADATA_ROW_CONTENT_TEXT_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,
-  METADATA_ROW_HINT_CLASSES,
   METADATA_ROW_LABEL_CLASSES,
   MetadataRowDetail,
   MetadataRowIconSlot,
@@ -332,19 +331,19 @@ const isServedHere = (url: string) => {
 /**
  * A document is a row: file glyph in the slot, name, type and size on the detail rail.
  * A file the browser can show, or a link to another site, opens in a new tab; any other
- * file downloads. A shown file offers its download in the trailing overlay. Hint and
- * controls only appear over the detail rail once the row is engaged, so the rail stays on
- * the same edge as every other row's at rest.
+ * file downloads. A row with one action hints at it in the leading slot once engaged, so
+ * the type and size stay readable while the reader decides. A shown file also offers its
+ * download, a real control, in the trailing overlay; only that takes the rail's place.
  */
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   const t = useTranslate();
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
   const url = getAttachmentUrl(attachment);
-  const body = (
+  const body = ({ hint, yields }: { hint?: LucideIcon; yields?: boolean }) => (
     <>
-      <MetadataRowIconSlot icon={FileIcon} />
+      <MetadataRowIconSlot icon={FileIcon} hint={hint} />
       <span className={METADATA_ROW_CONTENT_TEXT_CLASSES}>{attachment.filename}</span>
-      <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
+      <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} yields={yields} />
     </>
   );
 
@@ -357,8 +356,7 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
         title={t("common.open-name", { name: attachment.filename })}
         className={METADATA_ROW_CLASSES}
       >
-        {body}
-        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
+        {body({ hint: ExternalLinkIcon })}
       </a>
     );
   }
@@ -366,8 +364,7 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   if (!opensInline(attachment.type)) {
     return (
       <a href={url} download title={t("common.download-name", { name: attachment.filename })} className={METADATA_ROW_CLASSES}>
-        {body}
-        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
+        {body({ hint: DownloadIcon })}
       </a>
     );
   }
@@ -381,7 +378,7 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
         title={t("common.open-name", { name: attachment.filename })}
         className={METADATA_ROW_LABEL_CLASSES}
       >
-        {body}
+        {body({ yields: true })}
       </a>
       <div className={METADATA_ROW_CONTROLS_CLASSES}>
         <a

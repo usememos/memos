@@ -156,7 +156,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size }: AudioAttac
         {/* The name opens the player; an open glyph takes the detail rail's place once the row is engaged. */}
         <button type="button" className={OPEN_PLAYER_CLASSES} onClick={() => handlePlayerOpenChange(true)} title={filename}>
           <span className={METADATA_ROW_CONTENT_TEXT_CLASSES}>{filename}</span>
-          <MetadataRowDetail parts={[duration > 0 ? getDurationLabel(duration) : undefined, fileTypeLabel, fileSizeLabel]} />
+          <MetadataRowDetail parts={[duration > 0 ? getDurationLabel(duration) : undefined, fileTypeLabel, fileSizeLabel]} yields />
           <Maximize2Icon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
         </button>
       </div>
